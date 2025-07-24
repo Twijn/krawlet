@@ -7,9 +7,9 @@ export type Name = {
 	transferred?: Date;
 	a?: string;
 	unpaid: number;
-}
+};
 
 export type NameResponse = {
 	ok: boolean;
 	name: Name;
-}
+};

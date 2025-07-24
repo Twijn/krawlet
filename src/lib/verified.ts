@@ -5,7 +5,7 @@ export type VerifiedEntry = {
 
 export const verified: Record<string, VerifiedEntry> = {
 	serverwelf: {
-		address: "serverwelf",
-		description: "Verified as being the Kromer address for server welfare on reconnected.cc",
+		address: 'serverwelf',
+		description: 'Verified as being the Kromer address for server welfare on reconnected.cc'
 	}
 };

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import "$lib/app.css";
-	import {config} from '@fortawesome/fontawesome-svg-core';
+	import '$lib/app.css';
+	import { config } from '@fortawesome/fontawesome-svg-core';
 	import '@fortawesome/fontawesome-svg-core/styles.css';
 
-	import "@fontsource/inter/400.css";
-	import "@fontsource/inter/500.css";
+	import '@fontsource/inter/400.css';
+	import '@fontsource/inter/500.css';
 	import Alert from '$lib/components/Alert.svelte';
 
 	config.autoAddCss = false;

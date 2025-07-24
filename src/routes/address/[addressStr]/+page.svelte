@@ -9,16 +9,19 @@
 	const { params } = $props();
 	const { addressStr } = params;
 
-	let address: Address|null = $state(null);
+	let address: Address | null = $state(null);
 
 	onMount(async () => {
 		address = await kromer.address({ address: addressStr });
 	});
 
-	const verifiedEntry: VerifiedEntry|null = verified[addressStr] ?? null;
+	const verifiedEntry: VerifiedEntry | null = verified[addressStr] ?? null;
 </script>
 
-<h1><a href="/">Krawlet</a> <span>&raquo;</span> Address <span>&raquo;</span> <a href="/address/{addressStr}">{addressStr}</a></h1>
+<h1>
+	<a href="/">Krawlet</a> <span>&raquo;</span> Address <span>&raquo;</span>
+	<a href="/address/{addressStr}">{addressStr}</a>
+</h1>
 
 {#if verifiedEntry}
 	<Alert variant="success">

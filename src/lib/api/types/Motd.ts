@@ -4,19 +4,19 @@ export type MotdPackage = {
 	author: string;
 	license: string;
 	repository: string;
-}
+};
 
 export type MotdConstants = {
 	wallet_version: number;
 	name_cost: number;
-}
+};
 
 export type MotdCurrency = {
 	address_prefix: string;
 	name_suffix: string;
 	currency_name: string;
 	currency_symbol: string;
-}
+};
 
 export type MotdResponse = {
 	motd: string;
@@ -28,4 +28,4 @@ export type MotdResponse = {
 	package: MotdPackage;
 	constants: MotdConstants;
 	currency: MotdCurrency;
-}
+};

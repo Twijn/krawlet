@@ -115,9 +115,12 @@ export class KromerApi {
 		return this.wrapTransactionResponse(response);
 	}
 
-	public async send(body: MakeTransactionBody): Promise<Transaction|null> {
+	public async send(body: MakeTransactionBody): Promise<Transaction | null> {
 		try {
-			const response: MakeTransactionResponse = (await this.post('transactions', body)) as MakeTransactionResponse;
+			const response: MakeTransactionResponse = (await this.post(
+				'transactions',
+				body
+			)) as MakeTransactionResponse;
 			return response.transaction ?? null;
 		} catch (err) {
 			console.error(err);

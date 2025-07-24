@@ -3,7 +3,7 @@ import { writable } from 'svelte/store';
 export type Wallet = {
 	name: string;
 	address: string;
-	private: string
+	private: string;
 };
 
 type WalletStore = {
@@ -12,7 +12,7 @@ type WalletStore = {
 
 function createWalletStore() {
 	const initial: WalletStore = {
-		wallets: [],
+		wallets: []
 	};
 
 	const { subscribe, set, update } = writable<WalletStore>(initial);
@@ -23,7 +23,7 @@ function createWalletStore() {
 		try {
 			const parsed = JSON.parse(saved);
 			set({
-				wallets: parsed.wallets || [],
+				wallets: parsed.wallets || []
 			});
 		} catch {
 			console.warn('Failed to parse walletStore from localStorage.');
@@ -52,13 +52,13 @@ function createWalletStore() {
 		removeWallet: (address: string) => {
 			update((state) => ({
 				...state,
-				wallets: state.wallets.filter((w) => w.address !== address),
+				wallets: state.wallets.filter((w) => w.address !== address)
 			}));
 		},
 
 		clearAll: () => {
 			set({
-				wallets: [],
+				wallets: []
 			});
 			localStorage.removeItem('walletStore');
 		}

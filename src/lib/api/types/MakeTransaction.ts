@@ -5,8 +5,8 @@ export type MakeTransactionBody = {
 	to: string;
 	amount: number;
 	metadata?: string;
-}
+};
 
 export type MakeTransactionResponse = {
 	transaction: Transaction;
-}
+};

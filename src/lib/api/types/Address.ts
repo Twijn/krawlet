@@ -1,7 +1,7 @@
 export type AddressQuery = {
 	address: string;
 	fetchNames?: boolean;
-}
+};
 
 export type Address = {
 	address: string;
