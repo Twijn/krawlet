@@ -233,7 +233,7 @@ input[type=number] {
     font-size: 1rem;
     outline: none;
     box-shadow: 0 0 1em rgba(0,0,0,0.15);
-    transition: .2s ease-in-out;
+    transition: border-bottom-color .2s ease-in-out;
 }
 
 input[type=password]:focus,

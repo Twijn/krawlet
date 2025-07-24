@@ -1,12 +1,15 @@
 <script lang="ts">
+	import "$lib/app.css";
+	import {config} from '@fortawesome/fontawesome-svg-core';
+	import '@fortawesome/fontawesome-svg-core/styles.css';
+
+	import "@fontsource/inter/400.css";
+	import "@fontsource/inter/500.css";
 	import Alert from '$lib/components/Alert.svelte';
 
-	const { children } = $props();
+	config.autoAddCss = false;
 
-	import("@fontsource/inter/400.css");
-	import("@fontsource/inter/500.css");
-	import('@fortawesome/fontawesome-svg-core/styles.css');
-	import("$lib/app.css");
+	const { children } = $props();
 </script>
 
 <div class="container">
