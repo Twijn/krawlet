@@ -247,3 +247,45 @@ input[type='number']:focus {
 label:has(.fail) input {
 	border-bottom-color: rgb(var(--red));
 }
+
+.table-container {
+	width: 100%;
+	overflow-x: auto;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	white-space: nowrap;
+}
+
+thead tr {
+	background-color: rgba(0, 0, 0, 0.1);
+	border-bottom: 0.1em solid var(--theme-color-1);
+}
+
+tbody tr {
+	border-bottom: 0.1em solid rgba(255, 255, 255, 0.1);
+}
+
+tbody tr:last-child {
+	border-bottom: none;
+}
+
+th,
+td {
+	padding: 0.8rem 0.6rem;
+	text-align: left;
+}
+
+.center {
+	text-align: center;
+}
+
+.right {
+	text-align: right;
+}
+
+.caps {
+	text-transform: capitalize;
+}

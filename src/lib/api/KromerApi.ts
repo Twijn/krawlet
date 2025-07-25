@@ -5,7 +5,13 @@ import type {
 	TransactionQuery,
 	TransactionsResponse
 } from '$lib/api/types/Transaction';
-import type { Address, AddressQuery, AddressResponse } from '$lib/api/types/Address';
+import type {
+	Address,
+	AddressNamesQuery,
+	AddressNamesResponse,
+	AddressQuery,
+	AddressResponse, AddressTransactionQuery
+} from '$lib/api/types/Address';
 import type { LoginResponse } from '$lib/api/types/Login';
 import type { Name, NameResponse } from '$lib/api/types/Name';
 import type { MakeTransactionBody, MakeTransactionResponse } from '$lib/api/types/MakeTransaction';
@@ -69,11 +75,32 @@ export class KromerApi {
 				`addresses/${query.address}`,
 				query
 			)) as AddressResponse;
+			if (response.address?.firstseen) {
+				response.address.firstseen = new Date(response.address.firstseen);
+			}
 			return response.address;
 		} catch (e) {
 			console.error(e);
 			return null;
 		}
+	}
+
+	public async addressNames(query: AddressNamesQuery): Promise<AddressNamesResponse> {
+		const response: AddressNamesResponse = await this.get(`addresses/${query.address}/names`, query) as AddressNamesResponse;
+		response.names = response.names.map(x => {
+			return {
+				...x,
+				registered: new Date(x.registered),
+				updated: new Date(x.updated),
+				transferred: x.transferred ? new Date(x.transferred) : undefined,
+			}
+		})
+		return response;
+	}
+
+	public async addressTransactions(query: AddressTransactionQuery): Promise<TransactionsResponse> {
+		const response = await this.get(`addresses/${query.address}/transactions`, query) as TransactionsResponse;
+		return this.wrapTransactionResponse(response);
 	}
 
 	public async name(name: string): Promise<Name | null> {

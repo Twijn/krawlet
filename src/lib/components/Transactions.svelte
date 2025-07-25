@@ -12,14 +12,16 @@
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
 	const {
-		lgCols = null,
+		lgCols = 12,
 		mdCols = null,
 		smCols = null,
+		address,
 		limit = 100
 	}: {
 		lgCols?: ColumnCount;
 		mdCols?: ColumnCount;
 		smCols?: ColumnCount;
+		address?: string;
 		limit?: number;
 	} = $props();
 
@@ -30,12 +32,18 @@
 
 	let transactionsPromise = $derived(
 		browser
-			? kromer.allTransactions({
+			? (address ?
+				 kromer.addressTransactions({
+					 address,
+					 offset: (page - 1) * limit,
+					 limit,
+				 })
+				: kromer.allTransactions({
 					latest: true,
 					offset: (page - 1) * limit,
 					limit,
 					excludeMined: !includeMined
-				})
+				}))
 			: null
 	);
 
@@ -122,45 +130,6 @@
 	.table-container {
 		/* position relative required for absolute ModuleLoading */
 		position: relative;
-		width: 100%;
-		overflow-x: auto;
-	}
-
-	table {
-		width: 100%;
-		border-collapse: collapse;
-		white-space: nowrap;
-	}
-
-	thead tr {
-		background-color: rgba(0, 0, 0, 0.1);
-		border-bottom: 0.1em solid var(--theme-color-1);
-	}
-
-	tbody tr {
-		border-bottom: 0.1em solid rgba(255, 255, 255, 0.1);
-	}
-
-	tbody tr:last-child {
-		border-bottom: none;
-	}
-
-	th,
-	td {
-		padding: 0.8rem 0.6rem;
-		text-align: left;
-	}
-
-	.center {
-		text-align: center;
-	}
-
-	.right {
-		text-align: right;
-	}
-
-	.caps {
-		text-transform: capitalize;
 	}
 
 	.metadata {
