@@ -8,6 +8,9 @@
 	<title>{page.status} | Krawlet</title>
 </svelte:head>
 
+<h1>
+	<a href="/">Krawlet</a>
+</h1>
 <Section lgCols={12}>
 	<h2>{page.status}: {page?.error?.message ?? "Internal Server Error"}</h2>
 	<p>
