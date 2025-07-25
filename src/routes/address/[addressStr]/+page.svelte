@@ -44,6 +44,10 @@
 	const verifiedEntry: VerifiedEntry | null = $derived(verified[address.address] ?? null);
 </script>
 
+<svelte:head>
+	<title>{address.address} | Krawlet</title>
+</svelte:head>
+
 <h1>
 	<a href="/">Krawlet</a> <span>&raquo;</span> Address <span>&raquo;</span>
 	<a href="/address/{address.address}">{address.address}</a>

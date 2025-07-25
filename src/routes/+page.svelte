@@ -6,6 +6,10 @@
 
 <svelte:head>
 	<title>Krawlet</title>
+	<meta
+		name="description"
+		content="Krawlet: The simple, lightweight wallet for Kromer. Written in Svelte"
+	/>
 </svelte:head>
 
 <h1><a href="/">Krawlet</a></h1>

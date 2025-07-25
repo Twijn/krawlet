@@ -6,6 +6,10 @@
 	const { address } = data;
 </script>
 
+<svelte:head>
+	<title>Transactions | {address.address} | Krawlet</title>
+</svelte:head>
+
 <h1>
 	<a href="/">Krawlet</a> <span>&raquo;</span> Address <span>&raquo;</span>
 	<a href="/address/{address.address}">{address.address}</a> <span>&raquo;</span>
