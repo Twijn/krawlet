@@ -16,7 +16,7 @@
 <nav class="pagination" aria-label="Pagination">
 	<ul>
 		{#if page > 1}
-			<li><button onclick={() => page++} aria-label="Previous Page">&lt;</button></li>
+			<li><button onclick={() => page--} aria-label="Previous Page">&lt;</button></li>
 		{/if}
 		{#if startNumber > 0}
 			<li><button onclick={() => (page = 1)}>1</button></li>
