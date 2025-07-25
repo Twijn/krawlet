@@ -12,13 +12,11 @@
 	<a href="/">Krawlet</a>
 </h1>
 <Section lgCols={12}>
-	<h2>{page.status}: {page?.error?.message ?? "Internal Server Error"}</h2>
+	<h2>{page.status}: {page?.error?.message ?? 'Internal Server Error'}</h2>
 	<p>
 		The page responded with a status of {page.status}.
 	</p>
 	<div class="links">
-		<Button variant="primary" href="/" full={true}>
-			Return to Home
-		</Button>
+		<Button variant="primary" href="/" full={true}>Return to Home</Button>
 	</div>
 </Section>

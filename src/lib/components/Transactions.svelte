@@ -65,12 +65,11 @@
 	{#if transactions}
 		{#if limit > 25}
 			<Pagination bind:page total={transactions.total} {limit} />
+		{:else if address}
+			<a id="view-all" href="/address/{address}/transactions">View all transactions for {address}</a
+			>
 		{:else}
-			{#if address}
-				<a id="view-all" href="/address/{address}/transactions">View all transactions for {address}</a>
-			{:else}
-				<a id="view-all" href="/transactions">View all transactions</a>
-			{/if}
+			<a id="view-all" href="/transactions">View all transactions</a>
 		{/if}
 		<div class="table-container">
 			<ModuleLoading absolute={true} bind:loading />
