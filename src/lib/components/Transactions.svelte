@@ -32,18 +32,18 @@
 
 	let transactionsPromise = $derived(
 		browser
-			? (address ?
-				 kromer.addressTransactions({
-					 address,
-					 offset: (page - 1) * limit,
-					 limit,
-				 })
+			? address
+				? kromer.addressTransactions({
+						address,
+						offset: (page - 1) * limit,
+						limit
+					})
 				: kromer.allTransactions({
-					latest: true,
-					offset: (page - 1) * limit,
-					limit,
-					excludeMined: !includeMined
-				}))
+						latest: true,
+						offset: (page - 1) * limit,
+						limit,
+						excludeMined: !includeMined
+					})
 			: null
 	);
 

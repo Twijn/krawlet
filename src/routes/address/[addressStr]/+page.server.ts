@@ -5,10 +5,10 @@ export async function load({ params }) {
 	const address = await kromer.address({ address: params.addressStr });
 
 	if (!address) {
-		throw fail(404, {message: 'Address not found'});
+		throw fail(404, { message: 'Address not found' });
 	}
 
 	return {
-		address,
+		address
 	};
 }

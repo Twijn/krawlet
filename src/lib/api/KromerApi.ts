@@ -10,7 +10,8 @@ import type {
 	AddressNamesQuery,
 	AddressNamesResponse,
 	AddressQuery,
-	AddressResponse, AddressTransactionQuery
+	AddressResponse,
+	AddressTransactionQuery
 } from '$lib/api/types/Address';
 import type { LoginResponse } from '$lib/api/types/Login';
 import type { Name, NameResponse } from '$lib/api/types/Name';
@@ -86,20 +87,26 @@ export class KromerApi {
 	}
 
 	public async addressNames(query: AddressNamesQuery): Promise<AddressNamesResponse> {
-		const response: AddressNamesResponse = await this.get(`addresses/${query.address}/names`, query) as AddressNamesResponse;
-		response.names = response.names.map(x => {
+		const response: AddressNamesResponse = (await this.get(
+			`addresses/${query.address}/names`,
+			query
+		)) as AddressNamesResponse;
+		response.names = response.names.map((x) => {
 			return {
 				...x,
 				registered: new Date(x.registered),
 				updated: new Date(x.updated),
-				transferred: x.transferred ? new Date(x.transferred) : undefined,
-			}
-		})
+				transferred: x.transferred ? new Date(x.transferred) : undefined
+			};
+		});
 		return response;
 	}
 
 	public async addressTransactions(query: AddressTransactionQuery): Promise<TransactionsResponse> {
-		const response = await this.get(`addresses/${query.address}/transactions`, query) as TransactionsResponse;
+		const response = (await this.get(
+			`addresses/${query.address}/transactions`,
+			query
+		)) as TransactionsResponse;
 		return this.wrapTransactionResponse(response);
 	}
 

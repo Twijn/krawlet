@@ -16,23 +16,24 @@
 	const address = $derived(data.address);
 
 	let namesPromise = $derived(
-		browser ?
-			kromer.addressNames({
-				address: address.address,
-			}) : Promise.resolve(null)
-	)
+		browser
+			? kromer.addressNames({
+					address: address.address
+				})
+			: Promise.resolve(null)
+	);
 
 	let names: Name[] = $state([]);
 
 	$effect(() => {
-		namesPromise.then(result => {
+		namesPromise.then((result) => {
 			names = result?.names ?? [];
 		});
-	})
+	});
 
 	onMount(async () => {
 		const namesResponse = await kromer.addressNames({
-			address: address.address,
+			address: address.address
 		});
 
 		if (namesResponse?.names) {
@@ -63,26 +64,26 @@
 		<div class="table-container">
 			<table>
 				<tbody>
-				<tr>
-					<th>Address</th>
-					<td class="right">{address.address}</td>
-				</tr>
-				<tr>
-					<th>Balance</th>
-					<td class="right">{address.balance.toFixed(2)} <small>KRO</small></td>
-				</tr>
-				<tr>
-					<th>Total In</th>
-					<td class="right">{address.totalin.toFixed(2)} <small>KRO</small></td>
-				</tr>
-				<tr>
-					<th>Total Out</th>
-					<td class="right">{address.totalout.toFixed(2)} <small>KRO</small></td>
-				</tr>
-				<tr>
-					<th>First Seen</th>
-					<td class="right">{relativeTime(address.firstseen)}</td>
-				</tr>
+					<tr>
+						<th>Address</th>
+						<td class="right">{address.address}</td>
+					</tr>
+					<tr>
+						<th>Balance</th>
+						<td class="right">{address.balance.toFixed(2)} <small>KRO</small></td>
+					</tr>
+					<tr>
+						<th>Total In</th>
+						<td class="right">{address.totalin.toFixed(2)} <small>KRO</small></td>
+					</tr>
+					<tr>
+						<th>Total Out</th>
+						<td class="right">{address.totalout.toFixed(2)} <small>KRO</small></td>
+					</tr>
+					<tr>
+						<th>First Seen</th>
+						<td class="right">{relativeTime(address.firstseen)}</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -97,18 +98,18 @@
 		<div class="table-container">
 			<table>
 				<thead>
-				<tr>
-					<th>Name</th>
-					<th>Registered</th>
-				</tr>
+					<tr>
+						<th>Name</th>
+						<th>Registered</th>
+					</tr>
 				</thead>
 				<tbody>
-				{#each names as name (name.name)}
-					<tr>
-						<td>{name.name}.kro</td>
-						<td>{relativeTime(name.registered)}</td>
-					</tr>
-				{/each}
+					{#each names as name (name.name)}
+						<tr>
+							<td>{name.name}.kro</td>
+							<td>{relativeTime(name.registered)}</td>
+						</tr>
+					{/each}
 				</tbody>
 			</table>
 		</div>
@@ -127,6 +128,7 @@
 
 <div class="col-12">
 	<Alert variant="info">
-		Recent Transactions will show more pages than there are for this address. This is a bug with Kromer, not with Krawlet.
+		Recent Transactions will show more pages than there are for this address. This is a bug with
+		Kromer, not with Krawlet.
 	</Alert>
 </div>

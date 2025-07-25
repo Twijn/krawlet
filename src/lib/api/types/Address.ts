@@ -8,11 +8,11 @@ export type AddressQuery = {
 
 export type AddressNamesQuery = PaginatedQuery & {
 	address: string;
-}
+};
 
 export type AddressTransactionQuery = PaginatedQuery & {
 	address: string;
-}
+};
 
 export type Address = {
 	address: string;
@@ -27,5 +27,5 @@ export type AddressResponse = {
 };
 
 export type AddressNamesResponse = Paginated & {
-	names: Name[],
-}
+	names: Name[];
+};
