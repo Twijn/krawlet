@@ -1,7 +1,6 @@
 import type { MotdResponse } from '$lib/api/types/Motd';
 import type {
 	Transaction,
-	TransactionLookup,
 	TransactionQuery,
 	TransactionsResponse
 } from '$lib/api/types/Transaction';
@@ -59,8 +58,8 @@ export class KromerApi {
 			} else {
 				throw {
 					ok: false,
-					error: "api_error",
-					message: "Unknown API error",
+					error: 'api_error',
+					message: 'Unknown API error'
 				} as APIError;
 			}
 		}
@@ -91,10 +90,9 @@ export class KromerApi {
 	public async resolve(addrOrName: string): Promise<Address> {
 		addrOrName = addrOrName.toLowerCase();
 		//TODO: Make these go off of motd values
-		if (addrOrName.length === 10 &&
-			(addrOrName.startsWith('k') || addrOrName === 'serverwelf')) {
+		if (addrOrName.length === 10 && (addrOrName.startsWith('k') || addrOrName === 'serverwelf')) {
 			return await this.address({
-				address: addrOrName,
+				address: addrOrName
 			});
 		} else if (addrOrName.length > 4 && addrOrName.endsWith('.kro')) {
 			const name = await this.name(addrOrName);
@@ -104,8 +102,8 @@ export class KromerApi {
 		} else {
 			throw {
 				ok: false,
-				error: "invalid_format",
-				message: "Must be either an address (ks0d5iqb6p) or a name (reconnected.kro)"
+				error: 'invalid_format',
+				message: 'Must be either an address (ks0d5iqb6p) or a name (reconnected.kro)'
 			} as APIError;
 		}
 	}
@@ -146,7 +144,7 @@ export class KromerApi {
 	}
 
 	public async name(name: string): Promise<Name> {
-		name = name.toLowerCase().replace(".kro", "");
+		name = name.toLowerCase().replace('.kro', '');
 		const response: NameResponse = (await this.get(`names/${name}`)) as NameResponse;
 		return response.name;
 	}

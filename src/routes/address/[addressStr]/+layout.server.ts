@@ -9,11 +9,8 @@ export async function load({ params }) {
 		return {
 			address
 		};
-	} catch(e) {
+	} catch (e) {
 		const err = e as APIError;
-		throw error(
-			err.error === "address_not_found" ? 404 : 500,
-			err.message
-		);
+		throw error(err.error === 'address_not_found' ? 404 : 500, err.message);
 	}
 }

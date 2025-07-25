@@ -47,17 +47,17 @@
 	// "To" address authentication
 	let to = $state('');
 	let toAddress: Address | null = $state(null);
-	let toAddressError: string|null = $state(null);
+	let toAddressError: string | null = $state(null);
 
 	const verifyTo = async () => {
 		loading = true;
 		try {
 			toAddress = await kromer.resolve(to);
 			toAddressError = null;
-		} catch(e) {
+		} catch (e) {
 			toAddress = null;
 			const err = e as APIError;
-			toAddressError = err?.message ?? "An unknown error occurred.";
+			toAddressError = err?.message ?? 'An unknown error occurred.';
 		}
 		loading = false;
 	};
@@ -91,7 +91,7 @@
 					const data: MakeTransactionBody = {
 						privatekey,
 						to: toAddress?.address,
-						amount,
+						amount
 					};
 
 					if (metadata && metadata.length > 0) {
@@ -100,8 +100,8 @@
 
 					await kromer.send(data);
 
-					alert("Transaction successful!");
-				} catch(e) {
+					alert('Transaction successful!');
+				} catch (e) {
 					const err = e as APIError;
 					alert(err.message);
 				}
