@@ -7,6 +7,7 @@
 	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import type { APIError } from '$lib/api/types/APIError';
+	import type { MakeTransactionBody } from '$lib/api/types/MakeTransaction';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -61,6 +62,9 @@
 		loading = false;
 	};
 
+	// Metadata
+	let metadata: string = $state('');
+
 	// Amount & sending
 	let amount: number = $state(0);
 
@@ -84,11 +88,17 @@
 			} else {
 				loading = true;
 				try {
-					await kromer.send({
+					const data: MakeTransactionBody = {
 						privatekey,
 						to: toAddress?.address,
-						amount: amount
-					});
+						amount,
+					};
+
+					if (metadata && metadata.length > 0) {
+						data.metadata = metadata;
+					}
+
+					await kromer.send(data);
 
 					alert("Transaction successful!");
 				} catch(e) {
@@ -131,7 +141,7 @@
 		</label>
 		<label>
 			To Address / Name
-			<input type="text" bind:value={to} onblur={verifyTo} />
+			<input type="text" bind:value={to} placeholder="ks0d5iqb6p" onblur={verifyTo} />
 			{#if toAddress}
 				<small class="success">{toAddress.address} has {toAddress.balance} KRO</small>
 			{:else if toAddressError}
@@ -143,6 +153,10 @@
 		<label>
 			Amount
 			<input type="number" min="0" max={address?.balance ?? 0} step="0.01" bind:value={amount} />
+		</label>
+		<label>
+			Metadata
+			<input type="text" bind:value={metadata} />
 		</label>
 		<Button
 			type="submit"
