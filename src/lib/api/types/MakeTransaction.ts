@@ -1,4 +1,5 @@
 import type { Transaction } from '$lib/api/types/Transaction';
+import type { APIResponse } from '$lib/api/types/APIResponse';
 
 export type MakeTransactionBody = {
 	privatekey: string;
@@ -7,6 +8,6 @@ export type MakeTransactionBody = {
 	metadata?: string;
 };
 
-export type MakeTransactionResponse = {
+export type MakeTransactionResponse = APIResponse & {
 	transaction: Transaction;
 };

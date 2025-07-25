@@ -1,3 +1,5 @@
+import type { APIResponse } from '$lib/api/types/APIResponse';
+
 export type Name = {
 	name: string;
 	owner: string;
@@ -9,7 +11,6 @@ export type Name = {
 	unpaid: number;
 };
 
-export type NameResponse = {
-	ok: boolean;
+export type NameResponse = APIResponse & {
 	name: Name;
 };

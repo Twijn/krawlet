@@ -6,6 +6,7 @@
 	import type { Address } from '$lib/api/types/Address';
 	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import Button from '$lib/components/Button.svelte';
+	import type { APIError } from '$lib/api/types/APIError';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -43,33 +44,19 @@
 	};
 
 	// "To" address authentication
-	let invalidAddress: boolean = $state(false);
 	let to = $state('');
 	let toAddress: Address | null = $state(null);
+	let toAddressError: string|null = $state(null);
 
 	const verifyTo = async () => {
 		loading = true;
-		to = to.toLowerCase();
-		//TODO: Make these go off of motd values
-		if (to.length === 10 && (to.startsWith('k') || to === 'serverwelf')) {
-			toAddress = await kromer.address({
-				address: to
-			});
-			invalidAddress = !toAddress;
-		} else if (to.length > 4 && to.endsWith('.kro')) {
-			const name = await kromer.name(to.replace('.kro', ''));
-			if (name) {
-				toAddress = await kromer.address({
-					address: name.owner
-				});
-				invalidAddress = !toAddress;
-			} else {
-				invalidAddress = true;
-				toAddress = null;
-			}
-		} else {
-			invalidAddress = true;
+		try {
+			toAddress = await kromer.resolve(to);
+			toAddressError = null;
+		} catch(e) {
 			toAddress = null;
+			const err = e as APIError;
+			toAddressError = err?.message ?? "An unknown error occurred.";
 		}
 		loading = false;
 	};
@@ -79,7 +66,6 @@
 
 	const send = async (e: Event) => {
 		e.preventDefault();
-		loading = true;
 		if (
 			confirm(`Are you sure you want to send ${amount.toFixed(2)} KRO to ${toAddress?.address}?`)
 		) {
@@ -96,18 +82,22 @@
 				alert('Nice try!');
 				return false;
 			} else {
-				const transaction = await kromer.send({
-					privatekey,
-					to: toAddress?.address,
-					amount: amount
-				});
+				loading = true;
+				try {
+					await kromer.send({
+						privatekey,
+						to: toAddress?.address,
+						amount: amount
+					});
 
-				alert(
-					transaction ? 'Transfer successful!' : 'Transfer failed! Check the console for more info.'
-				);
+					alert("Transaction successful!");
+				} catch(e) {
+					const err = e as APIError;
+					alert(err.message);
+				}
+				loading = false;
 			}
 		}
-		loading = false;
 		return false;
 	};
 </script>
@@ -144,8 +134,8 @@
 			<input type="text" bind:value={to} onblur={verifyTo} />
 			{#if toAddress}
 				<small class="success">{toAddress.address} has {toAddress.balance} KRO</small>
-			{:else if invalidAddress}
-				<small class="fail">Invalid address!</small>
+			{:else if toAddressError}
+				<small class="fail">{toAddressError}</small>
 			{:else}
 				<small>Unfocus from the field above to verify the "to" address.</small>
 			{/if}

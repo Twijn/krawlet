@@ -16,6 +16,8 @@ import type {
 import type { LoginResponse } from '$lib/api/types/Login';
 import type { Name, NameResponse } from '$lib/api/types/Name';
 import type { MakeTransactionBody, MakeTransactionResponse } from '$lib/api/types/MakeTransaction';
+import type { APIResponse } from '$lib/api/types/APIResponse';
+import type { APIError } from '$lib/api/types/APIError';
 
 export interface KromerApiOptions {
 	syncNode: string;
@@ -47,7 +49,23 @@ export class KromerApi {
 			}
 			uri += '?' + params.toString();
 		}
-		return await fetch(this.options.syncNode + uri).then((res) => res.json());
+
+		const response = await fetch(this.options.syncNode + uri);
+		const data: unknown = await response.json();
+
+		if (!response.ok || !(data as APIResponse).ok) {
+			if (!(data as APIResponse).ok) {
+				throw data as APIError;
+			} else {
+				throw {
+					ok: false,
+					error: "api_error",
+					message: "Unknown API error",
+				} as APIError;
+			}
+		}
+
+		return data;
 	}
 
 	private async post(uri: string, body: unknown): Promise<unknown> {
@@ -70,20 +88,37 @@ export class KromerApi {
 		return motd;
 	}
 
-	public async address(query: AddressQuery): Promise<Address | null> {
-		try {
-			const response: AddressResponse = (await this.get(
-				`addresses/${query.address}`,
-				query
-			)) as AddressResponse;
-			if (response.address?.firstseen) {
-				response.address.firstseen = new Date(response.address.firstseen);
-			}
-			return response.address;
-		} catch (e) {
-			console.error(e);
-			return null;
+	public async resolve(addrOrName: string): Promise<Address> {
+		addrOrName = addrOrName.toLowerCase();
+		//TODO: Make these go off of motd values
+		if (addrOrName.length === 10 &&
+			(addrOrName.startsWith('k') || addrOrName === 'serverwelf')) {
+			return await this.address({
+				address: addrOrName,
+			});
+		} else if (addrOrName.length > 4 && addrOrName.endsWith('.kro')) {
+			const name = await this.name(addrOrName);
+			return await this.address({
+				address: name.owner
+			});
+		} else {
+			throw {
+				ok: false,
+				error: "invalid_format",
+				message: "Must be either an address (ks0d5iqb6p) or a name (reconnected.kro)"
+			} as APIError;
 		}
+	}
+
+	public async address(query: AddressQuery): Promise<Address> {
+		const response: AddressResponse = (await this.get(
+			`addresses/${query.address}`,
+			query
+		)) as AddressResponse;
+		if (response.address?.firstseen) {
+			response.address.firstseen = new Date(response.address.firstseen);
+		}
+		return response.address;
 	}
 
 	public async addressNames(query: AddressNamesQuery): Promise<AddressNamesResponse> {
@@ -110,14 +145,10 @@ export class KromerApi {
 		return this.wrapTransactionResponse(response);
 	}
 
-	public async name(name: string): Promise<Name | null> {
-		try {
-			const response: NameResponse = (await this.get(`names/${name}`)) as NameResponse;
-			return response?.name ?? null;
-		} catch (e) {
-			console.error(e);
-			return null;
-		}
+	public async name(name: string): Promise<Name> {
+		name = name.toLowerCase().replace(".kro", "");
+		const response: NameResponse = (await this.get(`names/${name}`)) as NameResponse;
+		return response.name;
 	}
 
 	private wrapTransactionResponse(response: TransactionsResponse): TransactionsResponse {
@@ -137,28 +168,11 @@ export class KromerApi {
 		return this.wrapTransactionResponse(response);
 	}
 
-	public async lookupTransactions(query: TransactionLookup): Promise<TransactionsResponse> {
-		let uri = 'lookup/transactions';
-		if (query.addresses) {
-			if (typeof query.addresses === 'string') {
-				query.addresses = [query.addresses];
-			}
-			uri += '/' + query.addresses.join(',');
-		}
-		const response: TransactionsResponse = (await this.get(uri, query)) as TransactionsResponse;
-		return this.wrapTransactionResponse(response);
-	}
-
-	public async send(body: MakeTransactionBody): Promise<Transaction | null> {
-		try {
-			const response: MakeTransactionResponse = (await this.post(
-				'transactions',
-				body
-			)) as MakeTransactionResponse;
-			return response.transaction ?? null;
-		} catch (err) {
-			console.error(err);
-			return null;
-		}
+	public async send(body: MakeTransactionBody): Promise<Transaction> {
+		const response: MakeTransactionResponse = (await this.post(
+			'transactions',
+			body
+		)) as MakeTransactionResponse;
+		return response.transaction ?? null;
 	}
 }

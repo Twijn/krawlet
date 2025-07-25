@@ -1,5 +1,6 @@
 import type { Paginated, PaginatedQuery } from '$lib/api/types/Pagination';
 import type { Name } from '$lib/api/types/Name';
+import type { APIResponse } from '$lib/api/types/APIResponse';
 
 export type AddressQuery = {
 	address: string;
@@ -22,7 +23,7 @@ export type Address = {
 	firstseen: Date;
 };
 
-export type AddressResponse = {
+export type AddressResponse = APIResponse & {
 	address: Address;
 };
 

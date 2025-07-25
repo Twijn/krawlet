@@ -1,3 +1,5 @@
+import type { APIResponse } from '$lib/api/types/APIResponse';
+
 export type MotdPackage = {
 	name: string;
 	version: string;
@@ -18,7 +20,7 @@ export type MotdCurrency = {
 	currency_symbol: string;
 };
 
-export type MotdResponse = {
+export type MotdResponse = APIResponse & {
 	motd: string;
 	motd_set: Date;
 	server_time: Date;

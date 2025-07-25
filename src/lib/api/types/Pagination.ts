@@ -1,4 +1,6 @@
-export type Paginated = {
+import type { APIResponse } from '$lib/api/types/APIResponse';
+
+export type Paginated = APIResponse & {
 	count: number;
 	total: number;
 };
