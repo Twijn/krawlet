@@ -26,7 +26,7 @@
 	<a href="/transactions/{transaction.id}">#{transaction.id}</a>
 </h1>
 
-<Section lgCols={4}>
+<Section lgCols={4} mdCols={12}>
 	<h2><FontAwesomeIcon icon={faInfoCircle} /> Raw Information</h2>
 	<div class="table-container">
 		<table>
@@ -66,7 +66,7 @@
 	</div>
 </Section>
 
-<Section lgCols={8}>
+<Section lgCols={8} mdCols={12}>
 	<h2><FontAwesomeIcon icon={faDatabase} /> Metadata</h2>
 	{#if transaction.metadata && transaction.metadata.length > 0}
 		<strong>Raw Metadata:</strong>
