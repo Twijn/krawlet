@@ -88,7 +88,7 @@
 				<tbody>
 					{#each transactions.transactions as transaction (transaction.id)}
 						<tr>
-							<td class="center">{transaction.id}</td>
+							<td class="center"><a href="/transactions/{transaction.id}">{transaction.id}</a></td>
 							<td class="caps">{transaction.type.replace(/_/g, ' ')}</td>
 							<td>
 								{#if transaction.from}

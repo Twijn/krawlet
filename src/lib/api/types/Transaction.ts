@@ -1,4 +1,5 @@
 import type { Paginated, PaginatedQuery } from '$lib/api/types/Pagination';
+import type { APIResponse } from '$lib/api/types/APIResponse';
 
 export type TransactionOrderBy =
 	| 'id'
@@ -40,6 +41,25 @@ export type Transaction = {
 	sent_name?: string | null;
 };
 
+export type TransactionMetadataEntry = {
+	name: string;
+	value: string;
+};
+
+export type MinecraftPlayer = {
+	uuid: string;
+	name: string;
+};
+
+export type TransactionMetadata = {
+	minecraftPlayer?: MinecraftPlayer;
+	entries: TransactionMetadataEntry[];
+};
+
 export type TransactionsResponse = Paginated & {
 	transactions: Transaction[];
+};
+
+export type TransactionResponse = APIResponse & {
+	transaction: Transaction;
 };

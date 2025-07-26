@@ -1,7 +1,10 @@
 import type { MotdResponse } from '$lib/api/types/Motd';
 import type {
 	Transaction,
+	TransactionMetadata,
+	TransactionMetadataEntry,
 	TransactionQuery,
+	TransactionResponse,
 	TransactionsResponse
 } from '$lib/api/types/Transaction';
 import type {
@@ -164,6 +167,48 @@ export class KromerApi {
 			query
 		)) as TransactionsResponse;
 		return this.wrapTransactionResponse(response);
+	}
+
+	public async transaction(transactionId: number | string): Promise<Transaction> {
+		const response: TransactionResponse = (await this.get(
+			`transactions/${transactionId}`
+		)) as TransactionResponse;
+		return {
+			...response.transaction,
+			time: new Date(response.transaction.time)
+		} as Transaction;
+	}
+
+	public parseMetadata(transaction: Transaction): TransactionMetadata {
+		const metadata: TransactionMetadata = {
+			entries: []
+		};
+
+		if (!transaction.metadata || transaction.metadata.length === 0) {
+			return metadata;
+		}
+
+		metadata.entries = transaction.metadata
+			.split(';')
+			.map((entry) => entry.split('='))
+			.map(([name, value]) => {
+				return { name, value } as TransactionMetadataEntry;
+			});
+
+		// Minecraft player parsing
+		const uuid = metadata.entries.find((x) => x.name === 'useruuid');
+		const name = metadata.entries.find((x) => x.name === 'username');
+		if (uuid && name && uuid.value.length === 36 && name.value.length > 0) {
+			metadata.minecraftPlayer = {
+				uuid: uuid.value,
+				name: name.value
+			};
+			metadata.entries = metadata.entries.filter(
+				(x) => x.name !== 'useruuid' && x.name !== 'username'
+			);
+		}
+
+		return metadata;
 	}
 
 	public async send(body: MakeTransactionBody): Promise<Transaction> {
