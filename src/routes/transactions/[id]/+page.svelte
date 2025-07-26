@@ -73,6 +73,12 @@
 		<code class="block">{transaction.metadata}</code>
 		<div class="table-container">
 			<table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Value</th>
+					</tr>
+				</thead>
 				<tbody>
 					{#if transactionMetadata.minecraftPlayer}
 						{@const player = transactionMetadata.minecraftPlayer}
