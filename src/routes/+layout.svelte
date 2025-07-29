@@ -13,13 +13,6 @@
 </script>
 
 <div class="container">
-	<div class="col-12">
-		<Alert variant="danger">
-			<strong>Warning!</strong>
-			<p>This application is still in early beta! There will be bugs!</p>
-		</Alert>
-	</div>
-
 	{@render children?.()}
 </div>
 <footer>
