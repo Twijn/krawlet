@@ -66,7 +66,7 @@
 		{#if limit > 25}
 			<Pagination bind:page total={transactions.total} {limit} />
 		{:else if address}
-			<a id="view-all" href="/address/{address}/transactions">View all transactions for {address}</a
+			<a id="view-all" href="/src/routes/addresses/{address}/transactions">View all transactions for {address}</a
 			>
 		{:else}
 			<a id="view-all" href="/transactions">View all transactions</a>
@@ -92,14 +92,14 @@
 							<td class="caps">{transaction.type.replace(/_/g, ' ')}</td>
 							<td>
 								{#if transaction.from}
-									<a href="/address/{transaction.from}">
+									<a href="/addresses/{transaction.from}">
 										{transaction.from}
 									</a>
 								{/if}
 							</td>
 							<td>
 								{#if transaction.to}
-									<a href="/address/{transaction.to}">
+									<a href="/addresses/{transaction.to}">
 										{transaction.to}
 									</a>
 								{/if}

@@ -34,13 +34,13 @@
 				<tr>
 					<th>From</th>
 					<td class="right">
-						<a href="/address/{transaction.from}">{transaction.from}</a>
+						<a href="/addresses/{transaction.from}">{transaction.from}</a>
 					</td>
 				</tr>
 				<tr>
 					<th>To</th>
 					<td class="right">
-						<a href="/address/{transaction.to}">{transaction.to}</a>
+						<a href="/addresses/{transaction.to}">{transaction.to}</a>
 					</td>
 				</tr>
 				<tr>
@@ -100,7 +100,7 @@
 								<th class="caps">{metadata.name}</th>
 								<td>
 									{#if metadata.name === 'return' && metadata.value.length === 10}
-										<a href="/address/{metadata.value}">
+										<a href="/src/routes/addresses/{metadata.value}">
 											{metadata.value}
 										</a>
 									{:else}

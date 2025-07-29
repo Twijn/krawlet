@@ -12,8 +12,8 @@
 
 <h1>
 	<a href="/">Krawlet</a> <span>&raquo;</span> Address <span>&raquo;</span>
-	<a href="/address/{address.address}">{address.address}</a> <span>&raquo;</span>
-	<a href="/address/{address.address}/transactions">Transactions</a>
+	<a href="/src/routes/addresses/{address.address}">{address.address}</a> <span>&raquo;</span>
+	<a href="/src/routes/addresses/{address.address}/transactions">Transactions</a>
 </h1>
 
 <div class="col-12">
