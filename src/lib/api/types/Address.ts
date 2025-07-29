@@ -7,6 +7,10 @@ export type AddressQuery = {
 	fetchNames?: boolean;
 };
 
+export type AddressesQuery = PaginatedQuery & {
+	rich: boolean;
+};
+
 export type AddressNamesQuery = PaginatedQuery & {
 	address: string;
 };
@@ -29,4 +33,8 @@ export type AddressResponse = APIResponse & {
 
 export type AddressNamesResponse = Paginated & {
 	names: Name[];
+};
+
+export type AddressesResponse = Paginated & {
+	addresses: Address[];
 };

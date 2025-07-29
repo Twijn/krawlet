@@ -49,8 +49,9 @@
 </svelte:head>
 
 <h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span> Address <span>&raquo;</span>
-	<a href="/src/routes/addresses/{address.address}">{address.address}</a>
+	<a href="/">Krawlet</a> <span>&raquo;</span>
+	<a href="/addresses">Addresses</a> <span>&raquo;</span>
+	<a href="/addresses/{address.address}">{address.address}</a>
 </h1>
 
 {#if verifiedEntry}

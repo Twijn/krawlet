@@ -22,7 +22,7 @@
 		box-shadow: 0 0 1em rgba(0, 0, 0, 0.2);
 	}
 
-	:global(section h2, section h3, section h4, section h5, section h6) {
+	:global(section > h2, section > h3, section > h4, section > h5, section > h6) {
 		font-size: 0.95rem;
 		font-weight: 500;
 		text-transform: uppercase;

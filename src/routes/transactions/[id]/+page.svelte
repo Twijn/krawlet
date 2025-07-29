@@ -100,7 +100,7 @@
 								<th class="caps">{metadata.name}</th>
 								<td>
 									{#if metadata.name === 'return' && metadata.value.length === 10}
-										<a href="/src/routes/addresses/{metadata.value}">
+										<a href="/addresses/{metadata.value}">
 											{metadata.value}
 										</a>
 									{:else}

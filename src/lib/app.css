@@ -251,6 +251,7 @@ label:has(.fail) input {
 .table-container {
 	width: 100%;
 	overflow-x: auto;
+	position: relative;
 }
 
 table {

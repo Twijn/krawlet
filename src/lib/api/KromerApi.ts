@@ -9,6 +9,8 @@ import type {
 } from '$lib/api/types/Transaction';
 import type {
 	Address,
+	AddressesQuery,
+	AddressesResponse,
 	AddressNamesQuery,
 	AddressNamesResponse,
 	AddressQuery,
@@ -109,6 +111,20 @@ export class KromerApi {
 				message: 'Must be either an address (ks0d5iqb6p) or a name (reconnected.kro)'
 			} as APIError;
 		}
+	}
+
+	public async addresses(query: AddressesQuery): Promise<AddressesResponse> {
+		const response: AddressesResponse = (await this.get(
+			'addresses' + (query?.rich ? '/rich' : ''),
+			query
+		)) as AddressesResponse;
+		response.addresses = response.addresses.map((x) => {
+			return {
+				...x,
+				firstseen: new Date(x.firstseen)
+			};
+		});
+		return response;
 	}
 
 	public async address(query: AddressQuery): Promise<Address> {

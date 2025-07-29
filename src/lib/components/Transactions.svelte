@@ -66,7 +66,8 @@
 		{#if limit > 25}
 			<Pagination bind:page total={transactions.total} {limit} />
 		{:else if address}
-			<a id="view-all" href="/src/routes/addresses/{address}/transactions">View all transactions for {address}</a
+			<a id="view-all" href="/addresses/{address}/transactions"
+				>View all transactions for {address}</a
 			>
 		{:else}
 			<a id="view-all" href="/transactions">View all transactions</a>
@@ -128,11 +129,6 @@
 		font-size: 0.8em;
 		color: var(--text-color-2);
 		margin: 1em 0;
-	}
-
-	.table-container {
-		/* position relative required for absolute ModuleLoading */
-		position: relative;
 	}
 
 	.metadata {

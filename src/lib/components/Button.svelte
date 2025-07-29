@@ -44,7 +44,7 @@
 		transition: all 0.2s ease;
 	}
 
-	.button :global(i) {
+	.button :global(svg) {
 		margin-right: 0.5em;
 	}
 
@@ -53,13 +53,13 @@
 	}
 
 	.secondary {
-		background-color: #2b2b2b;
+		background-color: #323537;
 		color: #e4e4e4;
 	}
 
 	.success {
 		background-color: rgb(var(--green));
-		color: white;
+		color: black;
 	}
 
 	.error {

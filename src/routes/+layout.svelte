@@ -16,8 +16,8 @@
 </div>
 <footer>
 	<p>
-		Made for the <a href="https://reconnected.cc/" target="_blank">Reconnected</a> community
-		by <a href="https://www.twijn.dev" target="_blank">Twijn</a>
+		Made for the <a href="https://reconnected.cc/" target="_blank">Reconnected</a> community by
+		<a href="https://www.twijn.dev" target="_blank">Twijn</a>
 	</p>
 	<p>
 		View the project on <a href="https://github.com/Twijn/krawlet" target="_blank">GitHub</a>
@@ -26,17 +26,17 @@
 
 <style>
 	footer {
-			font-size: .8rem;
-			text-align: center;
-      padding: 1rem;
-			opacity: .6;
+		font-size: 0.8rem;
+		text-align: center;
+		padding: 1rem;
+		opacity: 0.6;
 	}
 
 	footer p {
-			margin: .25rem 0;
+		margin: 0.25rem 0;
 	}
 
 	footer a {
-			color: var(--text-color-2);
+		color: var(--text-color-2);
 	}
 </style>
