@@ -5,7 +5,6 @@
 
 	import '@fontsource/inter/400.css';
 	import '@fontsource/inter/500.css';
-	import Alert from '$lib/components/Alert.svelte';
 
 	config.autoAddCss = false;
 
