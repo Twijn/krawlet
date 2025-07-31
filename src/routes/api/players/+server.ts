@@ -7,10 +7,10 @@ export async function GET({ fetch }) {
 
 		return json({
 			...response,
-			ok: true,
+			ok: true
 		});
-	} catch(err) {
+	} catch (err) {
 		console.error(err);
-		return json({ ok: false, error: "Players API not available" });
+		return json({ ok: false, error: 'Players API not available' });
 	}
 }

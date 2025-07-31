@@ -9,7 +9,7 @@
 	import type { APIError } from '$lib/api/types/APIError';
 	import type { MakeTransactionBody } from '$lib/api/types/MakeTransaction';
 	import ButtonSelect from '$lib/components/ButtonSelect.svelte';
-	import {slide} from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 	import type { MapPlayer, PlayersResponse } from '$lib/extendedAPI';
 	import { onMount } from 'svelte';
 	import Alert from '$lib/components/Alert.svelte';
@@ -51,22 +51,26 @@
 
 	const toOptions = [
 		{
-			id: "address",
-			name: "Address / Name",
+			id: 'address',
+			name: 'Address / Name'
 		},
 		{
-			id: "minecraft",
-			name: "Minecraft User",
-		},
+			id: 'minecraft',
+			name: 'Minecraft User'
+		}
 	];
-	let toType: string = $state("address");
+	let toType: string = $state('address');
 
-	let toPlayer: string = $state("");
+	let toPlayer: string = $state('');
 	let onlinePlayers: MapPlayer[] = $state([]);
-	let selectedPlayer: MapPlayer | null = $derived(onlinePlayers.find(x => x.uuid === toPlayer) ?? null);
+	let selectedPlayer: MapPlayer | null = $derived(
+		onlinePlayers.find((x) => x.uuid === toPlayer) ?? null
+	);
 
 	async function getPlayers() {
-		const response: PlayersResponse = await (await fetch("/api/players")).json() as PlayersResponse;
+		const response: PlayersResponse = (await (
+			await fetch('/api/players')
+		).json()) as PlayersResponse;
 		if (response.ok) {
 			onlinePlayers = response.players;
 		} else {
@@ -89,7 +93,7 @@
 		if (selectedPlayer?.address) {
 			toAddress = selectedPlayer.address;
 		}
-	})
+	});
 
 	const verifyTo = async () => {
 		loading = true;
@@ -105,11 +109,11 @@
 	};
 
 	const clearTo = () => {
-		toPlayer = "";
+		toPlayer = '';
 		toAddress = null;
 		toAddressError = null;
-		to = "";
-	}
+		to = '';
+	};
 
 	// Metadata
 	let metadata: string = $state('');
@@ -189,7 +193,7 @@
 			{/if}
 		</label>
 		<ButtonSelect vertical={false} options={toOptions} bind:selected={toType} change={clearTo} />
-		{#if toType === "address"}
+		{#if toType === 'address'}
 			<label transition:slide>
 				To Address / Name
 				<input type="text" bind:value={to} placeholder="ks0d5iqb6p" onblur={verifyTo} />
@@ -205,7 +209,13 @@
 			<div transition:slide>
 				{#if onlinePlayers.length > 0}
 					Select Player
-					<ButtonSelect vertical={true} options={onlinePlayers.map(x => { return {id: x.uuid, name: x.name}})} bind:selected={toPlayer} />
+					<ButtonSelect
+						vertical={true}
+						options={onlinePlayers.map((x) => {
+							return { id: x.uuid, name: x.name };
+						})}
+						bind:selected={toPlayer}
+					/>
 					{#if toAddress && selectedPlayer?.address}
 						<small class="success">{selectedPlayer.name} has {toAddress.balance} KRO</small>
 					{/if}
@@ -241,9 +251,7 @@
 
 <Alert variant="info">
 	<strong>Information</strong>
-	<p>
-		Due to Kromer API limitations you may only select players that are online.
-	</p>
+	<p>Due to Kromer API limitations you may only select players that are online.</p>
 </Alert>
 
 <style>

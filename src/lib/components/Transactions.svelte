@@ -96,7 +96,11 @@
 					{#each transactions.transactions as transaction (transaction.id)}
 						<tr>
 							<td class="center"><a href="/transactions/{transaction.id}">{transaction.id}</a></td>
-							<td class="caps">{transaction.type === "mined" ? "welfare" : transaction.type.replace(/_/g, ' ')}</td>
+							<td class="caps"
+								>{transaction.type === 'mined'
+									? 'welfare'
+									: transaction.type.replace(/_/g, ' ')}</td
+							>
 							<td>
 								{#if transaction.from}
 									<a href="/addresses/{transaction.from}">

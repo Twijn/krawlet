@@ -2,15 +2,15 @@
 	type Option = {
 		id: string;
 		name: string;
-	}
+	};
 
 	let {
 		vertical,
 		options = $bindable(),
 		selected = $bindable(),
-		change = () => {},
+		change = () => {}
 	}: {
-		vertical: boolean,
+		vertical: boolean;
 		options: Option[];
 		selected?: string;
 		change?: (value: string) => void;
@@ -19,10 +19,17 @@
 	const name = crypto.randomUUID();
 </script>
 
-<div class="select-wrapper" class:vertical={vertical}>
+<div class="select-wrapper" class:vertical>
 	{#each options as option (option.id)}
 		<div class="option">
-			<input type="radio" id={name + option.id} name={name} value={option.id} bind:group={selected} onchange={() => change(selected ?? "")} />
+			<input
+				type="radio"
+				id={name + option.id}
+				{name}
+				value={option.id}
+				bind:group={selected}
+				onchange={() => change(selected ?? '')}
+			/>
 			<label for={name + option.id}>{option.name}</label>
 		</div>
 	{/each}
@@ -31,9 +38,9 @@
 <style>
 	.select-wrapper {
 		display: flex;
-		border-radius: .5em;
+		border-radius: 0.5em;
 		border: 1px solid rgba(255, 255, 255, 0.2);
-		margin: .5em 0;
+		margin: 0.5em 0;
 		overflow: hidden;
 	}
 
@@ -41,7 +48,7 @@
 		flex-direction: column;
 	}
 
-	.select-wrapper input[type="radio"] {
+	.select-wrapper input[type='radio'] {
 		/* Hide visually but keep accessible for screen readers */
 		position: absolute;
 		width: 1px;
@@ -55,14 +62,14 @@
 	}
 
 	.select-wrapper .option {
-      background-color: rgba(255, 255, 255, 0.1);
-      font-weight: 500;
-      flex-grow: 1;
-      text-align: center;
-			transition: .25s background-color ease-in-out;
+		background-color: rgba(255, 255, 255, 0.1);
+		font-weight: 500;
+		flex-grow: 1;
+		text-align: center;
+		transition: 0.25s background-color ease-in-out;
 	}
 
 	.select-wrapper .option:has(input:checked) {
-			background-color: var(--theme-color-1);
+		background-color: var(--theme-color-1);
 	}
 </style>
