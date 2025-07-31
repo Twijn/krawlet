@@ -63,6 +63,12 @@
 <Section {lgCols} {mdCols} {smCols}>
 	<h2><FontAwesomeIcon icon={faList} /> Recent Transactions</h2>
 	{#if transactions}
+		{#if !address}
+			<label class="center">
+				<input type="checkbox" bind:checked={includeMined} />
+				Include welfare transactions
+			</label>
+		{/if}
 		{#if limit > 25}
 			<Pagination bind:page total={transactions.total} {limit} />
 		{:else if address}
@@ -90,7 +96,7 @@
 					{#each transactions.transactions as transaction (transaction.id)}
 						<tr>
 							<td class="center"><a href="/transactions/{transaction.id}">{transaction.id}</a></td>
-							<td class="caps">{transaction.type.replace(/_/g, ' ')}</td>
+							<td class="caps">{transaction.type === "mined" ? "welfare" : transaction.type.replace(/_/g, ' ')}</td>
 							<td>
 								{#if transaction.from}
 									<a href="/addresses/{transaction.from}">
