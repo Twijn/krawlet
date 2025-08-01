@@ -8,6 +8,7 @@
 	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 	import { relativeTime } from '$lib/util';
+	import Address from '$lib/components/Address.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -77,7 +78,7 @@
 				<tbody>
 					{#each addresses.addresses as address (address.address)}
 						<tr>
-							<td><a href="/addresses/{address.address}">{address.address}</a></td>
+							<td><Address address={address.address} /></td>
 							<td class="right">{address.balance.toFixed(2)} <small>KRO</small></td>
 							<td class="right">{address.totalin.toFixed(2)} <small>KRO</small></td>
 							<td class="right">{address.totalout.toFixed(2)} <small>KRO</small></td>

@@ -5,6 +5,7 @@
 	import { relativeTime } from '$lib/util';
 	import type { Transaction } from '$lib/api/types/Transaction';
 	import kromer from '$lib/api/kromer';
+	import Address from '$lib/components/Address.svelte';
 
 	const { data } = $props();
 	const {
@@ -34,13 +35,17 @@
 				<tr>
 					<th>From</th>
 					<td class="right">
-						<a href="/addresses/{transaction.from}">{transaction.from}</a>
+						{#if transaction.from}
+							<Address address={transaction.from} />
+						{:else}
+							<small>Unknown Sender</small>
+						{/if}
 					</td>
 				</tr>
 				<tr>
 					<th>To</th>
 					<td class="right">
-						<a href="/addresses/{transaction.to}">{transaction.to}</a>
+						<Address address={transaction.to} />
 					</td>
 				</tr>
 				<tr>

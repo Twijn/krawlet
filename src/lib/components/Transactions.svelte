@@ -8,6 +8,7 @@
 	import { relativeTime } from '$lib/util.js';
 	import Pagination from '$lib/components/Pagination.svelte';
 	import { browser } from '$app/environment';
+	import Address from '$lib/components/Address.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -103,17 +104,11 @@
 							>
 							<td>
 								{#if transaction.from}
-									<a href="/addresses/{transaction.from}">
-										{transaction.from}
-									</a>
+									<Address address={transaction.from} />
 								{/if}
 							</td>
 							<td>
-								{#if transaction.to}
-									<a href="/addresses/{transaction.to}">
-										{transaction.to}
-									</a>
-								{/if}
+								<Address address={transaction.to} />
 							</td>
 							<td class="right">{transaction.value.toFixed(2)} <small>KRO</small></td>
 							<td class="metadata"

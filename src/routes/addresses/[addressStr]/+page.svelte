@@ -9,8 +9,10 @@
 	import { relativeTime } from '$lib/util';
 	import type { Name } from '$lib/api/types/Name';
 	import Transactions from '$lib/components/Transactions.svelte';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { type Player, playerWalletStore } from '$lib/playerWallets';
+	import Address from '$lib/components/Address.svelte';
 
 	const { data } = $props();
 	const address = $derived(data.address);
@@ -42,6 +44,12 @@
 	});
 
 	const verifiedEntry: VerifiedEntry | null = $derived(verified[address.address] ?? null);
+
+	let player: Player | null = $derived(
+		$playerWalletStore.players.find((x) => x.kromerAddress === address.address) ?? null
+	);
+
+	onDestroy(playerWalletStore.destroy);
 </script>
 
 <svelte:head>
@@ -69,6 +77,14 @@
 		<div class="table-container">
 			<table>
 				<tbody>
+					{#if player || verifiedEntry}
+						<tr>
+							<th>{verifiedEntry ? 'Verified As' : 'Owned By'}</th>
+							<td class="right">
+								<Address address={address.address} />
+							</td>
+						</tr>
+					{/if}
 					<tr>
 						<th>Address</th>
 						<td class="right">{address.address}</td>
