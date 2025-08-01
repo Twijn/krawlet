@@ -63,8 +63,12 @@
 </h1>
 
 {#if verifiedEntry}
-	<Alert variant="success">
-		<strong>This address is verified!</strong>
+	<Alert variant={verifiedEntry.type === 'official' ? 'success' : 'info'}>
+		<strong
+			>This address is verified{verifiedEntry.type === 'shop'
+				? ' as an official shop'
+				: ''}!</strong
+		>
 		<p>
 			{verifiedEntry.description}
 		</p>

@@ -3,6 +3,8 @@
 
 	import { type Player, playerWalletStore } from '$lib/playerWallets';
 	import { verified, type VerifiedEntry } from '$lib/verified';
+	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+	import { faStore } from '@fortawesome/free-solid-svg-icons';
 
 	const {
 		address
@@ -21,12 +23,16 @@
 
 <a
 	href="/addresses/{address}"
+	class:special={player || verifiedEntry}
 	class:player={Boolean(player)}
-	class:verified={Boolean(verifiedEntry)}
+	class:official={verifiedEntry?.type === 'official'}
+	class:shop={verifiedEntry?.type === 'shop'}
 >
 	{#if verifiedEntry}
 		{#if verifiedEntry.imageSrc}
 			<img src={verifiedEntry.imageSrc} alt="Logo for {verifiedEntry.name}" />
+		{:else if verifiedEntry.type === 'shop'}
+			<FontAwesomeIcon icon={faStore} />
 		{/if}
 		{verifiedEntry.name}
 	{:else if player}
@@ -41,7 +47,7 @@
 </a>
 
 <style>
-	a:not(.player, .verified) {
+	a:not(.special) {
 		font-size: 1.1em;
 		font-family: monospace;
 	}
@@ -50,12 +56,15 @@
 		--color: 255, 255, 255;
 	}
 
-	.verified {
+	.official {
 		--color: var(--green);
 	}
 
-	.player,
-	.verified {
+	.shop {
+		--color: var(--theme-color-rgb);
+	}
+
+	.special {
 		display: inline-block;
 		background-color: rgba(var(--color), 0.1);
 		border: 1px solid rgba(var(--color), 0.2);
@@ -67,17 +76,17 @@
 		transition: 0.2s background-color ease-in-out;
 	}
 
-	.player:hover,
-	.player:focus-visible,
-	.verified:hover,
-	.verified:focus-visible {
+	.special:hover,
+	.special:focus-visible {
 		background-color: rgba(var(--color), 0.2);
 	}
 
-	.player img,
-	.verified img {
+	.special img {
 		width: 1em;
 		height: 1em;
 		vertical-align: middle;
+	}
+
+	.shop svg {
 	}
 </style>
