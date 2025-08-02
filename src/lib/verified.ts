@@ -48,8 +48,8 @@ export const verified: Record<string, VerifiedEntry> = {
 	krillionss: {
 		type: 'shop',
 		address: 'krillionss',
-		name: "Krillion's Store",
-		description: "Official shop address for Krillion's store, located near /warp spawn"
+		name: "Hellscaped's Store",
+		description: "Official shop address for Hellscaped's store, located near /warp spawn"
 	},
 	ka78ea8qv7: {
 		type: 'shop',
