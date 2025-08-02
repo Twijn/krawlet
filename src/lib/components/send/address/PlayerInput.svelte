@@ -9,7 +9,7 @@
 	let {
 		loading = $bindable(),
 		address = $bindable(),
-		addClearHandler,
+		addClearHandler
 	}: {
 		loading: boolean;
 		address: Address | null;
@@ -20,8 +20,8 @@
 	let playerFilter: string = $state('');
 
 	let players: Player[] = $derived(
-		$playerWalletStore.players.filter(
-			x => x.minecraftName.toLowerCase().includes(playerFilter.toLowerCase())
+		$playerWalletStore.players.filter((x) =>
+			x.minecraftName.toLowerCase().includes(playerFilter.toLowerCase())
 		) ?? []
 	);
 
@@ -36,12 +36,14 @@
 	$effect(() => {
 		if (selectedPlayer?.kromerAddress) {
 			loading = true;
-			kromer.address({
-				address: selectedPlayer.kromerAddress,
-			}).then(addr => {
-				loading = false;
-				address = addr;
-			});
+			kromer
+				.address({
+					address: selectedPlayer.kromerAddress
+				})
+				.then((addr) => {
+					loading = false;
+					address = addr;
+				});
 		}
 	});
 
@@ -54,12 +56,22 @@
 
 {#if players.length > 0}
 	<label for="filter-player">Select Player</label>
-	<input type="text" id="filter-player" bind:value={playerFilter} placeholder="Type to filter players..." />
+	<input
+		type="text"
+		id="filter-player"
+		bind:value={playerFilter}
+		placeholder="Type to filter players..."
+	/>
 	<ButtonSelect
 		vertical={true}
-		options={players.map((x) => {
-							return { id: x.minecraftUUID, name: x.online ? `${x.minecraftName} - Online` : x.minecraftName };
-						}).filter((x, i) => i < 10)}
+		options={players
+			.map((x) => {
+				return {
+					id: x.minecraftUUID,
+					name: x.online ? `${x.minecraftName} - Online` : x.minecraftName
+				};
+			})
+			.filter((x, i) => i < 10)}
 		bind:selected={playerUUID}
 	/>
 	{#if address && selectedPlayer?.kromerAddress}

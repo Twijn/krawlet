@@ -7,46 +7,44 @@
 	let {
 		loading = $bindable(),
 		address = $bindable(),
-		addClearHandler,
+		addClearHandler
 	}: {
 		loading: boolean;
 		address: Address | null;
 		addClearHandler?: (handler: () => void) => void;
 	} = $props();
 
-	const shops: {id: string, name: string}[] = $derived((() => {
-		let result: {id: string, name: string}[] = [];
-		for (const [, value] of Object.entries(verified)) {
-			if (value.type === "shop") {
-				result.push({
-					id: value.address,
-					name: value.name,
-				});
+	const shops: { id: string; name: string }[] = $derived(
+		(() => {
+			let result: { id: string; name: string }[] = [];
+			for (const [, value] of Object.entries(verified)) {
+				if (value.type === 'shop') {
+					result.push({
+						id: value.address,
+						name: value.name
+					});
+				}
 			}
-		}
-		return result;
-	})());
-
-	let selectedShopAddress = $state("");
-	let selectedShop: VerifiedEntry | null = $derived(
-		verified[ selectedShopAddress ] ?? null
+			return result;
+		})()
 	);
+
+	let selectedShopAddress = $state('');
+	let selectedShop: VerifiedEntry | null = $derived(verified[selectedShopAddress] ?? null);
 
 	$effect(() => {
 		if (selectedShop?.address) {
 			loading = true;
-			kromer
-				.address({ address: selectedShop.address })
-				.then(addr => {
-					address = addr;
-					loading = false;
-				});
+			kromer.address({ address: selectedShop.address }).then((addr) => {
+				address = addr;
+				loading = false;
+			});
 		}
-	})
+	});
 
 	if (addClearHandler) {
 		addClearHandler(() => {
-			selectedShopAddress = "";
+			selectedShopAddress = '';
 		});
 	}
 </script>

@@ -39,21 +39,20 @@ function createStore() {
 	};
 
 	async function updatePlayers() {
-		return fetchPlayers()
-			.then((players) => {
-				players.sort((a, b) => {
-					// If online status differs:
-					if (a.online !== b.online) {
-						return a.online ? -1 : 1; // online first
-					}
-					// If same online status, sort by name
-					return a.minecraftName.localeCompare(b.minecraftName);
-				});
-				update(() => ({
-					updated: Date.now(),
-					players
-				}));
+		return fetchPlayers().then((players) => {
+			players.sort((a, b) => {
+				// If online status differs:
+				if (a.online !== b.online) {
+					return a.online ? -1 : 1; // online first
+				}
+				// If same online status, sort by name
+				return a.minecraftName.localeCompare(b.minecraftName);
 			});
+			update(() => ({
+				updated: Date.now(),
+				players
+			}));
+		});
 	}
 
 	const { subscribe, set, update } = writable<PlayerStore>(initial);

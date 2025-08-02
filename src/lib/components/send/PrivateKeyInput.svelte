@@ -5,11 +5,11 @@
 	let {
 		loading = $bindable(),
 		privatekey = $bindable(),
-		address = $bindable(),
+		address = $bindable()
 	}: {
-		loading: boolean,
-		privatekey: string,
-		address: Address | null,
+		loading: boolean;
+		privatekey: string;
+		address: Address | null;
 	} = $props();
 
 	let authFailed: boolean = $state(false);
@@ -37,14 +37,11 @@
 	{#if address}
 		{#if address.balance > 0}
 			<small class="success"
-				>Authentication successful! Logged in as {address.address} with {address.balance.toFixed(
-					2
-				)} KRO</small
+				>Authentication successful! Logged in as {address.address} with {address.balance.toFixed(2)}
+				KRO</small
 			>
 		{:else}
-			<small class="fail"
-				>Authentication was successful, but {address.address} has no money!</small
-			>
+			<small class="fail">Authentication was successful, but {address.address} has no money!</small>
 		{/if}
 	{:else if authFailed}
 		<small class="fail">Authentication failed!</small>

@@ -84,11 +84,17 @@
 	<h2><FontAwesomeIcon icon={faPaperPlane} /> Send Kromer</h2>
 	<form method="POST">
 		<ModuleLoading absolute={true} {loading} />
-		<PrivateKeyInput bind:loading bind:privatekey={privatekey} bind:address={fromAddress} />
+		<PrivateKeyInput bind:loading bind:privatekey bind:address={fromAddress} />
 		<AddressSelector bind:loading bind:address={toAddress} />
 		<label>
 			Amount
-			<input type="number" min="0" max={fromAddress?.balance ?? 0} step="0.01" bind:value={amount} />
+			<input
+				type="number"
+				min="0"
+				max={fromAddress?.balance ?? 0}
+				step="0.01"
+				bind:value={amount}
+			/>
 		</label>
 		<label>
 			Metadata

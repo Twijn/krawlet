@@ -6,14 +6,14 @@
 	let {
 		loading = $bindable(),
 		address = $bindable(),
-		addClearHandler,
+		addClearHandler
 	}: {
 		loading: boolean;
-		address: Address|null;
+		address: Address | null;
 		addClearHandler?: (handler: () => void) => void;
 	} = $props();
 
-	let to = $state("");
+	let to = $state('');
 	let addressError: string | null = $state(null);
 
 	const verifyTo = async () => {
@@ -31,7 +31,7 @@
 
 	if (addClearHandler) {
 		addClearHandler(() => {
-			to = "";
+			to = '';
 			addressError = null;
 		});
 	}
