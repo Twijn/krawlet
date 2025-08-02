@@ -38,6 +38,24 @@ function createStore() {
 		players: []
 	};
 
+	async function updatePlayers() {
+		return fetchPlayers()
+			.then((players) => {
+				players.sort((a, b) => {
+					// If online status differs:
+					if (a.online !== b.online) {
+						return a.online ? -1 : 1; // online first
+					}
+					// If same online status, sort by name
+					return a.minecraftName.localeCompare(b.minecraftName);
+				});
+				update(() => ({
+					updated: Date.now(),
+					players
+				}));
+			});
+	}
+
 	const { subscribe, set, update } = writable<PlayerStore>(initial);
 
 	if (browser) {
@@ -58,14 +76,7 @@ function createStore() {
 
 	if (browser && get({ subscribe }).players.length === 0) {
 		// Initial fetch
-		fetchPlayers()
-			.then((players) => {
-				update(() => ({
-					updated: Date.now(),
-					players
-				}));
-			})
-			.catch(console.error);
+		updatePlayers().catch(console.error);
 	}
 
 	let interval: NodeJS.Timeout;
@@ -75,14 +86,7 @@ function createStore() {
 			const now = Date.now();
 			const store = get({ subscribe });
 			if (now - store.updated >= 30_000) {
-				fetchPlayers()
-					.then((players) => {
-						update(() => ({
-							updated: now,
-							players
-						}));
-					})
-					.catch(console.error);
+				updatePlayers().catch(console.error);
 			}
 		}, 1000);
 	}
@@ -98,7 +102,6 @@ function createStore() {
 			);
 		}
 	});
-	console.log('meow');
 	return {
 		subscribe,
 		destroy: () => clearInterval(interval)

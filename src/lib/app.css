@@ -249,6 +249,14 @@ label:has(.fail) input {
 	border-bottom-color: rgb(var(--red));
 }
 
+.success {
+	color: rgb(var(--green));
+}
+
+.fail {
+	color: rgb(var(--red));
+}
+
 .table-container {
 	width: 100%;
 	overflow-x: auto;
