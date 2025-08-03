@@ -21,9 +21,9 @@ export const verified: Record<string, VerifiedEntry> = {
 		name: 'Twin Farm',
 		description: "Official shop address for Twijn's Farm Store, located in /warp mall"
 	},
-	k75w1utsbr: {
+	kquarryree: {
 		type: 'shop',
-		address: 'k75w1utsbr',
+		address: 'kquarryree',
 		name: 'Twin Quarry',
 		description: "Official shop address for Twijn's Quarry Store, located in /warp mall"
 	},
