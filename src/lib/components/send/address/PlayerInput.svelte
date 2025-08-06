@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { Address } from '$lib/api/types/Address';
 	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import ButtonSelect from '$lib/components/ButtonSelect.svelte';
 	import { type Player, playerWalletStore } from '$lib/playerWallets';
 	import { onDestroy } from 'svelte';
 	import kromer from '$lib/api/kromer';
+	import type { Address } from 'kromer';
 
 	let {
 		loading = $bindable(),
@@ -36,14 +36,10 @@
 	$effect(() => {
 		if (selectedPlayer?.kromerAddress) {
 			loading = true;
-			kromer
-				.address({
-					address: selectedPlayer.kromerAddress
-				})
-				.then((addr) => {
-					loading = false;
-					address = addr;
-				});
+			kromer.addresses.get(selectedPlayer.kromerAddress).then((addr) => {
+				loading = false;
+				address = addr;
+			});
 		}
 	});
 

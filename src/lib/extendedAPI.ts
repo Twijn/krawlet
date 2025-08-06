@@ -1,4 +1,4 @@
-import type { Address } from '$lib/api/types/Address';
+import type { Address } from 'kromer';
 
 const MAP_ENDPOINT = 'https://map.reconnected.cc/';
 const UUID_ADDRESS_ENDPOINT = 'https://kromer.reconnected.cc/api/v1/wallet/by-player/';

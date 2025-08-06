@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { Address } from '$lib/api/types/Address';
 	import { verified, type VerifiedEntry } from '$lib/verified';
 	import ButtonSelect from '$lib/components/ButtonSelect.svelte';
 	import kromer from '$lib/api/kromer';
+	import type { Address } from 'kromer';
 
 	let {
 		loading = $bindable(),
@@ -35,7 +35,7 @@
 	$effect(() => {
 		if (selectedShop?.address) {
 			loading = true;
-			kromer.address({ address: selectedShop.address }).then((addr) => {
+			kromer.addresses.get(selectedShop.address).then((addr) => {
 				address = addr;
 				loading = false;
 			});

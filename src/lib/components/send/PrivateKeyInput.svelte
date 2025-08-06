@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Address } from '$lib/api/types/Address';
 	import kromer from '$lib/api/kromer';
+	import type { Address } from 'kromer';
 
 	let {
 		loading = $bindable(),
@@ -21,9 +21,7 @@
 		loading = true;
 		const response = await kromer.login(privatekey);
 		if (response.ok && response.authed && response.address) {
-			address = await kromer.address({
-				address: response.address
-			});
+			address = await kromer.addresses.get(response.address);
 		} else {
 			authFailed = true;
 		}

@@ -1,14 +1,14 @@
 <script lang="ts">
 	import Section from '$lib/components/Section.svelte';
 	import { browser } from '$app/environment';
-	import kromer from '$lib/api/kromer';
-	import type { AddressesResponse } from '$lib/api/types/Address';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faAddressBook } from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 	import { relativeTime } from '$lib/util';
 	import Address from '$lib/components/Address.svelte';
+	import kromer from '$lib/api/kromer';
+	import type { AddressesResponse } from 'kromer';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -32,8 +32,7 @@
 
 	let addressesPromise = $derived(
 		browser
-			? kromer.addresses({
-					rich,
+			? kromer.addresses[rich ? 'getRich' : 'getAll']({
 					offset: (page - 1) * limit,
 					limit
 				})

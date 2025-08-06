@@ -1,10 +1,10 @@
 import kromer from '$lib/api/kromer';
+import type { APIError } from 'kromer';
 import { error } from '@sveltejs/kit';
-import type { APIError } from '$lib/api/types/APIError';
 
 export async function load({ params }) {
 	try {
-		const address = await kromer.address({ address: params.addressStr });
+		const address = await kromer.addresses.get(params.addressStr);
 
 		return {
 			address

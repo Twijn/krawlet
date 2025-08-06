@@ -3,9 +3,9 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faDatabase, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 	import { relativeTime } from '$lib/util';
-	import type { Transaction } from '$lib/api/types/Transaction';
-	import kromer from '$lib/api/kromer';
 	import Address from '$lib/components/Address.svelte';
+	import kromer from '$lib/api/kromer';
+	import type { Transaction } from 'kromer';
 
 	const { data } = $props();
 	const {
@@ -14,7 +14,7 @@
 		transaction: Transaction;
 	} = data;
 
-	const transactionMetadata = kromer.parseMetadata(transaction);
+	const transactionMetadata = kromer.transactions.parseMetadata(transaction);
 </script>
 
 <svelte:head>

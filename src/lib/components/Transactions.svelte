@@ -2,13 +2,13 @@
 	import Section from '$lib/components/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faList } from '@fortawesome/free-solid-svg-icons';
-	import type { TransactionsResponse } from '$lib/api/types/Transaction';
-	import kromer from '$lib/api/kromer';
 	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import { relativeTime } from '$lib/util.js';
 	import Pagination from '$lib/components/Pagination.svelte';
 	import { browser } from '$app/environment';
 	import Address from '$lib/components/Address.svelte';
+	import kromer from '$lib/api/kromer';
+	import type { TransactionsResponse } from 'kromer';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -34,13 +34,11 @@
 	let transactionsPromise = $derived(
 		browser
 			? address
-				? kromer.addressTransactions({
-						address,
+				? kromer.addresses.getTransactions(address, {
 						offset: (page - 1) * limit,
 						limit
 					})
-				: kromer.allTransactions({
-						latest: true,
+				: kromer.transactions.getLatest({
 						offset: (page - 1) * limit,
 						limit,
 						excludeMined: !includeMined

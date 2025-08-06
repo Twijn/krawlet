@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
+	import type { Address } from 'kromer';
 	import ButtonSelect from '$lib/components/ButtonSelect.svelte';
-	import type { Address } from '$lib/api/types/Address';
 	import AddressInput from '$lib/components/send/address/AddressInput.svelte';
 	import PlayerInput from '$lib/components/send/address/PlayerInput.svelte';
 	import ShopInput from '$lib/components/send/address/ShopInput.svelte';

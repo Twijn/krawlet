@@ -2,14 +2,12 @@
 	import Section from '$lib/components/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-	import kromer from '$lib/api/kromer';
-	import type { Address } from '$lib/api/types/Address';
 	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import Button from '$lib/components/Button.svelte';
-	import type { APIError } from '$lib/api/types/APIError';
-	import type { MakeTransactionBody } from '$lib/api/types/MakeTransaction';
 	import PrivateKeyInput from '$lib/components/send/PrivateKeyInput.svelte';
 	import AddressSelector from '$lib/components/send/address/AddressSelector.svelte';
+	import kromer from '$lib/api/kromer';
+	import type { Address, APIError, MakeTransactionBody } from 'kromer';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -66,7 +64,7 @@
 						data.metadata = metadata;
 					}
 
-					await kromer.send(data);
+					await kromer.transactions.send(data);
 
 					alert('Transaction successful!');
 				} catch (e) {

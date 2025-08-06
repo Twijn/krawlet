@@ -1,3 +1,3 @@
-import { KromerApi } from '$lib/api/KromerApi';
+import { KromerApi } from 'kromer';
 
 export default new KromerApi();

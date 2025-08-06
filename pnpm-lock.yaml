@@ -26,6 +26,9 @@ importers:
       '@sveltejs/adapter-vercel':
         specifier: ^5.8.0
         version: 5.8.0(@sveltejs/kit@2.25.2(@sveltejs/vite-plugin-svelte@6.1.0(svelte@5.36.14)(vite@7.0.5(@types/node@24.1.0)))(svelte@5.36.14)(vite@7.0.5(@types/node@24.1.0)))(rollup@4.45.1)
+      kromer:
+        specifier: ^1.0.1
+        version: 1.0.1
     devDependencies:
       '@eslint/compat':
         specifier: ^1.2.5
@@ -970,6 +973,9 @@ packages:
 
   known-css-properties@0.37.0:
     resolution: {integrity: sha512-JCDrsP4Z1Sb9JwG0aJ8Eo2r7k4Ou5MwmThS/6lcIe1ICyb7UBJKGRIUUdqc2ASdE/42lgz6zFUnzAIhtXnBVrQ==}
+
+  kromer@1.0.1:
+    resolution: {integrity: sha512-5Muac0EarAECyGklAJ7ZW5D3BAtjgZVOaj5GALWfnzNLjH43wUyx7gMXoqUoi1HBkXbIZ15wV7NW6uJxu9iRMw==}
 
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
@@ -2237,6 +2243,8 @@ snapshots:
   kleur@4.1.5: {}
 
   known-css-properties@0.37.0: {}
+
+  kromer@1.0.1: {}
 
   levn@0.4.1:
     dependencies:

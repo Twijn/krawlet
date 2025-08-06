@@ -1,28 +1,24 @@
 <script lang="ts">
 	import { verified, type VerifiedEntry } from '$lib/verified';
 	import Alert from '$lib/components/Alert.svelte';
-	import kromer from '$lib/api/kromer';
 	import Section from '$lib/components/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faFileSignature, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import { relativeTime } from '$lib/util';
-	import type { Name } from '$lib/api/types/Name';
 	import Transactions from '$lib/components/Transactions.svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { type Player, playerWalletStore } from '$lib/playerWallets';
 	import Address from '$lib/components/Address.svelte';
+	import kromer from '$lib/api/kromer';
+	import type { Name } from 'kromer';
 
 	const { data } = $props();
 	const address = $derived(data.address);
 
 	let namesPromise = $derived(
-		browser
-			? kromer.addressNames({
-					address: address.address
-				})
-			: Promise.resolve(null)
+		browser ? kromer.addresses.getNames(address.address) : Promise.resolve(null)
 	);
 
 	let names: Name[] = $state([]);
@@ -34,9 +30,7 @@
 	});
 
 	onMount(async () => {
-		const namesResponse = await kromer.addressNames({
-			address: address.address
-		});
+		const namesResponse = await kromer.addresses.getNames(address.address);
 
 		if (namesResponse?.names) {
 			names = namesResponse.names;

@@ -1,7 +1,6 @@
 <script lang="ts">
-	import type { Address } from '$lib/api/types/Address';
 	import kromer from '$lib/api/kromer';
-	import type { APIError } from '$lib/api/types/APIError';
+	import type { Address, APIError } from 'kromer';
 
 	let {
 		loading = $bindable(),
@@ -19,7 +18,7 @@
 	const verifyTo = async () => {
 		loading = true;
 		try {
-			address = await kromer.resolve(to);
+			address = await kromer.addresses.resolve(to);
 			addressError = null;
 		} catch (e) {
 			address = null;

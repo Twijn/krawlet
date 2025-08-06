@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { MotdResponse } from '$lib/api/types/Motd';
 	import Section from '$lib/components/Section.svelte';
 	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import kromer from '$lib/api/kromer';
+	import type { MotdResponse } from 'kromer';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faMessage } from '@fortawesome/free-solid-svg-icons';
 
@@ -22,7 +22,7 @@
 	let motd: MotdResponse | null = $state(null);
 
 	onMount(async () => {
-		motd = await kromer.motd();
+		motd = await kromer.getMOTD();
 	});
 </script>
 
