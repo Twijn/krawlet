@@ -15,9 +15,9 @@ export const verified: Record<string, VerifiedEntry> = {
 		description: 'Verified as being the Kromer address for server welfare on reconnected.cc'
 	},
 	// Shop addresses
-	koissi9ji8: {
+	ktwinfarm4: {
 		type: 'shop',
-		address: 'koissi9ji8',
+		address: 'ktwinfarm4',
 		name: 'Twin Farm',
 		description: "Official shop address for Twijn's Farm Store, located in /warp mall"
 	},
