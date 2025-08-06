@@ -4,7 +4,7 @@
 	import { type Player, playerWalletStore } from '$lib/playerWallets';
 	import { verified, type VerifiedEntry } from '$lib/verified';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faStore } from '@fortawesome/free-solid-svg-icons';
+	import { faDice, faStore } from '@fortawesome/free-solid-svg-icons';
 
 	const {
 		address
@@ -27,12 +27,15 @@
 	class:player={Boolean(player)}
 	class:official={verifiedEntry?.type === 'official'}
 	class:shop={verifiedEntry?.type === 'shop'}
+	class:gamble={verifiedEntry?.type === 'gamble'}
 >
 	{#if verifiedEntry}
 		{#if verifiedEntry.imageSrc}
 			<img src={verifiedEntry.imageSrc} alt="Logo for {verifiedEntry.name}" />
 		{:else if verifiedEntry.type === 'shop'}
 			<FontAwesomeIcon icon={faStore} />
+		{:else if verifiedEntry.type === 'gamble'}
+			<FontAwesomeIcon icon={faDice} />
 		{/if}
 		{verifiedEntry.name}
 	{:else if player}
@@ -64,6 +67,10 @@
 		--color: var(--theme-color-rgb);
 	}
 
+	.gamble {
+		--color: var(--red);
+	}
+
 	.special {
 		display: inline-block;
 		background-color: rgba(var(--color), 0.1);
@@ -85,8 +92,5 @@
 		width: 1em;
 		height: 1em;
 		vertical-align: middle;
-	}
-
-	.shop svg {
 	}
 </style>

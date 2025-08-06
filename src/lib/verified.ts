@@ -1,5 +1,5 @@
 export type VerifiedEntry = {
-	type: 'official' | 'shop';
+	type: 'official' | 'shop' | 'gamble';
 	address: string;
 	imageSrc?: string;
 	name: string;
@@ -56,5 +56,18 @@ export const verified: Record<string, VerifiedEntry> = {
 		address: 'ka78ea8qv7',
 		name: "Emily's Enchant Store",
 		description: "Official shop address for Emily's enchant store, located near /warp spawn"
+	},
+	// Gambling addresses
+	kromerball: {
+		type: 'gamble',
+		address: 'kromerball',
+		name: 'Kromer Ball',
+		description: 'Official address for Kromer Ball, see \\kb for more information'
+	},
+	kdrakebr0u: {
+		type: 'gamble',
+		address: 'kdrakebr0u',
+		name: 'Kromer Flip',
+		description: 'Official address for Kromer Flip, see \\kf for more information'
 	}
 };
