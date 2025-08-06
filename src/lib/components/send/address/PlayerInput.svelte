@@ -1,10 +1,10 @@
 <script lang="ts">
-	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import ButtonSelect from '$lib/components/ButtonSelect.svelte';
 	import { type Player, playerWalletStore } from '$lib/playerWallets';
 	import { onDestroy } from 'svelte';
 	import kromer from '$lib/api/kromer';
 	import type { Address } from 'kromer';
+	import Alert from '$lib/components/Alert.svelte';
 
 	let {
 		loading = $bindable(),
@@ -50,14 +50,15 @@
 	}
 </script>
 
+<label for="filter-player">Select Player</label>
+<input
+	type="text"
+	id="filter-player"
+	bind:value={playerFilter}
+	placeholder="Type to filter players..."
+/>
+
 {#if players.length > 0}
-	<label for="filter-player">Select Player</label>
-	<input
-		type="text"
-		id="filter-player"
-		bind:value={playerFilter}
-		placeholder="Type to filter players..."
-	/>
 	<ButtonSelect
 		vertical={true}
 		options={players
@@ -74,5 +75,5 @@
 		<small class="success">{selectedPlayer.minecraftName} has {address.balance} KRO</small>
 	{/if}
 {:else}
-	<ModuleLoading />
+	<Alert variant="danger">No players were found!</Alert>
 {/if}
