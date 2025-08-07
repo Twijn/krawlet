@@ -1,5 +1,5 @@
 export type VerifiedEntry = {
-	type: 'official' | 'shop' | 'gamble';
+	type: 'official' | 'shop' | 'gamble' | 'service';
 	address: string;
 	imageSrc?: string;
 	name: string;
@@ -13,6 +13,12 @@ export const verified: Record<string, VerifiedEntry> = {
 		imageSrc: '/images/verified/serverwelf.png',
 		name: 'ReconnectedCC',
 		description: 'Verified as being the Kromer address for server welfare on reconnected.cc'
+	},
+	krb1yie41o: {
+		type: 'official',
+		address: 'krb1yie41o',
+		name: 'Soak',
+		description: 'Verified as being the official address for Soak, see \\soak for more information'
 	},
 	// Shop addresses
 	ktwinfarm4: {
@@ -56,6 +62,12 @@ export const verified: Record<string, VerifiedEntry> = {
 		address: 'ka78ea8qv7',
 		name: "Emily's Enchant Store",
 		description: "Official shop address for Emily's enchant store, located near /warp spawn"
+	},
+	k2god41s23: {
+		type: 'shop',
+		address: 'k2god41s23',
+		name: 'SolidityPools',
+		description: 'Official shop address for Solidity Pools, located north of /warp spawn'
 	},
 	// Gambling addresses
 	kromerball: {
