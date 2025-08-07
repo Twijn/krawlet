@@ -3,6 +3,7 @@
 	import Transactions from '$lib/components/Transactions.svelte';
 	import QuickActions from '$lib/components/QuickActions.svelte';
 	import Addresses from '$lib/components/Addresses.svelte';
+	import Names from '$lib/components/Names.svelte';
 </script>
 
 <svelte:head>
@@ -18,7 +19,7 @@
 <QuickActions lgCols={4} mdCols={12} />
 <Transactions lgCols={8} mdCols={12} limit={5} />
 
-<Addresses lgCols={6} limit={3} />
-<Addresses lgCols={6} limit={3} rich={true} />
+<Names lgCols={6} mdCols={12} limit={3} />
+<Addresses lgCols={6} mdCols={12} limit={3} rich={true} />
 
 <Motd lgCols={12} />

@@ -88,9 +88,7 @@
 					{/each}
 				</tbody>
 			</table>
-			{#if limit > 25}
-				<Pagination bind:page total={addresses.total} {limit} />
-			{/if}
+			<Pagination bind:page total={addresses.total} {limit} />
 		</div>
 	{:else}
 		<ModuleLoading />

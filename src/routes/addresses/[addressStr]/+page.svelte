@@ -3,39 +3,17 @@
 	import Alert from '$lib/components/Alert.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faFileSignature, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+	import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import { relativeTime } from '$lib/util';
 	import Transactions from '$lib/components/Transactions.svelte';
-	import { onDestroy, onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { onDestroy } from 'svelte';
 	import { type Player, playerWalletStore } from '$lib/playerWallets';
 	import Address from '$lib/components/Address.svelte';
-	import kromer from '$lib/api/kromer';
-	import type { Name } from 'kromer';
+	import Names from '$lib/components/Names.svelte';
 
 	const { data } = $props();
 	const address = $derived(data.address);
-
-	let namesPromise = $derived(
-		browser ? kromer.addresses.getNames(address.address) : Promise.resolve(null)
-	);
-
-	let names: Name[] = $state([]);
-
-	$effect(() => {
-		namesPromise.then((result) => {
-			names = result?.names ?? [];
-		});
-	});
-
-	onMount(async () => {
-		const namesResponse = await kromer.addresses.getNames(address.address);
-
-		if (namesResponse?.names) {
-			names = namesResponse.names;
-		}
-	});
 
 	const verifiedEntry: VerifiedEntry | null = $derived(verified[address.address] ?? null);
 
@@ -111,33 +89,11 @@
 	{/if}
 </Section>
 
-<Section lgCols={3} mdCols={6} smCols={12}>
-	<h2><FontAwesomeIcon icon={faFileSignature} /> Names</h2>
-	{#if names.length > 0}
-		<div class="table-container">
-			<table>
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Registered</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each names as name (name.name)}
-						<tr>
-							<td>{name.name}.kro</td>
-							<td>{relativeTime(name.registered)}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-	{:else if !address}
-		<ModuleLoading />
-	{:else}
-		No names found!
-	{/if}
-</Section>
+{#if address}
+	<Names lgCols={3} mdCols={6} smCols={12} limit={6} address={address.address} />
+{:else}
+	<ModuleLoading />
+{/if}
 
 {#if address}
 	<Transactions limit={6} address={address.address} lgCols={6} mdCols={12} />

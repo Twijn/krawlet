@@ -62,64 +62,71 @@
 <Section {lgCols} {mdCols} {smCols}>
 	<h2><FontAwesomeIcon icon={faList} /> Recent Transactions</h2>
 	{#if transactions}
-		{#if !address}
-			<label class="center">
-				<input type="checkbox" bind:checked={includeMined} />
-				Include welfare transactions
-			</label>
-		{/if}
-		{#if limit > 25}
-			<Pagination bind:page total={transactions.total} {limit} />
-		{:else if address}
-			<a id="view-all" href="/addresses/{address}/transactions"
-				>View all transactions for {address}</a
-			>
+		{#if transactions.transactions.length === 0}
+			<small class="none-found">
+				No transactions found{address ? ` for address ${address}` : ''}!
+			</small>
 		{:else}
-			<a id="view-all" href="/transactions">View all transactions</a>
-		{/if}
-		<div class="table-container">
-			<ModuleLoading absolute={true} bind:loading />
-			<table>
-				<thead>
-					<tr>
-						<th class="center">ID</th>
-						<th>Type</th>
-						<th>From</th>
-						<th>To</th>
-						<th class="right">Value</th>
-						<th>Metadata</th>
-						<th>Time</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each transactions.transactions as transaction (transaction.id)}
+			{#if !address}
+				<label class="center">
+					<input type="checkbox" bind:checked={includeMined} />
+					Include welfare transactions
+				</label>
+			{/if}
+			{#if limit > 25}
+				<Pagination bind:page total={transactions.total} {limit} />
+			{:else if address}
+				<a id="view-all" href="/addresses/{address}/transactions"
+					>View all transactions for {address}</a
+				>
+			{:else}
+				<a id="view-all" href="/transactions">View all transactions</a>
+			{/if}
+			<div class="table-container">
+				<ModuleLoading absolute={true} bind:loading />
+				<table>
+					<thead>
 						<tr>
-							<td class="center"><a href="/transactions/{transaction.id}">{transaction.id}</a></td>
-							<td class="caps"
-								>{transaction.type === 'mined'
-									? 'welfare'
-									: transaction.type.replace(/_/g, ' ')}</td
-							>
-							<td>
-								{#if transaction.from}
-									<Address address={transaction.from} />
-								{/if}
-							</td>
-							<td>
-								<Address address={transaction.to} />
-							</td>
-							<td class="right">{transaction.value.toFixed(2)} <small>KRO</small></td>
-							<td class="metadata"
-								><span>{transaction?.metadata ? transaction.metadata.substring(0, 100) : ''}</span
-								></td
-							>
-							<td title={transaction.time.toLocaleString()}>{relativeTime(transaction.time)}</td>
+							<th class="center">ID</th>
+							<th>Type</th>
+							<th>From</th>
+							<th>To</th>
+							<th class="right">Value</th>
+							<th>Metadata</th>
+							<th>Time</th>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-		<Pagination bind:page total={transactions.total} {limit} />
+					</thead>
+					<tbody>
+						{#each transactions.transactions as transaction (transaction.id)}
+							<tr>
+								<td class="center"><a href="/transactions/{transaction.id}">{transaction.id}</a></td
+								>
+								<td class="caps"
+									>{transaction.type === 'mined'
+										? 'welfare'
+										: transaction.type.replace(/_/g, ' ')}</td
+								>
+								<td>
+									{#if transaction.from}
+										<Address address={transaction.from} />
+									{/if}
+								</td>
+								<td>
+									<Address address={transaction.to} />
+								</td>
+								<td class="right">{transaction.value.toFixed(2)} <small>KRO</small></td>
+								<td class="metadata"
+									><span>{transaction?.metadata ? transaction.metadata.substring(0, 100) : ''}</span
+									></td
+								>
+								<td title={transaction.time.toLocaleString()}>{relativeTime(transaction.time)}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+			<Pagination bind:page total={transactions.total} {limit} />
+		{/if}
 	{:else}
 		<ModuleLoading />
 	{/if}
@@ -142,5 +149,11 @@
 		display: block;
 		max-width: 100%;
 		overflow: hidden;
+	}
+
+	.none-found {
+		display: block;
+		color: rgb(var(--red));
+		text-align: center;
 	}
 </style>

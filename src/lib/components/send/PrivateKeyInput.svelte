@@ -5,11 +5,13 @@
 	let {
 		loading = $bindable(),
 		privatekey = $bindable(),
-		address = $bindable()
+		address = $bindable(),
+		minimumBalance = $bindable(0.01)
 	}: {
 		loading: boolean;
 		privatekey: string;
 		address: Address | null;
+		minimumBalance?: number;
 	} = $props();
 
 	let authFailed: boolean = $state(false);
@@ -33,13 +35,18 @@
 	Private Key
 	<input type="password" bind:value={privatekey} onblur={verifyKey} />
 	{#if address}
-		{#if address.balance > 0}
+		{#if address.balance >= minimumBalance}
 			<small class="success"
 				>Authentication successful! Logged in as {address.address} with {address.balance.toFixed(2)}
 				KRO</small
 			>
 		{:else}
-			<small class="fail">Authentication was successful, but {address.address} has no money!</small>
+			<small class="fail"
+				>Authentication was successful, but {address.address}
+				{minimumBalance === 0.01
+					? 'has no money!'
+					: `doesn't have enough money (Needs ${minimumBalance} KRO)!`}</small
+			>
 		{/if}
 	{:else if authFailed}
 		<small class="fail">Authentication failed!</small>

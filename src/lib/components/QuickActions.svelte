@@ -5,6 +5,8 @@
 		faAddressBook,
 		faMoneyBill1Wave,
 		faPaperPlane,
+		faSign,
+		faSignature,
 		faTruckFast
 	} from '@fortawesome/free-solid-svg-icons';
 	import Button from '$lib/components/Button.svelte';
@@ -46,6 +48,17 @@
 		<Button variant="secondary" href="/addresses" full={true}>
 			<FontAwesomeIcon icon={faAddressBook} />
 			All Addresses
+		</Button>
+
+		<h3>Names</h3>
+		<Button variant="primary" href="/names/new" full={true}>
+			<FontAwesomeIcon icon={faSignature} />
+			Register a Name
+		</Button>
+
+		<Button variant="secondary" href="/names" full={true}>
+			<FontAwesomeIcon icon={faSign} />
+			All Names
 		</Button>
 	</nav>
 </Section>
