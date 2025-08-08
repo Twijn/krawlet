@@ -76,9 +76,9 @@ export const verified: Record<string, VerifiedEntry> = {
 		name: 'Kromer Ball',
 		description: 'Official address for Kromer Ball, see \\kb for more information'
 	},
-	kdrakebr0u: {
+	kromerflp0: {
 		type: 'gamble',
-		address: 'kdrakebr0u',
+		address: 'kromerflp0',
 		name: 'Kromer Flip',
 		description: 'Official address for Kromer Flip, see \\kf for more information'
 	}
