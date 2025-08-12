@@ -57,9 +57,9 @@ export const verified: Record<string, VerifiedEntry> = {
 		name: "Hellscaped's Store",
 		description: "Official shop address for Hellscaped's store, located near /warp spawn"
 	},
-	ka78ea8qv7: {
+	kenchants0: {
 		type: 'shop',
-		address: 'ka78ea8qv7',
+		address: 'kenchants0',
 		name: "Emily's Enchant Store",
 		description: "Official shop address for Emily's enchant store, located near /warp spawn"
 	},
