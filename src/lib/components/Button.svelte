@@ -59,7 +59,7 @@
 
 	.success {
 		background-color: rgb(var(--green));
-		color: black;
+		color: white;
 	}
 
 	.error {
