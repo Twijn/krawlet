@@ -4,10 +4,10 @@
 	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import Button from '$lib/components/Button.svelte';
-	import PrivateKeyInput from '$lib/components/send/PrivateKeyInput.svelte';
 	import AddressSelector from '$lib/components/send/address/AddressSelector.svelte';
 	import kromer from '$lib/api/kromer';
 	import type { Address, APIError, MakeTransactionBody } from 'kromer';
+	import PrivateKeySelector from '$lib/components/send/privatekey/PrivateKeySelector.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -82,22 +82,33 @@
 	<h2><FontAwesomeIcon icon={faPaperPlane} /> Send Kromer</h2>
 	<form method="POST">
 		<ModuleLoading absolute={true} {loading} />
-		<PrivateKeyInput bind:loading bind:privatekey bind:address={fromAddress} />
-		<AddressSelector bind:loading bind:address={toAddress} />
-		<label>
-			Amount
-			<input
-				type="number"
-				min="0"
-				max={fromAddress?.balance ?? 0}
-				step="0.01"
-				bind:value={amount}
-			/>
-		</label>
-		<label>
-			Metadata
-			<input type="text" bind:value={metadata} />
-		</label>
+		<fieldset>
+			<legend>From</legend>
+			<PrivateKeySelector bind:loading bind:privatekey bind:address={fromAddress} />
+		</fieldset>
+
+		<fieldset>
+			<legend>To</legend>
+			<AddressSelector bind:loading bind:address={toAddress} />
+		</fieldset>
+
+		<fieldset>
+			<legend>Amount &amp; Metadata</legend>
+			<label>
+				Amount
+				<input
+					type="number"
+					min="0"
+					max={fromAddress?.balance ?? 0}
+					step="0.01"
+					bind:value={amount}
+				/>
+			</label>
+			<label>
+				Metadata
+				<input type="text" bind:value={metadata} />
+			</label>
+		</fieldset>
 		<Button
 			type="submit"
 			full={true}
@@ -115,5 +126,21 @@
 <style>
 	form {
 		position: relative;
+	}
+
+	fieldset {
+			border: none;
+			margin: 0;
+			padding: .4em 0;
+			border-top: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	legend {
+			color: white;
+			text-align: center;
+			font-size: .9em;
+			font-weight: 500;
+			opacity: .5;
+			padding: 0 .75em;
 	}
 </style>

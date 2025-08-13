@@ -7,7 +7,7 @@
 		faPaperPlane,
 		faSign,
 		faSignature,
-		faTruckFast
+		faTruckFast, faWallet
 	} from '@fortawesome/free-solid-svg-icons';
 	import Button from '$lib/components/Button.svelte';
 
@@ -28,13 +28,19 @@
 	<h2><FontAwesomeIcon icon={faTruckFast} /> Quick Actions</h2>
 
 	<nav>
+		<h3>Wallets</h3>
+		<Button variant="primary" href="/wallets" full={true}>
+			<FontAwesomeIcon icon={faWallet} />
+			Manage Wallets
+		</Button>
+
 		<h3>Transactions</h3>
-		<Button variant="success" href="/transactions/new" full={true}>
+		<Button variant="primary" href="/transactions/new" full={true}>
 			<FontAwesomeIcon icon={faPaperPlane} />
 			Send Kromer
 		</Button>
 
-		<Button variant="primary" href="/transactions" full={true}>
+		<Button variant="secondary" href="/transactions" full={true}>
 			<FontAwesomeIcon icon={faAddressBook} />
 			All Transactions
 		</Button>
