@@ -100,10 +100,3 @@
 {:else}
 	<ModuleLoading />
 {/if}
-
-<div class="col-12">
-	<Alert variant="info">
-		Recent Transactions will show more pages than there are for this address. This is a bug with
-		Kromer, not with Krawlet.
-	</Alert>
-</div>
