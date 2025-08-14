@@ -9,6 +9,7 @@
 	import kromer from '$lib/api/kromer';
 	import type { NamesResponse } from 'kromer';
 	import { relativeTime } from '$lib/util';
+	import { paramState } from '$lib/paramState.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -17,16 +18,22 @@
 		mdCols = null,
 		smCols = null,
 		limit = 100,
-		address = null
+		address = null,
+		queryPrefix = ''
 	}: {
 		lgCols?: ColumnCount;
 		mdCols?: ColumnCount;
 		smCols?: ColumnCount;
 		limit?: number;
 		address?: string | null;
+		queryPrefix?: string;
 	} = $props();
 
-	let page: number = $state(1);
+	let page = paramState(`${queryPrefix}page`, 1, {
+		serialize: (value) => value.toString(),
+		deserialize: (value) => Number(value),
+		shouldSet: (value) => value >= 2
+	});
 
 	let loading: boolean = $state(false);
 
@@ -34,11 +41,11 @@
 		browser
 			? address
 				? kromer.addresses.getNames(address, {
-						offset: (page - 1) * limit,
+						offset: (page.value - 1) * limit,
 						limit
 					})
 				: kromer.names.getAll({
-						offset: (page - 1) * limit,
+						offset: (page.value - 1) * limit,
 						limit
 					})
 			: null
@@ -68,7 +75,7 @@
 			<div class="table-container">
 				<ModuleLoading absolute={true} bind:loading />
 				{#if limit > 25}
-					<Pagination bind:page total={names.total} {limit} />
+					<Pagination bind:page={page.value} total={names.total} {limit} />
 				{:else if address}
 					<a id="view-all" href="/addresses/{address}/names">
 						View all names for {address}
@@ -118,7 +125,7 @@
 						{/each}
 					</tbody>
 				</table>
-				<Pagination bind:page total={names.total} {limit} />
+				<Pagination bind:page={page.value} total={names.total} {limit} />
 			</div>
 		{/if}
 	{:else}

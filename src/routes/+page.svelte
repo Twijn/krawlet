@@ -17,9 +17,9 @@
 <h1><a href="/">Krawlet</a></h1>
 
 <QuickActions lgCols={4} mdCols={12} />
-<Transactions lgCols={8} mdCols={12} limit={5} />
+<Transactions lgCols={8} mdCols={12} limit={5} queryPrefix="trans_" />
 
-<Names lgCols={6} mdCols={12} limit={3} />
-<Addresses lgCols={6} mdCols={12} limit={3} rich={true} />
+<Names lgCols={6} mdCols={12} limit={3} queryPrefix="name_" />
+<Addresses lgCols={6} mdCols={12} limit={3} rich={true} queryPrefix="addr_" />
 
 <Motd lgCols={12} />

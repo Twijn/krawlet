@@ -8,6 +8,7 @@
 	import kromer from '$lib/api/kromer';
 	import type { Address, APIError, MakeTransactionBody } from 'kromer';
 	import PrivateKeySelector from '$lib/components/send/privatekey/PrivateKeySelector.svelte';
+	import { paramState } from '$lib/paramState.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -29,15 +30,22 @@
 	let toAddress: Address | null = $state(null);
 
 	// Metadata
-	let metadata: string = $state('');
+	let metadata = paramState('metadata', '', {
+		shouldSet: (value) => value.length > 0
+	});
 
 	// Amount & sending
-	let amount: number = $state(0);
+	let amount = paramState('amount', 0, {
+		deserialize: (value: string) => Number(value),
+		shouldSet: (value) => value > 0
+	});
 
 	const send = async (e: Event) => {
 		e.preventDefault();
 		if (
-			confirm(`Are you sure you want to send ${amount.toFixed(2)} KRO to ${toAddress?.address}?`)
+			confirm(
+				`Are you sure you want to send ${amount.value.toFixed(2)} KRO to ${toAddress?.address}?`
+			)
 		) {
 			if (!fromAddress) {
 				alert('Invalid private key!');
@@ -45,10 +53,10 @@
 			} else if (!toAddress) {
 				alert('Invalid recipient!');
 				return false;
-			} else if (amount > fromAddress.balance) {
+			} else if (amount.value > fromAddress.balance) {
 				alert("You don't have enough money to send that amount!");
 				return false;
-			} else if (amount <= 0) {
+			} else if (amount.value <= 0) {
 				alert('Nice try!');
 				return false;
 			} else {
@@ -57,11 +65,11 @@
 					const data: MakeTransactionBody = {
 						privatekey,
 						to: toAddress?.address,
-						amount
+						amount: amount.value
 					};
 
-					if (metadata && metadata.length > 0) {
-						data.metadata = metadata;
+					if (metadata.value && metadata.value.length > 0) {
+						data.metadata = metadata.value;
 					}
 
 					await kromer.transactions.send(data);
@@ -89,7 +97,7 @@
 
 		<fieldset>
 			<legend>To</legend>
-			<AddressSelector bind:loading bind:address={toAddress} />
+			<AddressSelector bind:loading bind:address={toAddress} queryPrefix="to_" />
 		</fieldset>
 
 		<fieldset>
@@ -101,23 +109,23 @@
 					min="0"
 					max={fromAddress?.balance ?? 0}
 					step="0.01"
-					bind:value={amount}
+					bind:value={amount.value}
 				/>
 			</label>
 			<label>
 				Metadata
-				<input type="text" bind:value={metadata} />
+				<input type="text" bind:value={metadata.value} />
 			</label>
 		</fieldset>
 		<Button
 			type="submit"
 			full={true}
-			disabled={!fromAddress || !toAddress || amount === 0}
+			disabled={!fromAddress || !toAddress || amount.value === 0}
 			onClick={send}
 		>
 			Send
-			{#if amount > 0}
-				{amount.toFixed(2)} KRO
+			{#if amount.value > 0}
+				{amount.value.toFixed(2)} KRO
 			{/if}
 		</Button>
 	</form>

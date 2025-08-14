@@ -5,16 +5,19 @@
 	import AddressInput from '$lib/components/send/address/AddressInput.svelte';
 	import PlayerInput from '$lib/components/send/address/PlayerInput.svelte';
 	import ShopInput from '$lib/components/send/address/ShopInput.svelte';
+	import { paramState } from '$lib/paramState.svelte';
 
 	let {
 		loading = $bindable(),
-		address = $bindable()
+		address = $bindable(),
+		queryPrefix = ''
 	}: {
 		loading: boolean;
 		address: Address | null;
+		queryPrefix?: string;
 	} = $props();
 
-	const toOptions = [
+	const options = [
 		{
 			id: 'address',
 			name: 'Address / Name'
@@ -29,7 +32,9 @@
 		}
 	];
 
-	let toType: string = $state('address');
+	let type = paramState(`${queryPrefix}type`, options[0].id, {
+		shouldSet: (value) => value !== options[0].id && Boolean(options.find((x) => x.id === value))
+	});
 
 	let clearHandlers: (() => void)[] = [];
 
@@ -43,17 +48,17 @@
 	};
 </script>
 
-<ButtonSelect vertical={false} options={toOptions} bind:selected={toType} change={clearTo} />
-{#if toType === 'address'}
+<ButtonSelect vertical={false} {options} bind:selected={type.value} change={clearTo} />
+{#if type.value === 'address'}
 	<div transition:slide>
-		<AddressInput bind:loading bind:address addClearHandler={addHandler} />
+		<AddressInput bind:loading bind:address {queryPrefix} addClearHandler={addHandler} />
 	</div>
-{:else if toType === 'minecraft'}
+{:else if type.value === 'minecraft'}
 	<div transition:slide>
-		<PlayerInput bind:loading bind:address addClearHandler={addHandler} />
+		<PlayerInput bind:loading bind:address {queryPrefix} addClearHandler={addHandler} />
 	</div>
-{:else if toType === 'shop'}
+{:else if type.value === 'shop'}
 	<div transition:slide>
-		<ShopInput bind:loading bind:address addClearHandler={addHandler} />
+		<ShopInput bind:loading bind:address {queryPrefix} addClearHandler={addHandler} />
 	</div>
 {/if}

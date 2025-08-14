@@ -90,13 +90,20 @@
 </Section>
 
 {#if address}
-	<Names lgCols={3} mdCols={6} smCols={12} limit={6} address={address.address} />
+	<Names
+		lgCols={3}
+		mdCols={6}
+		smCols={12}
+		limit={6}
+		address={address.address}
+		queryPrefix="name_"
+	/>
 {:else}
 	<ModuleLoading />
 {/if}
 
 {#if address}
-	<Transactions limit={6} address={address.address} lgCols={6} mdCols={12} />
+	<Transactions limit={6} address={address.address} lgCols={6} mdCols={12} queryPrefix="trans_" />
 {:else}
 	<ModuleLoading />
 {/if}

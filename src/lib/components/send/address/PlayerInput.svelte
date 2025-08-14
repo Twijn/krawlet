@@ -5,18 +5,23 @@
 	import kromer from '$lib/api/kromer';
 	import type { Address } from 'kromer';
 	import Alert from '$lib/components/Alert.svelte';
+	import { paramState } from '$lib/paramState.svelte';
 
 	let {
 		loading = $bindable(),
 		address = $bindable(),
+		queryPrefix = '',
 		addClearHandler
 	}: {
 		loading: boolean;
 		address: Address | null;
+		queryPrefix?: string;
 		addClearHandler?: (handler: () => void) => void;
 	} = $props();
 
-	let playerUUID: string = $state('');
+	let playerUUID = paramState(`${queryPrefix}player_uuid`, '', {
+		shouldSet: (value) => value.length > 0
+	});
 	let playerFilter: string = $state('');
 
 	let players: Player[] = $derived(
@@ -26,7 +31,7 @@
 	);
 
 	let selectedPlayer: Player | null = $derived(
-		players.find((x) => x.minecraftUUID === playerUUID) ?? null
+		players.find((x) => x.minecraftUUID === playerUUID.value) ?? null
 	);
 
 	onDestroy(playerWalletStore.destroy);
@@ -45,7 +50,7 @@
 
 	if (addClearHandler) {
 		addClearHandler(() => {
-			playerUUID = '';
+			playerUUID.value = '';
 		});
 	}
 </script>
@@ -69,7 +74,7 @@
 				};
 			})
 			.filter((x, i) => i < 10)}
-		bind:selected={playerUUID}
+		bind:selected={playerUUID.value}
 	/>
 	{#if address && selectedPlayer?.kromerAddress}
 		<small class="success">{selectedPlayer.minecraftName} has {address.balance} KRO</small>

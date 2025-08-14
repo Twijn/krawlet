@@ -9,6 +9,7 @@
 	import Address from '$lib/components/Address.svelte';
 	import kromer from '$lib/api/kromer';
 	import type { TransactionsResponse } from 'kromer';
+	import { paramState } from '$lib/paramState.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -17,16 +18,23 @@
 		mdCols = null,
 		smCols = null,
 		address,
-		limit = 100
+		limit = 100,
+		queryPrefix = ''
 	}: {
 		lgCols?: ColumnCount;
 		mdCols?: ColumnCount;
 		smCols?: ColumnCount;
 		address?: string;
 		limit?: number;
+		queryPrefix?: string;
 	} = $props();
 
-	let page: number = $state(1);
+	let page = paramState(`${queryPrefix}page`, 1, {
+		serialize: (value) => value.toString(),
+		deserialize: (value) => Number(value),
+		shouldSet: (value) => value >= 2
+	});
+
 	let includeMined: boolean = $state(false);
 
 	let loading: boolean = $state(false);
@@ -35,11 +43,11 @@
 		browser
 			? address
 				? kromer.addresses.getTransactions(address, {
-						offset: (page - 1) * limit,
+						offset: (page.value - 1) * limit,
 						limit
 					})
 				: kromer.transactions.getLatest({
-						offset: (page - 1) * limit,
+						offset: (page.value - 1) * limit,
 						limit,
 						excludeMined: !includeMined
 					})
@@ -74,7 +82,7 @@
 				</label>
 			{/if}
 			{#if limit > 25}
-				<Pagination bind:page total={transactions.total} {limit} />
+				<Pagination bind:page={page.value} total={transactions.total} {limit} />
 			{:else if address}
 				<a id="view-all" href="/addresses/{address}/transactions"
 					>View all transactions for {address}</a
@@ -125,7 +133,7 @@
 					</tbody>
 				</table>
 			</div>
-			<Pagination bind:page total={transactions.total} {limit} />
+			<Pagination bind:page={page.value} total={transactions.total} {limit} />
 		{/if}
 	{:else}
 		<ModuleLoading />

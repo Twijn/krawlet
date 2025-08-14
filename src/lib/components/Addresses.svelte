@@ -9,6 +9,7 @@
 	import Address from '$lib/components/Address.svelte';
 	import kromer from '$lib/api/kromer';
 	import type { AddressesResponse } from 'kromer';
+	import { paramState } from '$lib/paramState.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -17,23 +18,29 @@
 		mdCols = null,
 		smCols = null,
 		limit = 100,
-		rich = false
+		rich = false,
+		queryPrefix = ''
 	}: {
 		lgCols?: ColumnCount;
 		mdCols?: ColumnCount;
 		smCols?: ColumnCount;
 		limit?: number;
 		rich?: boolean;
+		queryPrefix?: string;
 	} = $props();
 
-	let page: number = $state(1);
+	let page = paramState(`${queryPrefix}page`, 1, {
+		serialize: (value) => value.toString(),
+		deserialize: (value) => Number(value),
+		shouldSet: (value) => value >= 2
+	});
 
 	let loading: boolean = $state(false);
 
 	let addressesPromise = $derived(
 		browser
 			? kromer.addresses[rich ? 'getRich' : 'getAll']({
-					offset: (page - 1) * limit,
+					offset: (page.value - 1) * limit,
 					limit
 				})
 			: null
@@ -58,7 +65,7 @@
 		<div class="table-container">
 			<ModuleLoading absolute={true} bind:loading />
 			{#if limit > 25}
-				<Pagination bind:page total={addresses.total} {limit} />
+				<Pagination bind:page={page.value} total={addresses.total} {limit} />
 			{:else}
 				<a id="view-all" href="/addresses{rich ? '/rich' : ''}"
 					>View all {rich ? 'of the richest' : ''} addresses</a
@@ -88,7 +95,7 @@
 					{/each}
 				</tbody>
 			</table>
-			<Pagination bind:page total={addresses.total} {limit} />
+			<Pagination bind:page={page.value} total={addresses.total} {limit} />
 		</div>
 	{:else}
 		<ModuleLoading />

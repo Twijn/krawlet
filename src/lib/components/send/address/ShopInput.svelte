@@ -3,15 +3,18 @@
 	import ButtonSelect from '$lib/components/ButtonSelect.svelte';
 	import kromer from '$lib/api/kromer';
 	import type { Address } from 'kromer';
+	import { paramState } from '$lib/paramState.svelte';
 
 	let {
 		loading = $bindable(),
 		address = $bindable(),
+		queryPrefix = '',
 		addClearHandler
 	}: {
 		loading: boolean;
 		address: Address | null;
 		addClearHandler?: (handler: () => void) => void;
+		queryPrefix?: string;
 	} = $props();
 
 	const shops: { id: string; name: string }[] = $derived(
@@ -29,8 +32,10 @@
 		})()
 	);
 
-	let selectedShopAddress = $state('');
-	let selectedShop: VerifiedEntry | null = $derived(verified[selectedShopAddress] ?? null);
+	let selectedShopAddress = paramState(`${queryPrefix}shop`, '', {
+		shouldSet: (value) => value.length > 0
+	});
+	let selectedShop: VerifiedEntry | null = $derived(verified[selectedShopAddress.value] ?? null);
 
 	$effect(() => {
 		if (selectedShop?.address) {
@@ -44,12 +49,12 @@
 
 	if (addClearHandler) {
 		addClearHandler(() => {
-			selectedShopAddress = '';
+			selectedShopAddress.value = '';
 		});
 	}
 </script>
 
-<ButtonSelect vertical={true} options={shops} bind:selected={selectedShopAddress} />
+<ButtonSelect vertical={true} options={shops} bind:selected={selectedShopAddress.value} />
 {#if selectedShop && address?.address}
 	<small class="success">
 		{selectedShop.name} ({selectedShop.address}) has {address.balance} KRO
