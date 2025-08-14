@@ -2,6 +2,8 @@
 	import kromer from '$lib/api/kromer';
 	import type { Address, APIError } from 'kromer';
 	import { paramState } from '$lib/paramState.svelte';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
 	let {
 		loading = $bindable(),
@@ -32,6 +34,12 @@
 		}
 		loading = false;
 	};
+
+	onMount(() => {
+		if (browser && to.value.length > 0) {
+			verifyTo();
+		}
+	});
 
 	if (addClearHandler) {
 		addClearHandler(() => {
