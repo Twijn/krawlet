@@ -91,7 +91,7 @@ export const verified: Record<string, VerifiedEntry> = {
 	kasinoslt5: {
 		type: 'gamble',
 		address: 'kasinoslt5',
-		name: 'Emily\'s Slot Machine',
+		name: "Emily's Slot Machine",
 		description: "Official address for Emily's slot machine, located at -20 30"
 	}
 };
