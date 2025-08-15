@@ -75,6 +75,12 @@ export const verified: Record<string, VerifiedEntry> = {
 		name: 'Galaxy Computing',
 		description: 'Official shop address for Galaxy Computing, located in /warp mall'
 	},
+	kvillwkw05: {
+		type: 'shop',
+		address: 'kvillwkw05',
+		name: "Chris's Shop",
+		description: "Official shop address for Chris's Shop, located in /warp mall"
+	},
 	// Gambling addresses
 	kromerball: {
 		type: 'gamble',
