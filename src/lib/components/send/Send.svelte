@@ -22,6 +22,12 @@
 		smCols?: ColumnCount;
 	} = $props();
 
+	let lock = paramState('lock', false, {
+		shouldSet: (value) => value,
+		deserialize: (value: string) => value === 'true',
+		serialize: (value: boolean) => (value ? 'true' : 'false')
+	});
+
 	let loading: boolean = $state(false);
 
 	let privatekey: string = $state('');
@@ -114,7 +120,10 @@
 			</label>
 			<label>
 				Metadata
-				<input type="text" bind:value={metadata.value} />
+				<input type="text" bind:value={metadata.value} disabled={lock.value} />
+				{#if lock.value}
+					<small>Metadata has been locked by the recipient.</small>
+				{/if}
 			</label>
 		</fieldset>
 		<Button
