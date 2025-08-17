@@ -1,5 +1,5 @@
 export type VerifiedEntry = {
-	type: 'official' | 'shop' | 'gamble' | 'service';
+	type: 'official' | 'shop' | 'gamble' | 'service' | 'company';
 	address: string;
 	imageSrc?: string;
 	name: string;
@@ -99,5 +99,12 @@ export const verified: Record<string, VerifiedEntry> = {
 		address: 'kasinoslt5',
 		name: "Emily's Slot Machine",
 		description: "Official address for Emily's slot machine, located at -20 30"
-	}
+	},
+	// Company addresses
+	kfemcorpio: {
+		type: 'company',
+		address: 'kfemcorpio',
+		name: 'Femcorp',
+		description: 'Official wallet for Femcorp'
+  }
 };
