@@ -106,5 +106,5 @@ export const verified: Record<string, VerifiedEntry> = {
 		address: 'kfemcorpio',
 		name: 'Femcorp',
 		description: 'Official wallet for Femcorp'
-  }
+	}
 };
