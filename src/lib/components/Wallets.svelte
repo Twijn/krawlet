@@ -51,20 +51,11 @@
 	let loading: boolean = $state(true);
 
 	walletStore.subscribe(async ($store) => {
-		loading = true;
-		for (const wallet of $store.wallets) {
-			if (!addresses[wallet.address]) {
-				try {
-					addresses = {
-						...addresses,
-						[wallet.address]: await kromer.addresses.get(wallet.address)
-					};
-				} catch (e) {
-					console.error(e);
-				}
-			}
+		if (browser) {
+			loading = true;
+			addresses = await kromer.addresses.getMultiple($store.wallets.map((x) => x.address));
+			loading = false;
 		}
-		loading = false;
 	});
 
 	let totalBalance = $derived(

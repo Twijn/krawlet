@@ -3,7 +3,7 @@
 	import Alert from '$lib/components/Alert.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+	import { faInfoCircle, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import { relativeTime } from '$lib/util';
 	import Transactions from '$lib/components/Transactions.svelte';
@@ -11,6 +11,7 @@
 	import { type Player, playerWalletStore } from '$lib/playerWallets';
 	import Address from '$lib/components/Address.svelte';
 	import Names from '$lib/components/Names.svelte';
+	import Button from '$lib/components/Button.svelte';
 
 	const { data } = $props();
 	const address = $derived(data.address);
@@ -50,6 +51,10 @@
 <Section lgCols={3} mdCols={6} smCols={12}>
 	<h2><FontAwesomeIcon icon={faInfoCircle} /> Information</h2>
 	{#if address}
+		<Button href="/transactions/new?to_address={address.address}" full={true}>
+			<FontAwesomeIcon icon={faPaperPlane} />
+			Pay {address.address}
+		</Button>
 		<div class="table-container">
 			<table>
 				<tbody>
@@ -90,13 +95,20 @@
 </Section>
 
 {#if address}
-	<Names lgCols={3} mdCols={6} smCols={12} limit={6} address={address.address} />
+	<Names
+		lgCols={3}
+		mdCols={6}
+		smCols={12}
+		limit={6}
+		address={address.address}
+		queryPrefix="name_"
+	/>
 {:else}
 	<ModuleLoading />
 {/if}
 
 {#if address}
-	<Transactions limit={6} address={address.address} lgCols={6} mdCols={12} />
+	<Transactions limit={6} address={address.address} lgCols={6} mdCols={12} queryPrefix="trans_" />
 {:else}
 	<ModuleLoading />
 {/if}

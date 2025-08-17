@@ -249,6 +249,12 @@ label:has(.fail) input {
 	border-bottom-color: rgb(var(--red));
 }
 
+input[disabled] {
+	border-bottom-color: black;
+	cursor: not-allowed;
+	color: var(--text-color-2);
+}
+
 .success {
 	color: rgb(var(--green));
 }

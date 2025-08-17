@@ -69,6 +69,18 @@ export const verified: Record<string, VerifiedEntry> = {
 		name: 'SolidityPools',
 		description: 'Official shop address for Solidity Pools, located north of /warp spawn'
 	},
+	komgasdvaw: {
+		type: 'shop',
+		address: 'komgasdvaw',
+		name: 'Galaxy Computing',
+		description: 'Official shop address for Galaxy Computing, located in /warp mall'
+	},
+	kvillwkw05: {
+		type: 'shop',
+		address: 'kvillwkw05',
+		name: "Chris's Shop",
+		description: "Official shop address for Chris's Shop, located in /warp mall"
+	},
 	// Gambling addresses
 	kromerball: {
 		type: 'gamble',
@@ -82,11 +94,17 @@ export const verified: Record<string, VerifiedEntry> = {
 		name: 'Kromer Flip',
 		description: 'Official address for Kromer Flip, see \\kf for more information'
 	},
+	kasinoslt5: {
+		type: 'gamble',
+		address: 'kasinoslt5',
+		name: "Emily's Slot Machine",
+		description: "Official address for Emily's slot machine, located at -20 30"
+	},
 	// Company addresses
 	kfemcorpio: {
 		type: 'company',
 		address: 'kfemcorpio',
-		name: "Femcorp",
-		description: "Official wallet for Femcorp"
-	}
+		name: 'Femcorp',
+		description: 'Official wallet for Femcorp'
+  }
 };
