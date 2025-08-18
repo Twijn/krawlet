@@ -46,7 +46,7 @@
 </script>
 
 <svelte:head>
-	<title>New Transaction | Krawlet</title>
+	<title>Wallets | Krawlet</title>
 </svelte:head>
 
 <h1>
