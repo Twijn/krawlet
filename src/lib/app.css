@@ -20,7 +20,7 @@ body {
 	font-family: var(--font-family), sans-serif;
 	background-color: var(--background-color-1);
 	color: var(--text-color-1);
-	margin: 1em;
+	margin: 0;
 }
 
 svg {
@@ -61,7 +61,6 @@ small {
 	grid-template-columns: repeat(12, 1fr);
 	gap: 1rem;
 	width: 100%;
-	max-width: 1200px;
 	margin: 0 auto;
 }
 
