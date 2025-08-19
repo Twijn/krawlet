@@ -1,0 +1,75 @@
+<script lang="ts">
+	import { fade, scale } from 'svelte/transition';
+	import { confirm } from '$lib/stores/confirm';
+	import Button from '$lib/components/Button.svelte';
+
+	const handleClickOutside = (node: HTMLElement) => {
+		const handleClick = (event: MouseEvent) => {
+			if (node && !node.contains(event.target as Node)) {
+				$confirm?.cancel?.();
+			}
+		};
+
+		document.addEventListener('click', handleClick, true);
+
+		return {
+			destroy() {
+				document.removeEventListener('click', handleClick, true);
+			}
+		};
+	};
+</script>
+
+{#if $confirm}
+	<div class="modal-backdrop" transition:fade={{ duration: 200 }}>
+		<div class="modal" transition:scale={{ duration: 200 }} use:handleClickOutside>
+			<p class="modal-message">{$confirm.message}</p>
+			<div class="modal-buttons">
+				<Button variant="secondary" type="button" onClick={() => $confirm.cancel?.()}>
+					Cancel
+				</Button>
+				<Button
+					variant={$confirm.danger ? 'error' : 'primary'}
+					type="button"
+					onClick={() => $confirm.confirm()}
+				>
+					Confirm
+				</Button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<style>
+	.modal-backdrop {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.3);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1000;
+	}
+
+	.modal {
+		background: var(--background-color-2);
+		padding: 1.5rem;
+		border-radius: 1rem;
+		max-width: 400px;
+		width: 90%;
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+		text-align: center;
+	}
+
+	.modal-message {
+		margin-bottom: 1.5rem;
+		font-size: 1.1rem;
+		font-weight: 500;
+	}
+
+	.modal-buttons {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 0.5rem;
+	}
+</style>

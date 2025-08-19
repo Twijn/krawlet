@@ -12,6 +12,8 @@
 	import '@fontsource/inter/500.css';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import { VERSION } from '$lib/consts';
+	import Notifications from '$lib/components/helpers/Notifications.svelte';
+	import Confirm from '$lib/components/helpers/Confirm.svelte';
 
 	config.autoAddCss = false;
 
@@ -75,6 +77,9 @@
 		</footer>
 	</div>
 </div>
+
+<Notifications />
+<Confirm />
 
 <style>
 	header {

@@ -11,6 +11,8 @@
 	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Alert from '$lib/components/Alert.svelte';
+	import { notifications } from '$lib/stores/notifications';
+	import { confirm } from '$lib/stores/confirm';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -38,15 +40,19 @@
 	}
 
 	function deleteWallet(wallet: Wallet) {
-		if (
-			confirm(
-				`Are you sure you want to delete the wallet ${wallet.name} (${wallet.address})? This action is irreversible!`
-			)
-		) {
-			delete addresses[wallet.address];
-			addresses = { ...addresses };
-			walletStore.removeWallet(wallet.address);
-		}
+		confirm.confirm({
+			message: `Are you sure you want to delete the wallet ${wallet.name} (${wallet.address})? This action is irreversible!`,
+			danger: true,
+			confirm: () => {
+				delete addresses[wallet.address];
+				addresses = { ...addresses };
+				walletStore.removeWallet(wallet.address);
+				notifications.success(`Successfully deleted wallet ${wallet.name} (${wallet.address})`);
+			},
+			cancel: () => {
+				notifications.warning('Wallet deletion cancelled');
+			}
+		});
 	}
 
 	let addresses: Record<string, Address> = $state({});

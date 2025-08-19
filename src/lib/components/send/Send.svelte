@@ -9,6 +9,8 @@
 	import type { Address, APIError, MakeTransactionBody } from 'kromer';
 	import PrivateKeySelector from '$lib/components/send/privatekey/PrivateKeySelector.svelte';
 	import { paramState } from '$lib/paramState.svelte';
+	import { notifications } from '$lib/stores/notifications';
+	import { confirm } from '$lib/stores/confirm';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -48,46 +50,50 @@
 
 	const send = async (e: Event) => {
 		e.preventDefault();
-		if (
-			confirm(
-				`Are you sure you want to send ${amount.value.toFixed(2)} KRO to ${toAddress?.address}?`
-			)
-		) {
-			if (!fromAddress) {
-				alert('Invalid private key!');
-				return false;
-			} else if (!toAddress) {
-				alert('Invalid recipient!');
-				return false;
-			} else if (amount.value > fromAddress.balance) {
-				alert("You don't have enough money to send that amount!");
-				return false;
-			} else if (amount.value <= 0) {
-				alert('Nice try!');
-				return false;
-			} else {
-				loading = true;
-				try {
-					const data: MakeTransactionBody = {
-						privatekey,
-						to: toAddress?.address,
-						amount: amount.value
-					};
 
-					if (metadata.value && metadata.value.length > 0) {
-						data.metadata = metadata.value;
+		confirm.confirm({
+			message: `Are you sure you want to send ${amount.value.toFixed(2)} KRO to ${toAddress?.address}?`,
+			confirm: async () => {
+				if (!fromAddress) {
+					notifications.error('Invalid private key!');
+					return false;
+				} else if (!toAddress) {
+					notifications.error('Invalid recipient!');
+					return false;
+				} else if (amount.value > fromAddress.balance) {
+					notifications.error("You don't have enough money to send that amount!");
+					return false;
+				} else if (amount.value <= 0) {
+					notifications.error('Nice try!');
+					return false;
+				} else {
+					loading = true;
+					try {
+						const data: MakeTransactionBody = {
+							privatekey,
+							to: toAddress?.address,
+							amount: amount.value
+						};
+
+						if (metadata.value && metadata.value.length > 0) {
+							data.metadata = metadata.value;
+						}
+
+						await kromer.transactions.send(data);
+
+						notifications.success('Transaction successful!');
+					} catch (e) {
+						const err = e as APIError;
+						notifications.error(err.message ?? 'Unknown error. Please try again later.');
 					}
-
-					await kromer.transactions.send(data);
-
-					alert('Transaction successful!');
-				} catch (e) {
-					const err = e as APIError;
-					alert(err.message);
+					loading = false;
 				}
-				loading = false;
+			},
+			cancel: () => {
+				notifications.warning('Transaction cancelled.');
 			}
-		}
+		});
+
 		return false;
 	};
 </script>

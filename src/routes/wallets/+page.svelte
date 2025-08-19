@@ -10,6 +10,7 @@
 	import Alert from '$lib/components/Alert.svelte';
 	import Import from '$lib/components/importexport/Import.svelte';
 	import Export from '$lib/components/importexport/Export.svelte';
+	import { notifications } from '$lib/stores/notifications';
 
 	let masterPassword = $state('');
 	let name = $state('');
@@ -22,15 +23,16 @@
 		e.preventDefault();
 
 		if (masterPassword.length < 8) {
-			alert('Your master password must be at least 8 characters!');
+			notifications.error('Your master password must be at least 8 characters!');
 			return false;
 		}
 
 		try {
+			const address = kromer.addresses.decodeAddressFromPrivateKey(pkey);
 			await walletStore.addWallet(
 				{
 					name,
-					address: kromer.addresses.decodeAddressFromPrivateKey(pkey),
+					address,
 					private: pkey
 				},
 				masterPassword
@@ -38,9 +40,11 @@
 
 			name = '';
 			pkey = '';
+
+			notifications.success(`Successfully added wallet ${name} (${address})!`);
 		} catch (e) {
 			const err = e as APIError;
-			alert(err.message ?? 'Unknown Error!');
+			notifications.error(err.message ?? 'Unknown Error!');
 		}
 
 		return false;

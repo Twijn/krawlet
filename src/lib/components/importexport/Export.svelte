@@ -6,6 +6,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import { walletStore } from '$lib/walletStore';
 	import { encryptWithPassword } from '$lib/walletStore.js';
+	import { notifications } from '$lib/stores/notifications';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -32,7 +33,9 @@
 
 	function copyToClipboard() {
 		navigator.clipboard.writeText(exportData);
-		alert('Copied export data to clipboard. Paste it into the Krawlet app to import your wallets.');
+		notifications.success(
+			'Copied export data to clipboard. Paste it into the Krawlet app to import your wallets.'
+		);
 	}
 </script>
 

@@ -8,6 +8,8 @@
 	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import PrivateKeySelector from '$lib/components/send/privatekey/PrivateKeySelector.svelte';
+	import { notifications } from '$lib/stores/notifications';
+	import { confirm } from '$lib/stores/confirm';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -48,37 +50,38 @@
 	function buyName(e: Event) {
 		e.preventDefault();
 
-		if (
-			!confirm(
-				`Are you sure you want to purchase '${name}.kro' for ${nameCost} KRO? This action cannot be undone!`
-			)
-		) {
-			return false;
-		}
-
 		if (!privateKeyAddress || privateKeyAddress.balance < nameCost) {
-			alert("You don't have enough money to purchase a name!");
+			notifications.error("You don't have enough money to purchase a name!");
 			return false;
 		}
 		if (!nameAvailable) {
-			alert("This name isn't available!");
+			notifications.error("This name isn't available!");
 			return false;
 		}
-		kromer.names
-			.register(name, {
-				privatekey: privateKey
-			})
-			.then(
-				async () => {
-					alert('Name purchase successful!');
-					name = '';
-					showNameStatus = false;
-				},
-				(e) => {
-					const err = e as APIError;
-					alert(`Failed to purchase name: ${err.message}`);
-				}
-			);
+
+		confirm.confirm({
+			message: `Are you sure you want to purchase '${name}.kro' for ${nameCost} KRO? This action cannot be undone!`,
+			confirm: () => {
+				kromer.names
+					.register(name, {
+						privatekey: privateKey
+					})
+					.then(
+						async () => {
+							notifications.success('Name purchase successful!');
+							name = '';
+							showNameStatus = false;
+						},
+						(e) => {
+							const err = e as APIError;
+							notifications.error(`Failed to purchase name: ${err.message}`);
+						}
+					);
+			},
+			cancel: () => {
+				notifications.warning('Name purchase cancelled.');
+			}
+		});
 
 		return false;
 	}

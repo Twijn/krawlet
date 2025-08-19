@@ -6,6 +6,8 @@
 	import { decryptWithPassword } from '$lib/walletStore';
 	import { walletStore } from '$lib/walletStore.js';
 	import type { APIError } from 'kromer';
+	import { notifications } from '$lib/stores/notifications';
+	import { get } from 'svelte/store';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -35,14 +37,17 @@
 				walletStore.importWallets(data);
 				exportedPassword = '';
 				importData = '';
-				alert('Wallets imported successfully!');
+				const walletCount = get(walletStore).wallets.length;
+				notifications.success(
+					`Successfully imported ${walletCount} wallet${walletCount === 1 ? '' : 's'}!`
+				);
 			} catch (e) {
 				const err = e as APIError;
-				alert('Error importing wallets: ' + err.message);
+				notifications.error('Error importing wallets: ' + err.message);
 			}
 			return false;
 		}
-		alert('Exported password or data is invalid!');
+		notifications.error('Exported password or data is invalid!');
 		return false;
 	}
 </script>
