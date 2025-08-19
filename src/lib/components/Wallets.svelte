@@ -50,13 +50,17 @@
 	}
 
 	let addresses: Record<string, Address> = $state({});
-	let loading: boolean = $state(true);
+	let loading: boolean = $state(false);
 
 	walletStore.subscribe(async ($store) => {
 		if (browser) {
-			loading = true;
-			addresses = await kromer.addresses.getMultiple($store.wallets.slice(0, limit).map((x) => x.address));
-			loading = false;
+			if ($store.wallets.length > 0) {
+				loading = true;
+				addresses = await kromer.addresses.getMultiple($store.wallets.slice(0, limit).map((x) => x.address));
+				loading = false;
+			} else {
+				addresses = {};
+			}
 		}
 	});
 
