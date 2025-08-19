@@ -116,7 +116,7 @@
 				{#if showDelete}
 					<Button variant="error" onClick={() => deleteWallet(wallet)}>
 						<FontAwesomeIcon icon={faTrash} />
-						Delete
+						<span class="delete-text">Delete</span>
 					</Button>
 				{/if}
 			</div>
@@ -187,5 +187,15 @@
 		text-align: right;
 		font-size: 0.9em;
 		margin-right: 0.5em;
+	}
+
+	@media only screen and (max-width: 768px) {
+		.delete-text {
+			display: none;
+		}
+
+		.wallet :global(svg) {
+			margin-right: 0;
+		}
 	}
 </style>

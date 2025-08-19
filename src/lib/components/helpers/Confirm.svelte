@@ -56,7 +56,7 @@
 		padding: 1.5rem;
 		border-radius: 1rem;
 		max-width: 400px;
-		width: 90%;
+		width: calc(100% - 4rem);
 		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 		text-align: center;
 	}

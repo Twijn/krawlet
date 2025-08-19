@@ -33,7 +33,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
-		max-width: 400px;
+		max-width: calc(100% - 2rem);
 	}
 
 	.notification {

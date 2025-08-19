@@ -146,6 +146,7 @@
 	@media only screen and (max-width: 768px) {
 		#content {
 			margin-left: 0;
+			padding: 0.75rem;
 		}
 	}
 

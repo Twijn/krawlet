@@ -92,8 +92,8 @@
 	</form>
 </Section>
 
-<Import lgCols={6} smCols={12} />
-<Export lgCols={6} smCols={12} />
+<Import lgCols={6} mdCols={12} />
+<Export lgCols={6} mdCols={12} />
 
 <div class="col-12">
 	<Alert variant="danger">

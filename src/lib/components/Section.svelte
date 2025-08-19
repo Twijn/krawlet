@@ -32,4 +32,15 @@
 		border-radius: 0.5rem 0.5rem 0 0;
 		box-shadow: 0 0 1em rgba(0, 0, 0, 0.2) inset;
 	}
+
+	@media only screen and (max-width: 768px) {
+		section {
+			padding: 0.75rem;
+		}
+
+		:global(section > h2, section > h3, section > h4, section > h5, section > h6) {
+			padding: 0.75rem 0.75rem;
+			margin: -0.75rem -0.75rem 0.75rem -0.75rem;
+		}
+	}
 </style>
