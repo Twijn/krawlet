@@ -6,7 +6,6 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { onNavigate } from '$app/navigation';
 
 	import '@fontsource/inter/300.css';
 	import '@fontsource/inter/400.css';
@@ -34,11 +33,6 @@
 		if (browser) {
 			window.removeEventListener('resize', handleResize);
 		}
-	});
-
-	onNavigate(() => {
-		const content = document.getElementById('content');
-		if (content) content.scrollTo(0, 0);
 	});
 
 	function handleWindowClick(e: MouseEvent) {
@@ -83,50 +77,19 @@
 </div>
 
 <style>
-	:root {
-		--mobile-breakpoint: 768px;
-	}
-
-	#app {
-		display: grid;
-		width: 100%;
-		height: 100vh;
-		grid-template-columns: 250px 1fr;
-		grid-template-rows: 3.5em 1fr;
-	}
-
-	@media (max-width: 768px) {
-		#app {
-			grid-template-columns: 1fr;
-		}
-
-		aside {
-			position: fixed;
-			top: 3.5rem;
-			left: 0;
-			bottom: 0;
-			width: 250px;
-			z-index: 5;
-		}
-	}
-
-	#app.nav-hidden aside {
-		display: none;
-	}
-
-	#app.nav-hidden {
-		grid-template-columns: 1fr;
-	}
-
 	header {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
 		display: flex;
 		align-items: center;
-		grid-column: 1 / -1;
 		background-color: var(--background-color-2);
 		padding: 0.5rem;
+		height: 3rem;
 		border-bottom: 0.1em solid var(--theme-color-2);
-		z-index: 10;
 		box-shadow: 0 0 1em rgba(0, 0, 0, 0.15);
+		z-index: 10;
 	}
 
 	header button {
@@ -144,16 +107,41 @@
 	}
 
 	aside {
+		position: fixed;
+		top: 4.1rem;
+		left: 0;
+		bottom: 0;
+		width: 250px;
 		background-color: var(--background-color-2);
 		color: var(--text-color-1);
 		overflow-y: auto;
 		box-shadow: 0 0 1em rgba(0, 0, 0, 0.15);
+		z-index: 5;
+		transition: 0.3s ease-in-out;
+	}
+
+	#app.nav-hidden aside {
+		left: -250px;
+		opacity: 0;
+		pointer-events: none;
 	}
 
 	#content {
-		max-height: 100vh;
 		overflow-y: auto;
+		margin-top: 4.1rem;
 		padding: 1rem;
+		margin-left: 250px;
+		transition: margin-left 0.3s ease-in-out;
+	}
+
+	#app.nav-hidden #content {
+			margin-left: 0;
+	}
+
+	@media only screen and (max-width: 768px) {
+		#content {
+			margin-left: 0;
+		}
 	}
 
 	footer {
