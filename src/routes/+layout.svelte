@@ -12,6 +12,7 @@
 	import '@fontsource/inter/400.css';
 	import '@fontsource/inter/500.css';
 	import Navigation from '$lib/components/Navigation.svelte';
+	import { VERSION } from '$lib/consts';
 
 	config.autoAddCss = false;
 
@@ -69,6 +70,7 @@
 			{@render children?.()}
 		</main>
 		<footer>
+			<p>Version {VERSION}</p>
 			<p>
 				Made for the <a href="https://reconnected.cc/" target="_blank">Reconnected</a> community by
 				<a href="https://www.twijn.dev" target="_blank">Twijn</a>
