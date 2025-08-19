@@ -13,18 +13,11 @@
 </h1>
 
 <div class="col-12">
-	<div class="wrapper">
-		<Send />
-	</div>
+	<Send />
 </div>
 
 <style>
-	h1 {
-		text-align: center;
-	}
-
-	.wrapper {
-		max-width: 30em;
-		margin: 0 auto;
+	div {
+			max-width: 480px;
 	}
 </style>
