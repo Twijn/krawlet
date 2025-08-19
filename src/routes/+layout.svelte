@@ -52,7 +52,7 @@
 			onclick={() => (showNavigation = !showNavigation)}
 			aria-label="Toggle navigation"
 		>
-			<FontAwesomeIcon icon={faBars} />
+			<FontAwesomeIcon icon={faBars} size="lg" />
 		</button>
 		<a href="/">Krawlet</a>
 	</header>
@@ -97,11 +97,11 @@
 		border: none;
 		color: var(--text-color-2);
 		cursor: pointer;
-		padding: 0.5rem;
+		padding: 1rem;
 	}
 
 	header a {
-		font-size: 1.2em;
+		font-size: 1.4em;
 		color: white;
 		text-decoration: none;
 	}
