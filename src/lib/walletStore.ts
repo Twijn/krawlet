@@ -197,6 +197,35 @@ function createWalletStore() {
 		clearAll: () => {
 			set({ wallets: [] });
 			if (browser) localStorage.removeItem('walletStore');
+		},
+
+		importWallets: (data: unknown) => {
+			const currentStore = get(walletStore);
+
+			if (currentStore.wallets.length > 0) {
+				throw {
+					ok: false,
+					error: 'wallet_exists',
+					message: 'You can\'t have any wallets saved when importing!'
+				} as APIError;
+			}
+
+			const store = data as WalletStore;
+
+			if ( !store.wallets || store.wallets.length === 0 ) {
+				throw {
+					ok: false,
+					error: 'invalid_data',
+					message: 'No wallets found in the imported data!'
+				}
+			}
+
+			set(store);
+		},
+
+		exportWallets: () => {
+			const store = get(walletStore);
+			return JSON.stringify(store);
 		}
 	};
 }
