@@ -21,7 +21,7 @@
 
 		if (masterPassword.length < 8) {
 			alert('Your master password must be at least 8 characters!');
-			return;
+			return false;
 		}
 
 		try {
@@ -54,13 +54,6 @@
 	<a href="/wallets">Wallets</a>
 </h1>
 
-<div class="col-12">
-	<Alert variant="danger">
-		<strong>Warning!</strong>
-		<p>Wallets are still in beta! Make sure you back up your keys elsewhere!</p>
-	</Alert>
-</div>
-
 <Wallets lgCols={8} mdCols={12} showDelete={true} />
 <Section lgCols={4} mdCols={12}>
 	<h2><FontAwesomeIcon icon={faPlus} /> New Wallet</h2>
@@ -92,3 +85,10 @@
 		<Button type="submit" full={true} onClick={addWallet}>Add Wallet</Button>
 	</form>
 </Section>
+
+<div class="col-12">
+	<Alert variant="danger">
+		<strong>Warning!</strong>
+		<p>Wallets are still in beta! Make sure you back up your keys elsewhere!</p>
+	</Alert>
+</div>
