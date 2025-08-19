@@ -8,6 +8,8 @@
 	import Wallets from '$lib/components/Wallets.svelte';
 	import type { APIError } from 'kromer';
 	import Alert from '$lib/components/Alert.svelte';
+	import Import from '$lib/components/importexport/Import.svelte';
+	import Export from '$lib/components/importexport/Export.svelte';
 
 	let masterPassword = $state('');
 	let name = $state('');
@@ -85,6 +87,9 @@
 		<Button type="submit" full={true} onClick={addWallet}>Add Wallet</Button>
 	</form>
 </Section>
+
+<Import lgCols={6} smCols={12} />
+<Export lgCols={6} smCols={12} />
 
 <div class="col-12">
 	<Alert variant="danger">
