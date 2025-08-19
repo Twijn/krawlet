@@ -3,6 +3,7 @@
 	import Transactions from '$lib/components/Transactions.svelte';
 	import Addresses from '$lib/components/Addresses.svelte';
 	import Names from '$lib/components/Names.svelte';
+	import Wallets from '$lib/components/Wallets.svelte';
 </script>
 
 <svelte:head>
@@ -15,7 +16,8 @@
 
 <h1><a href="/">Krawlet</a></h1>
 
-<Transactions lgCols={12} limit={5} queryPrefix="trans_" />
+<Wallets lgCols={5} mdCols={12} limit={4} />
+<Transactions lgCols={7} mdCols={12} limit={5} queryPrefix="trans_" />
 
 <Names lgCols={6} mdCols={12} limit={3} queryPrefix="name_" />
 <Addresses lgCols={6} mdCols={12} limit={3} rich={true} queryPrefix="addr_" />

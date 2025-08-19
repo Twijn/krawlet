@@ -18,12 +18,14 @@
 		lgCols = 12,
 		mdCols = null,
 		smCols = null,
-		showDelete = false
+		showDelete = false,
+		limit = 1000
 	}: {
 		lgCols?: ColumnCount;
 		mdCols?: ColumnCount;
 		smCols?: ColumnCount;
 		showDelete?: boolean;
+		limit?: number;
 	} = $props();
 
 	function formatBalance(balance: number) {
@@ -53,7 +55,7 @@
 	walletStore.subscribe(async ($store) => {
 		if (browser) {
 			loading = true;
-			addresses = await kromer.addresses.getMultiple($store.wallets.map((x) => x.address));
+			addresses = await kromer.addresses.getMultiple($store.wallets.slice(0, limit).map((x) => x.address));
 			loading = false;
 		}
 	});
@@ -65,6 +67,11 @@
 
 <Section {lgCols} {mdCols} {smCols}>
 	<h2><FontAwesomeIcon icon={faWallet} /> Wallets</h2>
+	{#if !showDelete}
+		<a href="/wallets" id="view-all">
+			View &amp; manage all wallets
+		</a>
+	{/if}
 
 	<div class="wallets">
 		<ModuleLoading absolute={true} bind:loading />
@@ -76,7 +83,7 @@
 				</p>
 			</Alert>
 		{/if}
-		{#each $walletStore.wallets as wallet (wallet.address)}
+		{#each $walletStore.wallets.slice(0, limit) as wallet (wallet.address)}
 			{@const balance = addresses[wallet.address] ? addresses[wallet.address].balance : 0}
 			<div
 				class="wallet"
@@ -115,6 +122,14 @@
 </Section>
 
 <style>
+	#view-all {
+			display: block;
+			font-size: .8em;
+			color: var(--text-color-2);
+			text-align: center;
+			padding: 1em;
+	}
+
 	.wallets {
 		position: relative;
 		display: flex;
