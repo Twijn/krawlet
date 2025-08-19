@@ -26,10 +26,8 @@
 		e.preventDefault();
 		let data: unknown;
 		try {
-			data = JSON.parse(
-				await decryptWithPassword(exportedPassword, importData) ?? ""
-			);
-		} catch(e) {
+			data = JSON.parse((await decryptWithPassword(exportedPassword, importData)) ?? '');
+		} catch (e) {
 			console.error(e);
 		}
 		if (data) {
@@ -37,14 +35,14 @@
 				walletStore.importWallets(data);
 				exportedPassword = '';
 				importData = '';
-				alert("Wallets imported successfully!");
-			} catch(e) {
+				alert('Wallets imported successfully!');
+			} catch (e) {
 				const err = e as APIError;
-				alert("Error importing wallets: " + err.message);
+				alert('Error importing wallets: ' + err.message);
 			}
 			return false;
 		}
-		alert("Exported password or data is invalid!");
+		alert('Exported password or data is invalid!');
 		return false;
 	}
 </script>
@@ -58,11 +56,21 @@
 	<form method="post">
 		<label>
 			Exported Password
-			<input type="password" name="exported-password"  bind:value={exportedPassword} placeholder="Enter the password you used to export your wallets" />
+			<input
+				type="password"
+				name="exported-password"
+				bind:value={exportedPassword}
+				placeholder="Enter the password you used to export your wallets"
+			/>
 		</label>
 		<label>
 			Import Data
-			<textarea rows="10" placeholder="Enter your JSON wallet export" name="import-data" bind:value={importData}></textarea>
+			<textarea
+				rows="10"
+				placeholder="Enter your JSON wallet export"
+				name="import-data"
+				bind:value={importData}
+			></textarea>
 		</label>
 		<Button type="submit" variant="primary" full={true} onClick={importWallets}>
 			<FontAwesomeIcon icon={faFileImport} />

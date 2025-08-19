@@ -206,18 +206,18 @@ function createWalletStore() {
 				throw {
 					ok: false,
 					error: 'wallet_exists',
-					message: 'You can\'t have any wallets saved when importing!'
+					message: "You can't have any wallets saved when importing!"
 				} as APIError;
 			}
 
 			const store = data as WalletStore;
 
-			if ( !store.wallets || store.wallets.length === 0 ) {
+			if (!store.wallets || store.wallets.length === 0) {
 				throw {
 					ok: false,
 					error: 'invalid_data',
 					message: 'No wallets found in the imported data!'
-				}
+				};
 			}
 
 			set(store);

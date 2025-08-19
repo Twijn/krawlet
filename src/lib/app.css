@@ -239,7 +239,7 @@ textarea {
 }
 
 textarea {
-    resize: none;
+	resize: none;
 }
 
 input[type='password']:focus,
