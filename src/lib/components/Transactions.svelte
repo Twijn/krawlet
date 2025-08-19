@@ -35,7 +35,11 @@
 		shouldSet: (value) => value >= 2
 	});
 
-	let includeMined: boolean = $state(false);
+	let includeMined = paramState(`${queryPrefix}incl_mined`, false, {
+		serialize: (value) => value.toString(),
+		deserialize: (value) => value === 'true',
+		shouldSet: (value) => value
+	});
 
 	let loading: boolean = $state(false);
 
@@ -49,7 +53,7 @@
 				: kromer.transactions.getLatest({
 						offset: (page.value - 1) * limit,
 						limit,
-						excludeMined: !includeMined
+						excludeMined: !includeMined.value
 					})
 			: null
 	);
@@ -90,7 +94,7 @@
 		{:else}
 			{#if !address}
 				<label class="center">
-					<input type="checkbox" bind:checked={includeMined} />
+					<input type="checkbox" bind:checked={includeMined.value} />
 					Include welfare transactions
 				</label>
 			{/if}
