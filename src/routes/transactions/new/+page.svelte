@@ -18,6 +18,6 @@
 
 <style>
 	div {
-			max-width: 480px;
+		max-width: 480px;
 	}
 </style>

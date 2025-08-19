@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from "$app/state";
+	import { page } from '$app/state';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 	import {
@@ -7,7 +7,8 @@
 		faHome,
 		faMoneyBillWave,
 		faPaperPlane,
-		faSign, faSignature,
+		faSign,
+		faSignature,
 		faWallet
 	} from '@fortawesome/free-solid-svg-icons';
 
@@ -16,82 +17,82 @@
 		name: string;
 		href: string;
 		startsWith?: boolean;
-	}
+	};
 
 	type NavigationGroup = {
 		name: string;
 		links: NavigationLink[];
-	}
+	};
 
 	const navigationGroups: NavigationGroup[] = [
 		{
-			name: "Homepage",
+			name: 'Homepage',
 			links: [
 				{
 					icon: faHome,
-					name: "Home",
-					href: "/",
-				}
-			],
-		},
-		{
-			name: "Wallets",
-			links: [
-				{
-					icon: faWallet,
-					name: "Wallets",
-					href: "/wallets",
-				},
-			],
-		},
-		{
-			name: "Transactions",
-			links: [
-				{
-					icon: faPaperPlane,
-					name: "Send Kromer",
-					href: "/transactions/new",
-				},
-				{
-					icon: faAddressBook,
-					name: "View Transactions",
-					href: "/transactions",
-					startsWith: true,
+					name: 'Home',
+					href: '/'
 				}
 			]
 		},
 		{
-			name: "Names",
+			name: 'Wallets',
 			links: [
 				{
-					icon: faSignature,
-					name: "Register Name",
-					href: "/names/new",
-				},
-				{
-					icon: faSign,
-					name: "All Names",
-					href: "/names",
-					startsWith: true,
-				},
-			],
+					icon: faWallet,
+					name: 'Wallets',
+					href: '/wallets'
+				}
+			]
 		},
 		{
-			name: "Addresses",
+			name: 'Transactions',
 			links: [
 				{
-					icon: faMoneyBillWave,
-					name: "Richest Addresses",
-					href: "/addresses/rich",
+					icon: faPaperPlane,
+					name: 'Send Kromer',
+					href: '/transactions/new'
 				},
 				{
 					icon: faAddressBook,
-					name: "All Addresses",
-					href: "/addresses",
-					startsWith: true,
+					name: 'View Transactions',
+					href: '/transactions',
+					startsWith: true
 				}
-			],
+			]
 		},
+		{
+			name: 'Names',
+			links: [
+				{
+					icon: faSignature,
+					name: 'Register Name',
+					href: '/names/new'
+				},
+				{
+					icon: faSign,
+					name: 'All Names',
+					href: '/names',
+					startsWith: true
+				}
+			]
+		},
+		{
+			name: 'Addresses',
+			links: [
+				{
+					icon: faMoneyBillWave,
+					name: 'Richest Addresses',
+					href: '/addresses/rich'
+				},
+				{
+					icon: faAddressBook,
+					name: 'All Addresses',
+					href: '/addresses',
+					startsWith: true
+				}
+			]
+		}
 	];
 
 	function isCurrent(link: NavigationLink) {
@@ -144,37 +145,38 @@
 
 	h2 {
 		color: var(--text-color-2);
-		padding: .8em;
+		padding: 0.8em;
 		margin: 0;
-		font-size: .9em;
+		font-size: 0.9em;
 		font-weight: 500;
 		text-transform: uppercase;
 	}
 
 	a {
-			display: flex;
-			align-items: center;
-			padding: .8em 1.5em;
-			transition: 250ms;
-      color: var(--text-color-1);
-			font-weight: 300;
-			text-decoration: none;
+		display: flex;
+		align-items: center;
+		padding: 0.8em 1.5em;
+		transition: 250ms;
+		color: var(--text-color-1);
+		font-weight: 300;
+		text-decoration: none;
 	}
 
 	.icon {
-			display: inline-flex;
-			width: 1.1em;
-			height: 1.1em;
-			margin-right: 0.5em;
-			align-items: center;
-			justify-content: center;
+		display: inline-flex;
+		width: 1.1em;
+		height: 1.1em;
+		margin-right: 0.5em;
+		align-items: center;
+		justify-content: center;
 	}
 
-	a:hover, a:focus-visible {
-		background-color: rgba(0,0,0,0.25);
+	a:hover,
+	a:focus-visible {
+		background-color: rgba(0, 0, 0, 0.25);
 	}
 
-	a[aria-current="page"] {
-      background-color: var(--theme-color-1);
+	a[aria-current='page'] {
+		background-color: var(--theme-color-1);
 	}
 </style>

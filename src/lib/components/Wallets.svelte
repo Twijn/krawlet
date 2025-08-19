@@ -56,7 +56,9 @@
 		if (browser) {
 			if ($store.wallets.length > 0) {
 				loading = true;
-				addresses = await kromer.addresses.getMultiple($store.wallets.slice(0, limit).map((x) => x.address));
+				addresses = await kromer.addresses.getMultiple(
+					$store.wallets.slice(0, limit).map((x) => x.address)
+				);
 				loading = false;
 			} else {
 				addresses = {};
@@ -72,9 +74,7 @@
 <Section {lgCols} {mdCols} {smCols}>
 	<h2><FontAwesomeIcon icon={faWallet} /> Wallets</h2>
 	{#if !showDelete}
-		<a href="/wallets" id="view-all">
-			View &amp; manage all wallets
-		</a>
+		<a href="/wallets" id="view-all"> View &amp; manage all wallets </a>
 	{/if}
 
 	<div class="wallets">
@@ -127,11 +127,11 @@
 
 <style>
 	#view-all {
-			display: block;
-			font-size: .8em;
-			color: var(--text-color-2);
-			text-align: center;
-			padding: 1em;
+		display: block;
+		font-size: 0.8em;
+		color: var(--text-color-2);
+		text-align: center;
+		padding: 1em;
 	}
 
 	.wallets {

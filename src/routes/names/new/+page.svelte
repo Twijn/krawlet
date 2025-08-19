@@ -17,7 +17,7 @@
 </div>
 
 <style>
-    div {
-        max-width: 480px;
-    }
+	div {
+		max-width: 480px;
+	}
 </style>
