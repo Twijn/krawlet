@@ -6,6 +6,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { onNavigate } from '$app/navigation';
 
 	import '@fontsource/inter/300.css';
 	import '@fontsource/inter/400.css';
@@ -32,6 +33,11 @@
 		if (browser) {
 			window.removeEventListener('resize', handleResize);
 		}
+	});
+
+	onNavigate(() => {
+		const content = document.getElementById('content');
+		if (content) content.scrollTo(0, 0);
 	});
 
 	function handleWindowClick(e: MouseEvent) {
