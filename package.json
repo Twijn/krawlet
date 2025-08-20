@@ -11,7 +11,8 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
-		"lint": "prettier --check . && eslint ."
+		"lint": "prettier --check . && eslint .",
+		"clean": "rimraf .svelte-kit"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
@@ -25,6 +26,7 @@
 		"globals": "^16.0.0",
 		"prettier": "^3.4.2",
 		"prettier-plugin-svelte": "^3.3.3",
+		"rimraf": "^6.0.1",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"typescript": "^5.0.0",
