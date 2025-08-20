@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Section from '$lib/components/Section.svelte';
+	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faFileImport } from '@fortawesome/free-solid-svg-icons';
-	import Button from '$lib/components/Button.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 	import { decryptWithPassword } from '$lib/walletStore';
 	import { walletStore } from '$lib/walletStore.js';
 	import type { APIError } from 'kromer';

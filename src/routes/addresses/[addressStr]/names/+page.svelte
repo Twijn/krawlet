@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Names from '$lib/components/Names.svelte';
+	import Names from '$lib/components/widgets/names/Names.svelte';
 
 	const { data } = $props();
 	const { address } = data;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Send from '$lib/components/send/Send.svelte';
+	import Send from '$lib/components/widgets/transactions/MakeTransaction.svelte';
 </script>
 
 <svelte:head>

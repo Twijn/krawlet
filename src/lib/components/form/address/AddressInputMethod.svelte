@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
 	import type { Address } from 'kromer';
-	import ButtonSelect from '$lib/components/ButtonSelect.svelte';
-	import AddressInput from '$lib/components/send/address/AddressInput.svelte';
-	import PlayerInput from '$lib/components/send/address/PlayerInput.svelte';
-	import ShopInput from '$lib/components/send/address/ShopInput.svelte';
-	import { paramState } from '$lib/paramState.svelte';
+	import ButtonSelect from '$lib/components/ui/ButtonSelect.svelte';
+	import AddressInput from '$lib/components/form/address/AddressInput.svelte';
+	import PlayerInput from '$lib/components/form/address/PlayerInput.svelte';
+	import ShopInput from '$lib/components/form/address/ShopInput.svelte';
+	import { paramState } from '$lib/paramState.svelte.js';
 
 	let {
 		loading = $bindable(),

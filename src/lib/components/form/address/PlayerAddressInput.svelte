@@ -1,11 +1,11 @@
 <script lang="ts">
-	import ButtonSelect from '$lib/components/ButtonSelect.svelte';
+	import ButtonSelect from '$lib/components/ui/ButtonSelect.svelte';
 	import { type Player, playerWalletStore } from '$lib/playerWallets';
 	import { onDestroy } from 'svelte';
 	import kromer from '$lib/api/kromer';
 	import type { Address } from 'kromer';
-	import Alert from '$lib/components/Alert.svelte';
-	import { paramState } from '$lib/paramState.svelte';
+	import Alert from '$lib/components/dialogs/Alert.svelte';
+	import { paramState } from '$lib/paramState.svelte.js';
 
 	let {
 		loading = $bindable(),

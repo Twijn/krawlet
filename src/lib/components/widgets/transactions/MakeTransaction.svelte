@@ -1,16 +1,16 @@
 <script lang="ts">
-	import Section from '$lib/components/Section.svelte';
+	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
-	import Button from '$lib/components/Button.svelte';
-	import AddressSelector from '$lib/components/send/address/AddressSelector.svelte';
+	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 	import kromer from '$lib/api/kromer';
 	import type { Address, APIError, MakeTransactionBody } from 'kromer';
-	import PrivateKeySelector from '$lib/components/send/privatekey/PrivateKeySelector.svelte';
-	import { paramState } from '$lib/paramState.svelte';
+	import { paramState } from '$lib/paramState.svelte.js';
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
+	import PrivateKeyInputMethod from '$lib/components/form/privatekey/PrivateKeyInputMethod.svelte';
+	import AddressInputMethod from '$lib/components/form/address/AddressInputMethod.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -104,12 +104,12 @@
 		<ModuleLoading absolute={true} {loading} />
 		<fieldset>
 			<legend>From</legend>
-			<PrivateKeySelector bind:loading bind:privatekey bind:address={fromAddress} />
+			<PrivateKeyInputMethod bind:loading bind:privatekey bind:address={fromAddress} />
 		</fieldset>
 
 		<fieldset>
 			<legend>To</legend>
-			<AddressSelector bind:loading bind:address={toAddress} queryPrefix="to_" />
+			<AddressInputMethod bind:loading bind:address={toAddress} queryPrefix="to_" />
 		</fieldset>
 
 		<fieldset>

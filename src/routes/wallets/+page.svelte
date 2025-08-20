@@ -1,15 +1,15 @@
 <script lang="ts">
-	import Section from '$lib/components/Section.svelte';
+	import Section from '$lib/components/ui/Section.svelte';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import Button from '$lib/components/Button.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 	import kromer from '$lib/api/kromer';
 	import { walletStore } from '$lib/walletStore';
-	import Wallets from '$lib/components/Wallets.svelte';
+	import Wallets from '$lib/components/widgets/Wallets.svelte';
 	import type { APIError } from 'kromer';
-	import Alert from '$lib/components/Alert.svelte';
-	import Import from '$lib/components/importexport/Import.svelte';
-	import Export from '$lib/components/importexport/Export.svelte';
+	import Alert from '$lib/components/dialogs/Alert.svelte';
+	import Import from '$lib/components/widgets/importexport/Import.svelte';
+	import Export from '$lib/components/widgets/importexport/Export.svelte';
 	import { notifications } from '$lib/stores/notifications';
 
 	let masterPassword = $state('');

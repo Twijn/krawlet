@@ -10,10 +10,10 @@
 	import '@fontsource/inter/300.css';
 	import '@fontsource/inter/400.css';
 	import '@fontsource/inter/500.css';
-	import Navigation from '$lib/components/Navigation.svelte';
+	import Navigation from '$lib/components/ui/Navigation.svelte';
 	import { VERSION } from '$lib/consts';
-	import Notifications from '$lib/components/helpers/Notifications.svelte';
-	import Confirm from '$lib/components/helpers/Confirm.svelte';
+	import Notifications from '$lib/components/dialogs/Notifications.svelte';
+	import Confirm from '$lib/components/dialogs/Confirm.svelte';
 
 	config.autoAddCss = false;
 

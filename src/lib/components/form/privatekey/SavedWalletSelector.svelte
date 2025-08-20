@@ -1,7 +1,7 @@
 <script lang="ts">
-	import ButtonSelect from '$lib/components/ButtonSelect.svelte';
+	import ButtonSelect from '$lib/components/ui/ButtonSelect.svelte';
 	import { walletStore } from '$lib/walletStore';
-	import Alert from '$lib/components/Alert.svelte';
+	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import type { Address, APIError } from 'kromer';
 	import kromer from '$lib/api/kromer';
 

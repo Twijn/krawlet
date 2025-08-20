@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Motd from '$lib/components/Motd.svelte';
-	import Transactions from '$lib/components/Transactions.svelte';
-	import Addresses from '$lib/components/Addresses.svelte';
-	import Names from '$lib/components/Names.svelte';
-	import Wallets from '$lib/components/Wallets.svelte';
+	import Motd from '$lib/components/widgets/Motd.svelte';
+	import Transactions from '$lib/components/widgets/transactions/Transactions.svelte';
+	import Addresses from '$lib/components/widgets/addresses/Addresses.svelte';
+	import Names from '$lib/components/widgets/names/Names.svelte';
+	import Wallets from '$lib/components/widgets/Wallets.svelte';
 </script>
 
 <svelte:head>

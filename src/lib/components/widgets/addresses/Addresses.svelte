@@ -1,15 +1,15 @@
 <script lang="ts">
-	import Section from '$lib/components/Section.svelte';
+	import Section from '$lib/components/ui/Section.svelte';
 	import { browser } from '$app/environment';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faAddressBook } from '@fortawesome/free-solid-svg-icons';
-	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
-	import Pagination from '$lib/components/Pagination.svelte';
+	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
+	import Pagination from '$lib/components/ui/Pagination.svelte';
 	import { relativeTime } from '$lib/util';
-	import Address from '$lib/components/Address.svelte';
+	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import kromer from '$lib/api/kromer';
 	import type { AddressesResponse } from 'kromer';
-	import { paramState } from '$lib/paramState.svelte';
+	import { paramState } from '$lib/paramState.svelte.js';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 

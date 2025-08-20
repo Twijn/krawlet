@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Addresses from '$lib/components/Addresses.svelte';
+	import Addresses from '$lib/components/widgets/addresses/Addresses.svelte';
 </script>
 
 <svelte:head>

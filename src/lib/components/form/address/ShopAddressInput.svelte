@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { verified, type VerifiedEntry } from '$lib/verified';
-	import ButtonSelect from '$lib/components/ButtonSelect.svelte';
+	import ButtonSelect from '$lib/components/ui/ButtonSelect.svelte';
 	import kromer from '$lib/api/kromer';
 	import type { Address } from 'kromer';
-	import { paramState } from '$lib/paramState.svelte';
+	import { paramState } from '$lib/paramState.svelte.js';
 
 	let {
 		loading = $bindable(),

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fade, scale } from 'svelte/transition';
 	import { confirm } from '$lib/stores/confirm';
-	import Button from '$lib/components/Button.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	const handleClickOutside = (node: HTMLElement) => {
 		const handleClick = (event: MouseEvent) => {

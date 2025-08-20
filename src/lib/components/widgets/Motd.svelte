@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Section from '$lib/components/Section.svelte';
-	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
+	import Section from '$lib/components/ui/Section.svelte';
+	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import kromer from '$lib/api/kromer';
 	import type { MotdResponse } from 'kromer';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';

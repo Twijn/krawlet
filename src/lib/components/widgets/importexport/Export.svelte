@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
-	import Section from '$lib/components/Section.svelte';
+	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faCopy, faFileExport } from '@fortawesome/free-solid-svg-icons';
-	import Button from '$lib/components/Button.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 	import { walletStore } from '$lib/walletStore';
 	import { encryptWithPassword } from '$lib/walletStore.js';
 	import { notifications } from '$lib/stores/notifications';

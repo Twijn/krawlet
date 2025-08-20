@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Alert from '$lib/components/Alert.svelte';
+	import Alert from '$lib/components/dialogs/Alert.svelte';
 </script>
 
 <svelte:head>

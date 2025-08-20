@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Section from '$lib/components/Section.svelte';
+	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faTrash, faWallet } from '@fortawesome/free-solid-svg-icons';
 	import { fade } from 'svelte/transition';
@@ -8,9 +8,9 @@
 	import type { Address } from 'kromer';
 	import { browser } from '$app/environment';
 	import kromer from '$lib/api/kromer';
-	import ModuleLoading from '$lib/components/ModuleLoading.svelte';
-	import Button from '$lib/components/Button.svelte';
-	import Alert from '$lib/components/Alert.svelte';
+	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
+	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
 

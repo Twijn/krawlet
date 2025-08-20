@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Section from '$lib/components/Section.svelte';
+	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faDatabase, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 	import { relativeTime } from '$lib/util';
-	import Address from '$lib/components/Address.svelte';
+	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import kromer from '$lib/api/kromer';
 	import type { Transaction } from 'kromer';
 

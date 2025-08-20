@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Transactions from '$lib/components/Transactions.svelte';
+	import Transactions from '$lib/components/widgets/transactions/Transactions.svelte';
 
 	const { data } = $props();
 	const { address } = data;

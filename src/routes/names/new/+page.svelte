@@ -1,5 +1,5 @@
 <script lang="ts">
-	import PurchaseName from '$lib/components/PurchaseName.svelte';
+	import PurchaseName from '$lib/components/widgets/names/PurchaseName.svelte';
 </script>
 
 <svelte:head>

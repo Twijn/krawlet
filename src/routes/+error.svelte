@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Section from '$lib/components/Section.svelte';
-	import Button from '$lib/components/Button.svelte';
+	import Section from '$lib/components/ui/Section.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 	import { page } from '$app/state';
 </script>
 

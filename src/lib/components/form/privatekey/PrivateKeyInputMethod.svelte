@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
-	import ButtonSelect from '$lib/components/ButtonSelect.svelte';
-	import PrivateKeyInput from '$lib/components/send/privatekey/PrivateKeyInput.svelte';
-	import WalletPrivateKey from '$lib/components/send/privatekey/WalletPrivateKey.svelte';
+	import ButtonSelect from '$lib/components/ui/ButtonSelect.svelte';
+	import PrivateKeyInput from '$lib/components/form/privatekey/PrivateKeyInput.svelte';
+	import WalletPrivateKey from '$lib/components/form/privatekey/WalletPrivateKey.svelte';
 	import type { Address } from 'kromer';
 
 	let {
