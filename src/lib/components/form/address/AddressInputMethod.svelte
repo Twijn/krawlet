@@ -2,10 +2,10 @@
 	import { slide } from 'svelte/transition';
 	import type { Address } from 'kromer';
 	import ButtonSelect from '$lib/components/ui/ButtonSelect.svelte';
-	import AddressInput from '$lib/components/form/address/AddressInput.svelte';
-	import PlayerInput from '$lib/components/form/address/PlayerInput.svelte';
-	import ShopInput from '$lib/components/form/address/ShopInput.svelte';
 	import { paramState } from '$lib/paramState.svelte.js';
+	import RawAddressInput from '$lib/components/form/address/RawAddressInput.svelte';
+	import PlayerAddressInput from '$lib/components/form/address/PlayerAddressInput.svelte';
+	import ShopAddressInput from '$lib/components/form/address/ShopAddressInput.svelte';
 
 	let {
 		loading = $bindable(),
@@ -51,14 +51,14 @@
 <ButtonSelect vertical={false} {options} bind:selected={type.value} change={clearTo} />
 {#if type.value === 'address'}
 	<div transition:slide>
-		<AddressInput bind:loading bind:address {queryPrefix} addClearHandler={addHandler} />
+		<RawAddressInput bind:loading bind:address {queryPrefix} addClearHandler={addHandler} />
 	</div>
 {:else if type.value === 'minecraft'}
 	<div transition:slide>
-		<PlayerInput bind:loading bind:address {queryPrefix} addClearHandler={addHandler} />
+		<PlayerAddressInput bind:loading bind:address {queryPrefix} addClearHandler={addHandler} />
 	</div>
 {:else if type.value === 'shop'}
 	<div transition:slide>
-		<ShopInput bind:loading bind:address {queryPrefix} addClearHandler={addHandler} />
+		<ShopAddressInput bind:loading bind:address {queryPrefix} addClearHandler={addHandler} />
 	</div>
 {/if}

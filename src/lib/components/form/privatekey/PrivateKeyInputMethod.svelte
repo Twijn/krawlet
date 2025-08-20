@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
 	import ButtonSelect from '$lib/components/ui/ButtonSelect.svelte';
-	import PrivateKeyInput from '$lib/components/form/privatekey/PrivateKeyInput.svelte';
-	import WalletPrivateKey from '$lib/components/form/privatekey/WalletPrivateKey.svelte';
 	import type { Address } from 'kromer';
+	import RawPrivateKeyInput from '$lib/components/form/privatekey/RawPrivateKeyInput.svelte';
+	import SavedWalletSelector from '$lib/components/form/privatekey/SavedWalletSelector.svelte';
 
 	let {
 		loading = $bindable(),
@@ -46,11 +46,11 @@
 <ButtonSelect vertical={false} {options} bind:selected={type} change={clearTo} />
 {#if type === 'wallet'}
 	<div transition:slide>
-		<WalletPrivateKey bind:loading bind:privatekey bind:address addClearHandler={addHandler} />
+		<SavedWalletSelector bind:loading bind:privatekey bind:address addClearHandler={addHandler} />
 	</div>
 {:else if type === 'raw'}
 	<div transition:slide>
-		<PrivateKeyInput bind:loading bind:privatekey bind:address />
+		<RawPrivateKeyInput bind:loading bind:privatekey bind:address />
 	</div>
 {/if}
 
