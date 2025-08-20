@@ -81,6 +81,12 @@ export const verified: Record<string, VerifiedEntry> = {
 		name: "Chris's Shop",
 		description: "Official shop address for Chris's Shop, located in /warp mall"
 	},
+	knvv4o6sbx: {
+		type: 'shop',
+		address: 'knvv4o6sbx',
+		name: 'foxshop',
+		description: 'Official shop address for foxshop, located west of /warp mall'
+	},
 	// Gambling addresses
 	kromerball: {
 		type: 'gamble',
