@@ -10,11 +10,19 @@
 			}
 		};
 
+		const handleKeydown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') {
+				$confirm?.cancel?.();
+			}
+		};
+
 		document.addEventListener('click', handleClick, true);
+		document.addEventListener('keydown', handleKeydown, true);
 
 		return {
 			destroy() {
 				document.removeEventListener('click', handleClick, true);
+				document.removeEventListener('keydown', handleKeydown, true);
 			}
 		};
 	};
