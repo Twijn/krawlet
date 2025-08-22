@@ -61,6 +61,7 @@
 
 		confirm.confirm({
 			message: `Are you sure you want to purchase '${name}.kro' for ${nameCost} KRO? This action cannot be undone!`,
+			confirmButtonLabel: 'Purchase Name',
 			confirm: () => {
 				kromer.names
 					.register(name, {

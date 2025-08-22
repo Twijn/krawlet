@@ -43,6 +43,7 @@
 		confirm.confirm({
 			message: `Are you sure you want to delete the wallet ${wallet.name} (${wallet.address})? This action is irreversible!`,
 			danger: true,
+			confirmButtonLabel: 'Delete',
 			confirm: () => {
 				delete addresses[wallet.address];
 				addresses = { ...addresses };

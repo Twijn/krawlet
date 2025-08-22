@@ -34,14 +34,14 @@
 			<p class="modal-message">{$confirm.message}</p>
 			<div class="modal-buttons">
 				<Button variant="secondary" type="button" onClick={() => $confirm.cancel?.()}>
-					Cancel
+					{$confirm.cancelButtonLabel ?? 'Cancel'}
 				</Button>
 				<Button
 					variant={$confirm.danger ? 'error' : 'primary'}
 					type="button"
 					onClick={() => $confirm.confirm()}
 				>
-					Confirm
+					{$confirm.confirmButtonLabel ?? 'Confirm'}
 				</Button>
 			</div>
 		</div>

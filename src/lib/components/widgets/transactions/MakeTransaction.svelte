@@ -53,6 +53,7 @@
 
 		confirm.confirm({
 			message: `Are you sure you want to send ${amount.value.toFixed(2)} KRO to ${toAddress?.address}?`,
+			confirmButtonLabel: 'Send',
 			confirm: async () => {
 				if (!fromAddress) {
 					notifications.error('Invalid private key!');

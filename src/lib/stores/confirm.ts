@@ -3,6 +3,8 @@ import { writable } from 'svelte/store';
 interface ConfirmMessage {
 	message: string;
 	danger?: boolean;
+	confirmButtonLabel?: string;
+	cancelButtonLabel?: string;
 	confirm: () => void;
 	cancel?: () => void;
 }
