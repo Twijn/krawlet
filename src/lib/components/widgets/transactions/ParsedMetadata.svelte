@@ -71,11 +71,21 @@
 	}
 
 	.metadata span.error {
-		color: rgb(var(--red));
+		--message-color: var(--red);
 	}
 
 	.metadata span.message {
-		color: rgb(var(--blue));
+		--message-color: var(--blue);
+	}
+
+	.display-meta {
+		color: rgb(var(--message-color));
+		font-weight: bold;
+	}
+
+	.display-meta:not(.error):not(.message) {
+		color: var(--text-color-2);
+		font-style: italic;
 	}
 
 	.metadata span.comp-winner {
@@ -114,10 +124,5 @@
 	.metadata span.comp::before {
 		content: var(--title);
 		color: rgb(var(--color));
-	}
-
-	.display-meta:not(.error):not(.message) {
-		color: var(--text-color-2);
-		font-style: italic;
 	}
 </style>
