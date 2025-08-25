@@ -48,6 +48,7 @@
 		{/each}
 	{:else if displayMeta}
 		<span
+			class="display-meta"
 			class:error={displayMeta.name.toLowerCase() === 'error'}
 			class:message={['message', 'msg'].includes(displayMeta.name.toLowerCase())}
 		>
@@ -113,5 +114,10 @@
 	.metadata span.comp::before {
 		content: var(--title);
 		color: rgb(var(--color));
+	}
+
+	.display-meta:not(.error):not(.message) {
+		color: var(--text-color-2);
+		font-style: italic;
 	}
 </style>
