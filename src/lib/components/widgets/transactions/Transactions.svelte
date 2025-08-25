@@ -8,8 +8,9 @@
 	import { browser } from '$app/environment';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import kromer from '$lib/api/kromer';
-	import type { TransactionMetadata, TransactionMetadataEntry, TransactionsResponse } from 'kromer';
+	import type { TransactionsResponse } from 'kromer';
 	import { paramState } from '$lib/paramState.svelte.js';
+	import ParsedMetadata from '$lib/components/widgets/transactions/ParsedMetadata.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -69,19 +70,6 @@
 			});
 		}
 	});
-
-	function findMeta(meta: TransactionMetadata, name: string): TransactionMetadataEntry | undefined {
-		return meta.entries.find((entry) => entry.name.toLowerCase() === name);
-	}
-
-	function findDisplayMeta(meta: TransactionMetadata): TransactionMetadataEntry | undefined {
-		return (
-			findMeta(meta, 'error') ??
-			findMeta(meta, 'message') ??
-			findMeta(meta, 'msg') ??
-			meta.entries.find((e) => !e.value)
-		);
-	}
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
@@ -124,7 +112,6 @@
 					<tbody>
 						{#each transactions.transactions as transaction (transaction.id)}
 							{@const meta = kromer.transactions.parseMetadata(transaction)}
-							{@const displayMeta = findDisplayMeta(meta)}
 							<tr>
 								<td class="center"><a href="/transactions/{transaction.id}">{transaction.id}</a></td
 								>
@@ -142,37 +129,7 @@
 									<Address address={transaction.to} />
 								</td>
 								<td class="right">{transaction.value.toFixed(2)} <small>KRO</small></td>
-								<td class="metadata">
-									{#if meta.entries.find(x => ["winner", "loser", "payout"].includes(x.name.toLowerCase()))}
-										{#if meta.entries.find(x => x.name.toLowerCase() === "winner")}
-											<span class="comp comp-winner">
-												{meta.entries.find(x => x.name.toLowerCase() === "winner")?.value}
-											</span>
-										{/if}
-										{#if meta.entries.find(x => x.name.toLowerCase() === "loser")}
-											<span class="comp comp-loser">
-												{meta.entries.find(x => x.name.toLowerCase() === "loser")?.value}
-											</span>
-										{/if}
-										{#if meta.entries.find(x => x.name.toLowerCase() === "payout")}
-											{@const payout = Number(meta.entries.find(x => x.name.toLowerCase() === "payout")?.value)}
-											{#if !isNaN(payout) && payout > 0}
-												<span class="comp comp-payout">
-													{payout.toFixed(2)} <small>KRO</small>
-												</span>
-											{/if}
-										{/if}
-									{:else if displayMeta}
-										<span
-											class:error={displayMeta.name.toLowerCase() === 'error'}
-											class:message={['message', 'msg'].includes(displayMeta.name.toLowerCase())}
-										>
-											{displayMeta.value ? displayMeta.value : displayMeta.name}
-										</span>
-									{:else}
-										<small>[No message]</small>
-									{/if}
-								</td>
+								<td class="metadata"><ParsedMetadata meta={meta} limitWidth={true} /></td>
 								<td title={transaction.time.toLocaleString()}>{relativeTime(transaction.time)}</td>
 							</tr>
 						{/each}
@@ -193,62 +150,6 @@
 		font-size: 0.8em;
 		color: var(--text-color-2);
 		margin: 1em 0;
-	}
-
-	.metadata {
-		max-width: 16em;
-	}
-
-	.metadata span {
-		display: block;
-		max-width: 100%;
-		overflow: hidden;
-	}
-
-	.metadata span.error {
-		color: rgb(var(--red));
-	}
-
-	.metadata span.message {
-		color: rgb(var(--blue));
-	}
-
-	.metadata span.comp-winner {
-			--title: "Winner";
-			--color: var(--green);
-	}
-
-	.metadata span.comp-loser {
-			--title: "Loser";
-			--color: var(--red);
-	}
-
-	.metadata span.comp-payout {
-			--title: "Payout";
-			--color: var(--blue);
-	}
-
-	.metadata span.comp {
-			display: inline-block;
-      background-color: rgba(var(--color), 0.1);
-			padding: 0.2em 0.4em;
-			border-radius: 0.2em;
-			margin: -0.4em 0.2em -0.4em 0;
-			font-size: 0.9em;
-			text-align: center;
-      font-weight: bold;
-	}
-
-	.metadata span.comp::before {
-			content: '';
-			display: block;
-			font-size: .6em;
-			text-transform: uppercase;
-	}
-
-	.metadata span.comp::before {
-			content: var(--title);
-			color: rgb(var(--color));
 	}
 
 	.none-found {
