@@ -33,6 +33,12 @@
 		<table>
 			<tbody>
 				<tr>
+					<th>Type</th>
+					<td class="capitalize right">
+						{transaction.type}
+					</td>
+				</tr>
+				<tr>
 					<th>From</th>
 					<td class="right">
 						{#if transaction.from}
@@ -141,5 +147,9 @@
 		vertical-align: middle;
 		width: 16px;
 		height: 16px;
+	}
+
+	.capitalize {
+			text-transform: capitalize;
 	}
 </style>
