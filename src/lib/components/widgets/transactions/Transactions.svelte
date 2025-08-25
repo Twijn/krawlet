@@ -143,7 +143,26 @@
 								</td>
 								<td class="right">{transaction.value.toFixed(2)} <small>KRO</small></td>
 								<td class="metadata">
-									{#if displayMeta}
+									{#if meta.entries.find(x => ["winner", "loser", "payout"].includes(x.name.toLowerCase()))}
+										{#if meta.entries.find(x => x.name.toLowerCase() === "winner")}
+											<span class="comp comp-winner">
+												{meta.entries.find(x => x.name.toLowerCase() === "winner")?.value}
+											</span>
+										{/if}
+										{#if meta.entries.find(x => x.name.toLowerCase() === "loser")}
+											<span class="comp comp-loser">
+												{meta.entries.find(x => x.name.toLowerCase() === "loser")?.value}
+											</span>
+										{/if}
+										{#if meta.entries.find(x => x.name.toLowerCase() === "payout")}
+											{@const payout = Number(meta.entries.find(x => x.name.toLowerCase() === "payout")?.value)}
+											{#if !isNaN(payout) && payout > 0}
+												<span class="comp comp-payout">
+													{payout.toFixed(2)} <small>KRO</small>
+												</span>
+											{/if}
+										{/if}
+									{:else if displayMeta}
 										<span
 											class:error={displayMeta.name.toLowerCase() === 'error'}
 											class:message={['message', 'msg'].includes(displayMeta.name.toLowerCase())}
@@ -177,7 +196,7 @@
 	}
 
 	.metadata {
-		max-width: 10em;
+		max-width: 16em;
 	}
 
 	.metadata span {
@@ -192,6 +211,44 @@
 
 	.metadata span.message {
 		color: rgb(var(--blue));
+	}
+
+	.metadata span.comp-winner {
+			--title: "Winner";
+			--color: var(--green);
+	}
+
+	.metadata span.comp-loser {
+			--title: "Loser";
+			--color: var(--red);
+	}
+
+	.metadata span.comp-payout {
+			--title: "Payout";
+			--color: var(--blue);
+	}
+
+	.metadata span.comp {
+			display: inline-block;
+      background-color: rgba(var(--color), 0.1);
+			padding: 0.2em 0.4em;
+			border-radius: 0.2em;
+			margin: -0.4em 0.2em -0.4em 0;
+			font-size: 0.9em;
+			text-align: center;
+      font-weight: bold;
+	}
+
+	.metadata span.comp::before {
+			content: '';
+			display: block;
+			font-size: .6em;
+			text-transform: uppercase;
+	}
+
+	.metadata span.comp::before {
+			content: var(--title);
+			color: rgb(var(--color));
 	}
 
 	.none-found {
