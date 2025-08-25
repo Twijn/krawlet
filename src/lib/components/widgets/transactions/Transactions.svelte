@@ -129,7 +129,7 @@
 									<Address address={transaction.to} />
 								</td>
 								<td class="right">{transaction.value.toFixed(2)} <small>KRO</small></td>
-								<td class="metadata"><ParsedMetadata meta={meta} limitWidth={true} /></td>
+								<td class="metadata"><ParsedMetadata {meta} limitWidth={true} /></td>
 								<td title={transaction.time.toLocaleString()}>{relativeTime(transaction.time)}</td>
 							</tr>
 						{/each}
