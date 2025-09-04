@@ -301,6 +301,11 @@ input[disabled] {
 	color: rgb(var(--red));
 }
 
+.relative {
+    position: relative;
+    min-height: 15em;
+}
+
 .table-container {
 	width: 100%;
 	overflow-x: auto;
