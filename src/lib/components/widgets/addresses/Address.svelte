@@ -32,52 +32,45 @@
 	};
 </script>
 
-<div class="address">
-	<a
-		href="/addresses/{address}"
-		class:special={player || verifiedEntry}
-		class:player={Boolean(player)}
-		class:official={verifiedEntry?.type === 'official'}
-		class:shop={verifiedEntry?.type === 'shop'}
-		class:gamble={verifiedEntry?.type === 'gamble'}
-		class:company={verifiedEntry?.type === 'company'}
-		title={verifiedEntry || player ? 'Go to ' + address : undefined}
-	>
-		{#if verifiedEntry}
-			{#if verifiedEntry.imageSrc}
-				<img src={verifiedEntry.imageSrc} alt="Logo for {verifiedEntry.name}" />
-			{:else if verifiedEntry.type === 'shop'}
-				<FontAwesomeIcon icon={faStore} />
-			{:else if verifiedEntry.type === 'gamble'}
-				<FontAwesomeIcon icon={faDice} />
-			{:else if verifiedEntry.type === 'company'}
-				<FontAwesomeIcon icon={faBuilding} />
-			{:else}
-				<FontAwesomeIcon icon={faCheck} />
-			{/if}
-			{verifiedEntry.name}
-		{:else if player}
-			<img
-				src="https://api.mineatar.io/face/{player.minecraftUUID}"
-				alt="Avatar for {player.minecraftName}"
-			/>
-			{player.minecraftName}
+<a
+	href="/addresses/{address}"
+	class:special={player || verifiedEntry}
+	class:player={Boolean(player)}
+	class:official={verifiedEntry?.type === 'official'}
+	class:shop={verifiedEntry?.type === 'shop'}
+	class:gamble={verifiedEntry?.type === 'gamble'}
+	class:company={verifiedEntry?.type === 'company'}
+	title={verifiedEntry || player ? 'Go to ' + address : undefined}
+>
+	{#if verifiedEntry}
+		{#if verifiedEntry.imageSrc}
+			<img src={verifiedEntry.imageSrc} alt="Logo for {verifiedEntry.name}" />
+		{:else if verifiedEntry.type === 'shop'}
+			<FontAwesomeIcon icon={faStore} />
+		{:else if verifiedEntry.type === 'gamble'}
+			<FontAwesomeIcon icon={faDice} />
+		{:else if verifiedEntry.type === 'company'}
+			<FontAwesomeIcon icon={faBuilding} />
 		{:else}
-			{address}
+			<FontAwesomeIcon icon={faCheck} />
 		{/if}
-	</a>
+		{verifiedEntry.name}
+	{:else if player}
+		<img
+			src="https://api.mineatar.io/face/{player.minecraftUUID}"
+			alt="Avatar for {player.minecraftName}"
+		/>
+		{player.minecraftName}
+	{:else}
+		{address}
+	{/if}
+</a>
 
-	<button type="button" class="copy-address" onclick={copyAddress} aria-label="Copy Address">
-		<FontAwesomeIcon icon={faCopy} />
-	</button>
-</div>
+<button type="button" class="copy-address" onclick={copyAddress} aria-label="Copy Address">
+	<FontAwesomeIcon icon={faCopy} />
+</button>
 
 <style>
-	.address {
-		display: flex;
-		gap: 0.3em;
-	}
-
 	a {
 		font-size: 1rem;
 		flex-grow: 1;
@@ -110,9 +103,9 @@
 	}
 
 	.special {
-		display: inline-block;
-		background-color: rgba(var(--color), 0.1);
-		border: 1px solid rgba(var(--color), 0.2);
+		display: inline-flex;
+		gap: .3em;
+		align-items: center;
 		color: white;
 		white-space: nowrap;
 		padding: 0.2em 0.4em;
@@ -123,17 +116,18 @@
 
 	.special:hover,
 	.special:focus-visible {
-		background-color: rgba(var(--color), 0.2);
+			background-color: rgba(var(--color), 0.1);
 	}
 
 	.special img {
 		width: 1em;
 		height: 1em;
 		vertical-align: middle;
+		border-radius: 0.1em;
 	}
 
 	.special :global(svg) {
-		color: var(--text-color-2);
+		color: rgba(var(--color), .5);
 	}
 
 	.copy-address {
