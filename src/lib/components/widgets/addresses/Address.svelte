@@ -53,6 +53,10 @@
 </a>
 
 <style>
+	a {
+		font-size: 1rem;
+	}
+
 	a:not(.special) {
 		font-size: 1.1em;
 		font-family: monospace;

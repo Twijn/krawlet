@@ -19,3 +19,7 @@ export const relativeTime = (date: Date): string => {
 
 	return `${value} ${label} ago`;
 };
+
+export const formatCurrency = (balance: number): string => {
+	return balance.toLocaleString(undefined, { minimumSignificantDigits: 2 });
+};
