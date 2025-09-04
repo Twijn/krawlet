@@ -75,7 +75,7 @@
 				<thead>
 					<tr>
 						{#if rich}
-							<th>Rank</th>
+							<th class="center">Rank</th>
 						{/if}
 						<th>Address</th>
 						<th class="right">Balance</th>
@@ -89,7 +89,7 @@
 						<tr>
 							{#if rich}
 								{@const rank = i + 1 + limit * (page.value - 1)}
-								<td class="rank" class:rank-gold={rank <= 5}>#{rank}</td>
+								<td class="rank center" class:rank-gold={rank <= 5}>#{rank}</td>
 							{/if}
 							<td><Address address={address.address} /></td>
 							<td class="right">{formatCurrency(address.balance)} <small>KRO</small></td>
