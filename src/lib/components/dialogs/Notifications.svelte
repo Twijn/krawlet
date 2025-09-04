@@ -36,11 +36,37 @@
 		max-width: calc(100% - 2rem);
 	}
 
+	.notification.success {
+		--rgb-color: var(--green);
+		color: white;
+	}
+
+	.notification.error {
+		--rgb-color: var(--red);
+		color: white;
+	}
+
+	.notification.info {
+		--rgb-color: var(--theme-color-rgb);
+		color: white;
+	}
+
+	.notification.warning {
+		--rgb-color: 255, 150, 0;
+		color: white;
+	}
+
 	.notification {
+		--rgb-color: 255, 255, 255;
 		padding: 1rem;
 		border-radius: 0.5rem;
-		background-color: white;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		background-color: rgba(var(--rgb-color), 0.3);
+		backdrop-filter: blur(10px);
+		border: 1px solid rgba(var(--rgb-color), 0.2);
+		box-shadow:
+			0 4px 6px rgba(0, 0, 0, 0.1),
+			inset 0 1px 0 rgba(255, 255, 255, 0.1);
+		text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -62,25 +88,5 @@
 
 	.notification button:hover {
 		opacity: 1;
-	}
-
-	.success {
-		background-color: rgb(var(--green));
-		color: white;
-	}
-
-	.error {
-		background-color: rgb(var(--red));
-		color: white;
-	}
-
-	.info {
-		background-color: var(--theme-color-1);
-		color: white;
-	}
-
-	.warning {
-		background-color: #ff9800;
-		color: white;
 	}
 </style>
