@@ -25,9 +25,10 @@
 
 	let loading: boolean = $state(false);
 
-	let dataIn: DataType[] | null = $state(null);
-	let dataOut: DataType[] | null = $state(null);
-	let balanceOverTime: {date: Date, amount: number}[] = $state([]);
+	let dataIn: DataType[] = $state([]);
+	let dataOut: DataType[] = $state([]);
+	let balanceOverTime: { date: Date; amount: number }[] = $state([]);
+	let steppedBalance: { date: Date; amount: number }[] = $state([]);
 
 	async function fetchTransactions(address: string, limit: number, timeLimit: number) {
 		const allTxs: Transaction[] = [];
@@ -36,7 +37,9 @@
 
 		while (more) {
 			const resp = await kromer.addresses.getTransactions(address, { offset, limit });
-			const recent = resp.transactions.filter(tx => tx.time.getTime() > Date.now() - timeLimit);
+			const recent = resp.transactions.filter(
+				(tx) => tx.time.getTime() > Date.now() - timeLimit
+			);
 
 			allTxs.push(...recent);
 
@@ -50,11 +53,31 @@
 		return allTxs;
 	}
 
+	function getSteppedBalance(data: { date: Date; amount: number }[]) {
+		const stepped: { date: Date; amount: number }[] = [];
+
+		if (!data.length) return stepped;
+
+		let prev = data[0];
+		stepped.push(prev);
+
+		for (let i = 1; i < data.length; i++) {
+			const curr = data[i];
+			// flat segment at previous balance until current timestamp
+			stepped.push({ date: curr.date, amount: prev.amount });
+			// vertical jump to new balance
+			stepped.push(curr);
+			prev = curr;
+		}
+
+		return stepped;
+	}
+
 	$effect(() => {
 		loading = true;
 		if (browser && address) {
 			fetchTransactions(address, limit, timeLimit)
-				.then(async allTxs => {
+				.then(async (allTxs) => {
 					const addressObj = await kromer.addresses.get(address);
 
 					// group in/out
@@ -67,89 +90,67 @@
 						groupedOut[day] = 0;
 					}
 
-					allTxs.forEach(tx => {
+					allTxs.forEach((tx) => {
 						const day = new Date(tx.time).toLocaleString('en-US', { month: 'numeric', day: 'numeric' });
 						const amt = tx.from === address ? -tx.value : tx.value;
 						if (tx.from === address) groupedOut[day] += amt;
 						else groupedIn[day] += amt;
-
 					});
 
 					dataIn = Object.entries(groupedIn).map(([day, amount]) => ({ timestamp: day, amount }));
 					dataOut = Object.entries(groupedOut).map(([day, amount]) => ({ timestamp: day, amount }));
 
+					// compute balance over time
 					let currentBalance = addressObj.balance;
 					balanceOverTime = [
-						{ date: new Date(Date.now()), amount: currentBalance },
-						...allTxs.map(x => {
-							currentBalance += x.from === address ? x.value : -x.value; // This is REVERSED as we are going backwards
+						{ date: new Date(), amount: currentBalance },
+						...allTxs.map((tx) => {
+							currentBalance += tx.from === address ? tx.value : -tx.value; // reversed as going backwards
 							return {
-								date: x.time,
+								date: tx.time,
 								amount: currentBalance
 							};
 						})
 					];
 
-					balanceOverTime = [
-						...balanceOverTime,
-						{ date: new Date(Date.now()), amount: currentBalance }
-					]
+					balanceOverTime.push({
+						date: new Date(Date.now() - timeLimit),
+						amount: currentBalance
+					});
 
 					balanceOverTime.reverse();
+
+					// generate stepped balance
+					steppedBalance = getSteppedBalance(balanceOverTime);
 
 					loading = false;
 				})
 				.catch(console.error);
 		}
 	});
-
 </script>
 
 <Section lgCols={6} mdCols={12}>
-	<h2><FontAwesomeIcon icon={faBarChart} /> Daily In / Out (7 Days)</h2>
+	<h2><FontAwesomeIcon icon={faBarChart} /> Daily In / Out (14 Days)</h2>
 	<div class="relative">
 		<ModuleLoading {loading} absolute />
-		{#if dataIn && dataOut}
-			<Plot height={350} x={{
-				type: "band",
-				grid: true,
-			}}
-
-			y={{
-				type: "linear",
-				grid: true,
-			}}>
-				<BarY
-					data={dataIn}
-					x="timestamp"
-					y="amount"
-					fill="#208eb8"
-					inset={6}
-				/>
-
-				<BarY
-					data={dataOut}
-					x="timestamp"
-					y="amount"
-					fill="#BD4444"
-					inset={6}
-				/>
-			</Plot>
-		{/if}
+		<Plot
+			height={350}
+			x={{ type: 'band', grid: true }}
+			y={{ type: 'linear', grid: true }}
+		>
+			<BarY data={dataIn} x="timestamp" y="amount" fill="#208eb8" inset={6} />
+			<BarY data={dataOut} x="timestamp" y="amount" fill="#BD4444" inset={6} />
+		</Plot>
 	</div>
 </Section>
 
 <Section lgCols={6} mdCols={12}>
-	<h2><FontAwesomeIcon icon={faLineChart} /> Balance over Time</h2>
-	{#if balanceOverTime && !loading}
-		<Plot height={350} x={{ type: "time", grid: true }} y={{ type: "linear", grid: true}}>
-			<Line
-				data={balanceOverTime}
-				x="date"
-				y="amount"
-			/>
+	<h2><FontAwesomeIcon icon={faLineChart} /> Balance over Time (Stepped)</h2>
+	<div class="relative">
+		<ModuleLoading {loading} absolute />
+		<Plot height={350} x={{ type: 'time', grid: true }} y={{ type: 'linear', grid: true }}>
+			<Line data={steppedBalance} x="date" y="amount" stroke="#28a745" />
 		</Plot>
-	{:else}
-		<ModuleLoading />
-	{/if}
+	</div>
 </Section>
