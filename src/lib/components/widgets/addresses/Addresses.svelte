@@ -5,7 +5,7 @@
 	import { faAddressBook } from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import Pagination from '$lib/components/ui/Pagination.svelte';
-	import { relativeTime } from '$lib/util';
+	import { formatCurrency, relativeTime } from '$lib/util';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import kromer from '$lib/api/kromer';
 	import type { AddressesResponse } from 'kromer';
@@ -85,9 +85,9 @@
 					{#each addresses.addresses as address (address.address)}
 						<tr>
 							<td><Address address={address.address} /></td>
-							<td class="right">{address.balance.toFixed(2)} <small>KRO</small></td>
-							<td class="right">{address.totalin.toFixed(2)} <small>KRO</small></td>
-							<td class="right">{address.totalout.toFixed(2)} <small>KRO</small></td>
+							<td class="right">{formatCurrency(address.balance)} <small>KRO</small></td>
+							<td class="right">{formatCurrency(address.totalin)} <small>KRO</small></td>
+							<td class="right">{formatCurrency(address.totalout)} <small>KRO</small></td>
 							<td class="right" title={address.firstseen.toLocaleString()}
 								>{relativeTime(address.firstseen)}</td
 							>

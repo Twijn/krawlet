@@ -3,7 +3,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faList } from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
-	import { relativeTime } from '$lib/util.js';
+	import { formatCurrency, relativeTime } from '$lib/util.js';
 	import Pagination from '$lib/components/ui/Pagination.svelte';
 	import { browser } from '$app/environment';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
@@ -128,7 +128,7 @@
 								<td>
 									<Address address={transaction.to} />
 								</td>
-								<td class="right">{transaction.value.toFixed(2)} <small>KRO</small></td>
+								<td class="right">{formatCurrency(transaction.value)} <small>KRO</small></td>
 								<td class="metadata"><ParsedMetadata {meta} limitWidth={true} /></td>
 								<td title={transaction.time.toLocaleString()}>{relativeTime(transaction.time)}</td>
 							</tr>
