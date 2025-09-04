@@ -1,12 +1,20 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faBarChart, faLineChart } from '@fortawesome/free-solid-svg-icons';
+	import { faAddressBook, faBarChart, faLineChart } from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import { browser } from '$app/environment';
 	import kromer from '$lib/api/kromer';
 	import type { Transaction } from 'kromer';
 	import { BarY, Line, Plot } from 'svelteplot';
+	import Address from '$lib/components/widgets/addresses/Address.svelte';
+	import { formatCurrency } from '$lib/util';
+
+	type IOAddress = {
+		address: string;
+		in: number;
+		out: number;
+	};
 
 	const {
 		address = $bindable(),
@@ -24,6 +32,7 @@
 	};
 
 	let loading: boolean = $state(false);
+	let ioAddresses: IOAddress[] = $state([]);
 
 	let dataIn: DataType[] = $state([]);
 	let dataOut: DataType[] = $state([]);
@@ -124,6 +133,31 @@
 					// generate stepped balance
 					steppedBalance = getSteppedBalance(balanceOverTime);
 
+					// compute transfers by address
+					ioAddresses = [];
+					for (const tx of allTxs) {
+						const targetAddress = tx.from === address ? tx.to : tx.from;
+						if (!targetAddress) continue;
+
+						let foundRecord = ioAddresses.find((a) => a.address === targetAddress);
+
+						if (!foundRecord) {
+							foundRecord = {
+								address: targetAddress,
+								in: 0,
+								out: 0
+							};
+							ioAddresses.push(foundRecord);
+						}
+
+						if (tx.from === address) {
+							foundRecord.out += tx.value;
+						} else {
+							foundRecord.in += tx.value;
+						}
+					}
+					ioAddresses.sort((a, b) => b.in - b.out - (a.in - a.out));
+
 					loading = false;
 				})
 				.catch(console.error);
@@ -143,7 +177,34 @@
 </Section>
 
 <Section lgCols={6} mdCols={12}>
-	<h2><FontAwesomeIcon icon={faLineChart} /> Balance over Time (Stepped)</h2>
+	<h2><FontAwesomeIcon icon={faAddressBook} /> Transfers by Address (14 Days)</h2>
+	<div class="table-container">
+		<ModuleLoading {loading} absolute />
+		<table>
+			<thead>
+				<tr>
+					<th>Address</th>
+					<th class="right">Received</th>
+					<th class="right">Sent</th>
+					<th class="right">Net</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each ioAddresses as ioa (ioa.address)}
+					<tr>
+						<th><Address address={ioa.address} /></th>
+						<td class="right">{formatCurrency(ioa.in)} <small>KRO</small></td>
+						<td class="right">{formatCurrency(ioa.out)} <small>KRO</small></td>
+						<td class="right">{formatCurrency(ioa.in - ioa.out)} <small>KRO</small></td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+</Section>
+
+<Section lgCols={12} mdCols={12}>
+	<h2><FontAwesomeIcon icon={faLineChart} /> Balance over Time (14 Days)</h2>
 	<div class="relative">
 		<ModuleLoading {loading} absolute />
 		<Plot height={350} x={{ type: 'time', grid: true }} y={{ type: 'linear', grid: true }}>
@@ -151,3 +212,10 @@
 		</Plot>
 	</div>
 </Section>
+
+<style>
+	.table-container {
+		max-height: 350px;
+		overflow: auto;
+	}
+</style>
