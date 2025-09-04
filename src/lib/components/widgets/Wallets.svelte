@@ -9,7 +9,6 @@
 	import { browser } from '$app/environment';
 	import kromer from '$lib/api/kromer';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
-	import Button from '$lib/components/ui/Button.svelte';
 	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
@@ -115,10 +114,9 @@
 					<small>KRO</small>
 				</div>
 				{#if showDelete}
-					<Button variant="error" onClick={() => deleteWallet(wallet)}>
+					<button class="delete-btn" onclick={() => deleteWallet(wallet)}>
 						<FontAwesomeIcon icon={faTrash} />
-						<span class="delete-text">Delete</span>
-					</Button>
+					</button>
 				{/if}
 			</div>
 		{/each}
@@ -187,14 +185,27 @@
 	.total {
 		text-align: right;
 		font-size: 0.9em;
-		margin-right: 0.5em;
+		margin-right: 0.25em;
+	}
+
+	.delete-btn {
+		color: white;
+		background-color: transparent;
+		padding: 0.5em;
+		margin: 0;
+		border: none;
+		cursor: pointer;
+		font-size: 0.9em;
+		opacity: 0.5;
+		transition: opacity 0.2s ease-in-out;
+	}
+
+	.delete-btn:hover,
+	.delete-btn:focus {
+		opacity: 0.75;
 	}
 
 	@media only screen and (max-width: 768px) {
-		.delete-text {
-			display: none;
-		}
-
 		.wallet :global(svg) {
 			margin-right: 0;
 		}
