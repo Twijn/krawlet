@@ -30,7 +30,7 @@ body {
 [title]:hover::after {
 	content: attr(title);
 	position: absolute;
-	right: 0;
+	left: 50%;
 	bottom: 100%;
 	padding: 0.5rem;
 	background-color: var(--background-color-1);
@@ -41,18 +41,18 @@ body {
 	box-shadow: 0 0 1em rgba(0, 0, 0, 0.4);
 	white-space: nowrap;
 	pointer-events: none;
-	transform: translateY(-0.3em);
+	transform: translate(-50%, -0.3em);
 	animation: fadeIn 0.2s ease-in-out;
 }
 
 @keyframes fadeIn {
 	from {
 		opacity: 0;
-		transform: translateY(-0.1em);
+		transform: translate(-50%, -0.1em);
 	}
 	to {
 		opacity: 1;
-		transform: translateY(-0.3em);
+		transform: translate(-50%, -0.3em);
 	}
 }
 

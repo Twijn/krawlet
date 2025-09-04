@@ -4,7 +4,8 @@
 	import { type Player, playerWalletStore } from '$lib/playerWallets';
 	import { verified, type VerifiedEntry } from '$lib/verified';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faBuilding, faDice, faStore } from '@fortawesome/free-solid-svg-icons';
+	import { faBuilding, faCopy, faDice, faStore } from '@fortawesome/free-solid-svg-icons';
+	import { notifications } from '$lib/stores/notifications';
 
 	const {
 		address
@@ -19,43 +20,74 @@
 	onDestroy(playerWalletStore.destroy);
 
 	let verifiedEntry: VerifiedEntry | null = $derived(verified[address] ?? null);
+
+	const copyAddress = async () => {
+		try {
+			await navigator.clipboard.writeText(address);
+			notifications.add({
+				type: 'success',
+				message: `Address '${address}' copied to clipboard.`,
+				timeout: 3000
+			});
+		} catch (err) {
+			console.error(err);
+			notifications.add({
+				type: 'error',
+				message: 'Failed to copy address to clipboard.',
+				timeout: 5000
+			});
+		}
+	};
 </script>
 
-<a
-	href="/addresses/{address}"
-	class:special={player || verifiedEntry}
-	class:player={Boolean(player)}
-	class:official={verifiedEntry?.type === 'official'}
-	class:shop={verifiedEntry?.type === 'shop'}
-	class:gamble={verifiedEntry?.type === 'gamble'}
-	class:company={verifiedEntry?.type === 'company'}
-	title={verifiedEntry || player ? address : undefined}
->
-	{#if verifiedEntry}
-		{#if verifiedEntry.imageSrc}
-			<img src={verifiedEntry.imageSrc} alt="Logo for {verifiedEntry.name}" />
-		{:else if verifiedEntry.type === 'shop'}
-			<FontAwesomeIcon icon={faStore} />
-		{:else if verifiedEntry.type === 'gamble'}
-			<FontAwesomeIcon icon={faDice} />
-		{:else if verifiedEntry.type === 'company'}
-			<FontAwesomeIcon icon={faBuilding} />
+<div class="address">
+	<a
+		href="/addresses/{address}"
+		class:special={player || verifiedEntry}
+		class:player={Boolean(player)}
+		class:official={verifiedEntry?.type === 'official'}
+		class:shop={verifiedEntry?.type === 'shop'}
+		class:gamble={verifiedEntry?.type === 'gamble'}
+		class:company={verifiedEntry?.type === 'company'}
+		title={verifiedEntry || player ? 'Go to ' + address : undefined}
+	>
+		{#if verifiedEntry}
+			{#if verifiedEntry.imageSrc}
+				<img src={verifiedEntry.imageSrc} alt="Logo for {verifiedEntry.name}" />
+			{:else if verifiedEntry.type === 'shop'}
+				<FontAwesomeIcon icon={faStore} />
+			{:else if verifiedEntry.type === 'gamble'}
+				<FontAwesomeIcon icon={faDice} />
+			{:else if verifiedEntry.type === 'company'}
+				<FontAwesomeIcon icon={faBuilding} />
+			{/if}
+			{verifiedEntry.name}
+		{:else if player}
+			<img
+				src="https://api.mineatar.io/face/{player.minecraftUUID}"
+				alt="Avatar for {player.minecraftName}"
+			/>
+			{player.minecraftName}
+		{:else}
+			{address}
 		{/if}
-		{verifiedEntry.name}
-	{:else if player}
-		<img
-			src="https://api.mineatar.io/face/{player.minecraftUUID}"
-			alt="Avatar for {player.minecraftName}"
-		/>
-		{player.minecraftName}
-	{:else}
-		{address}
-	{/if}
-</a>
+	</a>
+
+	<button type="button" class="copy-address" onclick={copyAddress} aria-label="Copy Address">
+		<FontAwesomeIcon icon={faCopy} />
+	</button>
+</div>
 
 <style>
+	.address {
+		display: flex;
+		gap: 0.3em;
+	}
+
 	a {
 		font-size: 1rem;
+		flex-grow: 1;
+		text-align: center;
 	}
 
 	a:not(.special) {
@@ -104,5 +136,21 @@
 		width: 1em;
 		height: 1em;
 		vertical-align: middle;
+	}
+
+	.copy-address {
+		font-size: 1rem;
+		color: rgba(255, 255, 255, 0.5);
+		background-color: transparent;
+		padding: 0;
+		margin: 0;
+		border: none;
+		transition: 0.2s color ease-in-out;
+		cursor: pointer;
+	}
+
+	.copy-address:hover,
+	.copy-address:focus-visible {
+		color: rgba(255, 255, 255, 0.25);
 	}
 </style>
