@@ -79,13 +79,21 @@
 					dataOut = Object.entries(groupedOut).map(([day, amount]) => ({ timestamp: day, amount }));
 
 					let currentBalance = addressObj.balance;
-					balanceOverTime = allTxs.map(x => {
-						currentBalance += x.from === address ? x.value : -x.value; // This is REVERSED as we are going backwards
-						return {
-							date: x.time,
-							amount: currentBalance
-						};
-					});
+					balanceOverTime = [
+						{ date: new Date(Date.now()), amount: currentBalance },
+						...allTxs.map(x => {
+							currentBalance += x.from === address ? x.value : -x.value; // This is REVERSED as we are going backwards
+							return {
+								date: x.time,
+								amount: currentBalance
+							};
+						})
+					];
+
+					balanceOverTime = [
+						...balanceOverTime,
+						{ date: new Date(Date.now()), amount: currentBalance }
+					]
 
 					balanceOverTime.reverse();
 
@@ -97,7 +105,7 @@
 
 </script>
 
-<Section lgCols={6} mdCols={6}>
+<Section lgCols={6} mdCols={12}>
 	<h2><FontAwesomeIcon icon={faBarChart} /> Daily In / Out (7 Days)</h2>
 	<div class="relative">
 		<ModuleLoading {loading} absolute />
