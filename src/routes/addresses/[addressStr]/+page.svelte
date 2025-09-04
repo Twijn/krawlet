@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { verified, type VerifiedEntry } from '$lib/verified';
-	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import { formatCurrency, relativeTime } from '$lib/util';
 	import Transactions from '$lib/components/widgets/transactions/Transactions.svelte';
 	import { onDestroy } from 'svelte';
