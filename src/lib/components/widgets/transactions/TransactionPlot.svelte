@@ -80,7 +80,7 @@
 
 					let currentBalance = addressObj.balance;
 					balanceOverTime = allTxs.map(x => {
-						currentBalance += x.from === address ? -x.value : x.value;
+						currentBalance += x.from === address ? x.value : -x.value; // This is REVERSED as we are going backwards
 						return {
 							date: x.time,
 							amount: currentBalance
@@ -134,7 +134,7 @@
 <Section lgCols={6} mdCols={12}>
 	<h2><FontAwesomeIcon icon={faLineChart} /> Balance over Time</h2>
 	{#if balanceOverTime && !loading}
-		<Plot height={350}>
+		<Plot height={350} x={{ type: "time", grid: true }} y={{ type: "linear", grid: true}}>
 			<Line
 				data={balanceOverTime}
 				x="date"
