@@ -302,8 +302,8 @@ input[disabled] {
 }
 
 .relative {
-    position: relative;
-    min-height: 15em;
+	position: relative;
+	min-height: 15em;
 }
 
 .table-container {

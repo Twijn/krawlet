@@ -37,9 +37,7 @@
 
 		while (more) {
 			const resp = await kromer.addresses.getTransactions(address, { offset, limit });
-			const recent = resp.transactions.filter(
-				(tx) => tx.time.getTime() > Date.now() - timeLimit
-			);
+			const recent = resp.transactions.filter((tx) => tx.time.getTime() > Date.now() - timeLimit);
 
 			allTxs.push(...recent);
 
@@ -91,7 +89,10 @@
 					}
 
 					allTxs.forEach((tx) => {
-						const day = new Date(tx.time).toLocaleString('en-US', { month: 'numeric', day: 'numeric' });
+						const day = new Date(tx.time).toLocaleString('en-US', {
+							month: 'numeric',
+							day: 'numeric'
+						});
 						const amt = tx.from === address ? -tx.value : tx.value;
 						if (tx.from === address) groupedOut[day] += amt;
 						else groupedIn[day] += amt;
@@ -134,11 +135,7 @@
 	<h2><FontAwesomeIcon icon={faBarChart} /> Daily In / Out (14 Days)</h2>
 	<div class="relative">
 		<ModuleLoading {loading} absolute />
-		<Plot
-			height={350}
-			x={{ type: 'band', grid: true }}
-			y={{ type: 'linear', grid: true }}
-		>
+		<Plot height={350} x={{ type: 'band', grid: true }} y={{ type: 'linear', grid: true }}>
 			<BarY data={dataIn} x="timestamp" y="amount" fill="#208eb8" inset={6} />
 			<BarY data={dataOut} x="timestamp" y="amount" fill="#BD4444" inset={6} />
 		</Plot>
