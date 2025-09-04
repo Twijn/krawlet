@@ -170,7 +170,7 @@
 	<div class="relative">
 		<ModuleLoading {loading} absolute />
 		<Plot height={350} x={{ type: 'band', grid: true }} y={{ type: 'linear', grid: true }}>
-			<BarY data={dataIn} x="timestamp" y="amount" fill="#208eb8" inset={6} />
+			<BarY data={dataIn} x="timestamp" y="amount" fill="#39a667" inset={6} />
 			<BarY data={dataOut} x="timestamp" y="amount" fill="#BD4444" inset={6} />
 		</Plot>
 	</div>
@@ -208,7 +208,7 @@
 	<div class="relative">
 		<ModuleLoading {loading} absolute />
 		<Plot height={350} x={{ type: 'time', grid: true }} y={{ type: 'linear', grid: true }}>
-			<Line data={steppedBalance} x="date" y="amount" stroke="#28a745" />
+			<Line data={steppedBalance} x="date" y="amount" stroke="#208eb8" />
 		</Plot>
 	</div>
 </Section>
