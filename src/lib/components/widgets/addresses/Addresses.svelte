@@ -74,6 +74,9 @@
 			<table>
 				<thead>
 					<tr>
+						{#if rich}
+							<th>Rank</th>
+						{/if}
 						<th>Address</th>
 						<th class="right">Balance</th>
 						<th class="right">Total In</th>
@@ -82,8 +85,12 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each addresses.addresses as address (address.address)}
+					{#each addresses.addresses as address, i (address.address)}
 						<tr>
+							{#if rich}
+								{@const rank = i + 1 + limit * (page.value - 1)}
+								<td class="rank" class:rank-gold={rank <= 5}>#{rank}</td>
+							{/if}
 							<td><Address address={address.address} /></td>
 							<td class="right">{formatCurrency(address.balance)} <small>KRO</small></td>
 							<td class="right">{formatCurrency(address.totalin)} <small>KRO</small></td>
@@ -109,5 +116,14 @@
 		font-size: 0.8em;
 		color: var(--text-color-2);
 		margin: 1em 0;
+	}
+
+	.rank {
+		color: var(--text-color-2);
+		font-weight: bold;
+	}
+
+	.rank-gold {
+		color: #f4d939;
 	}
 </style>
