@@ -28,6 +28,10 @@ Krawlet is still in active development, so more features will be added soon!
 Currently, the main public version for Krawlet is located on [Kromer.club](https://www.kromer.club).
 Once a more official release of a Kromer wallet comes out, it will be moved to [Krawlet.kromer.club](https://krawlet.kromer.club)!
 
+## Contributing
+
+Contributions are welcome! Please see the [Contributing Guide](CONTRIBUTING.md) for more information.
+
 ## Setting up for Development
 
 Setup for Krawlet is similar to most other Svelte kit applications!
