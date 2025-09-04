@@ -29,6 +29,7 @@
 	class:shop={verifiedEntry?.type === 'shop'}
 	class:gamble={verifiedEntry?.type === 'gamble'}
 	class:company={verifiedEntry?.type === 'company'}
+	title={verifiedEntry || player ? address : undefined}
 >
 	{#if verifiedEntry}
 		{#if verifiedEntry.imageSrc}

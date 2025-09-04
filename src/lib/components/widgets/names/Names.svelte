@@ -118,7 +118,7 @@
 										<small>Never Transferred</small>
 									{/if}
 								</td>
-								<td class="right">
+								<td class="right" title={name.registered.toLocaleString()}>
 									{relativeTime(name.registered)}
 								</td>
 							</tr>

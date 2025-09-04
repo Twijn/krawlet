@@ -58,7 +58,7 @@
 	</div>
 	<div class="statistic">
 		<h2>First Seen</h2>
-		<div>
+		<div title={new Date(address.firstseen).toLocaleString()}>
 			{relativeTime(address.firstseen)}
 		</div>
 	</div>
