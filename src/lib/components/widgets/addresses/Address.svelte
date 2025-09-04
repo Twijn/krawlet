@@ -24,18 +24,10 @@
 	const copyAddress = async () => {
 		try {
 			await navigator.clipboard.writeText(address);
-			notifications.add({
-				type: 'success',
-				message: `Address '${address}' copied to clipboard.`,
-				timeout: 3000
-			});
+			notifications.success(`Address '${address}' copied to clipboard.`);
 		} catch (err) {
 			console.error(err);
-			notifications.add({
-				type: 'error',
-				message: 'Failed to copy address to clipboard.',
-				timeout: 5000
-			});
+			notifications.success('Failed to copy address to clipboard.');
 		}
 	};
 </script>
