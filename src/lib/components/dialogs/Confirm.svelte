@@ -52,7 +52,8 @@
 	.modal-backdrop {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.3);
+		background: rgba(0, 0, 0, 0.15);
+		backdrop-filter: blur(1px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
