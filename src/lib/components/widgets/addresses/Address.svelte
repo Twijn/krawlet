@@ -104,7 +104,7 @@
 
 	.special {
 		display: inline-flex;
-		gap: .3em;
+		gap: 0.3em;
 		align-items: center;
 		color: white;
 		white-space: nowrap;
@@ -116,7 +116,7 @@
 
 	.special:hover,
 	.special:focus-visible {
-			background-color: rgba(var(--color), 0.1);
+		background-color: rgba(var(--color), 0.1);
 	}
 
 	.special img {
@@ -127,7 +127,7 @@
 	}
 
 	.special :global(svg) {
-		color: rgba(var(--color), .5);
+		color: rgba(var(--color), 0.5);
 	}
 
 	.copy-address {
