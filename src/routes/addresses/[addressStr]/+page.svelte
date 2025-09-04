@@ -74,7 +74,7 @@
 
 <Transactions limit={4} address={address.address} lgCols={7} mdCols={12} queryPrefix="trans_" />
 
-<Names lgCols={5} smCols={12} limit={4} address={address.address} queryPrefix="name_" />
+<Names lgCols={5} mdCols={12} limit={4} address={address.address} queryPrefix="name_" />
 
 <style>
 	.statistics {
