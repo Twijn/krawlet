@@ -4,7 +4,7 @@
 	import { type Player, playerWalletStore } from '$lib/playerWallets';
 	import { verified, type VerifiedEntry } from '$lib/verified';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faBuilding, faCopy, faDice, faStore } from '@fortawesome/free-solid-svg-icons';
+	import { faBuilding, faCheck, faCopy, faDice, faStore } from '@fortawesome/free-solid-svg-icons';
 	import { notifications } from '$lib/stores/notifications';
 
 	const {
@@ -52,6 +52,8 @@
 				<FontAwesomeIcon icon={faDice} />
 			{:else if verifiedEntry.type === 'company'}
 				<FontAwesomeIcon icon={faBuilding} />
+			{:else}
+				<FontAwesomeIcon icon={faCheck} />
 			{/if}
 			{verifiedEntry.name}
 		{:else if player}
@@ -128,6 +130,10 @@
 		width: 1em;
 		height: 1em;
 		vertical-align: middle;
+	}
+
+	.special :global(svg) {
+		color: var(--text-color-2);
 	}
 
 	.copy-address {
