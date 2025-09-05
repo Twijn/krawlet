@@ -2,9 +2,9 @@
 	import { browser } from '$app/environment';
 	import kromer from '$lib/api/kromer';
 	import type { Address, Transaction } from 'kromer';
-	import BalanceOverTime from '$lib/components/widgets/transactions/stats/BalanceOverTime.svelte';
-	import TransfersByAddress from '$lib/components/widgets/transactions/stats/TransfersByAddress.svelte';
-	import DailyInOut from '$lib/components/widgets/transactions/stats/DailyInOut.svelte';
+	import BalanceOverTime from '$lib/components/widgets/addresses/stats/BalanceOverTime.svelte';
+	import TransfersByAddress from '$lib/components/widgets/addresses/stats/TransfersByAddress.svelte';
+	import DailyInOut from '$lib/components/widgets/addresses/stats/DailyInOut.svelte';
 
 	let {
 		address = $bindable(),
