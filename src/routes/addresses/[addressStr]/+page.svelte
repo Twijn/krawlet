@@ -7,7 +7,7 @@
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import Names from '$lib/components/widgets/names/Names.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
-	import TransactionPlot from '$lib/components/widgets/transactions/TransactionPlot.svelte';
+	import TransactionStats from '$lib/components/widgets/transactions/TransactionStats.svelte';
 
 	const { data } = $props();
 	const address = $derived(data.address);
@@ -77,7 +77,7 @@
 
 <Names lgCols={5} mdCols={12} limit={4} address={address.address} queryPrefix="name_" />
 
-<TransactionPlot address={address.address} />
+<TransactionStats address={address.address} />
 
 <style>
 	.statistics {
