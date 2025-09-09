@@ -5,13 +5,14 @@
 	import { fade } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { type Wallet, walletStore } from '$lib/walletStore';
-	import type { Address } from 'kromer';
 	import { browser } from '$app/environment';
 	import kromer from '$lib/api/kromer';
+	import type { Address } from 'kromer';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
+	import AddressModule from './addresses/Address.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -105,9 +106,7 @@
 				</div>
 				<div class="info">
 					<h3>{wallet.name}</h3>
-					<a href="/addresses/{wallet.address}">
-						{wallet.address}
-					</a>
+					<AddressModule address={wallet.address} />
 				</div>
 				<div class="balance">
 					{formatBalance(balance)}
@@ -170,11 +169,6 @@
 	.wallet h3 {
 		font-size: 1rem;
 		margin: 0 0 0.25em 0;
-	}
-
-	.wallet a {
-		font-size: 0.9rem;
-		margin: 0;
 	}
 
 	.wallet .balance {
