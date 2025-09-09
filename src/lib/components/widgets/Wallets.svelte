@@ -63,9 +63,7 @@
 		if (browser) {
 			if ($store.wallets.length > 0) {
 				loading = true;
-				addresses = await kromer.addresses.getMultiple(
-					$store.wallets.slice(0, limit).map((x) => x.address)
-				);
+				addresses = await kromer.addresses.getMultiple($store.wallets.map((x) => x.address));
 				loading = false;
 			} else {
 				addresses = {};
@@ -74,7 +72,7 @@
 	});
 
 	let totalBalance = $derived(
-		Object.values(addresses).reduce((sum, address) => sum + address.balance, 0)
+		$walletStore.wallets.reduce((sum, wallet) => sum + (addresses[wallet.address]?.balance || 0), 0)
 	);
 </script>
 
