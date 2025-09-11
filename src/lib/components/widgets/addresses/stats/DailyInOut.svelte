@@ -36,22 +36,23 @@
 	let dataIn: DataType[] = $state([]);
 	let dataOut: DataType[] = $state([]);
 
+	function parseDate(date: string | number | Date): string {
+		return new Date(date).toLocaleString(undefined, { month: '2-digit', day: '2-digit' });
+	}
+
 	$effect(() => {
 		// group in/out
 		const groupedIn: Record<string, number> = {};
 		const groupedOut: Record<string, number> = {};
 
 		for (let i = Date.now() - timeLimit; i < Date.now(); i += 1000 * 60 * 60 * 24) {
-			const day = new Date(i).toLocaleString('en-US', { month: 'numeric', day: 'numeric' });
+			const day = parseDate(i);
 			groupedIn[day] = 0;
 			groupedOut[day] = 0;
 		}
 
 		transactions.forEach((tx) => {
-			const day = new Date(tx.time).toLocaleString('en-US', {
-				month: 'numeric',
-				day: 'numeric'
-			});
+			const day = parseDate(tx.time);
 			const amt = tx.from === address ? -tx.value : tx.value;
 			if (tx.from === address) groupedOut[day] += amt;
 			else groupedIn[day] += amt;
