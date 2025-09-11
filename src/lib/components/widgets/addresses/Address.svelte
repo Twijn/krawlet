@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 
-	import { type Player, playerWalletStore } from '$lib/playerWallets';
-	import { verified, type VerifiedEntry } from '$lib/verified';
+	import playerWalletStore, { type Player } from '$lib/stores/playerWallets';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faBuilding, faCheck, faCopy, faDice, faStore } from '@fortawesome/free-solid-svg-icons';
 	import { notifications } from '$lib/stores/notifications';
+	import { getAddress, type KnownAddress } from '$lib/stores/knownAddresses';
 
 	const {
 		address
@@ -14,12 +14,12 @@
 	} = $props();
 
 	let player: Player | null = $derived(
-		$playerWalletStore.players.find((x) => x.kromerAddress === address) ?? null
+		$playerWalletStore.data.find((x) => x.kromerAddress === address) ?? null
 	);
 
 	onDestroy(playerWalletStore.destroy);
 
-	let verifiedEntry: VerifiedEntry | null = $derived(verified[address] ?? null);
+	let verifiedEntry: KnownAddress | null = $derived(getAddress(address));
 
 	const copyAddress = async () => {
 		try {

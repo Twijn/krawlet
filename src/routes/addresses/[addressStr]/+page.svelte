@@ -1,21 +1,21 @@
 <script lang="ts">
-	import { verified, type VerifiedEntry } from '$lib/verified';
 	import { formatCurrency, relativeTime } from '$lib/util';
 	import Transactions from '$lib/components/widgets/transactions/Transactions.svelte';
 	import { onDestroy } from 'svelte';
-	import { type Player, playerWalletStore } from '$lib/playerWallets';
+	import playerWalletStore, { type Player } from '$lib/stores/playerWallets';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import Names from '$lib/components/widgets/names/Names.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import AddressStats from '$lib/components/widgets/addresses/AddressStats.svelte';
+	import { getAddress, type KnownAddress } from '$lib/stores/knownAddresses';
 
 	const { data } = $props();
 	const address = $derived(data.address);
 
-	const verifiedEntry: VerifiedEntry | null = $derived(verified[address.address] ?? null);
+	const knownEntry: KnownAddress | null = $derived(getAddress(address.address));
 
 	let player: Player | null = $derived(
-		$playerWalletStore.players.find((x) => x.kromerAddress === address.address) ?? null
+		$playerWalletStore.data.find((x) => x.kromerAddress === address.address) ?? null
 	);
 
 	onDestroy(playerWalletStore.destroy);
@@ -43,9 +43,9 @@
 			{address.address}
 		</div>
 	</div>
-	{#if player || verifiedEntry}
+	{#if player || knownEntry}
 		<div class="statistic">
-			<h2>{verifiedEntry ? 'Verified As' : 'Owned By'}</h2>
+			<h2>{knownEntry ? 'Verified As' : 'Owned By'}</h2>
 			<div>
 				<Address address={address.address} />
 			</div>

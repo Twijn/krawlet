@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { verified, type VerifiedEntry } from '$lib/verified';
 	import ButtonSelect from '$lib/components/ui/ButtonSelect.svelte';
 	import kromer from '$lib/api/kromer';
 	import type { Address } from 'kromer';
 	import { paramState } from '$lib/paramState.svelte.js';
+	import { get } from 'svelte/store';
+	import knownAddresses, { getAddress, type KnownAddress } from '$lib/stores/knownAddresses';
 
 	let {
 		loading = $bindable(),
@@ -20,7 +21,7 @@
 	const shops: { id: string; name: string }[] = $derived(
 		(() => {
 			let result: { id: string; name: string }[] = [];
-			for (const [, value] of Object.entries(verified)) {
+			for (const [, value] of Object.entries(get(knownAddresses).data)) {
 				if (value.type === 'shop') {
 					result.push({
 						id: value.address,
@@ -35,7 +36,7 @@
 	let selectedShopAddress = paramState(`${queryPrefix}shop`, '', {
 		shouldSet: (value) => value.length > 0
 	});
-	let selectedShop: VerifiedEntry | null = $derived(verified[selectedShopAddress.value] ?? null);
+	let selectedShop: KnownAddress | null = $derived(getAddress(selectedShopAddress.value));
 
 	$effect(() => {
 		if (selectedShop?.address) {

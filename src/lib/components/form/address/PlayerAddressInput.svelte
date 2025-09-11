@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ButtonSelect from '$lib/components/ui/ButtonSelect.svelte';
-	import { type Player, playerWalletStore } from '$lib/playerWallets';
+	import playerWalletStore, { type Player } from '$lib/stores/playerWallets';
 	import { onDestroy } from 'svelte';
 	import kromer from '$lib/api/kromer';
 	import type { Address } from 'kromer';
@@ -25,7 +25,7 @@
 	let playerFilter: string = $state('');
 
 	let players: Player[] = $derived(
-		$playerWalletStore.players.filter((x) =>
+		$playerWalletStore.data.filter((x) =>
 			x.minecraftName.toLowerCase().includes(playerFilter.toLowerCase())
 		) ?? []
 	);
