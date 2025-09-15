@@ -1,8 +1,9 @@
-import { createFetchedStore } from '$lib/stores/FetchedStore';
+import FetchedStore from '$lib/stores/FetchedStore';
 import { browser } from '$app/environment';
 
 const itemName = 'player-wallets';
 const itemUrl = 'https://krawlet-api.twijn.dev/playeraddresses/all';
+const interval = 30_000;
 
 export type Player = {
 	minecraftUUID: string;
@@ -21,4 +22,18 @@ if (browser && localStorage.getItem('playerWalletStore')) {
 	localStorage.removeItem('playerWalletStore');
 }
 
-export default createFetchedStore<Player>(itemName, itemUrl);
+class PlayerWalletStore extends FetchedStore<Player> {
+	protected sort(data: Player[]): Player[] {
+		data.sort((a, b) => {
+			// If online status differs:
+			if (a.online !== b.online) {
+				return a.online ? -1 : 1; // online first
+			}
+			// If same online status, sort by name
+			return a.minecraftName.localeCompare(b.minecraftName);
+		});
+		return data;
+	}
+}
+
+export default new PlayerWalletStore(itemName, itemUrl, interval);
