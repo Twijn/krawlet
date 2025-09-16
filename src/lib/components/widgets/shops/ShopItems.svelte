@@ -27,28 +27,40 @@
 <Section {lgCols} {mdCols} {smCols}>
 	<h2><FontAwesomeIcon icon={faListNumeric} /> Items</h2>
 	<div class="item-grid">
-		{#each items as item (item.shopId + ":" + item.id)}
+		{#each items as item (item.shopId + ':' + item.id)}
 			{@const stock = item.stock ?? 0}
 			<div class="item">
 				<div class="item-head">
-					<img src="https://shops.alexdevs.me/assets/items/{item.itemName.replace(":", "/")}.png" alt="Item icon for {item.itemDisplayName}">
+					<img
+						src="https://shops.alexdevs.me/assets/items/{item.itemName.replace(':', '/')}.png"
+						alt="Item icon for {item.itemDisplayName}"
+					/>
 					<div class="item-head-text">
 						<h3>{item.itemDisplayName}</h3>
 						<small title={item.itemNbt ? `NBT: ${item.itemNbt}` : undefined}>{item.itemName}</small>
 					</div>
 				</div>
 				{#if item.dynamicPrice || item.madeOnDemand || item.requiresInteraction}
-				<div class="badges">
-					{#if item.dynamicPrice}
-						<span class="badge badge-dynamic" title="The price for this listing will dynamically change">Dynamic Price</span>
-					{/if}
-					{#if item.madeOnDemand}
-						<span class="badge badge-demand" title="This item is when the purchase is completed">Made on Demand</span>
-					{/if}
-					{#if item.requiresInteraction}
-						<span class="badge badge-interaction" title="This requires interaction with the shop's monitor, chatbox, etc.">Requires Interaction</span>
-					{/if}
-				</div>
+					<div class="badges">
+						{#if item.dynamicPrice}
+							<span
+								class="badge badge-dynamic"
+								title="The price for this listing will dynamically change">Dynamic Price</span
+							>
+						{/if}
+						{#if item.madeOnDemand}
+							<span class="badge badge-demand" title="This item is when the purchase is completed"
+								>Made on Demand</span
+							>
+						{/if}
+						{#if item.requiresInteraction}
+							<span
+								class="badge badge-interaction"
+								title="This requires interaction with the shop's monitor, chatbox, etc."
+								>Requires Interaction</span
+							>
+						{/if}
+					</div>
 				{/if}
 				<div class="item-body table-container">
 					<table>
@@ -56,14 +68,15 @@
 							<tr>
 								<th>Stock</th>
 								<td class="right">
-									{stock.toLocaleString()} <small>item{stock === 1 ? "" : "s"}</small>
+									{stock.toLocaleString()} <small>item{stock === 1 ? '' : 's'}</small>
 								</td>
 							</tr>
-							{#each item.prices ?? [] as price}
+							{#each item.prices ?? [] as price (price.id)}
 								{@const priceValue = Number(price.value)}
 								<tr>
 									<th>Price <small>({price.currency})</small></th>
-									<td class="right">{formatCurrency(priceValue)} <small>{price.currency}</small></td>
+									<td class="right">{formatCurrency(priceValue)} <small>{price.currency}</small></td
+									>
 								</tr>
 							{/each}
 						</tbody>
@@ -76,7 +89,12 @@
 							<small class="center fail">This item is currently out of stock.</small>
 						{/if}
 
-						<Button variant="primary" disabled={stock <= 0} {href} newTab={href.includes("krist.club")}>
+						<Button
+							variant="primary"
+							disabled={stock <= 0}
+							{href}
+							newTab={href.includes('krist.club')}
+						>
 							Purchase {item.itemDisplayName}
 						</Button>
 					</div>

@@ -96,7 +96,7 @@ strong {
 .buttons {
 	display: flex;
 	flex-direction: column;
-	gap: .5em;
+	gap: 0.5em;
 }
 
 .container {
@@ -397,7 +397,7 @@ th {
 }
 
 .item-grid {
-	--shadow: 2px 2px 10px rgba(0,0,0,0.2);
+	--shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: 1em;
@@ -425,16 +425,16 @@ th {
 	display: flex;
 	flex-direction: column;
 	background-color: var(--background-color-1);
-	padding: .8em;
-	border-radius: .75em .25em;
+	padding: 0.8em;
+	border-radius: 0.75em 0.25em;
 	box-shadow: var(--shadow);
 }
 
 .item-head {
 	display: flex;
 	align-items: center;
-	gap: .5em;
-	margin-bottom: .5em;
+	gap: 0.5em;
+	margin-bottom: 0.5em;
 }
 
 .item-head img {

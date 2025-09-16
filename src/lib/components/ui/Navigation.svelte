@@ -96,18 +96,18 @@
 			]
 		},
 		{
-			name: "Reconnected.CC",
+			name: 'Reconnected.CC',
 			links: [
 				{
 					icon: faShop,
-					name: "Shops",
-					href: "/shops",
+					name: 'Shops',
+					href: '/shops',
 					startsWith: true
 				},
 				{
 					icon: faListNumeric,
-					name: "Items",
-					href: "/shops/items"
+					name: 'Items',
+					href: '/shops/items'
 				}
 			]
 		}

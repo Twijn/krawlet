@@ -53,14 +53,14 @@
 		shouldSet: (value) => value > 0 && amountEa.value > 0
 	});
 
-	let quantity = paramState("quantity", 1, {
+	let quantity = paramState('quantity', 1, {
 		deserialize: (value: string) => Math.max(1, Number(value)),
 		shouldSet: (value) => value > 1
 	});
 
 	let amount = paramState('amount', 0, {
 		deserialize: (value: string) => Number(value),
-		shouldSet: (value) => value > 0 && !amountEa.value,
+		shouldSet: (value) => value > 0 && !amountEa.value
 	});
 
 	$effect(() => {
@@ -71,7 +71,7 @@
 				quantity.value = 1;
 			}
 
-			amount.value = Math.ceil(amountEa.value * quantity.value * 100)/100;
+			amount.value = Math.ceil(amountEa.value * quantity.value * 100) / 100;
 		}
 	});
 
@@ -130,13 +130,16 @@
 		if (metadata.value && metadata.value.length > 0) {
 			command += ` ${metadata.value}`;
 		}
-		navigator.clipboard.writeText(command).then(() => {
-			notifications.success(`Copied '${command}' to clipboard!`);
-		}, e => {
-			console.error(e);
-			notifications.error('Failed to copy to clipboard.');
-		});
-	}
+		navigator.clipboard.writeText(command).then(
+			() => {
+				notifications.success(`Copied '${command}' to clipboard!`);
+			},
+			(e) => {
+				console.error(e);
+				notifications.error('Failed to copy to clipboard.');
+			}
+		);
+	};
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
@@ -158,7 +161,13 @@
 			{#if amountEa.value && amountEa.value > 0}
 				<label>
 					Item Quantity
-					<input type="number" min="1" max={quantityMax.value ?? undefined} step="1" bind:value={quantity.value} />
+					<input
+						type="number"
+						min="1"
+						max={quantityMax.value ?? undefined}
+						step="1"
+						bind:value={quantity.value}
+					/>
 					{#if quantityMax.value}
 						<small>Maximum: {quantityMax.value}</small>
 					{/if}
