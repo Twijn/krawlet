@@ -5,8 +5,10 @@
 	import {
 		faAddressBook,
 		faHome,
+		faListNumeric,
 		faMoneyBillWave,
 		faPaperPlane,
+		faShop,
 		faSign,
 		faSignature,
 		faWallet
@@ -90,6 +92,22 @@
 					name: 'All Addresses',
 					href: '/addresses',
 					startsWith: true
+				}
+			]
+		},
+		{
+			name: "Reconnected.CC",
+			links: [
+				{
+					icon: faShop,
+					name: "Shops",
+					href: "/shops",
+					startsWith: true
+				},
+				{
+					icon: faListNumeric,
+					name: "Items",
+					href: "/shops/items"
 				}
 			]
 		}

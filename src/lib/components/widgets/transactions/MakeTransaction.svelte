@@ -43,9 +43,36 @@
 	});
 
 	// Amount & sending
-	let amount = paramState('amount', 0, {
+	let amountEa = paramState('amount_ea', 0, {
 		deserialize: (value: string) => Number(value),
 		shouldSet: (value) => value > 0
+	});
+
+	let quantityMax = paramState('quantity_max', 0, {
+		deserialize: (value: string) => Number(value),
+		shouldSet: (value) => value > 0 && amountEa.value > 0
+	});
+
+	let quantity = paramState("quantity", 1, {
+		deserialize: (value: string) => Math.max(1, Number(value)),
+		shouldSet: (value) => value > 1
+	});
+
+	let amount = paramState('amount', 0, {
+		deserialize: (value: string) => Number(value),
+		shouldSet: (value) => value > 0 && !amountEa.value,
+	});
+
+	$effect(() => {
+		if (amountEa.value && amountEa.value > 0) {
+			if (quantityMax.value && quantity.value > quantityMax.value) {
+				quantity.value = quantityMax.value;
+			} else if (quantity.value < 1) {
+				quantity.value = 1;
+			}
+
+			amount.value = Math.ceil(amountEa.value * quantity.value * 100)/100;
+		}
 	});
 
 	const send = async (e: Event) => {
@@ -97,6 +124,19 @@
 
 		return false;
 	};
+
+	const copyPayCommand = () => {
+		let command = `/pay ${toAddress?.address ?? ''} ${amount.value}`;
+		if (metadata.value && metadata.value.length > 0) {
+			command += ` ${metadata.value}`;
+		}
+		navigator.clipboard.writeText(command).then(() => {
+			notifications.success(`Copied '${command}' to clipboard!`);
+		}, e => {
+			console.error(e);
+			notifications.error('Failed to copy to clipboard.');
+		});
+	}
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
@@ -115,6 +155,15 @@
 
 		<fieldset>
 			<legend>Amount &amp; Metadata</legend>
+			{#if amountEa.value && amountEa.value > 0}
+				<label>
+					Item Quantity
+					<input type="number" min="1" max={quantityMax.value ?? undefined} step="1" bind:value={quantity.value} />
+					{#if quantityMax.value}
+						<small>Maximum: {quantityMax.value}</small>
+					{/if}
+				</label>
+			{/if}
 			<label>
 				Amount
 				<input
@@ -122,8 +171,12 @@
 					min="0"
 					max={fromAddress?.balance ?? 0}
 					step="0.01"
+					disabled={amountEa.value > 0}
 					bind:value={amount.value}
 				/>
+				{#if amountEa.value > 0}
+					<small>Amount is calculated from item price and quantity.</small>
+				{/if}
 			</label>
 			<label>
 				Metadata
@@ -133,17 +186,27 @@
 				{/if}
 			</label>
 		</fieldset>
-		<Button
-			type="submit"
-			full={true}
-			disabled={!fromAddress || !toAddress || amount.value === 0}
-			onClick={send}
-		>
-			Send
-			{#if amount.value > 0}
-				{amount.value.toFixed(2)} KRO
-			{/if}
-		</Button>
+		<div class="buttons">
+			<Button
+				variant="secondary"
+				full={true}
+				onClick={copyPayCommand}
+				disabled={!toAddress || (!amountEa.value && amount.value === 0)}
+			>
+				Copy /pay Command
+			</Button>
+			<Button
+				type="submit"
+				full={true}
+				disabled={!fromAddress || !toAddress || amount.value === 0}
+				onClick={send}
+			>
+				Send
+				{#if amount.value > 0}
+					{amount.value.toFixed(2)} KRO
+				{/if}
+			</Button>
+		</div>
 	</form>
 </Section>
 

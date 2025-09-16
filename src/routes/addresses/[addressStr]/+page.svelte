@@ -80,40 +80,9 @@
 <AddressStats address={address.address} />
 
 <style>
-	.statistics {
-		display: flex;
-		justify-content: left;
-		gap: 2.5em;
-		margin: 0.5em 0 1.5em 0;
-	}
-
-	.statistic h2 {
-		color: var(--text-color-2);
-		font-size: 0.9rem;
-		font-weight: 500;
-		text-transform: uppercase;
-		margin: 0;
-	}
-
-	.statistic div {
-		margin-top: 0.5rem;
-		font-size: 1.6em;
-	}
-
 	.statistic .inout {
 		font-size: 0.9em;
 		text-align: right;
 		opacity: 0.8;
-	}
-
-	@media only screen and (max-width: 1000px) {
-		.statistics {
-			flex-direction: column;
-			gap: 1.5em;
-		}
-
-		.mobile-hide {
-			display: none;
-		}
 	}
 </style>
