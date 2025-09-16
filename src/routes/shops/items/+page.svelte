@@ -72,23 +72,3 @@
 		{/each}
 	</div>
 </Section>
-
-<style>
-	@media only screen and (min-width: 1000px) {
-		.item-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
-	@media only screen and (min-width: 1600px) {
-		.item-grid {
-			grid-template-columns: repeat(3, 1fr);
-		}
-	}
-
-	@media only screen and (min-width: 2200px) {
-		.item-grid {
-			grid-template-columns: repeat(4, 1fr);
-		}
-	}
-</style>
