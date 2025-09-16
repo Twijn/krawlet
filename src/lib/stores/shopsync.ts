@@ -6,6 +6,10 @@ const itemName = 'shopsync';
 const itemUrl = 'https://krawlet-api.twijn.dev/shopsync/shops';
 const itemExpiry = 1000 * 60 * 10; // 10 minutes
 
+const itemsRequiringNbt: string[] = [
+    "minecraft:enchanted_book",
+];
+
 class ShopSyncStore extends FetchedStore<Shop> {
     public sort(data: Shop[]): Shop[] {
         data.sort((a, b) => {
@@ -67,7 +71,7 @@ export const getListingsByItem = (): ItemListing[] => {
         if (!shop.items) return;
 
         shop.items.forEach(item => {
-            
+            if (itemsRequiringNbt.includes(item.itemName.toLowerCase()) && !item.itemNbt) return;
 
             let entry = listings.find(x => x.itemName == item.itemName && x.itemNbt == item.itemNbt);
             
