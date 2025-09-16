@@ -112,19 +112,19 @@
 		gap: 1em;
 	}
 
-	@media only screen and (min-width: 650px) {
+	@media only screen and (min-width: 1100px) {
 		.shop-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
-	@media only screen and (min-width: 1050px) {
+	@media only screen and (min-width: 1500px) {
 		.shop-grid {
 			grid-template-columns: repeat(3, 1fr);
 		}
 	}
 
-	@media only screen and (min-width: 1450px) {
+	@media only screen and (min-width: 2000px) {
 		.shop-grid {
 			grid-template-columns: repeat(4, 1fr);
 		}
