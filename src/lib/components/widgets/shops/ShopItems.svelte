@@ -92,63 +92,6 @@
 </Section>
 
 <style>
-    .item-grid {
-        --shadow: 2px 2px 10px rgba(0,0,0,0.2);
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1em;
-    }
-
-    @media only screen and (min-width: 650px) {
-        .item-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media only screen and (min-width: 1050px) {
-        .item-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-
-    @media only screen and (min-width: 1450px) {
-        .item-grid {
-            grid-template-columns: repeat(4, 1fr);
-        }
-    }
-
-	.item {
-		display: flex;
-		flex-direction: column;
-		background-color: var(--background-color-1);
-		padding: .8em;
-		border-radius: .75em .25em;
-		box-shadow: var(--shadow);
-	}
-
-	.item-head {
-		display: flex;
-		align-items: center;
-		gap: .5em;
-		margin-bottom: .5em;
-	}
-
-	.item-head img {
-		width: 48px;
-		height: 48px;
-	}
-
-	.item-head-text h3 {
-		font-size: 1.2em;
-		font-weight: 500;
-		margin: 0;
-		text-transform: capitalize;
-	}
-
-	.item-body {
-		flex-grow: 1;
-	}
-
 	.badges {
 		display: flex;
 		justify-content: center;

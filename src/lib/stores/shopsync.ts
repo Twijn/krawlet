@@ -54,6 +54,7 @@ export const getListingBuyLink = (item: Listing, lock: boolean = true): string =
 export type ShopWithListing = Shop & {listing: Listing};
 
 export type ItemListing = {
+    itemDisplayName: string;
     itemName: string;
     itemNbt: string | null;
     shops: ShopWithListing[];
@@ -66,6 +67,8 @@ export const getListingsByItem = (): ItemListing[] => {
         if (!shop.items) return;
 
         shop.items.forEach(item => {
+            
+
             let entry = listings.find(x => x.itemName == item.itemName && x.itemNbt == item.itemNbt);
             
             const shopWithListing: ShopWithListing = {
@@ -76,6 +79,7 @@ export const getListingsByItem = (): ItemListing[] => {
                 entry.shops.push(shopWithListing);
             } else {
                 listings.push({
+                    itemDisplayName: item.itemDisplayName || item.itemName,
                     itemName: item.itemName,
                     itemNbt: item.itemNbt,
                     shops: [shopWithListing]
@@ -83,6 +87,27 @@ export const getListingsByItem = (): ItemListing[] => {
             }
         });
     });
+
+    listings.forEach(listing => {
+        listing.shops.sort((a, b) => {
+            // 1. In stock first
+            const aStock = a.listing.stock ?? 0;
+            const bStock = b.listing.stock ?? 0;
+            if ((aStock > 0) !== (bStock > 0)) {
+                return bStock - aStock;
+            }
+            // 2. Price ascending (first price only)
+            const aPrice = a.listing.prices?.[0]?.value ?? Infinity;
+            const bPrice = b.listing.prices?.[0]?.value ?? Infinity;
+            if (aPrice !== bPrice) {
+                return aPrice - bPrice;
+            }
+            // 3. Shop computerId ascending
+            return a.computerId - b.computerId;
+        });
+    });
+
+    listings.sort((a, b) => a.itemDisplayName.localeCompare(b.itemDisplayName));
     return listings;
 };
 
