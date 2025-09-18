@@ -4,7 +4,6 @@
 	import { faTrash, faWallet } from '@fortawesome/free-solid-svg-icons';
 	import { fade } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
-	import { type Wallet, walletStore } from '$lib/walletStore';
 	import { browser } from '$app/environment';
 	import kromer from '$lib/api/kromer';
 	import type { Address } from 'kromer';
@@ -13,6 +12,7 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
 	import AddressModule from './addresses/Address.svelte';
+	import settings, { type Wallet } from '$lib/stores/settings';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -47,7 +47,7 @@
 			confirm: () => {
 				delete addresses[wallet.address];
 				addresses = { ...addresses };
-				walletStore.removeWallet(wallet.address);
+				settings.removeWallet(wallet.address);
 				notifications.success(`Successfully deleted wallet ${wallet.name} (${wallet.address})`);
 			},
 			cancel: () => {
@@ -59,7 +59,7 @@
 	let addresses: Record<string, Address> = $state({});
 	let loading: boolean = $state(false);
 
-	walletStore.subscribe(async ($store) => {
+	settings.subscribe(async ($store) => {
 		if (browser) {
 			if ($store.wallets.length > 0) {
 				loading = true;
@@ -72,7 +72,7 @@
 	});
 
 	let totalBalance = $derived(
-		$walletStore.wallets.reduce((sum, wallet) => sum + (addresses[wallet.address]?.balance || 0), 0)
+		$settings.wallets.reduce((sum, wallet) => sum + (addresses[wallet.address]?.balance || 0), 0)
 	);
 </script>
 
@@ -84,7 +84,7 @@
 
 	<div class="wallets">
 		<ModuleLoading absolute={true} bind:loading />
-		{#if $walletStore.wallets.length === 0}
+		{#if $settings.wallets.length === 0}
 			<Alert variant="info">
 				<strong>No wallets saved!</strong>
 				<p>
@@ -92,7 +92,7 @@
 				</p>
 			</Alert>
 		{/if}
-		{#each $walletStore.wallets.slice(0, limit) as wallet (wallet.address)}
+		{#each $settings.wallets.slice(0, limit) as wallet (wallet.address)}
 			{@const balance = addresses[wallet.address] ? addresses[wallet.address].balance : 0}
 			<div
 				class="wallet"
@@ -117,7 +117,7 @@
 				{/if}
 			</div>
 		{/each}
-		{#if $walletStore.wallets.length > 0}
+		{#if $settings.wallets.length > 0}
 			<p class="total">
 				<strong>Total Balance: </strong>
 				{formatBalance(totalBalance)}

@@ -4,13 +4,13 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import Button from '$lib/components/ui/Button.svelte';
 	import kromer from '$lib/api/kromer';
-	import { walletStore } from '$lib/walletStore';
 	import Wallets from '$lib/components/widgets/Wallets.svelte';
 	import type { APIError } from 'kromer';
 	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import Import from '$lib/components/widgets/importexport/Import.svelte';
 	import Export from '$lib/components/widgets/importexport/Export.svelte';
 	import { notifications } from '$lib/stores/notifications';
+	import settings from '$lib/stores/settings';
 
 	let masterPassword = $state('');
 	let name = $state('');
@@ -29,7 +29,7 @@
 
 		try {
 			const address = kromer.addresses.decodeAddressFromPrivateKey(pkey);
-			await walletStore.addWallet(
+			await settings.addWallet(
 				{
 					name,
 					address,
@@ -68,7 +68,7 @@
 			Master Password
 			<input id="new" type="password" name="masterPassword" bind:value={masterPassword} />
 			<small
-				>{#if $walletStore.wallets.length > 0}You must use the same password as your past wallets!{/if}
+				>{#if $settings.wallets.length > 0}You must use the same password as your past wallets!{/if}
 				Make sure you keep this safe!</small
 			>
 		</label>

@@ -4,9 +4,8 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faCopy, faFileExport } from '@fortawesome/free-solid-svg-icons';
 	import Button from '$lib/components/ui/Button.svelte';
-	import { walletStore } from '$lib/walletStore';
-	import { encryptWithPassword } from '$lib/walletStore.js';
 	import { notifications } from '$lib/stores/notifications';
+	import settings, { encryptWithPassword } from '$lib/stores/settings';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -26,7 +25,7 @@
 	async function exportWallets(e: Event) {
 		e.preventDefault();
 
-		exportData = await encryptWithPassword(exportedPassword, walletStore.exportWallets());
+		exportData = await encryptWithPassword(exportedPassword, settings.export());
 
 		return false;
 	}

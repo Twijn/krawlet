@@ -1,9 +1,9 @@
 <script lang="ts">
 	import ButtonSelect from '$lib/components/ui/ButtonSelect.svelte';
-	import { walletStore } from '$lib/walletStore';
 	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import type { Address, APIError } from 'kromer';
 	import kromer from '$lib/api/kromer';
+	import settings from '$lib/stores/settings';
 
 	let {
 		privatekey = $bindable(),
@@ -21,7 +21,7 @@
 	let selected: string = $state('');
 
 	let options = $derived(
-		$walletStore.wallets.map((x) => {
+		$settings.wallets.map((x) => {
 			return {
 				id: x.address,
 				name: `${x.name} (${x.address})`
@@ -35,10 +35,10 @@
 
 	let errorMessage: string | null = $state(null);
 	async function checkWallet() {
-		const wallet = $walletStore.wallets.find((x) => x.address === selected);
+		const wallet = $settings.wallets.find((x) => x.address === selected);
 		if (!wallet) return;
 
-		privatekey = (await walletStore.decryptWallet(wallet, masterPassword)) ?? '';
+		privatekey = (await settings.decryptWallet(wallet, masterPassword)) ?? '';
 
 		if (!privatekey) {
 			errorMessage = 'Invalid master password!';

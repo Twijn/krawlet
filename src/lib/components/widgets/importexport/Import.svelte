@@ -3,11 +3,10 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faFileImport } from '@fortawesome/free-solid-svg-icons';
 	import Button from '$lib/components/ui/Button.svelte';
-	import { decryptWithPassword } from '$lib/walletStore';
-	import { walletStore } from '$lib/walletStore.js';
 	import type { APIError } from 'kromer';
 	import { notifications } from '$lib/stores/notifications';
 	import { get } from 'svelte/store';
+	import settings, { decryptWithPassword } from '$lib/stores/settings';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -34,10 +33,10 @@
 		}
 		if (data) {
 			try {
-				walletStore.importWallets(data);
+				settings.import(data);
 				exportedPassword = '';
 				importData = '';
-				const walletCount = get(walletStore).wallets.length;
+				const walletCount = get(settings).wallets.length;
 				notifications.success(
 					`Successfully imported ${walletCount} wallet${walletCount === 1 ? '' : 's'}!`
 				);
