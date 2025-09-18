@@ -223,20 +223,4 @@
 	form {
 		position: relative;
 	}
-
-	fieldset {
-		border: none;
-		margin: 0;
-		padding: 0.4em 0;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-	}
-
-	legend {
-		color: white;
-		text-align: center;
-		font-size: 0.9em;
-		font-weight: 500;
-		opacity: 0.5;
-		padding: 0 0.75em;
-	}
 </style>
