@@ -6,6 +6,7 @@
 	import { faBuilding, faCheck, faCopy, faDice, faStore } from '@fortawesome/free-solid-svg-icons';
 	import { notifications } from '$lib/stores/notifications';
 	import { getAddress, type KnownAddress } from '$lib/stores/knownAddresses';
+	import settings from '$lib/stores/settings';
 
 	const {
 		address
@@ -30,19 +31,21 @@
 			notifications.success('Failed to copy address to clipboard.');
 		}
 	};
+
+	let special = $derived(Boolean((player && $settings.replaceAddressesWithPlayer) || (verifiedEntry && $settings.replaceAddressesWithKnown)));
 </script>
 
 <a
 	href="/addresses/{address}"
-	class:special={player || verifiedEntry}
-	class:player={Boolean(player)}
-	class:official={verifiedEntry?.type === 'official'}
-	class:shop={verifiedEntry?.type === 'shop'}
-	class:gamble={verifiedEntry?.type === 'gamble'}
-	class:company={verifiedEntry?.type === 'company'}
-	title={verifiedEntry || player ? 'Go to ' + address : undefined}
+	class:special={special}
+	class:player={$settings.replaceAddressesWithPlayer && Boolean(player)}
+	class:official={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'official'}
+	class:shop={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'shop'}
+	class:gamble={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'gamble'}
+	class:company={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'company'}
+	title={special ? 'Go to ' + address : undefined}
 >
-	{#if verifiedEntry}
+	{#if verifiedEntry && $settings.replaceAddressesWithKnown}
 		{#if verifiedEntry.imageSrc}
 			<img src={verifiedEntry.imageSrc} alt="Logo for {verifiedEntry.name}" />
 		{:else if verifiedEntry.type === 'shop'}
@@ -55,7 +58,7 @@
 			<FontAwesomeIcon icon={faCheck} />
 		{/if}
 		{verifiedEntry.name}
-	{:else if player}
+	{:else if player && $settings.replaceAddressesWithPlayer}
 		<img
 			src="https://api.mineatar.io/face/{player.minecraftUUID}"
 			alt="Avatar for {player.minecraftName}"

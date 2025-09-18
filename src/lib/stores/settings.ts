@@ -9,6 +9,8 @@ export type Wallet = {
 };
 
 export type SettingsData = {
+    replaceAddressesWithPlayer: boolean;
+    replaceAddressesWithKnown: boolean;
     wallets: Wallet[];
 };
 
@@ -117,7 +119,11 @@ export async function decryptWithPassword(
 }
 
 class Settings {
-    private initial: SettingsData = { wallets: [] };
+    private initial: SettingsData = {
+        replaceAddressesWithPlayer: true,
+        replaceAddressesWithKnown: true,
+        wallets: []
+    };
     private data: Writable<SettingsData>;
 
     constructor() {
