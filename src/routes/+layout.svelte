@@ -2,7 +2,7 @@
 	import '$lib/app.css';
 	import { config } from '@fortawesome/fontawesome-svg-core';
 	import '@fortawesome/fontawesome-svg-core/styles.css';
-	import { faBars } from '@fortawesome/free-solid-svg-icons';
+	import { faBars, faGear } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -57,6 +57,9 @@
 			<FontAwesomeIcon icon={faBars} size="lg" />
 		</button>
 		<a href="/">Krawlet</a>
+		<a href="/settings" class="settings-btn" aria-label="Settings" style="margin-left:auto;">
+			<FontAwesomeIcon icon={faGear} size="lg" />
+		</a>
 	</header>
 	<aside>
 		<Navigation />
@@ -163,5 +166,22 @@
 
 	footer a {
 		color: var(--text-color-2);
+	}
+	.settings-btn {
+		background: none;
+		border: none;
+		color: var(--text-color-1);
+		cursor: pointer;
+		padding: 0.5rem 1.5rem;
+		display: flex;
+		align-items: center;
+		font-size: 1.2em;
+		text-decoration: none;
+		transition: color 0.25s ease-in-out;
+	}
+
+	.settings-btn:hover,
+	.settings-btn:focus-visible {
+		color: var(--theme-color-2);
 	}
 </style>

@@ -122,14 +122,15 @@ class Settings {
 
     constructor() {
         this.data = writable<SettingsData>(this.initial);
-        
         // Load from localStorage on init
         if (browser) {
             const saved = localStorage.getItem(NAME);
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
-                    this.data.set(parsed ?? this.initial);
+                    if (parsed) {
+                        this.data.set({ ...this.initial, ...parsed });
+                    }
                 } catch {
                     console.warn('Failed to parse settings from localStorage.');
                 }
@@ -199,6 +200,10 @@ class Settings {
 
     public get subscribe() {
         return this.data.subscribe;
+    }
+
+    public get set() {
+        return this.data.set;
     }
 
     public import(data: unknown) {

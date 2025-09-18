@@ -264,6 +264,7 @@ label {
 input[type='password'],
 input[type='text'],
 input[type='number'],
+select,
 textarea {
 	display: block;
 	width: calc(100% - 1rem);
@@ -288,6 +289,7 @@ textarea {
 input[type='password']:focus,
 input[type='text']:focus,
 input[type='number']:focus,
+select:focus,
 textarea:focus {
 	border-bottom-color: var(--theme-color-2);
 	box-shadow: 0 0 1em rgba(0, 0, 0, 0.3);
@@ -297,7 +299,8 @@ label:has(.fail) input {
 	border-bottom-color: rgb(var(--red));
 }
 
-input[disabled] {
+input[disabled],
+select[disabled] {
 	border-bottom-color: black;
 	cursor: not-allowed;
 	color: var(--text-color-2);
