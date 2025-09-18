@@ -1,4 +1,4 @@
-import FetchedStore from '$lib/stores/FetchedStore';
+import FetchedStore, { type FetchedStoreData } from '$lib/stores/FetchedStore';
 import type { Listing, Shop } from '$lib/types/shops';
 import { get } from 'svelte/store';
 
@@ -64,9 +64,8 @@ export type ItemListing = {
 	shops: ShopWithListing[];
 };
 
-export const getListingsByItem = (): ItemListing[] => {
+export const getListingsByItem = (shops: FetchedStoreData<Shop>): ItemListing[] => {
 	const listings: ItemListing[] = [];
-	const shops = get(store);
 	shops.data.forEach((shop) => {
 		if (!shop.items) return;
 

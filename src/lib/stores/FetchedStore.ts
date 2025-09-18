@@ -1,12 +1,12 @@
 import { get, writable, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
-type FetchedStoreData<T> = {
+export type FetchedStoreData<T> = {
 	updated: number;
 	data: T[];
 };
 
-type FetchedResponse<T> = {
+export type FetchedResponse<T> = {
 	ok: boolean;
 	data: T[];
 };

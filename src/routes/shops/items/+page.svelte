@@ -1,11 +1,23 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
-	import { cleanShopData, getListingsByItem } from '$lib/stores/shopsync';
+	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
+	import shopsync, {
+		cleanShopData,
+		getListingsByItem,
+		type ItemListing
+	} from '$lib/stores/shopsync';
 	import { formatCurrency } from '$lib/util';
 	import { faListNumeric } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+	import { onMount } from 'svelte';
 
-	const listings = $derived(getListingsByItem());
+	let listings: ItemListing[] = $state([]);
+
+	onMount(() => {
+		shopsync.subscribe((shops) => {
+			listings = getListingsByItem(shops);
+		});
+	});
 </script>
 
 <svelte:head>
@@ -20,6 +32,9 @@
 
 <Section lgCols={12}>
 	<h2><FontAwesomeIcon icon={faListNumeric} /> Items</h2>
+	{#if listings.length === 0}
+		<ModuleLoading />
+	{/if}
 	<div class="item-grid">
 		{#each listings as listing (listing.itemName + (':' + listing.itemNbt))}
 			<div class="item">

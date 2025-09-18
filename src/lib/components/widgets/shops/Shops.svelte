@@ -5,9 +5,10 @@
 	import type { Shop } from '$lib/types/shops';
 	import { faShop } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { get } from 'svelte/store';
 	import Address from '../addresses/Address.svelte';
 	import { relativeTime } from '$lib/util';
+	import { onMount } from 'svelte';
+	import ModuleLoading from '../other/ModuleLoading.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -21,11 +22,20 @@
 		smCols?: ColumnCount;
 	} = $props();
 
-	let shops: Shop[] = $derived(get(shopsync).data);
+	let shops: Shop[] = $state([]);
+
+	onMount(() => {
+		shopsync.subscribe((data) => {
+			shops = data.data;
+		});
+	});
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
 	<h2><FontAwesomeIcon icon={faShop} /> Shops</h2>
+	{#if shops.length === 0}
+		<ModuleLoading />
+	{/if}
 	<div class="shop-grid">
 		{#each shops as shop (shop.computerId)}
 			{@const items = shop?.items ?? []}
