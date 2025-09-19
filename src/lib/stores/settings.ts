@@ -9,8 +9,19 @@ export type Wallet = {
 };
 
 export type SettingsData = {
+		// addresses
     replaceAddressesWithPlayer: boolean;
     replaceAddressesWithKnown: boolean;
+		// transactions
+		showMetadata: boolean;
+		parseTransactionMessage: boolean;
+		// names
+		showOriginalOwner: boolean;
+		showTransferredDate: boolean;
+		// date and time
+		relativeTimeEnabled: boolean;
+		relativeTimeAbove7d: boolean;
+		// wallets
     wallets: Wallet[];
 };
 
@@ -122,6 +133,12 @@ class Settings {
     private initial: SettingsData = {
         replaceAddressesWithPlayer: true,
         replaceAddressesWithKnown: true,
+				showOriginalOwner: true,
+				showTransferredDate: true,
+				showMetadata: true,
+				parseTransactionMessage: true,
+				relativeTimeEnabled: true,
+				relativeTimeAbove7d: false,
         wallets: []
     };
     private data: Writable<SettingsData>;

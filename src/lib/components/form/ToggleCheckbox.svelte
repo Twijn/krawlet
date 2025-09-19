@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { checked = $bindable(false), children, disabled = false, center = false } = $props();
+	let { checked = $bindable(false), disabled = $bindable(false), children, center = false, onChange = () => {} } = $props();
 </script>
 
 <div class:center={center}>
@@ -8,6 +8,7 @@
 			type="checkbox"
 			bind:checked={checked}
 			{disabled}
+			onchange={() => onChange()}
 		/>
 		<span class="slider"></span>
 		{@render children?.()}

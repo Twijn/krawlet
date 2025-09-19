@@ -10,6 +10,8 @@
 	import type { NamesResponse } from 'kromer';
 	import { relativeTime } from '$lib/util';
 	import { paramState } from '$lib/paramState.svelte.js';
+	import { SEVEN_DAYS } from '$lib/consts';
+	import settings from '$lib/stores/settings';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -87,39 +89,57 @@
 					<thead>
 						<tr>
 							<th class="right">Name</th>
-							<th>Owner</th>
-							<th>Original Owner</th>
-							<th>A</th>
-							<th class="right">Transferred</th>
+							<th class="right">Owner</th>
+							{#if $settings.showOriginalOwner}
+								<th class="right">Original Owner</th>
+							{/if}
+							<th class="right">A</th>
+							{#if $settings.showTransferredDate}
+								<th class="right">Last Transferred</th>
+							{/if}
 							<th class="right">Registered</th>
 						</tr>
 					</thead>
 					<tbody>
 						{#each names.names as name (name.name)}
+							{@const showRelativeTransferred = name.transferred && $settings.relativeTimeEnabled && ($settings.relativeTimeAbove7d || Date.now() - name.transferred.getTime() <= SEVEN_DAYS)}
+							{@const showRelativeRegistered = name.registered && $settings.relativeTimeEnabled && ($settings.relativeTimeAbove7d || Date.now() - name.registered.getTime() <= SEVEN_DAYS)}
 							<tr>
 								<td class="right"><code>{name.name}</code></td>
-								<td>
+								<td class="right">
 									<AddressModule address={name.owner} />
 								</td>
-								<td>
-									<AddressModule address={name.owner} />
-								</td>
-								<td>
+								{#if $settings.showOriginalOwner}
+									<td class="right">
+										<AddressModule address={name.original_owner} />
+									</td>
+								{/if}
+								<td class="right">
 									{#if name.a}
 										{name.a}
 									{:else}
 										<small>No Data</small>
 									{/if}
 								</td>
-								<td class="right">
-									{#if name.transferred}
-										{relativeTime(name.transferred)}
+								{#if $settings.showTransferredDate}
+									<td class="right" class:time={name.transferred} title={showRelativeTransferred ? name?.transferred?.toLocaleString() : undefined}>
+										{#if name.transferred}
+											{#if showRelativeTransferred}
+												{relativeTime(name.transferred)}
+											{:else}
+												{name.transferred.toLocaleString()}
+											{/if}
+										{:else}
+											<small>Never Transferred</small>
+										{/if}
+									</td>
+								{/if}
+								<td class="right time" title={showRelativeRegistered ? name.registered.toLocaleString() : undefined}>
+									{#if showRelativeRegistered}
+										{relativeTime(name.registered)}
 									{:else}
-										<small>Never Transferred</small>
+										{name.registered.toLocaleString()}
 									{/if}
-								</td>
-								<td class="right" title={name.registered.toLocaleString()}>
-									{relativeTime(name.registered)}
 								</td>
 							</tr>
 						{/each}
@@ -160,4 +180,8 @@
 		color: rgb(var(--red));
 		text-align: center;
 	}
+
+  .time {
+      font-size: .9rem;
+  }
 </style>

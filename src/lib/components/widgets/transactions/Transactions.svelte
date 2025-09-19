@@ -12,6 +12,8 @@
 	import { paramState } from '$lib/paramState.svelte.js';
 	import ParsedMetadata from '$lib/components/widgets/transactions/ParsedMetadata.svelte';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
+	import settings from '$lib/stores/settings';
+	import { SEVEN_DAYS } from '$lib/consts';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -105,13 +107,16 @@
 							<th>From</th>
 							<th>To</th>
 							<th class="right">Value</th>
-							<th>Message</th>
-							<th>Time</th>
+							{#if $settings.showMetadata}
+								<th>{$settings.parseTransactionMessage ? "Message" : "Metadata"}</th>
+							{/if}
+							<th class="right">Time</th>
 						</tr>
 					</thead>
 					<tbody>
 						{#each transactions.transactions as transaction (transaction.id)}
 							{@const meta = kromer.transactions.parseMetadata(transaction)}
+							{@const showRelative = $settings.relativeTimeEnabled && ($settings.relativeTimeAbove7d || Date.now() - transaction.time.getTime() <= SEVEN_DAYS)}
 							<tr>
 								<td class="center"><a href="/transactions/{transaction.id}">{transaction.id}</a></td
 								>
@@ -129,8 +134,24 @@
 									<Address address={transaction.to} />
 								</td>
 								<td class="right">{formatCurrency(transaction.value)} <small>KRO</small></td>
-								<td class="metadata"><ParsedMetadata {meta} limitWidth={true} /></td>
-								<td title={transaction.time.toLocaleString()}>{relativeTime(transaction.time)}</td>
+								{#if $settings.showMetadata}
+									<td class="metadata">
+										{#if $settings.parseTransactionMessage}
+											<ParsedMetadata {meta} limitWidth={true} />
+										{:else if transaction.metadata && transaction.metadata.length > 0}
+											<small>{transaction.metadata.substring(0, 75)}</small>
+										{:else}
+											<small>[No metadata]</small>
+										{/if}
+									</td>
+								{/if}
+								<td class="time right" title={showRelative ? transaction.time.toLocaleString() : undefined}>
+									{#if showRelative}
+										{relativeTime(transaction.time)}
+									{:else}
+										{transaction.time.toLocaleString()}
+									{/if}
+								</td>
 							</tr>
 						{/each}
 					</tbody>
@@ -156,5 +177,9 @@
 		display: block;
 		color: rgb(var(--red));
 		text-align: center;
+	}
+
+	.time {
+			font-size: .9rem;
 	}
 </style>

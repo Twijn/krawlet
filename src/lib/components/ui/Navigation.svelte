@@ -111,16 +111,6 @@
 					href: '/shops/items'
 				}
 			]
-		},
-		{
-			name: 'Settings',
-			links: [
-				{
-					icon: faGear,
-					name: 'Settings',
-					href: '/settings'
-				}
-			]
 		}
 	];
 
