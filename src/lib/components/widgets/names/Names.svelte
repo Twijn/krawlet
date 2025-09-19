@@ -102,8 +102,16 @@
 					</thead>
 					<tbody>
 						{#each names.names as name (name.name)}
-							{@const showRelativeTransferred = name.transferred && $settings.relativeTimeEnabled && ($settings.relativeTimeAbove7d || Date.now() - name.transferred.getTime() <= SEVEN_DAYS)}
-							{@const showRelativeRegistered = name.registered && $settings.relativeTimeEnabled && ($settings.relativeTimeAbove7d || Date.now() - name.registered.getTime() <= SEVEN_DAYS)}
+							{@const showRelativeTransferred =
+								name.transferred &&
+								$settings.relativeTimeEnabled &&
+								($settings.relativeTimeAbove7d ||
+									Date.now() - name.transferred.getTime() <= SEVEN_DAYS)}
+							{@const showRelativeRegistered =
+								name.registered &&
+								$settings.relativeTimeEnabled &&
+								($settings.relativeTimeAbove7d ||
+									Date.now() - name.registered.getTime() <= SEVEN_DAYS)}
 							<tr>
 								<td class="right"><code>{name.name}</code></td>
 								<td class="right">
@@ -122,7 +130,13 @@
 									{/if}
 								</td>
 								{#if $settings.showTransferredDate}
-									<td class="right" class:time={name.transferred} title={showRelativeTransferred ? name?.transferred?.toLocaleString() : undefined}>
+									<td
+										class="right"
+										class:time={name.transferred}
+										title={showRelativeTransferred
+											? name?.transferred?.toLocaleString()
+											: undefined}
+									>
 										{#if name.transferred}
 											{#if showRelativeTransferred}
 												{relativeTime(name.transferred)}
@@ -134,7 +148,10 @@
 										{/if}
 									</td>
 								{/if}
-								<td class="right time" title={showRelativeRegistered ? name.registered.toLocaleString() : undefined}>
+								<td
+									class="right time"
+									title={showRelativeRegistered ? name.registered.toLocaleString() : undefined}
+								>
 									{#if showRelativeRegistered}
 										{relativeTime(name.registered)}
 									{:else}
@@ -181,7 +198,7 @@
 		text-align: center;
 	}
 
-  .time {
-      font-size: .9rem;
-  }
+	.time {
+		font-size: 0.9rem;
+	}
 </style>

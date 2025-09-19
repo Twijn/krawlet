@@ -32,12 +32,17 @@
 		}
 	};
 
-	let special = $derived(Boolean((player && $settings.replaceAddressesWithPlayer) || (verifiedEntry && $settings.replaceAddressesWithKnown)));
+	let special = $derived(
+		Boolean(
+			(player && $settings.replaceAddressesWithPlayer) ||
+				(verifiedEntry && $settings.replaceAddressesWithKnown)
+		)
+	);
 </script>
 
 <a
 	href="/addresses/{address}"
-	class:special={special}
+	class:special
 	class:player={$settings.replaceAddressesWithPlayer && Boolean(player)}
 	class:official={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'official'}
 	class:shop={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'shop'}

@@ -4,7 +4,6 @@
 	import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 	import {
 		faAddressBook,
-		faGear,
 		faHome,
 		faListNumeric,
 		faMoneyBillWave,

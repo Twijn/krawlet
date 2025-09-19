@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Section from "$lib/components/ui/Section.svelte";
-	import settings from "$lib/stores/settings";
+	import Section from '$lib/components/ui/Section.svelte';
+	import settings from '$lib/stores/settings';
 	import { faCog } from '@fortawesome/free-solid-svg-icons';
-	import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
+	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 
 	function onShowMetadataChange() {
@@ -40,7 +40,10 @@
 		<ToggleCheckbox bind:checked={$settings.showMetadata} onChange={onShowMetadataChange}>
 			Show transaction metadata in the transaction list
 		</ToggleCheckbox>
-		<ToggleCheckbox bind:checked={$settings.parseTransactionMessage} disabled={!$settings.showMetadata}>
+		<ToggleCheckbox
+			bind:checked={$settings.parseTransactionMessage}
+			disabled={!$settings.showMetadata}
+		>
 			Parse transaction metadata into readable messages when possible
 		</ToggleCheckbox>
 	</fieldset>
@@ -58,7 +61,10 @@
 		<ToggleCheckbox bind:checked={$settings.relativeTimeEnabled} onChange={onRelativeTimeChange}>
 			Show relative time in transaction and names logs
 		</ToggleCheckbox>
-		<ToggleCheckbox bind:checked={$settings.relativeTimeAbove7d} disabled={!$settings.relativeTimeEnabled}>
+		<ToggleCheckbox
+			bind:checked={$settings.relativeTimeAbove7d}
+			disabled={!$settings.relativeTimeEnabled}
+		>
 			Show relative time above 7 days old
 		</ToggleCheckbox>
 	</fieldset>

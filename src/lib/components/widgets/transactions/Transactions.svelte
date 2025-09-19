@@ -108,7 +108,7 @@
 							<th>To</th>
 							<th class="right">Value</th>
 							{#if $settings.showMetadata}
-								<th>{$settings.parseTransactionMessage ? "Message" : "Metadata"}</th>
+								<th>{$settings.parseTransactionMessage ? 'Message' : 'Metadata'}</th>
 							{/if}
 							<th class="right">Time</th>
 						</tr>
@@ -116,7 +116,10 @@
 					<tbody>
 						{#each transactions.transactions as transaction (transaction.id)}
 							{@const meta = kromer.transactions.parseMetadata(transaction)}
-							{@const showRelative = $settings.relativeTimeEnabled && ($settings.relativeTimeAbove7d || Date.now() - transaction.time.getTime() <= SEVEN_DAYS)}
+							{@const showRelative =
+								$settings.relativeTimeEnabled &&
+								($settings.relativeTimeAbove7d ||
+									Date.now() - transaction.time.getTime() <= SEVEN_DAYS)}
 							<tr>
 								<td class="center"><a href="/transactions/{transaction.id}">{transaction.id}</a></td
 								>
@@ -145,7 +148,10 @@
 										{/if}
 									</td>
 								{/if}
-								<td class="time right" title={showRelative ? transaction.time.toLocaleString() : undefined}>
+								<td
+									class="time right"
+									title={showRelative ? transaction.time.toLocaleString() : undefined}
+								>
 									{#if showRelative}
 										{relativeTime(transaction.time)}
 									{:else}
@@ -180,6 +186,6 @@
 	}
 
 	.time {
-			font-size: .9rem;
+		font-size: 0.9rem;
 	}
 </style>
