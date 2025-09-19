@@ -1,25 +1,33 @@
 <script lang="ts">
-	let { checked = $bindable(false), children, disabled = false } = $props();
+	let { checked = $bindable(false), children, disabled = false, center = false } = $props();
 </script>
 
-<label class="toggle-container">
-	<input
-		type="checkbox"
-		bind:checked={checked}
-		{disabled}
-	/>
-	<span class="slider"></span>
-	{@render children?.()}
-</label>
+<div class:center={center}>
+	<label class="toggle-container">
+		<input
+			type="checkbox"
+			bind:checked={checked}
+			{disabled}
+		/>
+		<span class="slider"></span>
+		{@render children?.()}
+	</label>
+</div>
 
 <style>
     .toggle-container {
         position: relative;
-        display: inline-flex;
+        display: flex;
         align-items: center;
         gap: 0.5em;
         cursor: pointer;
         user-select: none;
+    }
+
+    .center {
+        display: flex;
+        justify-content: center;
+        width: 100%;
     }
 
     input {

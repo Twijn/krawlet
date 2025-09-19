@@ -82,11 +82,9 @@
 			</small>
 		{:else}
 			{#if !address}
-				<div class="center">
-					<ToggleCheckbox bind:checked={includeMined.value}>
-						Include Welfare Transactions
-					</ToggleCheckbox>
-				</div>
+				<ToggleCheckbox bind:checked={includeMined.value} center>
+					Include Welfare Transactions
+				</ToggleCheckbox>
 			{/if}
 			{#if limit > 25}
 				<Pagination bind:page={page.value} total={transactions.total} {limit} />
