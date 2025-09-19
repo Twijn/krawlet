@@ -3,6 +3,7 @@
 	import settings from "$lib/stores/settings";
 	import { faPaintBrush } from "@fortawesome/free-solid-svg-icons";
 	import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
+	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 </script>
 
 <svelte:head>
@@ -15,17 +16,11 @@
 	<h2><FontAwesomeIcon icon={faPaintBrush} /> Appearance</h2>
 	<fieldset>
 		<legend>Address Display</legend>
-		<label>
-			<input
-				type="checkbox"
-				bind:checked={$settings.replaceAddressesWithPlayer} />
+		<ToggleCheckbox bind:checked={$settings.replaceAddressesWithPlayer}>
 			Replace addresses with player names when possible
-		</label>
-		<label>
-			<input
-				type="checkbox"
-				bind:checked={$settings.replaceAddressesWithKnown} />
+		</ToggleCheckbox>
+		<ToggleCheckbox bind:checked={$settings.replaceAddressesWithKnown}>
 			Replace known addresses (shops, verified entities, etc.) when possible
-		</label>
+		</ToggleCheckbox>
 	</fieldset>
 </Section>

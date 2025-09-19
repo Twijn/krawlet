@@ -11,6 +11,7 @@
 	import type { TransactionsResponse } from 'kromer';
 	import { paramState } from '$lib/paramState.svelte.js';
 	import ParsedMetadata from '$lib/components/widgets/transactions/ParsedMetadata.svelte';
+	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -81,10 +82,11 @@
 			</small>
 		{:else}
 			{#if !address}
-				<label class="center">
-					<input type="checkbox" bind:checked={includeMined.value} />
-					Include welfare transactions
-				</label>
+				<div class="center">
+					<ToggleCheckbox bind:checked={includeMined.value}>
+						Include Welfare Transactions
+					</ToggleCheckbox>
+				</div>
 			{/if}
 			{#if limit > 25}
 				<Pagination bind:page={page.value} total={transactions.total} {limit} />
