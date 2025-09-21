@@ -14,6 +14,7 @@
 	import { VERSION } from '$lib/consts';
 	import Notifications from '$lib/components/dialogs/Notifications.svelte';
 	import Confirm from '$lib/components/dialogs/Confirm.svelte';
+	import Alert from '$lib/components/dialogs/Alert.svelte';
 
 	config.autoAddCss = false;
 
@@ -65,6 +66,13 @@
 		<Navigation />
 	</aside>
 	<div id="content">
+		<Alert variant="danger">
+			<strong style="font-size: 1.2em;">!! YOU ARE IN KRAWLET STAGING !!</strong>
+			<p>
+				Staging uses an alternative sync node to <code>kromer.reconnected.cc</code>.
+				Please <a href="https://www.kromer.club" style="color: var(--variant-color);">click here to return to production Krawlet</a>
+			</p>
+		</Alert>
 		<main class="container">
 			{@render children?.()}
 		</main>
