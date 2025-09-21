@@ -10,6 +10,7 @@
 	import { faListNumeric } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onMount } from 'svelte';
+	import ItemCard from '$lib/components/widgets/shops/ItemCard.svelte';
 
 	let listings: ItemListing[] = $state([]);
 
@@ -37,53 +38,39 @@
 	{/if}
 	<div class="item-grid">
 		{#each listings as listing (listing.itemName + (':' + listing.itemNbt))}
-			<div class="item">
-				<div class="item-head">
-					<img
-						src="https://shops.alexdevs.me/assets/items/{listing.itemName.replace(':', '/')}.png"
-						alt="Item icon for {listing.itemDisplayName}"
-					/>
-					<div class="item-head-text">
-						<h3>{listing.itemDisplayName}</h3>
-						<small title={listing.itemNbt ? `NBT: ${listing.itemNbt}` : undefined}
-							>{listing.itemName}</small
-						>
-					</div>
-				</div>
-				<div class="item-body table-container">
-					<table>
-						<thead>
-							<tr>
-								<th>Shop Name</th>
-								<th>Stock</th>
-								<th>Price</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each listing.shops as shop (shop.listing.id)}
-								{@const stock = shop.listing.stock}
-								<tr>
-									<td>
-										<a href="/shops/{shop.id}">{cleanShopData(shop.name)}</a>
-									</td>
-									<td class="right">
-										{stock.toLocaleString()}
-									</td>
-									<td class="right">
-										{#if shop.listing.prices?.[0].value}
-											{@const price = shop.listing.prices[0]}
-											{formatCurrency(price.value)}
-											<small>{price.currency}</small>
-										{:else}
-											N/A
-										{/if}
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-			</div>
+			<ItemCard item={listing} showBadges={false}>
+				<table>
+					<thead>
+					<tr>
+						<th>Shop Name</th>
+						<th>Stock</th>
+						<th>Price</th>
+					</tr>
+					</thead>
+					<tbody>
+					{#each listing.shops as shop (shop.listing.id)}
+						{@const stock = shop.listing.stock}
+						<tr>
+							<td>
+								<a href="/shops/{shop.id}">{cleanShopData(shop.name)}</a>
+							</td>
+							<td class="right">
+								{stock.toLocaleString()}
+							</td>
+							<td class="right">
+								{#if shop.listing.prices?.[0].value}
+									{@const price = shop.listing.prices[0]}
+									{formatCurrency(price.value)}
+									<small>{price.currency}</small>
+								{:else}
+									N/A
+								{/if}
+							</td>
+						</tr>
+					{/each}
+					</tbody>
+				</table>
+			</ItemCard>
 		{/each}
 	</div>
 </Section>

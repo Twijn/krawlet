@@ -440,35 +440,3 @@ th {
 		grid-template-columns: repeat(4, 1fr);
 	}
 }
-
-.item {
-	display: flex;
-	flex-direction: column;
-	background-color: var(--background-color-1);
-	padding: 0.8em;
-	border-radius: 0.75em 0.25em;
-	box-shadow: var(--shadow);
-}
-
-.item-head {
-	display: flex;
-	align-items: center;
-	gap: 0.5em;
-	margin-bottom: 0.5em;
-}
-
-.item-head img {
-	width: 48px;
-	height: 48px;
-}
-
-.item-head-text h3 {
-	font-size: 1.2em;
-	font-weight: 500;
-	margin: 0;
-	text-transform: capitalize;
-}
-
-.item-body {
-	flex-grow: 1;
-}
