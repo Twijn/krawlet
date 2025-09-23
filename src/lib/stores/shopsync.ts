@@ -59,6 +59,13 @@ export const getItemImageUrl = (item: Listing | ItemListing) => {
 	return `https://shops.alexdevs.me/assets/items/${item.itemName.replace(':', '/')}.png`;
 };
 
+export const getRelativeItemUrl = (item: Listing | ItemListing) => {
+	return `/shops/items/${item.itemName
+		.split(':')
+		.map((x) => encodeURI(x))
+		.join('/')}`;
+};
+
 export type ShopWithListing = Shop & { listing: Listing };
 
 export type ItemListing = {

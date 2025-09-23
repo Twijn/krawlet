@@ -15,6 +15,8 @@ export type SettingsData = {
 	// transactions
 	showMetadata: boolean;
 	parseTransactionMessage: boolean;
+	parsePurchaseItem: boolean;
+	parsePurchaseItemQuantity: boolean;
 	// names
 	showOriginalOwner: boolean;
 	showTransferredDate: boolean;
@@ -137,6 +139,8 @@ class Settings {
 		showTransferredDate: true,
 		showMetadata: true,
 		parseTransactionMessage: true,
+		parsePurchaseItem: true,
+		parsePurchaseItemQuantity: false,
 		relativeTimeEnabled: true,
 		relativeTimeAbove7d: false,
 		wallets: []

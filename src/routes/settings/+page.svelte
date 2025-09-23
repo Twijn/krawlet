@@ -8,6 +8,21 @@
 	function onShowMetadataChange() {
 		if (!$settings.showMetadata) {
 			$settings.parseTransactionMessage = false;
+			$settings.parsePurchaseItem = false;
+			$settings.parsePurchaseItemQuantity = false;
+		}
+	}
+
+	function onParseTransactionMessageChange() {
+		if (!$settings.parseTransactionMessage) {
+			$settings.parsePurchaseItem = false;
+			$settings.parsePurchaseItemQuantity = false;
+		}
+	}
+
+	function onParsePurchaseItemChange() {
+		if (!$settings.parsePurchaseItem) {
+			$settings.parsePurchaseItemQuantity = false;
 		}
 	}
 
@@ -43,8 +58,26 @@
 		<ToggleCheckbox
 			bind:checked={$settings.parseTransactionMessage}
 			disabled={!$settings.showMetadata}
+			onChange={onParseTransactionMessageChange}
 		>
 			Parse transaction metadata into readable messages when possible
+		</ToggleCheckbox>
+		<ToggleCheckbox
+			bind:checked={$settings.parsePurchaseItem}
+			disabled={!$settings.parseTransactionMessage}
+			onChange={onParsePurchaseItemChange}
+		>
+			Parse transaction metadata into purchased item names when possible
+		</ToggleCheckbox>
+		<ToggleCheckbox
+			bind:checked={$settings.parsePurchaseItemQuantity}
+			disabled={!$settings.parsePurchaseItem}
+		>
+			Show quantity of purchased items when possible
+			<small
+				>Note: This isn't 100% reliable as it won't account for price changes over time and only
+				uses the newest price data.</small
+			>
 		</ToggleCheckbox>
 	</fieldset>
 	<fieldset>

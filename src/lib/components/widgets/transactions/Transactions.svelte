@@ -140,7 +140,7 @@
 								{#if $settings.showMetadata}
 									<td class="metadata">
 										{#if $settings.parseTransactionMessage}
-											<ParsedMetadata {meta} limitWidth={true} />
+											<ParsedMetadata transaction={{ ...transaction, meta }} limitWidth={true} />
 										{:else if transaction.metadata && transaction.metadata.length > 0}
 											<small>{transaction.metadata.substring(0, 75)}</small>
 										{:else}
