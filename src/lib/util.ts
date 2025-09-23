@@ -21,7 +21,7 @@ export const relativeTime = (date: Date): string => {
 };
 
 export const formatCurrency = (balance: number): string => {
-	return balance.toLocaleString(undefined, {
+	return Number(balance).toLocaleString(undefined, {
 		minimumFractionDigits: 2
 	});
 };

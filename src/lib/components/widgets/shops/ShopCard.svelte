@@ -3,15 +3,17 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faShop } from '@fortawesome/free-solid-svg-icons';
 	import { cleanShopData } from '$lib/stores/shopsync';
-	import {relativeTime} from '$lib/util';
+	import { relativeTime } from '$lib/util';
 	import Button from '$lib/components/ui/Button.svelte';
 
-	const { shop, children }: {
+	const {
+		shop,
+		children
+	}: {
 		shop: Shop;
 		children: unknown;
 	} = $props();
 </script>
-
 
 <div class="shop">
 	<div class="shop-head">
@@ -39,7 +41,7 @@
 		</div>
 	</div>
 	<div class="shop-body table-container">
-		{#if typeof(children) === "function"}
+		{#if typeof children === 'function'}
 			{@render children()}
 		{/if}
 	</div>
@@ -60,60 +62,58 @@
 </div>
 
 <style>
+	.shop {
+		display: flex;
+		flex-direction: column;
+		background-color: var(--background-color-1);
+		padding: 0.8em;
+		border-radius: 0.75em 0.25em;
+		box-shadow: var(--shadow);
+	}
 
+	.shop-head {
+		display: flex;
+		gap: 0.75em;
+		align-items: center;
+	}
 
-    .shop {
-        display: flex;
-        flex-direction: column;
-        background-color: var(--background-color-1);
-        padding: 0.8em;
-        border-radius: 0.75em 0.25em;
-        box-shadow: var(--shadow);
-    }
+	.shop-head-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1.2em;
+		width: 2em;
+		height: 2em;
+		background-color: var(--theme-color-2);
+		color: var(--background-color-1);
+		border-radius: 1em;
+		box-shadow: var(--shadow);
+		text-shadow: var(--shadow);
+	}
 
-    .shop-head {
-        display: flex;
-        gap: 0.75em;
-        align-items: center;
-    }
+	.shop-head-text {
+		flex-grow: 1;
+	}
 
-    .shop-head-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2em;
-        width: 2em;
-        height: 2em;
-        background-color: var(--theme-color-2);
-        color: var(--background-color-1);
-        border-radius: 1em;
-        box-shadow: var(--shadow);
-        text-shadow: var(--shadow);
-    }
+	.shop-head-text h3 {
+		margin: 0;
+		font-weight: 300;
+	}
 
-    .shop-head-text {
-        flex-grow: 1;
-    }
+	.shop-head-text small {
+		display: block;
+	}
 
-    .shop-head-text h3 {
-        margin: 0;
-        font-weight: 300;
-    }
+	.shop-body {
+		flex-grow: 1;
+		margin: 0.5em 0;
+	}
 
-    .shop-head-text small {
-        display: block;
-    }
+	.shop-body p {
+		margin: 0;
+	}
 
-    .shop-body {
-        flex-grow: 1;
-        margin: 0.5em 0;
-    }
-
-    .shop-body p {
-        margin: 0;
-    }
-
-    small[title] {
-        cursor: pointer;
-    }
+	small[title] {
+		cursor: pointer;
+	}
 </style>

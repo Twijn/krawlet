@@ -41,33 +41,33 @@
 			<ItemCard item={listing} showBadges={false}>
 				<table>
 					<thead>
-					<tr>
-						<th>Shop Name</th>
-						<th>Stock</th>
-						<th>Price</th>
-					</tr>
+						<tr>
+							<th>Shop Name</th>
+							<th>Stock</th>
+							<th>Price</th>
+						</tr>
 					</thead>
 					<tbody>
-					{#each listing.shops as shop (shop.listing.id)}
-						{@const stock = shop.listing.stock}
-						<tr>
-							<td>
-								<a href="/shops/{shop.id}">{cleanShopData(shop.name)}</a>
-							</td>
-							<td class="right">
-								{stock.toLocaleString()}
-							</td>
-							<td class="right">
-								{#if shop.listing.prices?.[0].value}
-									{@const price = shop.listing.prices[0]}
-									{formatCurrency(price.value)}
-									<small>{price.currency}</small>
-								{:else}
-									N/A
-								{/if}
-							</td>
-						</tr>
-					{/each}
+						{#each listing.shops as shop (shop.listing.id)}
+							{@const stock = shop.listing.stock}
+							<tr>
+								<td>
+									<a href="/shops/{shop.id}">{cleanShopData(shop.name)}</a>
+								</td>
+								<td class="right">
+									{stock.toLocaleString()}
+								</td>
+								<td class="right">
+									{#if shop.listing.prices?.[0].value}
+										{@const price = shop.listing.prices[0]}
+										{formatCurrency(price.value)}
+										<small>{price.currency}</small>
+									{:else}
+										N/A
+									{/if}
+								</td>
+							</tr>
+						{/each}
 					</tbody>
 				</table>
 			</ItemCard>

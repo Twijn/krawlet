@@ -7,6 +7,17 @@
 	export let type: 'button' | 'submit' | 'reset' = 'button';
 	export let disabled: boolean = false;
 	export let external: boolean = false;
+	export let title: string | undefined = undefined;
+
+	function handleClick(e: Event) {
+		if (disabled) {
+			e.preventDefault();
+			return false;
+		}
+		if (onClick) {
+			onClick(e);
+		}
+	}
 </script>
 
 {#if href}
@@ -17,11 +28,13 @@
 		class:full
 		target={newTab ? '_blank' : undefined}
 		rel={external ? 'external' : undefined}
+		{title}
+		onclick={handleClick}
 	>
 		<slot />
 	</a>
 {:else}
-	<button on:click={onClick} {type} class="button {variant}" {disabled} class:full>
+	<button onclick={handleClick} {type} class="button {variant}" {disabled} class:full>
 		<slot />
 	</button>
 {/if}
@@ -78,8 +91,9 @@
 
 	.disabled,
 	.button:disabled {
-		opacity: 0.6;
 		cursor: not-allowed;
+		background-color: #152127;
+		color: #acb2b3;
 	}
 
 	.full {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Section from '$lib/components/ui/Section.svelte';;
+	import Section from '$lib/components/ui/Section.svelte';
 	import type { Shop, Listing } from '$lib/types/shops';
 	import { formatCurrency } from '$lib/util';
 	import { faListNumeric } from '@fortawesome/free-solid-svg-icons';
@@ -32,20 +32,20 @@
 				<div class="item-body table-container">
 					<table>
 						<tbody>
-						<tr>
-							<th>Stock</th>
-							<td class="right">
-								{stock.toLocaleString()} <small>item{stock === 1 ? '' : 's'}</small>
-							</td>
-						</tr>
-						{#each item.prices ?? [] as price (price.id)}
-							{@const priceValue = Number(price.value)}
 							<tr>
-								<th>Price <small>({price.currency})</small></th>
-								<td class="right">{formatCurrency(priceValue)} <small>{price.currency}</small></td
-								>
+								<th>Stock</th>
+								<td class="right">
+									{stock.toLocaleString()} <small>item{stock === 1 ? '' : 's'}</small>
+								</td>
 							</tr>
-						{/each}
+							{#each item.prices ?? [] as price (price.id)}
+								{@const priceValue = Number(price.value)}
+								<tr>
+									<th>Price <small>({price.currency})</small></th>
+									<td class="right">{formatCurrency(priceValue)} <small>{price.currency}</small></td
+									>
+								</tr>
+							{/each}
 						</tbody>
 					</table>
 				</div>

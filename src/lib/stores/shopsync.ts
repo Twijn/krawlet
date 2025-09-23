@@ -55,9 +55,9 @@ export const getListingBuyLink = (item: Listing, lock: boolean = true): string =
 	}
 };
 
-export const getItemImageUrl = (item: Listing|ItemListing) => {
+export const getItemImageUrl = (item: Listing | ItemListing) => {
 	return `https://shops.alexdevs.me/assets/items/${item.itemName.replace(':', '/')}.png`;
-}
+};
 
 export type ShopWithListing = Shop & { listing: Listing };
 
@@ -118,12 +118,12 @@ export const getListingsByItem = (shops: FetchedStoreData<Shop>): ItemListing[] 
 	return listings;
 };
 
-export const getListing = (itemName: string, modId?: string): ItemListing|null => {
+export const getListing = (itemName: string, modId?: string): ItemListing | null => {
 	if (modId) {
-		itemName = modId + ":" + itemName;
+		itemName = modId + ':' + itemName;
 	}
 	const allListings = getListingsByItem(get(store));
 	return allListings.find((x) => x.itemName === itemName) ?? null;
-}
+};
 
 export default store;
