@@ -11,8 +11,50 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onMount } from 'svelte';
 	import ItemCard from '$lib/components/widgets/shops/ItemCard.svelte';
+	import { paramState } from '$lib/paramState.svelte';
+	import FilterSortControls from '$lib/components/widgets/shops/filtersort/ItemFilterSort.svelte';
 
 	let listings: ItemListing[] = $state([]);
+
+	let searchQuery = paramState('q', '', {
+		shouldSet: (v) => v.length > 0
+	});
+	let sortOption = paramState<'name-asc' | 'name-desc' | 'price-asc' | 'price-desc'>(
+		'sort',
+		'name-asc',
+		{
+			shouldSet: (v) => ['name-desc', 'price-asc', 'price-desc'].includes(v)
+		}
+	);
+
+	let filteredListings = $derived(
+		listings
+			.filter(
+				(listing) =>
+					listing.itemName.toLowerCase().includes(searchQuery.value) ||
+					listing.itemDisplayName.toLowerCase().includes(searchQuery.value)
+			)
+			.sort((a, b) => {
+				switch (sortOption.value) {
+					case 'name-asc':
+						return a.itemDisplayName.localeCompare(b.itemDisplayName);
+					case 'name-desc':
+						return b.itemDisplayName.localeCompare(a.itemDisplayName);
+					case 'price-asc':
+						return (
+							(a.shops[0]?.listing.prices?.[0]?.value || 0) -
+							(b.shops[0]?.listing.prices?.[0]?.value || 0)
+						);
+					case 'price-desc':
+						return (
+							(b.shops[0]?.listing.prices?.[0]?.value || 0) -
+							(a.shops[0]?.listing.prices?.[0]?.value || 0)
+						);
+					default:
+						return 0;
+				}
+			})
+	);
 
 	onMount(() => {
 		shopsync.subscribe((shops) => {
@@ -31,20 +73,22 @@
 	<a href="/shops/items">Items</a>
 </h1>
 
+<FilterSortControls bind:searchQuery={searchQuery.value} bind:sortOption={sortOption.value} />
+
 <Section lgCols={12}>
 	<h2><FontAwesomeIcon icon={faListNumeric} /> Items</h2>
 	{#if listings.length === 0}
 		<ModuleLoading />
 	{/if}
 	<div class="item-grid">
-		{#each listings as listing (listing.itemName + (':' + listing.itemNbt))}
+		{#each filteredListings as listing (listing.itemName + (':' + listing.itemNbt))}
 			<ItemCard item={listing} showBadges={false}>
 				<table>
 					<thead>
 						<tr>
 							<th>Shop Name</th>
-							<th>Stock</th>
-							<th>Price</th>
+							<th class="right">Stock</th>
+							<th class="right">Price</th>
 						</tr>
 					</thead>
 					<tbody>
