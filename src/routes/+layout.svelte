@@ -94,8 +94,7 @@
 		display: flex;
 		align-items: center;
 		background-color: var(--background-color-2);
-		padding: 0.5rem;
-		height: 3rem;
+		height: 3.8rem;
 		border-bottom: 0.1em solid var(--theme-color-2);
 		box-shadow: 0 0 1em rgba(0, 0, 0, 0.15);
 		z-index: 10;
@@ -117,7 +116,7 @@
 
 	aside {
 		position: fixed;
-		top: 4.1rem;
+		top: 3.8rem;
 		left: 0;
 		bottom: 0;
 		width: 250px;
@@ -137,7 +136,7 @@
 
 	#content {
 		overflow-y: auto;
-		margin-top: 4.1rem;
+		margin-top: 3.8rem;
 		padding: 1rem;
 		margin-left: 250px;
 		transition: margin-left 0.3s ease-in-out;
