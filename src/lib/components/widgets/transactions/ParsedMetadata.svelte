@@ -9,11 +9,9 @@
 	const SPECIAL_META: string[] = ['winner', 'loser', 'payout'];
 
 	const {
-		transaction,
-		limitWidth
+		transaction
 	}: {
 		transaction: TransactionWithMeta;
-		limitWidth: boolean;
 	} = $props();
 
 	const meta = transaction.meta ?? { entries: [] };
@@ -77,7 +75,7 @@
 	});
 </script>
 
-<div class="metadata" class:limit-width={limitWidth && !relatedListing}>
+<div class="metadata">
 	{#if meta.entries.find((x) => SPECIAL_META.includes(x.name.toLowerCase()))}
 		{#each meta.entries.filter( (x) => SPECIAL_META.includes(x.name.toLowerCase()) ) as entry (entry.name + ':' + entry.value)}
 			{@const name = entry.name.toLowerCase()}
@@ -116,11 +114,14 @@
 			</div>
 		</a>
 	{:else if displayMeta}
-		<span
-			class="display-meta"
-			class:error={displayMeta.name.toLowerCase() === 'error'}
-			class:message={['message', 'msg'].includes(displayMeta.name.toLowerCase())}
-		>
+		{@const isError = displayMeta.name.toLowerCase() === 'error'}
+		{@const isMessage = ['message', 'msg'].includes(displayMeta.name.toLowerCase())}
+		<span class="display-meta" class:error={isError} class:message={isMessage}>
+			{#if displayMeta.name.toLowerCase() == 'error'}
+				<strong>Error: </strong>
+			{:else if ['message', 'msg'].includes(displayMeta.name.toLowerCase())}
+				<strong>Message: </strong>
+			{/if}
 			{displayMeta.value ? displayMeta.value : displayMeta.name}
 		</span>
 	{:else}
@@ -129,10 +130,6 @@
 </div>
 
 <style>
-	.metadata.limit-width {
-		max-width: 20em;
-	}
-
 	.metadata span {
 		display: block;
 		max-width: 100%;
@@ -148,8 +145,15 @@
 	}
 
 	.display-meta {
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+
+	span.message strong,
+	span.error strong {
+		font-weight: 600;
 		color: rgb(var(--message-color));
-		font-weight: bold;
 	}
 
 	.display-meta:not(.error):not(.message) {
