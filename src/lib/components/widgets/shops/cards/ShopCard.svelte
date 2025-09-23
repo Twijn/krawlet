@@ -109,10 +109,6 @@
 		margin: 0.5em 0;
 	}
 
-	.shop-body p {
-		margin: 0;
-	}
-
 	small[title] {
 		cursor: pointer;
 	}

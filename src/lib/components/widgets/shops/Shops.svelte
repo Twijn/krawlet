@@ -7,7 +7,7 @@
 	import Address from '../addresses/Address.svelte';
 	import { onMount } from 'svelte';
 	import ModuleLoading from '../other/ModuleLoading.svelte';
-	import ShopCard from '$lib/components/widgets/shops/ShopCard.svelte';
+	import ShopCard from '$lib/components/widgets/shops/cards/ShopCard.svelte';
 	import ShopFilterSort from './filtersort/ShopFilterSort.svelte';
 	import { paramState } from '$lib/paramState.svelte';
 

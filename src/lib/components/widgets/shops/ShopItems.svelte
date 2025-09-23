@@ -4,7 +4,7 @@
 	import { formatCurrency } from '$lib/util';
 	import { faListNumeric } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import ItemCard from '$lib/components/widgets/shops/ItemCard.svelte';
+	import ItemCard from '$lib/components/widgets/shops/cards/ItemCard.svelte';
 	import ItemFilterSort from './filtersort/ItemFilterSort.svelte';
 	import { paramState } from '$lib/paramState.svelte';
 

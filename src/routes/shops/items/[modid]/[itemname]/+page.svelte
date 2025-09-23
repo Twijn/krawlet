@@ -13,7 +13,7 @@
 	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faShop } from '@fortawesome/free-solid-svg-icons';
-	import ShopCard from '$lib/components/widgets/shops/ShopCard.svelte';
+	import ShopCard from '$lib/components/widgets/shops/cards/ShopCard.svelte';
 
 	const { params } = $props();
 

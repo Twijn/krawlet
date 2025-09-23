@@ -10,7 +10,7 @@
 	import { faListNumeric } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onMount } from 'svelte';
-	import ItemCard from '$lib/components/widgets/shops/ItemCard.svelte';
+	import ItemCard from '$lib/components/widgets/shops/cards/ItemCard.svelte';
 	import { paramState } from '$lib/paramState.svelte';
 	import FilterSortControls from '$lib/components/widgets/shops/filtersort/ItemFilterSort.svelte';
 
