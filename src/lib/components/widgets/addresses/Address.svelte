@@ -128,19 +128,30 @@
 	}
 
 	.special img {
-		width: 1em;
-		height: 1em;
+		width: 0.9em;
+		height: 0.9em;
 		vertical-align: middle;
-		border-radius: 0.1em;
+		border-radius: 0.15em;
 	}
 
 	.special :global(svg) {
 		color: rgba(var(--color), 0.5);
 	}
 
+	.special img,
+	.special :global(svg) {
+		opacity: 0.8;
+		transition: 0.25s;
+	}
+
+	.special:hover img,
+	.special:hover :global(svg) {
+		opacity: 1;
+	}
+
 	.copy-address {
 		font-size: 1rem;
-		color: rgba(255, 255, 255, 0.5);
+		color: rgba(255, 255, 255, 0.25);
 		background-color: transparent;
 		padding: 0;
 		margin: 0;
@@ -151,6 +162,6 @@
 
 	.copy-address:hover,
 	.copy-address:focus-visible {
-		color: rgba(255, 255, 255, 0.25);
+		color: rgba(255, 255, 255, 0.4);
 	}
 </style>

@@ -104,8 +104,8 @@
 						<tr>
 							<th class="center">ID</th>
 							<th>Type</th>
-							<th>From</th>
-							<th>To</th>
+							<th class="right">From</th>
+							<th class="right">To</th>
 							<th class="right">Value</th>
 							{#if $settings.showMetadata}
 								<th>{$settings.parseTransactionMessage ? 'Message' : 'Metadata'}</th>
@@ -128,12 +128,12 @@
 										? 'welfare'
 										: transaction.type.replace(/_/g, ' ')}</td
 								>
-								<td>
+								<td class="right">
 									{#if transaction.from}
 										<Address address={transaction.from} />
 									{/if}
 								</td>
-								<td>
+								<td class="right">
 									<Address address={transaction.to} />
 								</td>
 								<td class="right">{formatCurrency(transaction.value)} <small>KRO</small></td>
