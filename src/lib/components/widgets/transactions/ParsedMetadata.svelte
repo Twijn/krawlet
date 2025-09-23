@@ -105,7 +105,7 @@
 			<div class="item-info">
 				<strong
 					>{relatedListing.itemDisplayName}
-					<small>{quantity > 0 ? `x${quantity}` : ''}</small></strong
+					<small>{quantity > 0 ? `x${quantity.toLocaleString()}` : ''}</small></strong
 				>
 				{#if $settings.parsePurchaseItemQuantity && relatedListing?.prices}
 					{@const price = relatedListing.prices.find((p) => p.currency.toLowerCase() === 'kro')}
