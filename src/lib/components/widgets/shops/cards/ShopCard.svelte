@@ -66,6 +66,8 @@
 		display: flex;
 		flex-direction: column;
 		background-color: var(--background-color-1);
+		min-width: 0;
+		max-width: 100%;
 		padding: 0.8em;
 		border-radius: 0.75em 0.25em;
 		box-shadow: var(--shadow);
