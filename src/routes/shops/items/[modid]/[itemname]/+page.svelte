@@ -14,6 +14,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faShop } from '@fortawesome/free-solid-svg-icons';
 	import ShopCard from '$lib/components/widgets/shops/cards/ShopCard.svelte';
+	import ItemBadges from '$lib/components/widgets/shops/ItemBadges.svelte';
 
 	const { params } = $props();
 
@@ -132,7 +133,8 @@
 			{#each item.shops as shop (shop.listing.id)}
 				{@const stock = Number(shop.listing.stock)}
 				<ShopCard {shop}>
-					<div class="item-body table-container">
+					<ItemBadges item={shop.listing} />
+					<div class="table-container">
 						<table>
 							<tbody>
 								<tr>

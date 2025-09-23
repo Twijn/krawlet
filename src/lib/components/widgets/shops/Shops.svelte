@@ -82,33 +82,35 @@
 			{@const items = shop.items ?? []}
 			{@const totalStock = items.reduce((v, l) => v + l.stock, 0)}
 			<ShopCard {shop}>
-				<table>
-					<tbody>
-						<tr>
-							<th>Total Items</th>
-							<td class="right"
-								>{items.length} <small>listing{items.length === 1 ? '' : 's'}</small></td
-							>
-						</tr>
-						<tr>
-							<th>Total Stock</th>
-							<td class="right"
-								>{totalStock.toLocaleString()}
-								<small>item{totalStock === 1 ? '' : 's'}</small></td
-							>
-						</tr>
-						{#if shop.addresses}
-							{#each shop.addresses as address (address)}
-								{#if address.length === 10 && address.startsWith('k')}
-									<tr>
-										<th>Address</th>
-										<td class="right"><Address {address} /></td>
-									</tr>
-								{/if}
-							{/each}
-						{/if}
-					</tbody>
-				</table>
+				<div class="table-container">
+					<table>
+						<tbody>
+							<tr>
+								<th>Total Items</th>
+								<td class="right"
+									>{items.length} <small>listing{items.length === 1 ? '' : 's'}</small></td
+								>
+							</tr>
+							<tr>
+								<th>Total Stock</th>
+								<td class="right"
+									>{totalStock.toLocaleString()}
+									<small>item{totalStock === 1 ? '' : 's'}</small></td
+								>
+							</tr>
+							{#if shop.addresses}
+								{#each shop.addresses as address (address)}
+									{#if address.length === 10 && address.startsWith('k')}
+										<tr>
+											<th>Address</th>
+											<td class="right"><Address {address} /></td>
+										</tr>
+									{/if}
+								{/each}
+							{/if}
+						</tbody>
+					</table>
+				</div>
 			</ShopCard>
 		{/each}
 	</div>

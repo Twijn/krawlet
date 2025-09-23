@@ -40,7 +40,7 @@
 			{/if}
 		</div>
 	</div>
-	<div class="shop-body table-container">
+	<div class="shop-body">
 		{#if typeof children === 'function'}
 			{@render children()}
 		{/if}
