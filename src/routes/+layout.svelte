@@ -10,6 +10,7 @@
 	import '@fontsource/inter/300.css';
 	import '@fontsource/inter/400.css';
 	import '@fontsource/inter/500.css';
+	import '@fontsource/inter/600.css';
 	import Navigation from '$lib/components/ui/Navigation.svelte';
 	import { VERSION } from '$lib/consts';
 	import Notifications from '$lib/components/dialogs/Notifications.svelte';
