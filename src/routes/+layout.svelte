@@ -135,7 +135,6 @@
 	}
 
 	#content {
-		overflow-y: auto;
 		margin-top: 3.8rem;
 		padding: 1rem;
 		margin-left: 250px;

@@ -3,16 +3,20 @@
 
 	import playerWalletStore, { type Player } from '$lib/stores/playerWallets';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faBuilding, faCheck, faCopy, faDice, faStore } from '@fortawesome/free-solid-svg-icons';
+	import { faBuilding, faCheck, faCopy, faDice, faStore, faWallet } from '@fortawesome/free-solid-svg-icons';
 	import { notifications } from '$lib/stores/notifications';
 	import { getAddress, type KnownAddress } from '$lib/stores/knownAddresses';
-	import settings from '$lib/stores/settings';
+	import settings, { type Wallet } from '$lib/stores/settings';
 
-	const {
-		address
+	let {
+		address = $bindable(),
 	}: {
 		address: string;
 	} = $props();
+
+	let wallet: Wallet | null = $derived(
+		$settings.wallets.find(x => x.address === address) ?? null
+	)
 
 	let player: Player | null = $derived(
 		$playerWalletStore.data.find((x) => x.kromerAddress === address) ?? null
@@ -34,6 +38,7 @@
 
 	let special = $derived(
 		Boolean(
+			(wallet) ||
 			(player && $settings.replaceAddressesWithPlayer) ||
 				(verifiedEntry && $settings.replaceAddressesWithKnown)
 		)
@@ -43,6 +48,7 @@
 <a
 	href="/addresses/{address}"
 	class:special
+	class:wallet={Boolean(wallet)}
 	class:player={$settings.replaceAddressesWithPlayer && Boolean(player)}
 	class:official={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'official'}
 	class:shop={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'shop'}
@@ -69,6 +75,9 @@
 			alt="Avatar for {player.minecraftName}"
 		/>
 		{player.minecraftName}
+	{:else if wallet}
+		<FontAwesomeIcon icon={faWallet} />
+		{wallet.name}
 	{:else}
 		{address}
 	{/if}
@@ -88,6 +97,10 @@
 	a:not(.special) {
 		font-size: 1.1em;
 		font-family: monospace;
+	}
+
+	.wallet {
+		--color: 235, 200, 250;
 	}
 
 	.player {

@@ -335,6 +335,10 @@ select[disabled] {
 	color: rgb(var(--red));
 }
 
+button {
+	font-family: var(--font-family), sans-serif;
+}
+
 .relative {
 	position: relative;
 	min-height: 15em;
@@ -382,6 +386,14 @@ th {
 
 .right {
 	text-align: right;
+}
+
+.bold-500 {
+	font-weight: 500;
+}
+
+.bold-600 {
+	font-weight: 500;
 }
 
 .caps {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Send from '$lib/components/widgets/transactions/MakeTransaction.svelte';
+	import Send from '$lib/components/widgets/transactions/Send.svelte';
 </script>
 
 <svelte:head>
@@ -18,6 +18,6 @@
 
 <style>
 	div {
-		max-width: 480px;
+		max-width: 900px;
 	}
 </style>
