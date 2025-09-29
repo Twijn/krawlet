@@ -18,6 +18,6 @@
 
 <style>
 	div {
-		max-width: 900px;
+		max-width: 50em;
 	}
 </style>

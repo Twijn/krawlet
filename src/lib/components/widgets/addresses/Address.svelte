@@ -3,20 +3,27 @@
 
 	import playerWalletStore, { type Player } from '$lib/stores/playerWallets';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faBuilding, faCheck, faCopy, faDice, faStore, faWallet } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faBuilding,
+		faCheck,
+		faCopy,
+		faDice,
+		faStore,
+		faWallet
+	} from '@fortawesome/free-solid-svg-icons';
 	import { notifications } from '$lib/stores/notifications';
 	import { getAddress, type KnownAddress } from '$lib/stores/knownAddresses';
 	import settings, { type Wallet } from '$lib/stores/settings';
 
 	let {
-		address = $bindable(),
+		address = $bindable()
 	}: {
 		address: string;
 	} = $props();
 
 	let wallet: Wallet | null = $derived(
-		$settings.wallets.find(x => x.address === address) ?? null
-	)
+		$settings.wallets.find((x) => x.address === address) ?? null
+	);
 
 	let player: Player | null = $derived(
 		$playerWalletStore.data.find((x) => x.kromerAddress === address) ?? null
@@ -38,8 +45,8 @@
 
 	let special = $derived(
 		Boolean(
-			(wallet) ||
-			(player && $settings.replaceAddressesWithPlayer) ||
+			wallet ||
+				(player && $settings.replaceAddressesWithPlayer) ||
 				(verifiedEntry && $settings.replaceAddressesWithKnown)
 		)
 	);

@@ -15,6 +15,7 @@
 	import { VERSION } from '$lib/consts';
 	import Notifications from '$lib/components/dialogs/Notifications.svelte';
 	import Confirm from '$lib/components/dialogs/Confirm.svelte';
+	import Prompt from '$lib/components/dialogs/Prompt.svelte';
 
 	config.autoAddCss = false;
 
@@ -84,6 +85,7 @@
 
 <Notifications />
 <Confirm />
+<Prompt />
 
 <style>
 	header {

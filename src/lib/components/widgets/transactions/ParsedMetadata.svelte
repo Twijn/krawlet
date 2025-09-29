@@ -117,7 +117,7 @@
 		{@const isError = displayMeta.name.toLowerCase() === 'error'}
 		{@const isMessage = ['message', 'msg'].includes(displayMeta.name.toLowerCase())}
 		<span class="display-meta" class:error={isError} class:message={isMessage}>
-			{#if displayMeta.name.toLowerCase() == 'error'}
+			{#if displayMeta.name.toLowerCase() === 'error'}
 				<strong>Error: </strong>
 			{:else if ['message', 'msg'].includes(displayMeta.name.toLowerCase())}
 				<strong>Message: </strong>
