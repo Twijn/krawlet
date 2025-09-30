@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/Button.svelte';
 	import {
 		canBuyListing,
 		getItemImageUrl,
@@ -6,7 +7,6 @@
 		type ItemListing
 	} from '$lib/stores/shopsync';
 	import type { Listing } from '$lib/types/shops';
-	import Button from '$lib/components/ui/Button.svelte';
 	import ItemBadges from '../ItemBadges.svelte';
 
 	const {
@@ -65,7 +65,12 @@
 		{/if}
 
 		{#if showViewLink}
-			<Button variant="primary" href="/shops/items/{item.itemName.replace(/:/g, '/')}">
+			<Button
+				variant="primary"
+				href="/shops/items/{item.itemName.replace(/:/g, '/')}{item.itemNbt
+					? `?nbt=${encodeURIComponent(item.itemNbt)}`
+					: ''}"
+			>
 				View Item
 			</Button>
 		{/if}
