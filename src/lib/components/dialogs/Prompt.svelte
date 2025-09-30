@@ -46,6 +46,12 @@
 			value = "";
 		}
 	});
+
+	function handleKeyUp(e: KeyboardEvent) {
+		if (e.key !== 'Enter') {
+			prompt.clearErrors();
+		}
+	}
 </script>
 
 {#if $prompt}
@@ -66,7 +72,7 @@
 						type={$prompt.type}
 						bind:value
 						bind:this={inputElement}
-						onkeyup={() => prompt.clearErrors()}
+						onkeyup={handleKeyUp}
 					/>
 				</label>
 				<div class="modal-buttons">

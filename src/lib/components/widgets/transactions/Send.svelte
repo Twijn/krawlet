@@ -46,12 +46,12 @@
 	});
 
 	function copyPayCommand() {
-		if (!to) {
+		if (!to.value) {
 			notifications.error('You must select a recipient!');
 		} else if (amount.value === 0) {
 			notifications.error('Transaction amount must be greater than 0!');
 		} else {
-			let command = `/pay ${to} ${amount.value} ${metadata.value}`.trim();
+			let command = `/pay ${to.value} ${amount.value} ${metadata.value}`.trim();
 			navigator.clipboard.writeText(command).then(
 				() => {
 					notifications.success(`Copied '${command}' to clipboard!`);

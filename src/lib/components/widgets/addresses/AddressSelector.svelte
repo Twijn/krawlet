@@ -19,9 +19,10 @@
 	import type { Address } from 'kromer';
 	import { notifications } from '$lib/stores/notifications';
 	import { prompt } from '$lib/stores/prompt';
+	import { onMount } from 'svelte';
 
 	const NAME_REGEX = /^(\w+@)?(\w+)\.kro$/;
-	const ADDRESS_REGEX = /k[a-z]{9}/;
+	const ADDRESS_REGEX = /k[a-z0-9]{9}/;
 
 	const PER_FILTER_LIMIT = 5;
 
@@ -134,13 +135,7 @@
 
 	let exactResult: string | null = $state(null);
 
-	function handleKeyUp(e: KeyboardEvent) {
-		if (e.key === 'Enter' && filteredAddresses.length === 1) {
-			setAddress(filteredAddresses[0]);
-		} else if (query !== address) {
-			clear();
-		}
-
+	function updateExact() {
 		if (mode === 'address') {
 			const nameMatch = query.match(NAME_REGEX);
 			if (nameMatch && nameMatch[2]) {
@@ -180,11 +175,25 @@
 		}
 	}
 
+	function handleKeyUp(e: KeyboardEvent) {
+		if (e.key === 'Enter' && filteredAddresses.length === 1) {
+			setAddress(filteredAddresses[0]);
+		} else if (query !== address) {
+			clear();
+		}
+
+		updateExact();
+	}
+
 	function handleKeyDown(e: KeyboardEvent) {
 		if (e.key === 'Enter') {
 			e.preventDefault();
 		}
 	}
+
+	onMount(() => {
+		updateExact();
+	});
 
 	$effect(() => {
 		if (loading) return;
