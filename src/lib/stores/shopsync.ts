@@ -125,12 +125,19 @@ export const getListingsByItem = (shops: FetchedStoreData<Shop>): ItemListing[] 
 	return listings;
 };
 
-export const getListing = (itemName: string, modId?: string): ItemListing | null => {
+export const getListing = (itemName: string, modId?: string, nbt?: string | null): ItemListing | null => {
 	if (modId) {
 		itemName = modId + ':' + itemName;
 	}
 	const allListings = getListingsByItem(get(store));
-	return allListings.find((x) => x.itemName === itemName) ?? null;
+
+	const requiresNbt = itemsRequiringNbt.includes(itemName.toLowerCase());
+	const listing = allListings.find(
+		(x) =>
+			x.itemName === itemName &&
+			(!requiresNbt || x.itemNbt === nbt)
+	);
+	return listing ?? null;
 };
 
 export default store;

@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
+	import Section from '$lib/components/ui/Section.svelte';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
+	import ShopCard from '$lib/components/widgets/shops/cards/ShopCard.svelte';
+	import ItemBadges from '$lib/components/widgets/shops/ItemBadges.svelte';
 	import {
 		cleanShopData,
 		getItemImageUrl,
@@ -8,20 +12,20 @@
 		type ItemListing,
 		type ShopWithListing
 	} from '$lib/stores/shopsync';
-	import { onMount } from 'svelte';
 	import { formatCurrency } from '$lib/util';
-	import Section from '$lib/components/ui/Section.svelte';
-	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faShop } from '@fortawesome/free-solid-svg-icons';
-	import ShopCard from '$lib/components/widgets/shops/cards/ShopCard.svelte';
-	import ItemBadges from '$lib/components/widgets/shops/ItemBadges.svelte';
+	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+	import { onMount } from 'svelte';
 
 	const { params } = $props();
+	const { url } = page;
+
+	const nbt = url.searchParams.get('nbt');
 
 	let item = $state<ItemListing | null>(null);
 
 	onMount(() => {
-		item = getListing(params.itemname, params.modid);
+		item = getListing(params.itemname, params.modid, nbt);
 		if (!item) {
 			goto('/shops/items?error=not-found');
 		}
