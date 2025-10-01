@@ -11,6 +11,7 @@
 		faBuilding,
 		faCheck,
 		faDice,
+		faPencil,
 		faStore,
 		faWallet,
 		type IconDefinition
@@ -176,9 +177,16 @@
 	}
 
 	function handleKeyUp(e: KeyboardEvent) {
-		if (e.key === 'Enter' && filteredAddresses.length === 1) {
-			setAddress(filteredAddresses[0]);
+		if (e.key === 'Enter') {
+			if (filteredAddresses.length === 1) {
+				setAddress(filteredAddresses[0]);
+			} else if (mode === 'privatekey' && exactResult) {
+				privateKeyExactResult(query);
+			}
 		} else if (query !== address) {
+			if (mode === "privatekey" && kromer.addresses.decodeAddressFromPrivateKey(query) === exactResult) {
+				return;
+			}
 			clear();
 		}
 
@@ -254,7 +262,7 @@
 	<label>
 		{label}
 		<input
-			type="text"
+			type={mode === "privatekey" && exactResult && filteredAddresses.length === 0 ? "password" : "text"}
 			name="query-{label.toLowerCase()}"
 			placeholder="Search for addresses..."
 			bind:value={query}
@@ -292,6 +300,14 @@
 					</button>
 				</li>
 			{/each}
+		{:else if mode === "privatekey" && !exactResult}
+			<li>
+				<a href="/wallets">
+					You don't have any wallets saved!
+					<br><br>
+					Click here to add a new one, or enter a private key above to use it once.
+				</a>
+			</li>
 		{/if}
 		{#if mode === 'address'}
 			{#if filteredPlayers.length > 0}
@@ -338,6 +354,7 @@
 			<li><strong>Exact Result</strong></li>
 			<li>
 				<button type="button" onclick={() => privateKeyExactResult(query)}>
+					<FontAwesomeIcon icon={faPencil} />
 					<span class="bold-500">{exactResult}</span>
 				</button>
 			</li>
@@ -420,6 +437,16 @@
 
 	.dropdown button :global(svg) {
 		opacity: 0.5;
+	}
+
+	.dropdown a {
+		display: block;
+		color: var(--text-color-2);
+		text-decoration: none;
+		font-size: .8em;
+		line-height: .9em;
+		text-align: center;
+		padding: .6em .75em;
 	}
 
 	.detail {
