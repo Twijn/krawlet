@@ -147,6 +147,9 @@
 				step="0.01"
 				bind:value={amount.value}
 			/>
+			<button type="button" class="link" onclick={() => (amount.value = balances[fromAddress] ?? 0)}>
+				Set to current balance (max)
+			</button>
 		</label>
 		<MetaInput bind:metadata={metadata.value} />
 		<div class="buttons">

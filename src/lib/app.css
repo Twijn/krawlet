@@ -339,6 +339,21 @@ button {
 	font-family: var(--font-family), sans-serif;
 }
 
+button.link {
+	font-size: 0.9rem;
+	background-color: transparent;
+	color: var(--theme-color-2);
+	border: none;
+	margin: 0;
+	padding: 0;
+	cursor: pointer;
+}
+
+button.link:hover,
+button.link:focus-visible {
+	text-decoration: underline;
+}
+
 .relative {
 	position: relative;
 	min-height: 15em;
