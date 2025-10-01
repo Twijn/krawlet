@@ -300,7 +300,7 @@
 					</button>
 				</li>
 			{/each}
-		{:else if mode === "privatekey" && !exactResult}
+		{:else if mode === "privatekey" && !exactResult && !allAddresses.find(x => 'private' in x)}
 			<li>
 				<a href="/wallets">
 					You don't have any wallets saved!
