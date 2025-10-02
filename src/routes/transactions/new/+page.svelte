@@ -3,8 +3,8 @@
 	import ItemPurchase from '$lib/components/widgets/transactions/ItemPurchase.svelte';
 	import { paramState } from '$lib/paramState.svelte';
 
-	const type = paramState<'transfer'|'purchase'>('type', 'transfer', {
-		shouldSet: (v) => ['purchase'].includes(v),
+	const type = paramState<'transfer' | 'purchase'>('type', 'transfer', {
+		shouldSet: (v) => ['purchase'].includes(v)
 	});
 </script>
 
@@ -19,9 +19,9 @@
 </h1>
 
 <div class="col-12">
-	{#if type.value === "transfer"}
+	{#if type.value === 'transfer'}
 		<Send />
-	{:else if type.value === "purchase"}
+	{:else if type.value === 'purchase'}
 		<ItemPurchase />
 	{/if}
 </div>

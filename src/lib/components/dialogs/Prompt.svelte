@@ -43,7 +43,7 @@
 		if ($prompt && inputElement) {
 			inputElement.focus();
 		} else {
-			value = "";
+			value = '';
 		}
 	});
 
@@ -68,12 +68,7 @@
 				<p class="modal-message">{$prompt.message}</p>
 				<label>
 					{$prompt.inputLabel}
-					<input
-						type={$prompt.type}
-						bind:value
-						bind:this={inputElement}
-						onkeyup={handleKeyUp}
-					/>
+					<input type={$prompt.type} bind:value bind:this={inputElement} onkeyup={handleKeyUp} />
 				</label>
 				<div class="modal-buttons">
 					<Button variant="secondary" type="button" onClick={() => $prompt.cancel?.()}>

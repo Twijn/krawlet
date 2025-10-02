@@ -4,7 +4,7 @@
 
 	let {
 		metadata = $bindable(),
-		lock = $bindable(false),
+		lock = $bindable(false)
 	}: {
 		metadata: string;
 		lock?: boolean;
@@ -40,7 +40,7 @@
 
 	{#if !lock}
 		<button type="button" class="link" onclick={toggleRaw}
-		>Switch to {useCommonMeta.value ? 'Raw Metadata' : 'CommonMeta'}</button
+			>Switch to {useCommonMeta.value ? 'Raw Metadata' : 'CommonMeta'}</button
 		>
 	{/if}
 </div>

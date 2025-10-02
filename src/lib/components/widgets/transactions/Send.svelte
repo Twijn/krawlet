@@ -147,7 +147,11 @@
 				step="0.01"
 				bind:value={amount.value}
 			/>
-			<button type="button" class="link" onclick={() => (amount.value = balances[fromAddress] ?? 0)}>
+			<button
+				type="button"
+				class="link"
+				onclick={() => (amount.value = balances[fromAddress] ?? 0)}
+			>
 				Set to current balance (max)
 			</button>
 		</label>
@@ -167,6 +171,6 @@
 
 <style>
 	form {
-			position: relative;
+		position: relative;
 	}
 </style>

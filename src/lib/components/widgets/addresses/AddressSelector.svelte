@@ -90,7 +90,7 @@
 		selected = null;
 		address = '';
 		exactResult = null;
-		privatekey = "";
+		privatekey = '';
 	}
 
 	function setAddress(addr: Addr | Address, setQuery: boolean = true) {
@@ -184,7 +184,10 @@
 				privateKeyExactResult(query);
 			}
 		} else if (query !== address) {
-			if (mode === "privatekey" && kromer.addresses.decodeAddressFromPrivateKey(query) === exactResult) {
+			if (
+				mode === 'privatekey' &&
+				kromer.addresses.decodeAddressFromPrivateKey(query) === exactResult
+			) {
 				return;
 			}
 			clear();
@@ -262,7 +265,9 @@
 	<label>
 		{label}
 		<input
-			type={mode === "privatekey" && exactResult && filteredAddresses.length === 0 ? "password" : "text"}
+			type={mode === 'privatekey' && exactResult && filteredAddresses.length === 0
+				? 'password'
+				: 'text'}
 			name="query-{label.toLowerCase()}"
 			placeholder="Search for addresses..."
 			bind:value={query}
@@ -300,11 +305,11 @@
 					</button>
 				</li>
 			{/each}
-		{:else if mode === "privatekey" && !exactResult && !allAddresses.find(x => 'private' in x)}
+		{:else if mode === 'privatekey' && !exactResult && !allAddresses.find((x) => 'private' in x)}
 			<li>
 				<a href="/wallets">
 					You don't have any wallets saved!
-					<br><br>
+					<br /><br />
 					Click here to add a new one, or enter a private key above to use it once.
 				</a>
 			</li>
@@ -443,10 +448,10 @@
 		display: block;
 		color: var(--text-color-2);
 		text-decoration: none;
-		font-size: .8em;
-		line-height: .9em;
+		font-size: 0.8em;
+		line-height: 0.9em;
 		text-align: center;
-		padding: .6em .75em;
+		padding: 0.6em 0.75em;
 	}
 
 	.detail {

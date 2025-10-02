@@ -14,7 +14,7 @@
 	import Address from '../addresses/Address.svelte';
 	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import { onMount } from 'svelte';
-	import {formatCurrency} from '$lib/util';
+	import { formatCurrency } from '$lib/util';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -37,17 +37,20 @@
 
 	onMount(() => {
 		if (to.value && to.value.length === 10) {
-			kromer.addresses.get(to.value).then((addr) => {
-				balances[addr.address] = addr.balance;
-			}).catch(() => {
-				// Ignore
-			});
+			kromer.addresses
+				.get(to.value)
+				.then((addr) => {
+					balances[addr.address] = addr.balance;
+				})
+				.catch(() => {
+					// Ignore
+				});
 		}
 	});
 
 	let lock = paramState('lock', false, {
 		deserialize: (value: string) => value === 'true',
-		shouldSet: v => v
+		shouldSet: (v) => v
 	});
 
 	let to = paramState('to', '', {
@@ -140,7 +143,9 @@
 		return false;
 	}
 
-	let priceText = $derived(`${formatCurrency(unitPrice.value)} KRO ea. * ${quantity.value ?? 0} = ${formatCurrency(amount)} KRO`);
+	let priceText = $derived(
+		`${formatCurrency(unitPrice.value)} KRO ea. * ${quantity.value ?? 0} = ${formatCurrency(amount)} KRO`
+	);
 </script>
 
 {#if unitPrice.value <= 0}
@@ -149,7 +154,7 @@
 			Please provide a unit price in the "unit_price" query parameter to send a purchase.
 		</Alert>
 	</div>
-{:else if to.value && to.value.length === 10 && typeof(balances[to.value]) === "number"}
+{:else if to.value && to.value.length === 10 && typeof balances[to.value] === 'number'}
 	<Section {lgCols} {mdCols} {smCols}>
 		<h2><FontAwesomeIcon icon={faPaperPlane} /> Send Kromer</h2>
 		<form method="POST">
@@ -193,12 +198,7 @@
 			</label>
 			<label>
 				Price
-				<input
-					type="text"
-					name="price"
-					bind:value={priceText}
-					disabled
-				/>
+				<input type="text" name="price" bind:value={priceText} disabled />
 			</label>
 			<MetaInput bind:metadata={metadata.value} bind:lock={lock.value} />
 			<div class="buttons">
@@ -227,6 +227,6 @@
 	}
 
 	.recipient-text {
-		margin: 0 0 .5em 0;
+		margin: 0 0 0.5em 0;
 	}
 </style>
