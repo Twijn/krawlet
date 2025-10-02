@@ -49,7 +49,7 @@ export const getListingBuyLink = (item: Listing, lock: boolean = true): string =
 	}
 
 	if (type === 'kro') {
-		return `/transactions/new?to_address=${encodeURIComponent(item?.addresses?.[0] ?? '')}&amount_ea=${item.prices?.[0]?.value ?? 1}&quantity_max=${item.stock}&metadata=${encodeURIComponent(item.prices?.[0].requiredMeta ?? '')}${lock ? '&lock=true' : ''}`;
+		return `/transactions/new?type=purchase&to=${encodeURIComponent(item?.addresses?.[0] ?? '')}&unit_price=${item.prices?.[0]?.value ?? 1}&max_quantity=${item.stock}&metadata=${encodeURIComponent(item.prices?.[0].requiredMeta ?? '')}${lock ? '&lock=true' : ''}`;
 	} else {
 		return `https://krist.club/send?to=${encodeURIComponent(item?.addresses?.[0] ?? '')}&amount=${item.prices?.[0]?.value ?? 1}&metadata=${encodeURIComponent(item.prices?.[0].requiredMeta ?? '')}`;
 	}

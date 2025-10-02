@@ -3,9 +3,11 @@
 	import { notifications } from '$lib/stores/notifications';
 
 	let {
-		metadata = $bindable()
+		metadata = $bindable(),
+		lock = $bindable(false),
 	}: {
 		metadata: string;
+		lock?: boolean;
 	} = $props();
 
 	let useCommonMeta = paramState('common_meta', false, {
@@ -31,13 +33,16 @@
 				name="raw-metadata"
 				bind:value={metadata}
 				placeholder="key=value;anotherkey=anothervalue"
+				disabled={lock}
 			></textarea>
 		</label>
 	{/if}
 
-	<button type="button" class="link" onclick={toggleRaw}
+	{#if !lock}
+		<button type="button" class="link" onclick={toggleRaw}
 		>Switch to {useCommonMeta.value ? 'Raw Metadata' : 'CommonMeta'}</button
-	>
+		>
+	{/if}
 </div>
 
 <style>
