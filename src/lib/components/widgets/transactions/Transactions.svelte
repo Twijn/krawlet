@@ -134,7 +134,15 @@
 									{/if}
 								</td>
 								<td class="right">
-									<Address address={transaction.to} />
+									{#if transaction.sent_name}
+										<a href="/addresses/{transaction.to}" title="Go to {transaction.to}">
+											{transaction.sent_metaname
+												? `${transaction.sent_metaname}@`
+												: ''}{transaction.sent_name}.kro
+										</a>
+									{:else}
+										<Address address={transaction.to} />
+									{/if}
 								</td>
 								<td class="right">{formatCurrency(transaction.value)} <small>KRO</small></td>
 								{#if $settings.showMetadata}

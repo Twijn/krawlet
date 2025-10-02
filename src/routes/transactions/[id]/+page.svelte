@@ -93,6 +93,18 @@
 						<Address address={transaction.to} />
 					</td>
 				</tr>
+				{#if transaction.sent_name}
+					<tr>
+						<th>Sent to Name</th>
+						<td class="right">
+							<code
+								>{transaction.sent_metaname
+									? `${transaction.sent_metaname}@`
+									: ''}{transaction.sent_name}<small>.kro</small></code
+							>
+						</td>
+					</tr>
+				{/if}
 				<tr>
 					<th>Amount</th>
 					<td class="right">
