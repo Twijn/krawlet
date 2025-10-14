@@ -223,6 +223,12 @@
 		if (addresses.length > 0) {
 			loading = true;
 			kromer.addresses.getMultiple(addresses).then((addrs) => {
+				// Initially set all retrieve balances to 0, then update with actual balances
+				// This prevents unknown addresses from being continuously fetched
+				for (const addr of addresses) {
+					balances[addr] = 0;
+				}
+
 				for (const [address, addressObj] of Object.entries(addrs)) {
 					balances[address] = addressObj.balance;
 				}
