@@ -3,6 +3,7 @@
 		canBuyListing,
 		getItemImageUrl,
 		getListingBuyLink,
+		getRelativeItemUrl,
 		type ItemListing
 	} from '$lib/stores/shopsync';
 	import type { Listing } from '$lib/types/shops';
@@ -65,14 +66,7 @@
 		{/if}
 
 		{#if showViewLink}
-			<Button
-				variant="primary"
-				href="/shops/items/{item.itemName.replace(/:/g, '/')}{item.itemNbt
-					? `/${item.itemNbt}`
-					: ''}"
-			>
-				View Item
-			</Button>
+			<Button variant="primary" href={getRelativeItemUrl(item)}>View Item</Button>
 		{/if}
 	</div>
 </div>

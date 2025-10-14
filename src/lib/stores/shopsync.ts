@@ -63,7 +63,7 @@ export const getRelativeItemUrl = (item: Listing | ItemListing) => {
 	return `/shops/items/${item.itemName
 		.split(':')
 		.map((x) => encodeURI(x))
-		.join('/')}`;
+		.join('/')}${item.itemNbt ? `/${encodeURIComponent(item.itemNbt)}` : ''}`;
 };
 
 export type ShopWithListing = Shop & { listing: Listing };
