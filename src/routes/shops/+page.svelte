@@ -22,14 +22,6 @@
 	</Alert>
 {/if}
 
-<Alert variant="info">
-	<strong>Shops are experimental!</strong>
-	<p>
-		Shops are a new feature and are still being developed. If you encounter any issues, please
-		report them to Twijn.
-	</p>
-</Alert>
-
 <h1><a href="/">Krawlet</a> <span>&raquo;</span> <a href="/shops">Shops</a></h1>
 
 <Shops lgCols={12} />
