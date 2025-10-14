@@ -10,8 +10,11 @@
 	import ShopCard from '$lib/components/widgets/shops/cards/ShopCard.svelte';
 	import ShopFilterSort from './filtersort/ShopFilterSort.svelte';
 	import { paramState } from '$lib/paramState.svelte';
+	import { SHOP_SORT_OPTIONS, type ShopSortOption } from '$lib/types/sort';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
+
+	const DEFAULT_SORT = 'name-asc';
 
 	const {
 		lgCols = null,
@@ -27,14 +30,9 @@
 	let searchQuery = paramState('q', '', {
 		shouldSet: (value) => value.length > 0
 	});
-	let sortOption = paramState<'name-asc' | 'name-desc' | 'owner-asc' | 'owner-desc'>(
-		'sort',
-		'name-asc',
-		{
-			shouldSet: (value) =>
-				['name-asc', 'name-desc', 'owner-asc', 'owner-desc'].includes(value) && value !== 'name-asc'
-		}
-	);
+	let sortOption = paramState<ShopSortOption>('sort', DEFAULT_SORT, {
+		shouldSet: (value) => SHOP_SORT_OPTIONS.includes(value) && value !== DEFAULT_SORT
+	});
 
 	let filteredShops: Shop[] = $state([]);
 
@@ -48,6 +46,10 @@
 			);
 		}
 		filtered.sort((a, b) => {
+			const aCreated = new Date(a.createdDate ?? 0).getTime();
+			const bCreated = new Date(b.createdDate ?? 0).getTime();
+			const aUpdated = new Date(a.updatedDate ?? 0).getTime();
+			const bUpdated = new Date(b.updatedDate ?? 0).getTime();
 			switch (sortOption.value) {
 				case 'name-asc':
 					return a.name.localeCompare(b.name);
@@ -57,6 +59,14 @@
 					return (a?.owner ?? '').localeCompare(b?.owner ?? '');
 				case 'owner-desc':
 					return (b.owner ?? '').localeCompare(a?.owner ?? '');
+				case 'updated-asc':
+					return aUpdated - bUpdated;
+				case 'updated-desc':
+					return bUpdated - aUpdated;
+				case 'created-asc':
+					return aCreated - bCreated;
+				case 'created-desc':
+					return bCreated - aCreated;
 				default:
 					return 0;
 			}

@@ -7,6 +7,7 @@
 	import ItemCard from '$lib/components/widgets/shops/cards/ItemCard.svelte';
 	import ItemFilterSort from './filtersort/ItemFilterSort.svelte';
 	import { paramState } from '$lib/paramState.svelte';
+	import { DEFAULT_ITEM_SORT, ITEM_SORT_OPTIONS, type ItemSortOption } from '$lib/types/sort';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -25,14 +26,9 @@
 	let searchQuery = paramState('q', '', {
 		shouldSet: (value) => value.length > 0
 	});
-	let sortOption = paramState<'name-asc' | 'name-desc' | 'price-asc' | 'price-desc'>(
-		'sort',
-		'name-asc',
-		{
-			shouldSet: (value) =>
-				['name-asc', 'name-desc', 'price-asc', 'price-desc'].includes(value) && value !== 'name-asc'
-		}
-	);
+	let sortOption = paramState<ItemSortOption>('sort', DEFAULT_ITEM_SORT, {
+		shouldSet: (value) => ITEM_SORT_OPTIONS.includes(value) && value !== DEFAULT_ITEM_SORT
+	});
 
 	const items = $derived(
 		(shop?.items ?? [])
@@ -49,10 +45,18 @@
 					case 'name-desc':
 						if (!a?.itemDisplayName || !b?.itemDisplayName) return 0;
 						return b.itemDisplayName.localeCompare(a.itemDisplayName);
+					case 'id-asc':
+						return a.itemName.localeCompare(b.itemName);
+					case 'id-desc':
+						return b.itemName.localeCompare(a.itemName);
 					case 'price-asc':
 						return (a.prices?.[0]?.value ?? 0) - (b.prices?.[0]?.value ?? 0);
 					case 'price-desc':
 						return (b.prices?.[0]?.value ?? 0) - (a.prices?.[0]?.value ?? 0);
+					case 'stock-asc':
+						return (a.stock ?? 0) - (b.stock ?? 0);
+					case 'stock-desc':
+						return (b.stock ?? 0) - (a.stock ?? 0);
 					default:
 						return 0;
 				}

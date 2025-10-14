@@ -2,13 +2,14 @@
 	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faFilter } from '@fortawesome/free-solid-svg-icons';
+	import { DEFAULT_SHOP_SORT, type ShopSortOption } from '$lib/types/sort';
 
 	let {
 		searchQuery = $bindable(''),
-		sortOption = $bindable('name-asc')
+		sortOption = $bindable(DEFAULT_SHOP_SORT)
 	}: {
 		searchQuery: string;
-		sortOption: 'name-asc' | 'name-desc' | 'owner-asc' | 'owner-desc';
+		sortOption: ShopSortOption;
 	} = $props();
 </script>
 
@@ -26,6 +27,10 @@
 			<option value="name-desc">Name (Z-A)</option>
 			<option value="owner-asc">Owner (A-Z)</option>
 			<option value="owner-desc">Owner (Z-A)</option>
+			<option value="updated-asc">Last Updated (Oldest)</option>
+			<option value="updated-desc">Last Updated (Newest)</option>
+			<option value="created-asc">Created (Oldest)</option>
+			<option value="created-desc">Created (Newest)</option>
 		</select>
 	</div>
 </Section>
