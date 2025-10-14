@@ -65,7 +65,12 @@
 		{/if}
 
 		{#if showViewLink}
-			<Button variant="primary" href="/shops/items/{item.itemName.replace(/:/g, '/')}">
+			<Button
+				variant="primary"
+				href="/shops/items/{item.itemName.replace(/:/g, '/')}{item.itemNbt
+					? `/${item.itemNbt}`
+					: ''}"
+			>
 				View Item
 			</Button>
 		{/if}
