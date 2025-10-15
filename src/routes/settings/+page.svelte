@@ -4,6 +4,11 @@
 	import { faCog } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
+	import ButtonSelect from '$lib/components/ui/ButtonSelect.svelte';
+	import { SYNC_NODE_OFFICIAL, SYNC_NODES } from '$lib/consts';
+	import { notifications } from '$lib/stores/notifications';
+
+	let allowSyncNodeChange = $state($settings.syncNode !== SYNC_NODE_OFFICIAL.id);
 
 	function onShowMetadataChange() {
 		if (!$settings.showMetadata) {
@@ -29,6 +34,28 @@
 	function onRelativeTimeChange() {
 		if (!$settings.relativeTimeEnabled) {
 			$settings.relativeTimeAbove7d = false;
+		}
+	}
+
+	function onSyncNodeAllowChange() {
+		if (!allowSyncNodeChange) {
+			$settings.syncNode = '0';
+		}
+	}
+
+	let currentSyncNode = $settings.syncNode;
+	let notificationId: null | string = null;
+	function onSyncNodeChange() {
+		if (currentSyncNode !== $settings.syncNode) {
+			if (!notificationId) {
+				notificationId = notifications.success(
+					'Sync node changed successfully! Please refresh the app to apply the new sync node.',
+					null
+				);
+			}
+		} else if (notificationId) {
+			notifications.remove(notificationId);
+			notificationId = null;
 		}
 	}
 </script>
@@ -100,5 +127,19 @@
 		>
 			Show relative time above 7 days old
 		</ToggleCheckbox>
+	</fieldset>
+	<fieldset>
+		<legend>Sync Node</legend>
+		<ToggleCheckbox bind:checked={allowSyncNodeChange} onChange={onSyncNodeAllowChange}>
+			Change sync node
+		</ToggleCheckbox>
+		{#if allowSyncNodeChange}
+			<ButtonSelect
+				vertical
+				bind:selected={$settings.syncNode}
+				options={SYNC_NODES.map((node) => ({ id: node.id, name: `${node.name} (${node.url})` }))}
+				change={onSyncNodeChange}
+			/>
+		{/if}
 	</fieldset>
 </Section>

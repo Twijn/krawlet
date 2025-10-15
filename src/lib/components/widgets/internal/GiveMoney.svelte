@@ -6,11 +6,11 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
 	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-	import { SYNC_NODE } from '$lib/consts';
 	import kromer from '$lib/api/kromer';
 	import { paramState } from '$lib/paramState.svelte';
 	import { formatCurrency } from '$lib/util';
 	import AddressSelector from '$lib/components/widgets/addresses/AddressSelector.svelte';
+	import { getSyncNode } from '$lib/consts';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -27,7 +27,7 @@
 	let balances: Record<string, number> = $state({});
 
 	let loading = $state(false);
-	let kromerKey = $state(SYNC_NODE.internalKey ?? '');
+	let kromerKey = $state(getSyncNode().internalKey ?? '');
 
 	let address = paramState('address', '', {
 		shouldSet: (value) => value.length === 10
@@ -59,7 +59,7 @@
 				kromer.external.giveMoney(kromerKey, address.value, amount.value).then((wallet) => {
 					balances[wallet.address] = wallet.balance;
 					notifications.success(
-						`Successfully sent ${formatCurrency(amount.value)} KRO to ${wallet.address}. New balance: ${wallet.balance}`
+						`Successfully sent ${formatCurrency(amount.value)} KRO to ${wallet.address}. New balance: ${formatCurrency(wallet.balance)} KRO`
 					);
 				});
 			}
@@ -73,7 +73,7 @@
 	<form method="POST">
 		<ModuleLoading {loading} absolute />
 
-		{#if !SYNC_NODE.internalKey}
+		{#if !getSyncNode().internalKey}
 			<label>
 				Internal Key
 				<input type="text" bind:value={kromerKey} />

@@ -7,11 +7,12 @@
 	import { prompt } from '$lib/stores/prompt';
 	import { confirm } from '$lib/stores/confirm';
 	import { faWallet } from '@fortawesome/free-solid-svg-icons';
-	import { SYNC_NODE } from '$lib/consts';
 	import kromer from '$lib/api/kromer';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 	import settings from '$lib/stores/settings';
 	import { paramState } from '$lib/paramState.svelte';
+	import { getSyncNode } from '$lib/consts';
+	import type { APIError } from 'kromer';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -26,7 +27,7 @@
 	} = $props();
 
 	let loading = $state(false);
-	let kromerKey = $state(SYNC_NODE.internalKey ?? '');
+	let kromerKey = $state(getSyncNode().internalKey ?? '');
 
 	let uuid = paramState('uuid', '', {
 		shouldSet: (value) => value.length === 36
@@ -52,15 +53,21 @@
 							settings
 								.addWallet(
 									{
-										name: name.value,
+										name: `${name.value} - ${uuid.value.split('-')[0]}`,
 										address: wallet.address,
 										private: wallet.privatekey
 									},
 									masterPassword
 								)
-								.then(() => {
-									notifications.success('Wallet saved successfully!');
-								});
+								.then(
+									(wallet) => {
+										notifications.success(`Wallet ${wallet.name} saved successfully!`);
+									},
+									(e) => {
+										const error = e as APIError;
+										notifications.error(error.message ?? 'Unknown Error!');
+									}
+								);
 						}
 
 						navigator.clipboard.writeText(wallet.privatekey).then(
@@ -123,7 +130,7 @@
 	<form method="POST">
 		<ModuleLoading {loading} absolute />
 
-		{#if !SYNC_NODE.internalKey}
+		{#if !getSyncNode().internalKey}
 			<label>
 				Internal Key
 				<input type="text" bind:value={kromerKey} />

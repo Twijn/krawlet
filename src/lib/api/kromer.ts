@@ -1,6 +1,8 @@
-import { SYNC_NODE } from '$lib/consts';
+import { getSyncNode } from '$lib/consts';
 import { KromerApi } from 'kromer';
 
+console.log('Using sync node ' + getSyncNode().name);
+
 export default new KromerApi({
-	syncNode: SYNC_NODE.url
+	syncNode: getSyncNode().url
 });

@@ -12,10 +12,12 @@
 	import '@fontsource/inter/500.css';
 	import '@fontsource/inter/600.css';
 	import Navigation from '$lib/components/ui/Navigation.svelte';
-	import { VERSION } from '$lib/consts';
+	import { getSyncNode, SYNC_NODE_OFFICIAL, VERSION } from '$lib/consts';
 	import Notifications from '$lib/components/dialogs/Notifications.svelte';
 	import Confirm from '$lib/components/dialogs/Confirm.svelte';
 	import Prompt from '$lib/components/dialogs/Prompt.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
+	import settings from '$lib/stores/settings';
 
 	config.autoAddCss = false;
 
@@ -43,6 +45,13 @@
 		const target = e.target as HTMLElement;
 		if (!target.closest('#show-navigation') && window.innerWidth <= 768) {
 			showNavigation = false;
+		}
+	}
+
+	function revertNode() {
+		$settings.syncNode = SYNC_NODE_OFFICIAL.id;
+		if (browser) {
+			location.reload();
 		}
 	}
 </script>
@@ -86,6 +95,18 @@
 <Notifications />
 <Confirm />
 <Prompt />
+
+{#if !getSyncNode().official}
+	<div class="sync-node-warning">
+		<p>
+			Warning: You are connected to a custom sync node {getSyncNode().name} -
+			<em>{getSyncNode().url}</em>.
+			<br />
+			<strong>!! You should <em>not</em> enter any private keys you use in production !!</strong>
+		</p>
+		<Button variant="error" full type="button" onClick={revertNode}>Revert to Official Node</Button>
+	</div>
+{/if}
 
 <style>
 	header {
@@ -184,5 +205,23 @@
 	.settings-btn:hover,
 	.settings-btn:focus-visible {
 		color: var(--theme-color-2);
+	}
+
+	.sync-node-warning {
+		position: fixed;
+		width: calc(100% - 3em);
+		max-width: 35em;
+		bottom: 1em;
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 100;
+		text-align: center;
+		background-color: rgba(var(--red), 0.5);
+		border: 0.1em solid rgba(var(--red), 0.7);
+		padding: 0.6em 0.75em;
+		border-radius: 0.5em;
+		backdrop-filter: blur(5px);
+		color: white;
+		box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 	}
 </style>

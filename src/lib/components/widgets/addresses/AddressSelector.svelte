@@ -21,6 +21,7 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { prompt } from '$lib/stores/prompt';
 	import { onMount } from 'svelte';
+	import { getSyncNode } from '$lib/consts';
 
 	const NAME_REGEX = /^(\w+@)?(\w+)\.kro$/;
 	const ADDRESS_REGEX = /k[a-z0-9]{9}/;
@@ -46,7 +47,7 @@
 	type Addr = Wallet | Player | KnownAddress;
 
 	let allAddresses: Addr[] = $derived([
-		...$settings.wallets,
+		...$settings.wallets.filter((x) => x.syncNode === getSyncNode().id),
 		...$playerWallets.data,
 		...$knownAddresses.data
 	]);

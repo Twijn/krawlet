@@ -11,6 +11,7 @@
 	import Export from '$lib/components/widgets/importexport/Export.svelte';
 	import { notifications } from '$lib/stores/notifications';
 	import settings from '$lib/stores/settings';
+	import { getSyncNode } from '$lib/consts';
 
 	let masterPassword = $state('');
 	let name = $state('');
@@ -68,7 +69,8 @@
 			Master Password
 			<input id="new" type="password" name="masterPassword" bind:value={masterPassword} />
 			<small
-				>{#if $settings.wallets.length > 0}You must use the same password as your past wallets!{/if}
+				>{#if $settings.wallets.filter((x) => x.syncNode === getSyncNode().id).length > 0}You must
+					use the same password as your past wallets!{/if}
 				Make sure you keep this safe!</small
 			>
 		</label>

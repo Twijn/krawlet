@@ -13,7 +13,7 @@
 		faSign,
 		faWallet
 	} from '@fortawesome/free-solid-svg-icons';
-	import { SYNC_NODE, SYNC_NODE_OFFICIAL } from '$lib/consts';
+	import { getSyncNode, SYNC_NODE_OFFICIAL } from '$lib/consts';
 
 	type NavigationLink = {
 		icon: IconDefinition;
@@ -153,7 +153,7 @@
 		return false;
 	}
 
-	const isInternal = SYNC_NODE_OFFICIAL.url === SYNC_NODE.url;
+	const isInternal = SYNC_NODE_OFFICIAL.url === getSyncNode().url;
 	function shouldShow(hideInternal?: boolean, hideExternal?: boolean) {
 		if (isInternal && hideInternal) {
 			return false;
