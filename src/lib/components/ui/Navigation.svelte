@@ -124,13 +124,13 @@
 				{
 					icon: faWallet,
 					name: 'Create Wallet',
-					href: '/internal/create-wallet',
+					href: '/internal/create-wallet'
 				},
 				{
 					icon: faPaperPlane,
 					name: 'Give Money',
-					href: '/internal/give-money',
-				},
+					href: '/internal/give-money'
+				}
 			]
 		}
 	];

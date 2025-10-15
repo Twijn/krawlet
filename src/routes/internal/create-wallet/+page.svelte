@@ -17,7 +17,7 @@
 </div>
 
 <style>
-    div.col-12 {
-        max-width: 480px;
-    }
+	div.col-12 {
+		max-width: 480px;
+	}
 </style>

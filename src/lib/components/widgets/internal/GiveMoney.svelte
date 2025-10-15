@@ -30,12 +30,12 @@
 	let kromerKey = $state(SYNC_NODE.internalKey ?? '');
 
 	let address = paramState('address', '', {
-		shouldSet: (value) => value.length === 10,
+		shouldSet: (value) => value.length === 10
 	});
 	let amount = paramState('amount', 0, {
 		serialize: (value) => value.toString(),
 		deserialize: (value) => Number(value),
-		shouldSet: (value) => !isNaN(value) && value > 0,
+		shouldSet: (value) => !isNaN(value) && value > 0
 	});
 
 	let isAddressValid = $derived(address.value.length === 10);
@@ -54,16 +54,16 @@
 
 		confirm.confirm({
 			message: `Are you sure you want to give ${formatCurrency(amount.value)} KRO to ${address.value}?`,
-			confirmButtonLabel: "Send",
+			confirmButtonLabel: 'Send',
 			confirm: () => {
-				kromer.external
-					.giveMoney(kromerKey, address.value, amount.value)
-					.then((wallet) => {
-						balances[wallet.address] = wallet.balance;
-						notifications.success(`Successfully sent ${formatCurrency(amount.value)} KRO to ${wallet.address}. New balance: ${wallet.balance}`);
+				kromer.external.giveMoney(kromerKey, address.value, amount.value).then((wallet) => {
+					balances[wallet.address] = wallet.balance;
+					notifications.success(
+						`Successfully sent ${formatCurrency(amount.value)} KRO to ${wallet.address}. New balance: ${wallet.balance}`
+					);
 				});
 			}
-		})
+		});
 		return false;
 	}
 </script>
@@ -76,7 +76,7 @@
 		{#if !SYNC_NODE.internalKey}
 			<label>
 				Internal Key
-				<input type="text" bind:value={kromerKey}>
+				<input type="text" bind:value={kromerKey} />
 			</label>
 		{/if}
 
@@ -84,23 +84,21 @@
 
 		<label>
 			Amount
-			<input type="number" bind:value={amount.value} min=".01" step=".01">
+			<input type="number" bind:value={amount.value} min=".01" step=".01" />
 		</label>
 
 		<div class="buttons">
-			<Button variant="primary" type="submit" full={true} onClick={giveMoney}
-			>Give Money</Button
-			>
+			<Button variant="primary" type="submit" full={true} onClick={giveMoney}>Give Money</Button>
 		</div>
 	</form>
 </Section>
 
 <style>
-    form {
-        position: relative;
-    }
+	form {
+		position: relative;
+	}
 
-    .buttons {
-        margin-top: 1em;
-    }
+	.buttons {
+		margin-top: 1em;
+	}
 </style>

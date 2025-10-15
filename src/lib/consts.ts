@@ -12,7 +12,7 @@ export type SyncNode = {
 };
 
 // Modify this to change the node the instance is currently running on.
-const activeNode = 1;
+const activeNode = 2;
 export const SYNC_NODES: SyncNode[] = [
 	{
 		official: true,
@@ -24,6 +24,12 @@ export const SYNC_NODES: SyncNode[] = [
 		name: 'Sad.ovh',
 		url: 'https://kromer.sad.ovh/api/krist/',
 		internalKey: 'anndemeulemeester'
+	},
+	{
+		official: false,
+		name: 'HerrKatze.com',
+		url: 'https://kromer.herrkatze.com/api/krist/',
+		internalKey: 'dQw4w9WgXcQ'
 	}
 ];
 
