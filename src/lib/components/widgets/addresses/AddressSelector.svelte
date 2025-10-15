@@ -305,7 +305,7 @@
 					<button
 						type="button"
 						onclick={() => setAddress(addr)}
-						ontouchstart={() => setAddress(addr)}
+						ontouchend={() => setAddress(addr)}
 					>
 						<FontAwesomeIcon icon={faWallet} />
 						<span class="bold-500">{addr.name}</span>
@@ -334,7 +334,7 @@
 						<button
 							type="button"
 							onclick={() => setAddress(addr)}
-							ontouchstart={() => setAddress(addr)}
+							ontouchend={() => setAddress(addr)}
 						>
 							<img
 								src="https://api.mineatar.io/face/{addr.minecraftUUID}"
@@ -358,7 +358,7 @@
 						<button
 							type="button"
 							onclick={() => setAddress(addr)}
-							ontouchstart={() => setAddress(addr)}
+							ontouchend={() => setAddress(addr)}
 						>
 							{#if 'imageSrc' in addr && addr.imageSrc}
 								<img src={addr.imageSrc} alt="Icon for {addr.name}" />
