@@ -39,7 +39,8 @@
 
 	function onSyncNodeAllowChange() {
 		if (!allowSyncNodeChange) {
-			$settings.syncNode = '0';
+			$settings.syncNode = SYNC_NODE_OFFICIAL.id;
+			onSyncNodeChange();
 		}
 	}
 
