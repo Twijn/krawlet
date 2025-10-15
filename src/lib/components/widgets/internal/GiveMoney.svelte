@@ -5,7 +5,7 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
-	import { faUpDownLeftRight } from '@fortawesome/free-solid-svg-icons';
+	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import { SYNC_NODE } from '$lib/consts';
 	import kromer from '$lib/api/kromer';
 	import { paramState } from '$lib/paramState.svelte';
@@ -37,7 +37,6 @@
 		deserialize: (value) => Number(value),
 		shouldSet: (value) => !isNaN(value) && value > 0,
 	});
-	let saveAsWallet = $state(true);
 
 	let isAddressValid = $derived(address.value.length === 10);
 	let isAmountValid = $derived(!isNaN(amount.value) && amount.value > 0);
@@ -70,7 +69,7 @@
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
-	<h2><FontAwesomeIcon icon={faUpDownLeftRight} /> Transfer Name</h2>
+	<h2><FontAwesomeIcon icon={faPaperPlane} /> Give Money</h2>
 	<form method="POST">
 		<ModuleLoading {loading} absolute />
 

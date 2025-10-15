@@ -6,7 +6,7 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { prompt } from '$lib/stores/prompt';
 	import { confirm } from '$lib/stores/confirm';
-	import { faUpDownLeftRight } from '@fortawesome/free-solid-svg-icons';
+	import { faWallet } from '@fortawesome/free-solid-svg-icons';
 	import { SYNC_NODE } from '$lib/consts';
 	import kromer from '$lib/api/kromer';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
@@ -110,7 +110,7 @@
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
-	<h2><FontAwesomeIcon icon={faUpDownLeftRight} /> Transfer Name</h2>
+	<h2><FontAwesomeIcon icon={faWallet} /> Create Wallet</h2>
 	<form method="POST">
 		<ModuleLoading {loading} absolute />
 
