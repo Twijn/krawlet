@@ -390,7 +390,7 @@
 		list-style-type: none;
 		border-radius: 0.25em;
 		box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.5);
-		z-index: 100;
+		z-index: 9999;
 		overflow: hidden auto;
 		max-height: 20em;
 		opacity: 0;
@@ -430,6 +430,11 @@
 		cursor: pointer;
 		text-align: left;
 		transition: 0.25s background-color;
+		color: var(--text-color-1);
+		-webkit-tap-highlight-color: transparent;
+		appearance: none;
+		box-shadow: none;
+		outline: none;
 	}
 
 	.dropdown button img {
