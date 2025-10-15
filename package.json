@@ -46,7 +46,7 @@
 		"@fortawesome/svelte-fontawesome": "^0.2.3",
 		"@sveltejs/adapter-vercel": "^5.8.0",
 		"crypto-js": "^4.2.0",
-		"kromer": "^1.2.3",
+		"kromer": "^1.4.1",
 		"svelteplot": "^0.3.9"
 	}
 }
