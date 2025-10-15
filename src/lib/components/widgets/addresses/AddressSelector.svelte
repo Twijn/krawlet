@@ -392,26 +392,26 @@
 		box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.5);
 		z-index: 9999;
 		overflow: hidden auto;
-		max-height: 20em;
-
-		/* --- safer show/hide animation --- */
 		visibility: hidden;
 		opacity: 0;
-		translate: 0 -8px; /* no transform(), fixes Safari touch bug */
+		transform: translateY(-10px) scaleY(0.9);
 		transition:
-			opacity 0.25s ease,
-			translate 0.25s ease,
+			opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+			transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
 			visibility 0s linear 0.25s;
-
-		pointer-events: none; /* prevent ghost clicks when hidden */
+		max-height: 20em;
+		opacity: 0;
+		transform: translateY(-10px) scaleY(0.9);
+		transition:
+			opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+			transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	.address-selector:not(.hidden):focus-within .dropdown {
 		visibility: visible;
 		opacity: 1;
-		translate: 0 0;
+		transform: unset; /* FUCK SAFARI */
 		transition-delay: 0s;
-		pointer-events: auto;
 	}
 
 	.dropdown strong {
