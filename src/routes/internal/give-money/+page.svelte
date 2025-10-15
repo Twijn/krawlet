@@ -1,19 +1,19 @@
 <script lang="ts">
-	import CreateWallet from '$lib/components/widgets/internal/CreateWallet.svelte';
+	import GiveMoney from '$lib/components/widgets/internal/GiveMoney.svelte';
 </script>
 
 <svelte:head>
-	<title>Create Wallet | Krawlet</title>
+	<title>Give Money | Krawlet</title>
 </svelte:head>
 
 <h1>
 	<a href="/">Krawlet</a> <span>&raquo;</span>
 	Internal <span>&raquo;</span>
-	<a href="/internal/create-wallet">Create Wallet</a>
+	<a href="/internal/give-money">Give Money</a>
 </h1>
 
 <div class="col-12">
-	<CreateWallet />
+	<GiveMoney />
 </div>
 
 <style>

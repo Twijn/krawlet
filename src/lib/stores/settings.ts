@@ -225,6 +225,16 @@ class Settings {
 		if (browser) localStorage.removeItem(NAME);
 	}
 
+	public async validateMasterPassword(encryptionKey: string): Promise<boolean> {
+		const store = get(this.data);
+		if (store.wallets.length === 0) return true;
+		for (const wallet of store.wallets) {
+			const decrypted = await this.decryptWallet(wallet, encryptionKey);
+			if (!decrypted) return false;
+		}
+		return true;
+	}
+
 	public get subscribe() {
 		return this.data.subscribe;
 	}
