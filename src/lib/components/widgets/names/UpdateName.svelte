@@ -10,7 +10,7 @@
 	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import { confirm } from '$lib/stores/confirm';
 	import type { APIError } from 'kromer';
-	import { faUpDownLeftRight } from '@fortawesome/free-solid-svg-icons';
+	import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -28,7 +28,7 @@
 
 	let loading = $state(false);
 	let privatekey = $state('');
-	let address = $state('');
+	let a = $state('');
 
 	let allNames: { id: string; name: string }[] = $state([]);
 	let selectedName = $state('');
@@ -59,38 +59,35 @@
 		updateNames();
 	});
 
-	function transferName(e: Event) {
+	function updateName(e: Event) {
 		e.preventDefault();
 
 		if (selectedName.length === 0) {
-			notifications.warning('You must select a name to transfer.');
-			return;
-		} else if (address.length !== 10) {
-			notifications.warning('You must enter a valid address.');
+			notifications.warning('You must select a name to update.');
 			return;
 		}
 
 		confirm.confirm({
-			message: `Are you sure you want to transfer the name ${selectedName} to ${address}?`,
-			confirmButtonLabel: 'Transfer Name',
+			message: `Are you sure you want to update the data for ${selectedName} to ${a && a.length > 0 ? a : '<null>'}?`,
+			confirmButtonLabel: 'Update Name',
 			danger: true,
 			confirm: () => {
 				loading = true;
 				kromer.names
-					.transfer(selectedName, {
+					.update(selectedName, {
 						privatekey,
-						address
+						a
 					})
 					.then(
 						async () => {
-							notifications.success('Name transferred successfully!');
+							notifications.success('Name updated successfully!');
 							selectedName = '';
 							updateNames();
 							loading = false;
 						},
 						(e) => {
 							const err = e as APIError;
-							notifications.error(`Failed to transfer name: ${err.message}`);
+							notifications.error(`Failed to update name: ${err.message}`);
 							loading = false;
 						}
 					);
@@ -100,16 +97,12 @@
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
-	<h2><FontAwesomeIcon icon={faUpDownLeftRight} /> Transfer Name</h2>
+	<h2><FontAwesomeIcon icon={faPenToSquare} /> Update Name</h2>
 	<form method="POST">
-		<ModuleLoading {loading} absolute />
 		<Alert variant="danger">
-			<strong>DANGER! Read me!</strong>
-			<p>
-				At this time, this transfers <em>all</em> of the names you own, rather than just the single
-				one. <strong>You should probably not use this feature until this is patched.</strong>
-			</p>
+			"A" record data is not currently returned by the Kromer API. This endpoint is useless.
 		</Alert>
+		<ModuleLoading {loading} absolute />
 		<AddressSelector mode="privatekey" label="Address" bind:privatekey bind:balances />
 		<label>
 			Name
@@ -121,11 +114,12 @@
 				<Alert variant="info">Select a private key above to see available names.</Alert>
 			{/if}
 		</label>
-		<AddressSelector mode="address" label="Recipient" bind:address bind:balances />
+		<label>
+			Data
+			<input type="text" bind:value={a} />
+		</label>
 		<div class="buttons">
-			<Button variant="primary" type="submit" full={true} onClick={transferName}
-				>Transfer Name</Button
-			>
+			<Button variant="primary" type="submit" full={true} onClick={updateName}>Update Name</Button>
 		</div>
 	</form>
 </Section>

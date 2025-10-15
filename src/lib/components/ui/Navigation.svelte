@@ -4,13 +4,13 @@
 	import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 	import {
 		faAddressBook,
+		faFont,
 		faHome,
 		faListNumeric,
 		faMoneyBillWave,
 		faPaperPlane,
 		faShop,
 		faSign,
-		faSignature,
 		faWallet
 	} from '@fortawesome/free-solid-svg-icons';
 	import { SYNC_NODE, SYNC_NODE_OFFICIAL } from '$lib/consts';
@@ -72,9 +72,9 @@
 			name: 'Names',
 			links: [
 				{
-					icon: faSignature,
-					name: 'Register Name',
-					href: '/names/new'
+					icon: faFont,
+					name: 'Manage Names',
+					href: '/names/manage'
 				},
 				{
 					icon: faSign,
