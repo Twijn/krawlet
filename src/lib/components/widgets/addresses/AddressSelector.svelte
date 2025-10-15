@@ -302,7 +302,11 @@
 			{#each filteredWallets as addr (addr.name + '.' + addr.address)}
 				{@const address = getAddress(addr)}
 				<li>
-					<button type="button" onclick={() => setAddress(addr)} ontouchstart={() => setAddress(addr)}>
+					<button
+						type="button"
+						onclick={() => setAddress(addr)}
+						ontouchstart={() => setAddress(addr)}
+					>
 						<FontAwesomeIcon icon={faWallet} />
 						<span class="bold-500">{addr.name}</span>
 						<small>({address})</small>
@@ -327,7 +331,11 @@
 				{#each filteredPlayers as addr (addr.kromerAddress)}
 					{@const address = getAddress(addr)}
 					<li>
-						<button type="button" onclick={() => setAddress(addr)} ontouchstart={() => setAddress(addr)}>
+						<button
+							type="button"
+							onclick={() => setAddress(addr)}
+							ontouchstart={() => setAddress(addr)}
+						>
 							<img
 								src="https://api.mineatar.io/face/{addr.minecraftUUID}"
 								alt="Avatar for {addr.minecraftName}"
@@ -347,7 +355,11 @@
 					{@const address = getAddress(addr)}
 					{@const icon = getVerifiedIcon(addr)}
 					<li>
-						<button type="button" onclick={() => setAddress(addr)} ontouchstart={() => setAddress(addr)}>
+						<button
+							type="button"
+							onclick={() => setAddress(addr)}
+							ontouchstart={() => setAddress(addr)}
+						>
 							{#if 'imageSrc' in addr && addr.imageSrc}
 								<img src={addr.imageSrc} alt="Icon for {addr.name}" />
 							{:else if icon}
