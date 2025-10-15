@@ -6,7 +6,6 @@
 	import kromer from '$lib/api/kromer';
 	import Wallets from '$lib/components/widgets/Wallets.svelte';
 	import type { APIError } from 'kromer';
-	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import Import from '$lib/components/widgets/importexport/Import.svelte';
 	import Export from '$lib/components/widgets/importexport/Export.svelte';
 	import { notifications } from '$lib/stores/notifications';
@@ -96,10 +95,3 @@
 
 <Import lgCols={6} mdCols={12} />
 <Export lgCols={6} mdCols={12} />
-
-<div class="col-12">
-	<Alert variant="danger">
-		<strong>Warning!</strong>
-		<p>Wallets are still in beta! Make sure you back up your keys elsewhere!</p>
-	</Alert>
-</div>
