@@ -1,5 +1,11 @@
 <script lang="ts">
-	import Send from '$lib/components/widgets/transactions/MakeTransaction.svelte';
+	import Send from '$lib/components/widgets/transactions/Send.svelte';
+	import ItemPurchase from '$lib/components/widgets/transactions/ItemPurchase.svelte';
+	import { paramState } from '$lib/paramState.svelte';
+
+	const type = paramState<'transfer' | 'purchase'>('type', 'transfer', {
+		shouldSet: (v) => ['purchase'].includes(v)
+	});
 </script>
 
 <svelte:head>
@@ -13,11 +19,15 @@
 </h1>
 
 <div class="col-12">
-	<Send />
+	{#if type.value === 'transfer'}
+		<Send />
+	{:else if type.value === 'purchase'}
+		<ItemPurchase />
+	{/if}
 </div>
 
 <style>
 	div {
-		max-width: 480px;
+		max-width: 50em;
 	}
 </style>

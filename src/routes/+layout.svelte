@@ -10,11 +10,14 @@
 	import '@fontsource/inter/300.css';
 	import '@fontsource/inter/400.css';
 	import '@fontsource/inter/500.css';
+	import '@fontsource/inter/600.css';
 	import Navigation from '$lib/components/ui/Navigation.svelte';
-	import { VERSION } from '$lib/consts';
+	import { getSyncNode, SYNC_NODE_OFFICIAL, VERSION } from '$lib/consts';
 	import Notifications from '$lib/components/dialogs/Notifications.svelte';
 	import Confirm from '$lib/components/dialogs/Confirm.svelte';
-	import Alert from '$lib/components/dialogs/Alert.svelte';
+	import Prompt from '$lib/components/dialogs/Prompt.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
+	import settings from '$lib/stores/settings';
 
 	config.autoAddCss = false;
 
@@ -44,6 +47,13 @@
 			showNavigation = false;
 		}
 	}
+
+	function revertNode() {
+		$settings.syncNode = SYNC_NODE_OFFICIAL.id;
+		if (browser) {
+			location.reload();
+		}
+	}
 </script>
 
 <svelte:window onclick={handleWindowClick} />
@@ -66,13 +76,6 @@
 		<Navigation />
 	</aside>
 	<div id="content">
-		<Alert variant="danger">
-			<strong style="font-size: 1.2em;">!! YOU ARE IN KRAWLET STAGING !!</strong>
-			<p>
-				Staging uses an alternative sync node to <code>kromer.reconnected.cc</code>.
-				Please <a href="https://www.kromer.club" style="color: var(--variant-color);">click here to return to production Krawlet</a>
-			</p>
-		</Alert>
 		<main class="container">
 			{@render children?.()}
 		</main>
@@ -91,6 +94,19 @@
 
 <Notifications />
 <Confirm />
+<Prompt />
+
+{#if !getSyncNode().official}
+	<div class="sync-node-warning">
+		<p>
+			Warning: You are connected to a custom sync node {getSyncNode().name} -
+			<em>{getSyncNode().url}</em>.
+			<br />
+			<strong>!! You should <em>not</em> enter any private keys you use in production !!</strong>
+		</p>
+		<Button variant="error" full type="button" onClick={revertNode}>Revert to Official Node</Button>
+	</div>
+{/if}
 
 <style>
 	header {
@@ -101,8 +117,7 @@
 		display: flex;
 		align-items: center;
 		background-color: var(--background-color-2);
-		padding: 0.5rem;
-		height: 3rem;
+		height: 3.8rem;
 		border-bottom: 0.1em solid var(--theme-color-2);
 		box-shadow: 0 0 1em rgba(0, 0, 0, 0.15);
 		z-index: 10;
@@ -124,7 +139,7 @@
 
 	aside {
 		position: fixed;
-		top: 4.1rem;
+		top: 3.8rem;
 		left: 0;
 		bottom: 0;
 		width: 250px;
@@ -143,8 +158,7 @@
 	}
 
 	#content {
-		overflow-y: auto;
-		margin-top: 4.1rem;
+		margin-top: 3.8rem;
 		padding: 1rem;
 		margin-left: 250px;
 		transition: margin-left 0.3s ease-in-out;
@@ -191,5 +205,23 @@
 	.settings-btn:hover,
 	.settings-btn:focus-visible {
 		color: var(--theme-color-2);
+	}
+
+	.sync-node-warning {
+		position: fixed;
+		width: calc(100% - 3em);
+		max-width: 35em;
+		bottom: 1em;
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 100;
+		text-align: center;
+		background-color: rgba(var(--red), 0.5);
+		border: 0.1em solid rgba(var(--red), 0.7);
+		padding: 0.6em 0.75em;
+		border-radius: 0.5em;
+		backdrop-filter: blur(5px);
+		color: white;
+		box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 	}
 </style>

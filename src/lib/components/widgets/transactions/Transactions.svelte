@@ -104,8 +104,8 @@
 						<tr>
 							<th class="center">ID</th>
 							<th>Type</th>
-							<th>From</th>
-							<th>To</th>
+							<th class="right">From</th>
+							<th class="right">To</th>
 							<th class="right">Value</th>
 							{#if $settings.showMetadata}
 								<th>{$settings.parseTransactionMessage ? 'Message' : 'Metadata'}</th>
@@ -128,19 +128,27 @@
 										? 'welfare'
 										: transaction.type.replace(/_/g, ' ')}</td
 								>
-								<td>
+								<td class="right">
 									{#if transaction.from}
 										<Address address={transaction.from} />
 									{/if}
 								</td>
-								<td>
-									<Address address={transaction.to} />
+								<td class="right">
+									{#if transaction.sent_name}
+										<a href="/addresses/{transaction.to}" title="Go to {transaction.to}">
+											{transaction.sent_metaname
+												? `${transaction.sent_metaname}@`
+												: ''}{transaction.sent_name}.kro
+										</a>
+									{:else}
+										<Address address={transaction.to} />
+									{/if}
 								</td>
 								<td class="right">{formatCurrency(transaction.value)} <small>KRO</small></td>
 								{#if $settings.showMetadata}
 									<td class="metadata">
 										{#if $settings.parseTransactionMessage}
-											<ParsedMetadata {meta} limitWidth={true} />
+											<ParsedMetadata transaction={{ ...transaction, meta }} />
 										{:else if transaction.metadata && transaction.metadata.length > 0}
 											<small>{transaction.metadata.substring(0, 75)}</small>
 										{:else}

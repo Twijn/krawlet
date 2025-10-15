@@ -1,16 +1,20 @@
 <script lang="ts">
-	import Button from '$lib/components/ui/Button.svelte';
 	import Section from '$lib/components/ui/Section.svelte';
-	import shopsync, { cleanShopData } from '$lib/stores/shopsync';
+	import shopsync from '$lib/stores/shopsync';
 	import type { Shop } from '$lib/types/shops';
 	import { faShop } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import Address from '../addresses/Address.svelte';
-	import { relativeTime } from '$lib/util';
 	import { onMount } from 'svelte';
 	import ModuleLoading from '../other/ModuleLoading.svelte';
+	import ShopCard from '$lib/components/widgets/shops/cards/ShopCard.svelte';
+	import ShopFilterSort from './filtersort/ShopFilterSort.svelte';
+	import { paramState } from '$lib/paramState.svelte';
+	import { SHOP_SORT_OPTIONS, type ShopSortOption } from '$lib/types/sort';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
+
+	const DEFAULT_SORT = 'name-asc';
 
 	const {
 		lgCols = null,
@@ -23,6 +27,52 @@
 	} = $props();
 
 	let shops: Shop[] = $state([]);
+	let searchQuery = paramState('q', '', {
+		shouldSet: (value) => value.length > 0
+	});
+	let sortOption = paramState<ShopSortOption>('sort', DEFAULT_SORT, {
+		shouldSet: (value) => SHOP_SORT_OPTIONS.includes(value) && value !== DEFAULT_SORT
+	});
+
+	let filteredShops: Shop[] = $state([]);
+
+	$effect(() => {
+		let filtered = [...shops];
+		if (searchQuery.value) {
+			filtered = filtered.filter(
+				(shop) =>
+					shop.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+					(shop?.owner && shop.owner.toLowerCase().includes(searchQuery.value.toLowerCase()))
+			);
+		}
+		filtered.sort((a, b) => {
+			const aCreated = new Date(a.createdDate ?? 0).getTime();
+			const bCreated = new Date(b.createdDate ?? 0).getTime();
+			const aUpdated = new Date(a.updatedDate ?? 0).getTime();
+			const bUpdated = new Date(b.updatedDate ?? 0).getTime();
+			switch (sortOption.value) {
+				case 'name-asc':
+					return a.name.localeCompare(b.name);
+				case 'name-desc':
+					return b.name.localeCompare(a.name);
+				case 'owner-asc':
+					return (a?.owner ?? '').localeCompare(b?.owner ?? '');
+				case 'owner-desc':
+					return (b.owner ?? '').localeCompare(a?.owner ?? '');
+				case 'updated-asc':
+					return aUpdated - bUpdated;
+				case 'updated-desc':
+					return bUpdated - aUpdated;
+				case 'created-asc':
+					return aCreated - bCreated;
+				case 'created-desc':
+					return bCreated - aCreated;
+				default:
+					return 0;
+			}
+		});
+		filteredShops = filtered;
+	});
 
 	onMount(() => {
 		shopsync.subscribe((data) => {
@@ -31,41 +81,18 @@
 	});
 </script>
 
+<ShopFilterSort bind:searchQuery={searchQuery.value} bind:sortOption={sortOption.value} />
 <Section {lgCols} {mdCols} {smCols}>
 	<h2><FontAwesomeIcon icon={faShop} /> Shops</h2>
 	{#if shops.length === 0}
 		<ModuleLoading />
 	{/if}
 	<div class="shop-grid">
-		{#each shops as shop (shop.computerId)}
-			{@const items = shop?.items ?? []}
+		{#each filteredShops as shop (shop.computerId)}
+			{@const items = shop.items ?? []}
 			{@const totalStock = items.reduce((v, l) => v + l.stock, 0)}
-			<div class="shop">
-				<div class="shop-head">
-					<div class="shop-head-icon"><FontAwesomeIcon icon={faShop} /></div>
-					<div class="shop-head-text">
-						<h3>{cleanShopData(shop.name)}</h3>
-						<small>
-							{#if shop.owner}
-								By {cleanShopData(shop.owner)}
-							{/if}
-							{#if shop.softwareName}
-								{#if shop.owner}&bullet;{/if}
-								{shop.softwareName}
-								{#if shop.softwareVersion}
-									v{shop.softwareVersion}
-								{/if}
-							{/if}
-						</small>
-						{#if shop.updatedDate}
-							{@const date = new Date(shop.updatedDate)}
-							<small title={date.toLocaleString()}>
-								Last updated {relativeTime(date)}
-							</small>
-						{/if}
-					</div>
-				</div>
-				<div class="shop-body table-container">
+			<ShopCard {shop}>
+				<div class="table-container">
 					<table>
 						<tbody>
 							<tr>
@@ -93,105 +120,8 @@
 							{/if}
 						</tbody>
 					</table>
-					<p></p>
 				</div>
-				<div class="buttons">
-					{#if shop.locationCoordinates && shop.locationCoordinates.split(' ').length === 3}
-						{@const coordinates = shop.locationCoordinates.split(' ')}
-						<Button
-							variant="secondary"
-							newTab={true}
-							full={true}
-							href="https://map.reconnected.cc/#world:{coordinates[0]}:{coordinates[1]}:{coordinates[2]}:40:0:0:0:1:flat"
-						>
-							Locate Shop
-						</Button>
-					{/if}
-					<Button variant="primary" full={true} href="/shops/{shop.id}">View Shop</Button>
-				</div>
-			</div>
+			</ShopCard>
 		{/each}
 	</div>
 </Section>
-
-<style>
-	.shop-grid {
-		--shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 1em;
-	}
-
-	@media only screen and (min-width: 1100px) {
-		.shop-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
-	@media only screen and (min-width: 1500px) {
-		.shop-grid {
-			grid-template-columns: repeat(3, 1fr);
-		}
-	}
-
-	@media only screen and (min-width: 2000px) {
-		.shop-grid {
-			grid-template-columns: repeat(4, 1fr);
-		}
-	}
-
-	.shop {
-		display: flex;
-		flex-direction: column;
-		background-color: var(--background-color-1);
-		padding: 0.8em;
-		border-radius: 0.75em 0.25em;
-		box-shadow: var(--shadow);
-	}
-
-	.shop-head {
-		display: flex;
-		gap: 0.75em;
-		align-items: center;
-	}
-
-	.shop-head-icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 1.2em;
-		width: 2em;
-		height: 2em;
-		background-color: var(--theme-color-2);
-		color: var(--background-color-1);
-		border-radius: 1em;
-		box-shadow: var(--shadow);
-		text-shadow: var(--shadow);
-	}
-
-	.shop-head-text {
-		flex-grow: 1;
-	}
-
-	.shop-head-text h3 {
-		margin: 0;
-		font-weight: 300;
-	}
-
-	.shop-head-text small {
-		display: block;
-	}
-
-	.shop-body {
-		flex-grow: 1;
-		margin: 0.5em 0;
-	}
-
-	.shop-body p {
-		margin: 0;
-	}
-
-	small[title] {
-		cursor: pointer;
-	}
-</style>

@@ -4,7 +4,7 @@ interface Notification {
 	id: string;
 	type: 'success' | 'error' | 'info' | 'warning';
 	message: string;
-	timeout?: number;
+	timeout?: number | null;
 }
 
 function createNotificationStore() {
@@ -12,13 +12,13 @@ function createNotificationStore() {
 
 	const store = {
 		subscribe,
-		success: (message: string, timeout: number = 3000) =>
+		success: (message: string, timeout: number | null = 3000) =>
 			store.add({ type: 'success', message, timeout }),
-		info: (message: string, timeout: number = 3000) =>
+		info: (message: string, timeout: number | null = 3000) =>
 			store.add({ type: 'info', message, timeout }),
-		error: (message: string, timeout: number = 5000) =>
+		error: (message: string, timeout: number | null = 5000) =>
 			store.add({ type: 'error', message, timeout }),
-		warning: (message: string, timeout: number = 5000) =>
+		warning: (message: string, timeout: number | null = 5000) =>
 			store.add({ type: 'warning', message, timeout }),
 		add: (notification: Omit<Notification, 'id'>) => {
 			const id = crypto.randomUUID();
@@ -29,6 +29,8 @@ function createNotificationStore() {
 					store.remove(id);
 				}, notification.timeout);
 			}
+
+			return id;
 		},
 		remove: (id: string) => {
 			update((notifications) => notifications.filter((n) => n.id !== id));

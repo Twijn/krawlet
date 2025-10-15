@@ -1,11 +1,12 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faDatabase, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-	import { relativeTime } from '$lib/util';
+	import { faDatabase, faInfoCircle, faRepeat } from '@fortawesome/free-solid-svg-icons';
+	import { relativeTime, formatCurrency } from '$lib/util';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
-	import kromer from '$lib/api/kromer';
+	import kromer from '$lib/api/kromer.js';
 	import type { Transaction } from 'kromer';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	const { data } = $props();
 	const {
@@ -26,6 +27,44 @@
 	<span>&raquo;</span>
 	<a href="/transactions/{transaction.id}">#{transaction.id}</a>
 </h1>
+
+<div class="col-12 statistics">
+	<div class="statistic">
+		<div>
+			<Button
+				variant="primary"
+				href="/transactions/new?to={transaction.to}&amount={transaction.value}&metadata={transaction.metadata}"
+			>
+				<FontAwesomeIcon icon={faRepeat} />
+				Repeat
+			</Button>
+		</div>
+	</div>
+	<div class="statistic">
+		<h2>ID</h2>
+		<div>{transaction.id.toLocaleString()}</div>
+	</div>
+	{#if transaction.from}
+		<div class="statistic">
+			<h2>From</h2>
+			<div><Address address={transaction.from} /></div>
+		</div>
+	{/if}
+	<div class="statistic">
+		<h2>To</h2>
+		<div><Address address={transaction.to} /></div>
+	</div>
+	<div class="statistic">
+		<h2>Amount</h2>
+		<div>{formatCurrency(transaction.value)} <small>KRO</small></div>
+	</div>
+	<div class="statistic">
+		<h2>Time</h2>
+		<div title={new Date(transaction.time).toLocaleString()}>
+			{relativeTime(transaction.time)}
+		</div>
+	</div>
+</div>
 
 <Section lgCols={4} mdCols={12}>
 	<h2><FontAwesomeIcon icon={faInfoCircle} /> Raw Information</h2>
@@ -54,6 +93,18 @@
 						<Address address={transaction.to} />
 					</td>
 				</tr>
+				{#if transaction.sent_name}
+					<tr>
+						<th>Sent to Name</th>
+						<td class="right">
+							<code
+								>{transaction.sent_metaname
+									? `${transaction.sent_metaname}@`
+									: ''}{transaction.sent_name}<small>.kro</small></code
+							>
+						</td>
+					</tr>
+				{/if}
 				<tr>
 					<th>Amount</th>
 					<td class="right">

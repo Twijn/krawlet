@@ -4,26 +4,31 @@
 	import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 	import {
 		faAddressBook,
+		faFont,
 		faHome,
 		faListNumeric,
 		faMoneyBillWave,
 		faPaperPlane,
 		faShop,
 		faSign,
-		faSignature,
 		faWallet
 	} from '@fortawesome/free-solid-svg-icons';
+	import { getSyncNode, SYNC_NODE_OFFICIAL } from '$lib/consts';
 
 	type NavigationLink = {
 		icon: IconDefinition;
 		name: string;
 		href: string;
 		startsWith?: boolean;
+		hideOnInternal?: boolean;
+		hideOnExternal?: boolean;
 	};
 
 	type NavigationGroup = {
 		name: string;
 		links: NavigationLink[];
+		hideOnInternal?: boolean;
+		hideOnExternal?: boolean;
 	};
 
 	const navigationGroups: NavigationGroup[] = [
@@ -67,9 +72,9 @@
 			name: 'Names',
 			links: [
 				{
-					icon: faSignature,
-					name: 'Register Name',
-					href: '/names/new'
+					icon: faFont,
+					name: 'Manage Names',
+					href: '/names/manage'
 				},
 				{
 					icon: faSign,
@@ -97,6 +102,7 @@
 		},
 		{
 			name: 'Reconnected.CC',
+			hideOnExternal: true,
 			links: [
 				{
 					icon: faShop,
@@ -108,6 +114,22 @@
 					icon: faListNumeric,
 					name: 'Items',
 					href: '/shops/items'
+				}
+			]
+		},
+		{
+			name: 'Internal Endpoints',
+			hideOnInternal: true,
+			links: [
+				{
+					icon: faWallet,
+					name: 'Create Wallet',
+					href: '/internal/create-wallet'
+				},
+				{
+					icon: faPaperPlane,
+					name: 'Give Money',
+					href: '/internal/give-money'
 				}
 			]
 		}
@@ -130,26 +152,40 @@
 		}
 		return false;
 	}
+
+	const isInternal = SYNC_NODE_OFFICIAL.url === getSyncNode().url;
+	function shouldShow(hideInternal?: boolean, hideExternal?: boolean) {
+		if (isInternal && hideInternal) {
+			return false;
+		} else if (!isInternal && hideExternal) {
+			return false;
+		}
+		return true;
+	}
 </script>
 
 <nav>
 	<ul>
 		{#each navigationGroups as group (group.name)}
-			<li>
-				<h2>{group.name}</h2>
-				<ul>
-					{#each group.links as link (link.name)}
-						<li>
-							<a href={link.href} aria-current={isCurrent(link) ? 'page' : undefined}>
-								<div class="icon">
-									<FontAwesomeIcon icon={link.icon} />
-								</div>
-								{link.name}
-							</a>
-						</li>
-					{/each}
-				</ul>
-			</li>
+			{#if shouldShow(group.hideOnInternal, group.hideOnExternal)}
+				<li>
+					<h2>{group.name}</h2>
+					<ul>
+						{#each group.links as link (link.name)}
+							{#if shouldShow(link.hideOnInternal, link.hideOnExternal)}
+								<li>
+									<a href={link.href} aria-current={isCurrent(link) ? 'page' : undefined}>
+										<div class="icon">
+											<FontAwesomeIcon icon={link.icon} />
+										</div>
+										{link.name}
+									</a>
+								</li>
+							{/if}
+						{/each}
+					</ul>
+				</li>
+			{/if}
 		{/each}
 	</ul>
 </nav>

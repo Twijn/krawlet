@@ -10,8 +10,56 @@
 	import { faListNumeric } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onMount } from 'svelte';
+	import ItemCard from '$lib/components/widgets/shops/cards/ItemCard.svelte';
+	import { paramState } from '$lib/paramState.svelte';
+	import FilterSortControls from '$lib/components/widgets/shops/filtersort/ItemFilterSort.svelte';
+	import { DEFAULT_ITEM_SORT, ITEM_SORT_OPTIONS, type ItemSortOption } from '$lib/types/sort';
 
 	let listings: ItemListing[] = $state([]);
+
+	let searchQuery = paramState('q', '', {
+		shouldSet: (v) => v.length > 0
+	});
+	let sortOption = paramState<ItemSortOption>('sort', DEFAULT_ITEM_SORT, {
+		shouldSet: (v) => ITEM_SORT_OPTIONS.includes(v)
+	});
+
+	let filteredListings = $derived(
+		listings
+			.filter(
+				(listing) =>
+					listing.itemName.toLowerCase().includes(searchQuery.value) ||
+					listing.itemDisplayName.toLowerCase().includes(searchQuery.value)
+			)
+			.sort((a, b) => {
+				switch (sortOption.value) {
+					case 'name-asc':
+						return a.itemDisplayName.localeCompare(b.itemDisplayName);
+					case 'name-desc':
+						return b.itemDisplayName.localeCompare(a.itemDisplayName);
+					case 'id-asc':
+						return a.itemName.localeCompare(b.itemName);
+					case 'id-desc':
+						return b.itemName.localeCompare(a.itemName);
+					case 'price-asc':
+						return (
+							(a.shops[0]?.listing.prices?.[0]?.value || 0) -
+							(b.shops[0]?.listing.prices?.[0]?.value || 0)
+						);
+					case 'price-desc':
+						return (
+							(b.shops[0]?.listing.prices?.[0]?.value || 0) -
+							(a.shops[0]?.listing.prices?.[0]?.value || 0)
+						);
+					case 'stock-asc':
+						return (a.shops[0]?.listing.stock || 0) - (b.shops[0]?.listing.stock || 0);
+					case 'stock-desc':
+						return (b.shops[0]?.listing.stock || 0) - (a.shops[0]?.listing.stock || 0);
+					default:
+						return 0;
+				}
+			})
+	);
 
 	onMount(() => {
 		shopsync.subscribe((shops) => {
@@ -30,60 +78,48 @@
 	<a href="/shops/items">Items</a>
 </h1>
 
+<FilterSortControls bind:searchQuery={searchQuery.value} bind:sortOption={sortOption.value} />
+
 <Section lgCols={12}>
 	<h2><FontAwesomeIcon icon={faListNumeric} /> Items</h2>
 	{#if listings.length === 0}
 		<ModuleLoading />
 	{/if}
 	<div class="item-grid">
-		{#each listings as listing (listing.itemName + (':' + listing.itemNbt))}
-			<div class="item">
-				<div class="item-head">
-					<img
-						src="https://shops.alexdevs.me/assets/items/{listing.itemName.replace(':', '/')}.png"
-						alt="Item icon for {listing.itemDisplayName}"
-					/>
-					<div class="item-head-text">
-						<h3>{listing.itemDisplayName}</h3>
-						<small title={listing.itemNbt ? `NBT: ${listing.itemNbt}` : undefined}
-							>{listing.itemName}</small
-						>
-					</div>
-				</div>
-				<div class="item-body table-container">
-					<table>
-						<thead>
+		{#each filteredListings as listing (listing.itemName + (':' + listing.itemNbt))}
+			<ItemCard item={listing} showBadges={false}>
+				<table>
+					<thead>
+						<tr>
+							<th>Shop Name</th>
+							<th class="right">Stock</th>
+							<th class="right">Price</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each listing.shops as shop (shop.listing.id)}
+							{@const stock = shop.listing.stock}
 							<tr>
-								<th>Shop Name</th>
-								<th>Stock</th>
-								<th>Price</th>
+								<td>
+									<a href="/shops/{shop.id}">{cleanShopData(shop.name)}</a>
+								</td>
+								<td class="right">
+									{stock.toLocaleString()}
+								</td>
+								<td class="right">
+									{#if shop.listing.prices?.[0].value}
+										{@const price = shop.listing.prices[0]}
+										{formatCurrency(price.value)}
+										<small>{price.currency}</small>
+									{:else}
+										N/A
+									{/if}
+								</td>
 							</tr>
-						</thead>
-						<tbody>
-							{#each listing.shops as shop (shop.listing.id)}
-								{@const stock = shop.listing.stock}
-								<tr>
-									<td>
-										<a href="/shops/{shop.id}">{cleanShopData(shop.name)}</a>
-									</td>
-									<td class="right">
-										{stock.toLocaleString()}
-									</td>
-									<td class="right">
-										{#if shop.listing.prices?.[0].value}
-											{@const price = shop.listing.prices[0]}
-											{formatCurrency(price.value)}
-											<small>{price.currency}</small>
-										{:else}
-											N/A
-										{/if}
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-			</div>
+						{/each}
+					</tbody>
+				</table>
+			</ItemCard>
 		{/each}
 	</div>
 </Section>

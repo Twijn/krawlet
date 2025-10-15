@@ -2,14 +2,14 @@
 	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faSignature } from '@fortawesome/free-solid-svg-icons';
-	import type { Address, APIError } from 'kromer';
+	import type { APIError } from 'kromer';
 	import kromer from '$lib/api/kromer';
 	import { onMount } from 'svelte';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
-	import PrivateKeyInputMethod from '$lib/components/form/privatekey/PrivateKeyInputMethod.svelte';
+	import AddressSelector from '$lib/components/widgets/addresses/AddressSelector.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -25,9 +25,8 @@
 
 	let loading = $state(false);
 	let privateKey = $state('');
-	let privateKeyAddress: Address | null = $state(null);
 
-	let nameCost = $state(3);
+	let nameCost = $state(500);
 	onMount(async () => {
 		nameCost = await kromer.names.getCost();
 	});
@@ -50,10 +49,6 @@
 	function buyName(e: Event) {
 		e.preventDefault();
 
-		if (!privateKeyAddress || privateKeyAddress.balance < nameCost) {
-			notifications.error("You don't have enough money to purchase a name!");
-			return false;
-		}
 		if (!nameAvailable) {
 			notifications.error("This name isn't available!");
 			return false;
@@ -92,12 +87,7 @@
 	<h2><FontAwesomeIcon icon={faSignature} /> Purchase Name</h2>
 	<form method="POST">
 		<ModuleLoading {loading} absolute={true} />
-		<PrivateKeyInputMethod
-			bind:loading
-			bind:privatekey={privateKey}
-			bind:address={privateKeyAddress}
-			bind:minimumBalance={nameCost}
-		/>
+		<AddressSelector mode="privatekey" label="Address" bind:privatekey={privateKey} />
 		<label>
 			Name
 			<input
