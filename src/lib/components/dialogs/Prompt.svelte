@@ -56,8 +56,8 @@
 
 {#if $prompt}
 	<div class="modal-backdrop" transition:fade={{ duration: 200 }}>
-		<form>
-			<div class="modal" transition:scale={{ duration: 200 }} use:handleClickOutside>
+		<div class="modal" transition:scale={{ duration: 200 }} use:handleClickOutside>
+			<form>
 				{#if $prompt.errors && $prompt.errors.length > 0}
 					{#each $prompt.errors as error (error)}
 						<Alert variant="danger">
@@ -78,8 +78,8 @@
 						{$prompt.confirmButtonLabel ?? 'Confirm'}
 					</Button>
 				</div>
-			</div>
-		</form>
+			</form>
+		</div>
 	</div>
 {/if}
 
