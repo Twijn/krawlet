@@ -392,26 +392,26 @@
 		box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.5);
 		z-index: 9999;
 		overflow: hidden auto;
+		max-height: 20em;
+
+		/* --- safer show/hide animation --- */
 		visibility: hidden;
 		opacity: 0;
-		transform: translateY(-10px) scaleY(0.9);
+		translate: 0 -8px; /* no transform(), fixes Safari touch bug */
 		transition:
-			opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-			transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+			opacity 0.25s ease,
+			translate 0.25s ease,
 			visibility 0s linear 0.25s;
-		max-height: 20em;
-		opacity: 0;
-		transform: translateY(-10px) scaleY(0.9);
-		transition:
-			opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-			transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+		pointer-events: none; /* prevent ghost clicks when hidden */
 	}
 
 	.address-selector:not(.hidden):focus-within .dropdown {
 		visibility: visible;
 		opacity: 1;
-		transform: translateY(0) scaleY(1);
+		translate: 0 0;
 		transition-delay: 0s;
+		pointer-events: auto;
 	}
 
 	.dropdown strong {
