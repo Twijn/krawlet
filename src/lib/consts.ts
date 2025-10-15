@@ -12,7 +12,7 @@ export type SyncNode = {
 };
 
 // Modify this to change the node the instance is currently running on.
-const activeNode = 1;
+const activeNode = 0;
 export const SYNC_NODES: SyncNode[] = [
 	{
 		official: true,
