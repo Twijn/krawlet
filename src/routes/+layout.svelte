@@ -82,7 +82,11 @@
 			{@render children?.()}
 		</main>
 		<footer>
-			<p>Version {VERSION}</p>
+			<p>
+				Version {VERSION}
+				<small>&bullet;</small>
+				<a href="/whats-new">What's New</a>
+			</p>
 			<p>
 				Made for the <a href="https://reconnected.cc/" target="_blank">Reconnected</a> community by
 				<a href="https://www.twijn.dev" target="_blank">Twijn</a>
