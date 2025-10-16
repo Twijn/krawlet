@@ -17,9 +17,11 @@
 			out:fade
 		>
 			<p>{notification.message}</p>
-			<button on:click={() => notifications.remove(notification.id)}>
-				<FontAwesomeIcon icon={faTimes} />
-			</button>
+			{#if !notification.unclosable}
+				<button on:click={() => notifications.remove(notification.id)}>
+					<FontAwesomeIcon icon={faTimes} />
+				</button>
+			{/if}
 		</div>
 	{/each}
 </div>

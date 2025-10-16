@@ -47,11 +47,15 @@
 	let currentSyncNode = $settings.syncNode;
 	let notificationId: null | string = null;
 	function onSyncNodeChange() {
+		notifications.success(
+			'Sync node changed successfully! Please refresh the app to apply the new sync node.'
+		);
 		if (currentSyncNode !== $settings.syncNode) {
 			if (!notificationId) {
-				notificationId = notifications.success(
-					'Sync node changed successfully! Please refresh the app to apply the new sync node.',
-					null
+				notificationId = notifications.error(
+					'Please refresh the app to apply the new sync node.',
+					null,
+					true
 				);
 			}
 		} else if (notificationId) {
