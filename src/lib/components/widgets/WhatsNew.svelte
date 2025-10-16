@@ -73,80 +73,53 @@
 	{:else if commits.length === 0}
 		<p>No recent commits found.</p>
 	{:else}
-		<ul class="commits-list">
-			{#each commits as commit (commit.sha)}
-				{@const date = new Date(commit.commit.author.date)}
-				<li class="commit-item">
-					<a class="commit-link" href={commit.html_url} target="_blank" rel="noopener">
-						<strong class="commit-message">{commit.commit.message.split('\n')[0]}</strong>
-					</a>
-					<div class="commit-meta">
-						{#if commit.author}
-							<a
-								href={commit.author.html_url}
-								target="_blank"
-								rel="noopener"
-								class="author-avatar-link"
-							>
-								<img
-									src={commit.author.avatar_url}
-									alt={commit.author.login}
-									class="author-avatar"
-								/>
-								<span class="commit-author">
-									{commit.commit.author.name}
-								</span>
-							</a>
-						{/if}
-						<small class="commit-date" title={date.toLocaleString()}>
-							{relativeTime(date)}
-						</small>
-					</div>
-				</li>
-			{/each}
-		</ul>
+		<div class="table-container">
+			<table>
+				<thead>
+					<tr>
+						<th>Author</th>
+						<th>Message</th>
+						<th class="right">Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each commits as commit (commit.sha)}
+						{@const date = new Date(commit.commit.author.date)}
+						<tr>
+							<td>
+								{#if commit.author}
+									<a class="author-link" href={commit.author.html_url}>
+										<img
+											src={commit.author.avatar_url}
+											alt={commit.author.login}
+											class="author-avatar"
+										/>
+										<span class="commit-author">
+											{commit.commit.author.name}
+										</span>
+									</a>
+								{:else}
+									<small>No author</small>
+								{/if}
+							</td>
+							<td>
+								<a href={commit.html_url}>
+									{commit.commit.message.split('\n')[0]}
+								</a>
+							</td>
+							<td class="small right" title={date.toLocaleString()}>
+								{relativeTime(date)}
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
 	{/if}
 </Section>
 
 <style>
-	.commits-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-
-	.commit-item {
-		border-bottom: 1px solid var(--background-color-1);
-		padding: 1rem 0.5rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.3rem;
-	}
-
-	.commit-item:last-child {
-		border-bottom: none;
-	}
-
-	.commit-link {
-		color: var(--theme-color-2);
-		text-decoration: none;
-		font-size: 1.05rem;
-	}
-
-	.commit-link:hover {
-		text-decoration: underline;
-	}
-
-	.commit-meta {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.92rem;
-		color: var(--text-color-2);
-	}
-
-	.author-avatar-link {
-		display: inline-block;
+	.author-link {
 		color: var(--text-color-1);
 		text-decoration: none;
 	}
@@ -158,9 +131,5 @@
 		margin-right: 0.3rem;
 		vertical-align: middle;
 		border: 0.1em solid var(--theme-color-1);
-	}
-
-	.commit-author {
-		font-weight: 500;
 	}
 </style>
