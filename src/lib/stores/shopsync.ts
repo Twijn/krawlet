@@ -24,9 +24,22 @@ export const cleanShopData = (str: string) => {
 	return str.replace(/[^\w., '&]/g, '');
 };
 
-export const getShopById = (id: string): Shop | null => {
+const fetchShopById = async (id: string): Promise<Shop | null> => {
+	const response = await fetch(`${itemUrl}/${encodeURIComponent(id)}`);
+	if (!response.ok) return null;
+	const shop = (await response.json()) as { ok: boolean; data: Shop };
+	return shop.data ?? null;
+};
+
+export const getShopById = async (id: string): Promise<Shop | null> => {
 	const shops = get(store);
-	return shops?.data?.find((x) => x.id === id) ?? null;
+	let shop = shops?.data?.find((x) => x.id === id) ?? null;
+
+	if (!shop) {
+		shop = await fetchShopById(id);
+	}
+
+	return shop ?? null;
 };
 
 export const canBuyListing = (item: Listing): boolean => {
@@ -125,21 +138,29 @@ export const getListingsByItem = (shops: FetchedStoreData<Shop>): ItemListing[] 
 	return listings;
 };
 
-export const getListing = (
+export const getListings = async (
 	itemName: string,
 	modId?: string,
 	itemNbt?: string
-): ItemListing | null => {
+): Promise<ItemListing[]> => {
+	console.log('getListings', { itemName, modId, itemNbt });
+
+	// Prepend modid if given
 	if (modId) {
 		itemName = modId + ':' + itemName;
 	}
-	const allListings = getListingsByItem(get(store));
-	const filteredListing = allListings.find(
-		(x) =>
-			x.itemName === itemName &&
-			(itemsRequiringNbt.includes(x.itemName.toLowerCase()) ? x.itemNbt === itemNbt : true)
+
+	// Retrieve the shops data directly if we don't have it yet
+	let shopsData = get(store);
+	if (!shopsData || !shopsData.data || shopsData.data.length === 0) {
+		shopsData = await store.updateItems();
+	}
+
+	const allListings = getListingsByItem(shopsData);
+	const filteredListings = allListings.filter(
+		(x) => x.itemName === itemName && (itemNbt ? x.itemNbt === itemNbt : true)
 	);
-	return filteredListing ?? null;
+	return filteredListings;
 };
 
 export default store;

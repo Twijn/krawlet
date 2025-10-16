@@ -1,23 +1,12 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import ShopItems from '$lib/components/widgets/shops/ShopItems.svelte';
-	import { cleanShopData, getShopById } from '$lib/stores/shopsync';
-	import type { Shop } from '$lib/types/shops.js';
+	import { cleanShopData } from '$lib/stores/shopsync';
 	import { relativeTime } from '$lib/util.js';
-	import { onMount } from 'svelte';
 
-	const { params } = $props();
-
-	let shop = $state<Shop | null>(null);
-
-	onMount(() => {
-		shop = getShopById(params.id);
-		if (!shop) {
-			goto('/shops?error=not-found');
-		}
-	});
+	const { data } = $props();
+	const { shop } = data;
 
 	let items = $derived(shop?.items ?? []);
 </script>
@@ -76,7 +65,7 @@
 		{/if}
 	</div>
 
-	<ShopItems bind:shop />
+	<ShopItems {shop} />
 {:else}
 	<ModuleLoading />
 {/if}
