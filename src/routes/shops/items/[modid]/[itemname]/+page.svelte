@@ -1,14 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
-	import {
-		cleanShopData,
-		getItemImageUrl,
-		getListing,
-		type ItemListing,
-		type ShopWithListing
-	} from '$lib/stores/shopsync';
-	import { onMount } from 'svelte';
+	import { cleanShopData, getItemImageUrl, type ShopWithListing } from '$lib/stores/shopsync';
 	import { formatCurrency } from '$lib/util';
 	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
@@ -16,20 +7,15 @@
 	import ShopCard from '$lib/components/widgets/shops/cards/ShopCard.svelte';
 	import ItemBadges from '$lib/components/widgets/shops/ItemBadges.svelte';
 
-	const { params } = $props();
+	const { data } = $props();
+	const { item } = data;
 
-	let item = $state<ItemListing | null>(null);
-
-	onMount(() => {
-		item = getListing(params.itemname, params.modid);
-		if (!item) {
-			goto('/shops/items?error=not-found');
-		}
-	});
-
-	let lowestShop: ShopWithListing | null = $state(null);
-	let highestShop: ShopWithListing | null = $state(null);
+	let lowestShop = $state<ShopWithListing | null>(null);
+	let highestShop = $state<ShopWithListing | null>(null);
 	let marketValue: number = $state(0);
+
+	const lowestPrice = $derived(lowestShop?.listing?.prices?.[0]?.value);
+	const highestPrice = $derived(highestShop?.listing?.prices?.[0]?.value);
 
 	$effect(() => {
 		if (!item) return;
@@ -77,91 +63,84 @@
 	>
 </h1>
 
-{#if item}
-	{@const lowestPrice = lowestShop?.listing?.prices?.[0]?.value}
-	{@const highestPrice = highestShop?.listing?.prices?.[0]?.value}
-	<div class="col-12 statistics">
-		<div class="statistic">
-			<img src={getItemImageUrl(item)} alt={item.itemDisplayName} />
-		</div>
-		<div class="statistic">
-			<h2>Item Name</h2>
-			<div>{cleanShopData(item.itemDisplayName)}</div>
-		</div>
-		<div class="statistic">
-			<h2>Shops</h2>
-			<div>{item.shops.length}</div>
-		</div>
-		<div class="statistic">
-			<h2>Lowest Price</h2>
-			<div>
-				{#if lowestPrice}
-					{formatCurrency(lowestPrice)}
-					<small>KRO</small>
-				{:else}
-					N/A
-				{/if}
-			</div>
-		</div>
-		<div class="statistic">
-			<h2>Highest Price</h2>
-			<div>
-				{#if highestPrice}
-					{formatCurrency(highestPrice)}
-					<small>KRO</small>
-				{:else}
-					N/A
-				{/if}
-			</div>
-		</div>
-		<div class="statistic">
-			<h2>Market Value</h2>
-			<div>
-				{#if marketValue}
-					{formatCurrency(marketValue)}
-					<small>KRO</small>
-				{:else}
-					N/A
-				{/if}
-			</div>
+<div class="col-12 statistics">
+	<div class="statistic">
+		<img src={getItemImageUrl(item)} alt={item.itemDisplayName} />
+	</div>
+	<div class="statistic">
+		<h2>Item Name</h2>
+		<div>{cleanShopData(item.itemDisplayName)}</div>
+	</div>
+	<div class="statistic">
+		<h2>Shops</h2>
+		<div>{item.shops.length}</div>
+	</div>
+	<div class="statistic">
+		<h2>Lowest Price</h2>
+		<div>
+			{#if lowestPrice}
+				{formatCurrency(lowestPrice)}
+				<small>KRO</small>
+			{:else}
+				N/A
+			{/if}
 		</div>
 	</div>
-
-	<Section lgCols={12}>
-		<h2><FontAwesomeIcon icon={faShop} /> Shops</h2>
-		<div class="shop-grid">
-			{#each item.shops as shop (shop.listing.id)}
-				{@const stock = Number(shop.listing.stock)}
-				<ShopCard {shop}>
-					<ItemBadges item={shop.listing} />
-					<div class="table-container">
-						<table>
-							<tbody>
-								<tr>
-									<th>Stock</th>
-									<td class="right">
-										{stock.toLocaleString()} <small>item{stock === 1 ? '' : 's'}</small>
-									</td>
-								</tr>
-								{#each shop.listing.prices ?? [] as price (price.id)}
-									{@const priceValue = Number(price.value)}
-									<tr>
-										<th>Price <small>({price.currency})</small></th>
-										<td class="right"
-											>{formatCurrency(priceValue)} <small>{price.currency}</small></td
-										>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
-					</div>
-				</ShopCard>
-			{/each}
+	<div class="statistic">
+		<h2>Highest Price</h2>
+		<div>
+			{#if highestPrice}
+				{formatCurrency(highestPrice)}
+				<small>KRO</small>
+			{:else}
+				N/A
+			{/if}
 		</div>
-	</Section>
-{:else}
-	<ModuleLoading />
-{/if}
+	</div>
+	<div class="statistic">
+		<h2>Market Value</h2>
+		<div>
+			{#if marketValue}
+				{formatCurrency(marketValue)}
+				<small>KRO</small>
+			{:else}
+				N/A
+			{/if}
+		</div>
+	</div>
+</div>
+
+<Section lgCols={12}>
+	<h2><FontAwesomeIcon icon={faShop} /> Shops</h2>
+	<div class="shop-grid">
+		{#each item.shops as shop (shop.listing.id)}
+			{@const stock = Number(shop.listing.stock)}
+			<ShopCard {shop}>
+				<ItemBadges item={shop.listing} />
+				<div class="table-container">
+					<table>
+						<tbody>
+							<tr>
+								<th>Stock</th>
+								<td class="right">
+									{stock.toLocaleString()} <small>item{stock === 1 ? '' : 's'}</small>
+								</td>
+							</tr>
+							{#each shop.listing.prices ?? [] as price (price.id)}
+								{@const priceValue = Number(price.value)}
+								<tr>
+									<th>Price <small>({price.currency})</small></th>
+									<td class="right">{formatCurrency(priceValue)} <small>{price.currency}</small></td
+									>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			</ShopCard>
+		{/each}
+	</div>
+</Section>
 
 <style>
 	.statistic:has(img) {

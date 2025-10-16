@@ -21,6 +21,7 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { prompt } from '$lib/stores/prompt';
 	import { onMount } from 'svelte';
+	import { getSyncNode } from '$lib/consts';
 
 	const NAME_REGEX = /^(\w+@)?(\w+)\.kro$/;
 	const ADDRESS_REGEX = /k[a-z0-9]{9}/;
@@ -46,7 +47,7 @@
 	type Addr = Wallet | Player | KnownAddress;
 
 	let allAddresses: Addr[] = $derived([
-		...$settings.wallets,
+		...$settings.wallets.filter((x) => x.syncNode === getSyncNode().id),
 		...$playerWallets.data,
 		...$knownAddresses.data
 	]);
@@ -301,7 +302,11 @@
 			{#each filteredWallets as addr (addr.name + '.' + addr.address)}
 				{@const address = getAddress(addr)}
 				<li>
-					<button type="button" onclick={() => setAddress(addr)}>
+					<button
+						type="button"
+						onclick={() => setAddress(addr)}
+						ontouchend={() => setAddress(addr)}
+					>
 						<FontAwesomeIcon icon={faWallet} />
 						<span class="bold-500">{addr.name}</span>
 						<small>({address})</small>
@@ -326,7 +331,11 @@
 				{#each filteredPlayers as addr (addr.kromerAddress)}
 					{@const address = getAddress(addr)}
 					<li>
-						<button type="button" onclick={() => setAddress(addr)}>
+						<button
+							type="button"
+							onclick={() => setAddress(addr)}
+							ontouchend={() => setAddress(addr)}
+						>
 							<img
 								src="https://api.mineatar.io/face/{addr.minecraftUUID}"
 								alt="Avatar for {addr.minecraftName}"
@@ -346,7 +355,11 @@
 					{@const address = getAddress(addr)}
 					{@const icon = getVerifiedIcon(addr)}
 					<li>
-						<button type="button" onclick={() => setAddress(addr)}>
+						<button
+							type="button"
+							onclick={() => setAddress(addr)}
+							ontouchend={() => setAddress(addr)}
+						>
 							{#if 'imageSrc' in addr && addr.imageSrc}
 								<img src={addr.imageSrc} alt="Icon for {addr.name}" />
 							{:else if icon}
@@ -389,21 +402,28 @@
 		list-style-type: none;
 		border-radius: 0.25em;
 		box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.5);
-		z-index: 100;
+		z-index: 9999;
 		overflow: hidden auto;
+		visibility: hidden;
+		opacity: 0;
+		transform: translateY(-10px) scaleY(0.9);
+		transition:
+			opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+			transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+			visibility 0s linear 0.25s;
 		max-height: 20em;
 		opacity: 0;
 		transform: translateY(-10px) scaleY(0.9);
-		pointer-events: none;
 		transition:
 			opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
 			transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	.address-selector:not(.hidden):focus-within .dropdown {
+		visibility: visible;
 		opacity: 1;
-		transform: translateY(0) scaleY(1);
-		pointer-events: auto;
+		transform: unset; /* FUCK SAFARI */
+		transition-delay: 0s;
 	}
 
 	.dropdown strong {
@@ -429,6 +449,11 @@
 		cursor: pointer;
 		text-align: left;
 		transition: 0.25s background-color;
+		color: var(--text-color-1);
+		-webkit-tap-highlight-color: transparent;
+		appearance: none;
+		box-shadow: none;
+		outline: none;
 	}
 
 	.dropdown button img {

@@ -14,6 +14,7 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { getAddress, type KnownAddress } from '$lib/stores/knownAddresses';
 	import settings, { type Wallet } from '$lib/stores/settings';
+	import { getSyncNode } from '$lib/consts';
 
 	let {
 		address = $bindable()
@@ -22,7 +23,9 @@
 	} = $props();
 
 	let wallet: Wallet | null = $derived(
-		$settings.wallets.find((x) => x.address === address) ?? null
+		$settings.wallets
+			.filter((x) => x.syncNode === getSyncNode().id)
+			.find((x) => x.address === address) ?? null
 	);
 
 	let player: Player | null = $derived(

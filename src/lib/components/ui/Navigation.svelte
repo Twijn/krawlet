@@ -9,11 +9,12 @@
 		faListNumeric,
 		faMoneyBillWave,
 		faPaperPlane,
+		faSearch,
 		faShop,
 		faSign,
 		faWallet
 	} from '@fortawesome/free-solid-svg-icons';
-	import { SYNC_NODE, SYNC_NODE_OFFICIAL } from '$lib/consts';
+	import { getSyncNode, SYNC_NODE_OFFICIAL } from '$lib/consts';
 
 	type NavigationLink = {
 		icon: IconDefinition;
@@ -88,6 +89,11 @@
 			name: 'Addresses',
 			links: [
 				{
+					icon: faSearch,
+					name: 'Search Addresses',
+					href: '/addresses/search'
+				},
+				{
 					icon: faMoneyBillWave,
 					name: 'Richest Addresses',
 					href: '/addresses/rich'
@@ -116,6 +122,22 @@
 					href: '/shops/items'
 				}
 			]
+		},
+		{
+			name: 'Internal Endpoints',
+			hideOnInternal: true,
+			links: [
+				{
+					icon: faWallet,
+					name: 'Create Wallet',
+					href: '/internal/create-wallet'
+				},
+				{
+					icon: faPaperPlane,
+					name: 'Give Money',
+					href: '/internal/give-money'
+				}
+			]
 		}
 	];
 
@@ -137,7 +159,7 @@
 		return false;
 	}
 
-	const isInternal = SYNC_NODE_OFFICIAL.url === SYNC_NODE.url;
+	const isInternal = SYNC_NODE_OFFICIAL.url === getSyncNode().url;
 	function shouldShow(hideInternal?: boolean, hideExternal?: boolean) {
 		if (isInternal && hideInternal) {
 			return false;

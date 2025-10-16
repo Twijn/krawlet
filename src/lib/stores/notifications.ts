@@ -4,7 +4,8 @@ interface Notification {
 	id: string;
 	type: 'success' | 'error' | 'info' | 'warning';
 	message: string;
-	timeout?: number;
+	unclosable?: boolean;
+	timeout?: number | null;
 }
 
 function createNotificationStore() {
@@ -12,14 +13,14 @@ function createNotificationStore() {
 
 	const store = {
 		subscribe,
-		success: (message: string, timeout: number = 3000) =>
-			store.add({ type: 'success', message, timeout }),
-		info: (message: string, timeout: number = 3000) =>
-			store.add({ type: 'info', message, timeout }),
-		error: (message: string, timeout: number = 5000) =>
-			store.add({ type: 'error', message, timeout }),
-		warning: (message: string, timeout: number = 5000) =>
-			store.add({ type: 'warning', message, timeout }),
+		success: (message: string, timeout: number | null = 3000, unclosable: boolean = false) =>
+			store.add({ type: 'success', message, timeout, unclosable }),
+		info: (message: string, timeout: number | null = 3000, unclosable: boolean = false) =>
+			store.add({ type: 'info', message, timeout, unclosable }),
+		error: (message: string, timeout: number | null = 5000, unclosable: boolean = false) =>
+			store.add({ type: 'error', message, timeout, unclosable }),
+		warning: (message: string, timeout: number | null = 5000, unclosable: boolean = false) =>
+			store.add({ type: 'warning', message, timeout, unclosable }),
 		add: (notification: Omit<Notification, 'id'>) => {
 			const id = crypto.randomUUID();
 			update((notifications) => [...notifications, { ...notification, id }]);
@@ -29,6 +30,8 @@ function createNotificationStore() {
 					store.remove(id);
 				}, notification.timeout);
 			}
+
+			return id;
 		},
 		remove: (id: string) => {
 			update((notifications) => notifications.filter((n) => n.id !== id));

@@ -13,6 +13,7 @@
 	import { confirm } from '$lib/stores/confirm';
 	import AddressModule from './addresses/Address.svelte';
 	import settings, { type Wallet } from '$lib/stores/settings';
+	import { getSyncNode } from '$lib/consts';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -61,9 +62,10 @@
 
 	settings.subscribe(async ($store) => {
 		if (browser) {
-			if ($store.wallets.length > 0) {
+			const wallets = $store.wallets.filter((x) => x.syncNode === getSyncNode().id);
+			if (wallets.length > 0) {
 				loading = true;
-				addresses = await kromer.addresses.getMultiple($store.wallets.map((x) => x.address));
+				addresses = await kromer.addresses.getMultiple(wallets.map((x) => x.address));
 				loading = false;
 			} else {
 				addresses = {};
@@ -72,7 +74,9 @@
 	});
 
 	let totalBalance = $derived(
-		$settings.wallets.reduce((sum, wallet) => sum + (addresses[wallet.address]?.balance || 0), 0)
+		$settings.wallets
+			.filter((x) => x.syncNode === getSyncNode().id)
+			.reduce((sum, wallet) => sum + (addresses[wallet.address]?.balance || 0), 0)
 	);
 </script>
 
@@ -84,7 +88,7 @@
 
 	<div class="wallets">
 		<ModuleLoading absolute={true} bind:loading />
-		{#if $settings.wallets.length === 0}
+		{#if $settings.wallets.filter((x) => x.syncNode === getSyncNode().id).length === 0}
 			<Alert variant="info">
 				<strong>No wallets saved!</strong>
 				<p>
@@ -92,7 +96,9 @@
 				</p>
 			</Alert>
 		{/if}
-		{#each $settings.wallets.slice(0, limit) as wallet (wallet.address)}
+		{#each $settings.wallets
+			.filter((x) => x.syncNode === getSyncNode().id)
+			.slice(0, limit) as wallet (wallet.address)}
 			{@const balance = addresses[wallet.address] ? addresses[wallet.address].balance : 0}
 			<div
 				class="wallet"
@@ -117,7 +123,7 @@
 				{/if}
 			</div>
 		{/each}
-		{#if $settings.wallets.length > 0}
+		{#if $settings.wallets.filter((x) => x.syncNode === getSyncNode().id).length > 0}
 			<p class="total">
 				<strong>Total Balance: </strong>
 				{formatBalance(totalBalance)}

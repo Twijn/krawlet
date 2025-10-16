@@ -2,7 +2,7 @@
 	import '$lib/app.css';
 	import { config } from '@fortawesome/fontawesome-svg-core';
 	import '@fortawesome/fontawesome-svg-core/styles.css';
-	import { faBars, faGear } from '@fortawesome/free-solid-svg-icons';
+	import { faArrowDown, faBars, faGear } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -11,16 +11,20 @@
 	import '@fontsource/inter/400.css';
 	import '@fontsource/inter/500.css';
 	import '@fontsource/inter/600.css';
+
 	import Navigation from '$lib/components/ui/Navigation.svelte';
-	import { VERSION } from '$lib/consts';
+	import { getSyncNode, SYNC_NODE_OFFICIAL, VERSION } from '$lib/consts';
 	import Notifications from '$lib/components/dialogs/Notifications.svelte';
 	import Confirm from '$lib/components/dialogs/Confirm.svelte';
 	import Prompt from '$lib/components/dialogs/Prompt.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
+	import settings from '$lib/stores/settings';
 
 	config.autoAddCss = false;
 
 	const { children } = $props();
 	let showNavigation = $state(false);
+	let showSyncNodeWarning = $state(true);
 
 	let handleResize: () => void;
 
@@ -43,6 +47,13 @@
 		const target = e.target as HTMLElement;
 		if (!target.closest('#show-navigation') && window.innerWidth <= 768) {
 			showNavigation = false;
+		}
+	}
+
+	function revertNode() {
+		$settings.syncNode = SYNC_NODE_OFFICIAL.id;
+		if (browser) {
+			location.reload();
 		}
 	}
 </script>
@@ -86,6 +97,31 @@
 <Notifications />
 <Confirm />
 <Prompt />
+
+{#if !getSyncNode().official}
+	<div class="sync-node-warning" class:hide={!showSyncNodeWarning}>
+		<button
+			class="close-btn"
+			aria-label="Close warning"
+			onclick={() => (showSyncNodeWarning = !showSyncNodeWarning)}
+		>
+			<FontAwesomeIcon icon={faArrowDown} size="2xs" />
+		</button>
+		{#if showSyncNodeWarning}
+			<p>
+				Warning: You are connected to a custom sync node {getSyncNode().name} -
+				<em>{getSyncNode().url}</em>.
+				<br />
+				<strong>!! You should <em>not</em> enter any private keys you use in production !!</strong>
+			</p>
+			<Button variant="error" full type="button" onClick={revertNode}
+				>Revert to Official Node</Button
+			>
+		{:else}
+			Connected to custom sync node {getSyncNode().name}
+		{/if}
+	</div>
+{/if}
 
 <style>
 	header {
@@ -184,5 +220,54 @@
 	.settings-btn:hover,
 	.settings-btn:focus-visible {
 		color: var(--theme-color-2);
+	}
+
+	.sync-node-warning {
+		position: fixed;
+		width: calc(100% - 3em);
+		max-width: 35em;
+		bottom: 1em;
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 100;
+		text-align: center;
+		background-color: rgba(var(--red), 0.6);
+		border: 0.1em solid rgba(var(--red), 0.8);
+		padding: 0.6em 0.75em;
+		border-radius: 0.5em;
+		backdrop-filter: blur(5px);
+		color: white;
+		box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+		transition: 0.25s;
+	}
+
+	.sync-node-warning.hide {
+		max-width: 30em;
+		bottom: -1em;
+		padding: 0.25em 0.75em 1em 0.25em;
+	}
+
+	.close-btn {
+		position: absolute;
+		top: 0.2em;
+		right: 0.2em;
+		background: none;
+		border: none;
+		color: white;
+		font-size: 1.5em;
+		cursor: pointer;
+		opacity: 0.7;
+		transition: 0.25s;
+	}
+	.close-btn:hover,
+	.close-btn:focus-visible {
+		opacity: 1;
+		color: rgb(var(--red));
+	}
+
+	.sync-node-warning.hide .close-btn {
+		top: -0.1em;
+		right: -0.1em;
+		transform: rotate(180deg);
 	}
 </style>

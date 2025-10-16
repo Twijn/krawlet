@@ -5,7 +5,6 @@ import { error } from '@sveltejs/kit';
 export async function load({ params }) {
 	try {
 		const address = await kromer.addresses.get(params.addressStr);
-
 		return {
 			address
 		};

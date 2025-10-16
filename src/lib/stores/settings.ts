@@ -1,11 +1,13 @@
 import { writable, get, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import type { APIError } from 'kromer';
+import { getSyncNode, SYNC_NODE_OFFICIAL, updateActiveNode } from '$lib/consts';
 
 export type Wallet = {
 	name: string;
 	address: string;
 	private: string; // encrypted payload (JSON string) when stored
+	syncNode: string; // sync node ID where this wallet was created
 };
 
 export type SettingsData = {
@@ -25,6 +27,8 @@ export type SettingsData = {
 	relativeTimeAbove7d: boolean;
 	// wallets
 	wallets: Wallet[];
+	// sync node
+	syncNode: string;
 };
 
 const NAME = 'settings';
@@ -143,7 +147,8 @@ class Settings {
 		parsePurchaseItemQuantity: false,
 		relativeTimeEnabled: true,
 		relativeTimeAbove7d: false,
-		wallets: []
+		wallets: [],
+		syncNode: SYNC_NODE_OFFICIAL.id
 	};
 	private data: Writable<SettingsData>;
 
@@ -158,6 +163,15 @@ class Settings {
 					if (parsed) {
 						this.data.set({ ...this.initial, ...parsed });
 					}
+
+					// Update the active sync node in consts.ts
+					const stored = get(this.data);
+					updateActiveNode(stored.syncNode ?? SYNC_NODE_OFFICIAL.id);
+
+					// Ensure wallets are associated with a sync node
+					stored.wallets.forEach((wallet) => {
+						wallet.syncNode = wallet.syncNode ?? SYNC_NODE_OFFICIAL.id;
+					});
 				} catch {
 					console.warn('Failed to parse settings from localStorage.');
 				}
@@ -172,8 +186,12 @@ class Settings {
 		});
 	}
 
-	public async addWallet(wallet: Wallet, encryptionKey: string) {
+	public async addWallet(w: Wallet | Omit<Wallet, 'syncNode'>, encryptionKey: string) {
 		const store = get(this.data);
+		const wallet: Wallet = {
+			syncNode: store.syncNode,
+			...w
+		};
 		for (const existingWallet of store.wallets) {
 			const decrypted = await decryptWithPassword(encryptionKey, existingWallet.private);
 			if (existingWallet.address === wallet.address) {
@@ -199,9 +217,20 @@ class Settings {
 			}
 		}
 		const encrypted = await encryptWithPassword(encryptionKey, wallet.private);
-		const entry: Wallet = { name: wallet.name, address: wallet.address, private: encrypted };
+		const entry: Wallet = {
+			name: wallet.name,
+			address: wallet.address,
+			private: encrypted,
+			syncNode: store.syncNode
+		};
 		this.data.update((state) => ({ ...state, wallets: [...state.wallets, entry] }));
 		return entry;
+	}
+
+	public getWallets() {
+		const store = get(this.data);
+		const currentSyncNodeId = getSyncNode().id ?? SYNC_NODE_OFFICIAL.id;
+		return store.wallets.filter((x) => x.syncNode === currentSyncNodeId);
 	}
 
 	public removeWallet(address: string) {
@@ -223,6 +252,16 @@ class Settings {
 	public clearAll() {
 		this.data.set(this.initial);
 		if (browser) localStorage.removeItem(NAME);
+	}
+
+	public async validateMasterPassword(encryptionKey: string): Promise<boolean> {
+		const store = get(this.data);
+		if (store.wallets.length === 0) return true;
+		for (const wallet of store.wallets) {
+			const decrypted = await this.decryptWallet(wallet, encryptionKey);
+			if (!decrypted) return false;
+		}
+		return true;
 	}
 
 	public get subscribe() {
@@ -251,6 +290,9 @@ class Settings {
 		if (importStore.wallets && importStore.wallets.length > 0) {
 			importStore.wallets.forEach((w) => {
 				if (!currentStore.wallets.find((x) => x.address === w.address)) {
+					if (!w.syncNode) {
+						w.syncNode = getSyncNode().id ?? SYNC_NODE_OFFICIAL.id;
+					}
 					newData.wallets.push(w);
 				}
 			});

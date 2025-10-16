@@ -76,13 +76,14 @@ export default class FetchedStore<T> {
 		return data;
 	}
 
-	protected async updateItems() {
-		return fetchItems<T>(this.itemUrl).then((data) => {
-			this.store.update(() => ({
-				updated: Date.now(),
-				data: this.sort(data)
-			}));
-		});
+	public async updateItems(): Promise<FetchedStoreData<T>> {
+		const data = {
+			data: await fetchItems<T>(this.itemUrl),
+			updated: Date.now()
+		};
+		this.sort(data.data);
+		this.store.update(() => data);
+		return data;
 	}
 
 	public get subscribe() {
