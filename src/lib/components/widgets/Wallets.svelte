@@ -2,7 +2,7 @@
 	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faTrash, faWallet } from '@fortawesome/free-solid-svg-icons';
-	import { fade } from 'svelte/transition';
+	import { fade, slide } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { browser } from '$app/environment';
 	import kromer from '$lib/api/kromer';
@@ -13,7 +13,7 @@
 	import { confirm } from '$lib/stores/confirm';
 	import AddressModule from './addresses/Address.svelte';
 	import settings, { type Wallet } from '$lib/stores/settings';
-	import { getSyncNode } from '$lib/consts';
+	import { getSyncNode, SYNC_NODES } from '$lib/consts';
 	import ToggleCheckbox from '../form/ToggleCheckbox.svelte';
 	import { paramState } from '$lib/paramState.svelte';
 
@@ -104,6 +104,14 @@
 				Show wallets from other sync nodes
 			</ToggleCheckbox>
 		{/if}
+		{#if showOtherNodes.value}
+			<div transition:slide>
+				<Alert variant="info">
+					<strong>Note:</strong>
+					<p>Balances for wallets on other sync nodes may be inaccurate or not show at all.</p>
+				</Alert>
+			</div>
+		{/if}
 		<ModuleLoading absolute={true} bind:loading />
 		{#if filteredWallets.length === 0}
 			<Alert variant="info">
@@ -125,7 +133,14 @@
 				</div>
 				<div class="info">
 					<h3>{wallet.name}</h3>
-					<AddressModule address={wallet.address} />
+					<div class="wallet-info">
+						<AddressModule address={wallet.address} />
+						{#if showOtherNodes.value}
+							{@const syncNodeName =
+								SYNC_NODES.find((x) => x.id === wallet.syncNode)?.name ?? 'Unknown'}
+							<small><strong>Sync Node:</strong> {syncNodeName}</small>
+						{/if}
+					</div>
 				</div>
 				<div class="balance">
 					{formatBalance(balance)}
