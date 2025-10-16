@@ -29,6 +29,8 @@ export type SettingsData = {
 	wallets: Wallet[];
 	// sync node
 	syncNode: string;
+	showAllWalletsOption: boolean;
+	showAllWalletsDefault: boolean;
 };
 
 const NAME = 'settings';
@@ -148,7 +150,9 @@ class Settings {
 		relativeTimeEnabled: true,
 		relativeTimeAbove7d: false,
 		wallets: [],
-		syncNode: SYNC_NODE_OFFICIAL.id
+		syncNode: SYNC_NODE_OFFICIAL.id,
+		showAllWalletsOption: false,
+		showAllWalletsDefault: false
 	};
 	private data: Writable<SettingsData>;
 

@@ -14,6 +14,8 @@
 	import AddressModule from './addresses/Address.svelte';
 	import settings, { type Wallet } from '$lib/stores/settings';
 	import { getSyncNode } from '$lib/consts';
+	import ToggleCheckbox from '../form/ToggleCheckbox.svelte';
+	import { paramState } from '$lib/paramState.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -60,9 +62,21 @@
 	let addresses: Record<string, Address> = $state({});
 	let loading: boolean = $state(false);
 
+	let showOtherNodes = paramState<boolean>('all_wallets', $settings.showAllWalletsDefault, {
+		serialize: (value) => value.toString(),
+		deserialize: (value) => value === 'true',
+		shouldSet: (value) => value
+	});
+
+	let filteredWallets = $derived(
+		$settings.wallets.filter((x) => showOtherNodes.value || x.syncNode === getSyncNode().id)
+	);
+
 	settings.subscribe(async ($store) => {
 		if (browser) {
-			const wallets = $store.wallets.filter((x) => x.syncNode === getSyncNode().id);
+			const wallets = $store.wallets.filter(
+				(x) => showOtherNodes.value || x.syncNode === getSyncNode().id
+			);
 			if (wallets.length > 0) {
 				loading = true;
 				addresses = await kromer.addresses.getMultiple(wallets.map((x) => x.address));
@@ -74,9 +88,7 @@
 	});
 
 	let totalBalance = $derived(
-		$settings.wallets
-			.filter((x) => x.syncNode === getSyncNode().id)
-			.reduce((sum, wallet) => sum + (addresses[wallet.address]?.balance || 0), 0)
+		filteredWallets.reduce((sum, wallet) => sum + (addresses[wallet.address]?.balance || 0), 0)
 	);
 </script>
 
@@ -87,8 +99,13 @@
 	{/if}
 
 	<div class="wallets">
+		{#if $settings.showAllWalletsOption}
+			<ToggleCheckbox bind:checked={showOtherNodes.value} center>
+				Show wallets from other sync nodes
+			</ToggleCheckbox>
+		{/if}
 		<ModuleLoading absolute={true} bind:loading />
-		{#if $settings.wallets.filter((x) => x.syncNode === getSyncNode().id).length === 0}
+		{#if filteredWallets.length === 0}
 			<Alert variant="info">
 				<strong>No wallets saved!</strong>
 				<p>
@@ -96,9 +113,7 @@
 				</p>
 			</Alert>
 		{/if}
-		{#each $settings.wallets
-			.filter((x) => x.syncNode === getSyncNode().id)
-			.slice(0, limit) as wallet (wallet.address)}
+		{#each filteredWallets.slice(0, limit) as wallet (wallet.address)}
 			{@const balance = addresses[wallet.address] ? addresses[wallet.address].balance : 0}
 			<div
 				class="wallet"
@@ -123,7 +138,7 @@
 				{/if}
 			</div>
 		{/each}
-		{#if $settings.wallets.filter((x) => x.syncNode === getSyncNode().id).length > 0}
+		{#if filteredWallets.length > 0}
 			<p class="total">
 				<strong>Total Balance: </strong>
 				{formatBalance(totalBalance)}

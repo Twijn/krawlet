@@ -63,6 +63,12 @@
 			notificationId = null;
 		}
 	}
+
+	function onShowAllWalletsOptionChange() {
+		if (!$settings.showAllWalletsOption) {
+			$settings.showAllWalletsDefault = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -146,5 +152,17 @@
 				change={onSyncNodeChange}
 			/>
 		{/if}
+		<ToggleCheckbox
+			bind:checked={$settings.showAllWalletsOption}
+			onChange={onShowAllWalletsOptionChange}
+		>
+			Show "Show wallets from other sync nodes" option in the wallets widget
+		</ToggleCheckbox>
+		<ToggleCheckbox
+			bind:checked={$settings.showAllWalletsDefault}
+			disabled={!$settings.showAllWalletsOption}
+		>
+			Make "Show wallets from other sync nodes" enabled by default
+		</ToggleCheckbox>
 	</fieldset>
 </Section>
