@@ -9,6 +9,7 @@
 		faListNumeric,
 		faMoneyBillWave,
 		faPaperPlane,
+		faSearch,
 		faShop,
 		faSign,
 		faWallet
@@ -87,6 +88,11 @@
 		{
 			name: 'Addresses',
 			links: [
+				{
+					icon: faSearch,
+					name: 'Search Addresses',
+					href: '/addresses/search'
+				},
 				{
 					icon: faMoneyBillWave,
 					name: 'Richest Addresses',
