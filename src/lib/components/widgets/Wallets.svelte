@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faTrash, faWallet } from '@fortawesome/free-solid-svg-icons';
+	import { faBars, faTrash, faWallet } from '@fortawesome/free-solid-svg-icons';
 	import { fade, slide } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 	import { browser } from '$app/environment';
@@ -48,8 +48,6 @@
 			danger: true,
 			confirmButtonLabel: 'Delete',
 			confirm: () => {
-				delete addresses[wallet.address];
-				addresses = { ...addresses };
 				settings.removeWallet(wallet.address);
 				notifications.success(`Successfully deleted wallet ${wallet.name} (${wallet.address})`);
 			},
@@ -59,7 +57,7 @@
 		});
 	}
 
-	let addresses: Record<string, Address> = $state({});
+	let balances: Record<string, number> = $state({});
 	let loading: boolean = $state(false);
 
 	let showOtherNodes = paramState<boolean>('all_wallets', $settings.showAllWalletsDefault, {
@@ -77,18 +75,37 @@
 			const wallets = $store.wallets.filter(
 				(x) => showOtherNodes.value || x.syncNode === getSyncNode().id
 			);
-			if (wallets.length > 0) {
+
+			let neededWallets: string[] = [];
+			// Zeroed balances adds wallets with 0 balance to the balances object
+			// so that they show up as 0 instead of "Loading..." or not at all
+			let zeroedBalances: Record<string, number> = {};
+			for (const wallet of wallets) {
+				// check the type instead of falsy because 0 is falsy
+				if (typeof balances[wallet.address] !== 'number') {
+					console.log('need', wallet);
+					neededWallets.push(wallet.address);
+					zeroedBalances[wallet.address] = 0;
+				}
+			}
+
+			if (neededWallets.length > 0) {
 				loading = true;
-				addresses = await kromer.addresses.getMultiple(wallets.map((x) => x.address));
+				const retrieved = await kromer.addresses.getMultiple(neededWallets);
+				balances = {
+					...zeroedBalances,
+					...balances,
+					...Object.fromEntries(
+						Object.values(retrieved).map((x: Address) => [x.address, x.balance])
+					)
+				};
 				loading = false;
-			} else {
-				addresses = {};
 			}
 		}
 	});
 
 	let totalBalance = $derived(
-		filteredWallets.reduce((sum, wallet) => sum + (addresses[wallet.address]?.balance || 0), 0)
+		filteredWallets.reduce((sum, wallet) => sum + (balances[wallet.address] || 0), 0)
 	);
 </script>
 
@@ -122,11 +139,46 @@
 			</Alert>
 		{/if}
 		{#each filteredWallets.slice(0, limit) as wallet (wallet.address)}
-			{@const balance = addresses[wallet.address] ? addresses[wallet.address].balance : 0}
+			{@const balance = balances[wallet.address] || 0}
 			<div
 				class="wallet"
 				transition:fade|local={{ duration: 200 }}
 				animate:flip={{ duration: 200 }}
+				role="button"
+				tabindex="0"
+				draggable="true"
+				ondragstart={(e) => {
+					if (!e.dataTransfer) return;
+					e.dataTransfer.setData('wallet-address', wallet.address);
+					e.dataTransfer.effectAllowed = 'move';
+				}}
+				ondragover={(e) => {
+					if (!e.dataTransfer) return;
+					e.preventDefault();
+					e.dataTransfer.dropEffect = 'move';
+					e.currentTarget.classList.add('drag-over');
+				}}
+				ondragleave={(e) => {
+					e.currentTarget.classList.remove('drag-over');
+				}}
+				ondrop={(e) => {
+					if (!e.dataTransfer) return;
+					e.preventDefault();
+					e.currentTarget.classList.remove('drag-over');
+					const fromAddress = e.dataTransfer.getData('wallet-address');
+					const toAddress = wallet.address;
+					if (fromAddress && fromAddress !== toAddress) {
+						const wallets = [...$settings.wallets];
+						const fromIdx = wallets.findIndex((w) => w.address === fromAddress);
+						const toIdx = wallets.findIndex((w) => w.address === toAddress);
+						if (fromIdx !== -1 && toIdx !== -1) {
+							const [moved] = wallets.splice(fromIdx, 1);
+							wallets.splice(toIdx, 0, moved);
+							settings.setWallets(wallets);
+							notifications.success(`Wallet order saved!`);
+						}
+					}
+				}}
 			>
 				<div class="icon">
 					<FontAwesomeIcon icon={faWallet} />
@@ -147,7 +199,10 @@
 					<small>KRO</small>
 				</div>
 				{#if showDelete}
-					<button class="delete-btn" onclick={() => deleteWallet(wallet)}>
+					<div class="drag-handle manage-btn" title="Drag to reorder">
+						<FontAwesomeIcon icon={faBars} />
+					</div>
+					<button class="manage-btn" onclick={() => deleteWallet(wallet)}>
 						<FontAwesomeIcon icon={faTrash} />
 					</button>
 				{/if}
@@ -216,21 +271,20 @@
 		margin-right: 0.25em;
 	}
 
-	.delete-btn {
-		color: white;
+	.manage-btn {
+		color: var(--text-color-2);
 		background-color: transparent;
 		padding: 0.5em;
 		margin: 0;
 		border: none;
 		cursor: pointer;
 		font-size: 0.9em;
-		opacity: 0.5;
-		transition: opacity 0.2s ease-in-out;
+		transition: color 0.2s ease-in-out;
 	}
 
-	.delete-btn:hover,
-	.delete-btn:focus {
-		opacity: 0.75;
+	.manage-btn:hover,
+	.manage-btn:focus {
+		color: white;
 	}
 
 	@media only screen and (max-width: 768px) {

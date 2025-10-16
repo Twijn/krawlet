@@ -268,6 +268,13 @@ class Settings {
 		return true;
 	}
 
+	public setWallets(wallets: Wallet[]) {
+		this.data.update((state) => ({
+			...state,
+			wallets: [...wallets]
+		}));
+	}
+
 	public get subscribe() {
 		return this.data.subscribe;
 	}
