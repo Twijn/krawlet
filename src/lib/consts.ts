@@ -22,13 +22,6 @@ export const SYNC_NODES: SyncNode[] = [
 		url: 'https://kromer.reconnected.cc/api/krist/'
 	},
 	{
-		id: 'sadovh',
-		official: false,
-		name: 'Sad.ovh',
-		url: 'https://kromer.sad.ovh/api/krist/',
-		internalKey: 'anndemeulemeester'
-	},
-	{
 		id: 'herrkatze',
 		official: false,
 		name: 'HerrKatze.com',
