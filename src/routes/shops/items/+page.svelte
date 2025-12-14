@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
+	import Skeleton from '$lib/components/ui/Skeleton.svelte';
 	import shopsync, {
 		cleanShopData,
 		getListingsByItem,
@@ -84,7 +85,9 @@
 <Section lgCols={12}>
 	<h2><FontAwesomeIcon icon={faListNumeric} /> {$t$('shop.items')}</h2>
 	{#if listings.length === 0}
-		<ModuleLoading />
+		<ModuleLoading>
+			<Skeleton variant="rectangular" width="100%" height="200px" />
+		</ModuleLoading>
 	{/if}
 	<div class="item-grid">
 		{#each filteredListings as listing (listing.itemName + (':' + listing.itemNbt))}
@@ -98,7 +101,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each listing.shops as shop (shop.listing.id)}
+						{#each listing.shops as shop (shop.id)}
 							{@const stock = shop.listing.stock}
 							<tr>
 								<td>

@@ -3,6 +3,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faList } from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
+	import SkeletonTable from '$lib/components/ui/SkeletonTable.svelte';
 	import { formatCurrency, relativeTime } from '$lib/util.js';
 	import Pagination from '$lib/components/ui/Pagination.svelte';
 	import { browser } from '$app/environment';
@@ -179,7 +180,9 @@
 			<Pagination bind:page={page.value} total={transactions.total} {limit} />
 		{/if}
 	{:else}
-		<ModuleLoading />
+		<ModuleLoading>
+			<SkeletonTable rows={5} columns={6} />
+		</ModuleLoading>
 	{/if}
 </Section>
 

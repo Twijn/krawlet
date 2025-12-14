@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
+	import Skeleton from '$lib/components/ui/Skeleton.svelte';
 	import ShopItems from '$lib/components/widgets/shops/ShopItems.svelte';
 	import { cleanShopData } from '$lib/stores/shopsync';
 	import { relativeTime } from '$lib/util.js';
@@ -68,5 +69,7 @@
 
 	<ShopItems {shop} />
 {:else}
-	<ModuleLoading />
+	<ModuleLoading>
+		<Skeleton variant="rectangular" width="100%" height="300px" />
+	</ModuleLoading>
 {/if}

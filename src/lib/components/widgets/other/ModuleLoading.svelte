@@ -2,20 +2,27 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 	import { fade } from 'svelte/transition';
+	import type { Snippet } from 'svelte';
 
 	const {
 		loading = $bindable(true),
-		absolute = false
+		absolute = false,
+		children
 	}: {
 		loading?: boolean;
 		absolute?: boolean;
+		children?: Snippet;
 	} = $props();
 </script>
 
 {#if loading}
 	<div class="loading" class:absolute transition:fade>
-		<FontAwesomeIcon icon={faSpinner} spin />
-		<span>Loading...</span>
+		{#if children}
+			{@render children()}
+		{:else}
+			<FontAwesomeIcon icon={faSpinner} spin />
+			<span>Loading...</span>
+		{/if}
 	</div>
 {/if}
 

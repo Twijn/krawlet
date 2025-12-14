@@ -4,6 +4,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faAddressBook } from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
+	import SkeletonTable from '$lib/components/ui/SkeletonTable.svelte';
 	import Pagination from '$lib/components/ui/Pagination.svelte';
 	import { formatCurrency, relativeTime } from '$lib/util';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
@@ -106,7 +107,9 @@
 			<Pagination bind:page={page.value} total={addresses.total} {limit} />
 		</div>
 	{:else}
-		<ModuleLoading />
+		<ModuleLoading>
+			<SkeletonTable rows={5} columns={rich ? 6 : 5} />
+		</ModuleLoading>
 	{/if}
 </Section>
 

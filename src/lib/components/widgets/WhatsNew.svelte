@@ -4,6 +4,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onMount } from 'svelte';
 	import ModuleLoading from './other/ModuleLoading.svelte';
+	import SkeletonTable from '$lib/components/ui/SkeletonTable.svelte';
 	import { relativeTime } from '$lib/util';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
@@ -67,7 +68,9 @@
 	{/if}
 
 	{#if loading}
-		<ModuleLoading />
+		<ModuleLoading>
+			<SkeletonTable rows={5} columns={3} />
+		</ModuleLoading>
 	{:else if error}
 		<p class="error">{error}</p>
 	{:else if commits.length === 0}

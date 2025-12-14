@@ -7,6 +7,7 @@
 	import Address from '../addresses/Address.svelte';
 	import { onMount } from 'svelte';
 	import ModuleLoading from '../other/ModuleLoading.svelte';
+	import Skeleton from '$lib/components/ui/Skeleton.svelte';
 	import ShopCard from '$lib/components/widgets/shops/cards/ShopCard.svelte';
 	import ShopFilterSort from './filtersort/ShopFilterSort.svelte';
 	import { paramState } from '$lib/paramState.svelte';
@@ -86,7 +87,9 @@
 <Section {lgCols} {mdCols} {smCols}>
 	<h2><FontAwesomeIcon icon={faShop} /> {$t$('shop.shops')}</h2>
 	{#if shops.length === 0}
-		<ModuleLoading />
+		<ModuleLoading>
+			<Skeleton variant="rectangular" width="100%" height="200px" />
+		</ModuleLoading>
 	{/if}
 	<div class="shop-grid">
 		{#each filteredShops as shop (shop.computerId)}

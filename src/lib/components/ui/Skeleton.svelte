@@ -45,7 +45,7 @@
 	aria-busy="true"
 >
 	{#if variant === 'text' && lines > 1}
-		{#each Array(lines).map((_, i) => i) as i (i)}
+		{#each Array.from({ length: lines }, (_, i) => i) as i (i)}
 			<div class="skeleton-line" style:width={i === lines - 1 ? '70%' : '100%'}></div>
 		{/each}
 	{:else}

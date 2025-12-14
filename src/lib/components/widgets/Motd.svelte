@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import Section from '$lib/components/ui/Section.svelte';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
+	import Skeleton from '$lib/components/ui/Skeleton.svelte';
 	import kromer from '$lib/api/kromer';
 	import type { MotdResponse } from 'kromer';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
@@ -32,6 +33,8 @@
 		<p>{motd.motd}</p>
 		<small>Last updated {motd.motd_set.toLocaleString()}</small>
 	{:else}
-		<ModuleLoading />
+		<ModuleLoading>
+			<Skeleton variant="text" lines={2} />
+		</ModuleLoading>
 	{/if}
 </Section>

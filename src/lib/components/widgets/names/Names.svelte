@@ -4,6 +4,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faSign } from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
+	import SkeletonTable from '$lib/components/ui/SkeletonTable.svelte';
 	import AddressModule from '$lib/components/widgets/addresses/Address.svelte';
 	import Pagination from '$lib/components/ui/Pagination.svelte';
 	import kromer from '$lib/api/kromer';
@@ -171,7 +172,9 @@
 			</div>
 		{/if}
 	{:else}
-		<ModuleLoading />
+		<ModuleLoading>
+			<SkeletonTable rows={5} columns={4} />
+		</ModuleLoading>
 	{/if}
 </Section>
 
