@@ -15,7 +15,14 @@
 </script>
 
 {#if loading}
-	<div class="loading" class:absolute transition:fade role="status" aria-label={$t$('common.loading')} aria-busy="true">
+	<div
+		class="loading"
+		class:absolute
+		transition:fade
+		role="status"
+		aria-label={$t$('common.loading')}
+		aria-busy="true"
+	>
 		{#if children}
 			{@render children()}
 		{:else}

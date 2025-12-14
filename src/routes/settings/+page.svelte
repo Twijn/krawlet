@@ -91,7 +91,9 @@
 	<title>{$t$('settings.title')} | Krawlet</title>
 </svelte:head>
 
-<h1><a href="/">Krawlet</a> <span>&raquo;</span> <a href="/settings">{$t$('settings.title')}</a></h1>
+<h1>
+	<a href="/">Krawlet</a> <span>&raquo;</span> <a href="/settings">{$t$('settings.title')}</a>
+</h1>
 
 <Section lgCols={12} mdCols={12} smCols={12}>
 	<h2><FontAwesomeIcon icon={faCog} /> {$t$('settings.title')}</h2>
@@ -100,7 +102,9 @@
 		<fieldset class="settings-group">
 			<legend><FontAwesomeIcon icon={faGlobe} /> {$t$('settings.language')}</legend>
 			<div class="setting-content">
-				<label for="language-select" class="setting-description">{$t$('settings.selectLanguage')}</label>
+				<label for="language-select" class="setting-description"
+					>{$t$('settings.selectLanguage')}</label
+				>
 				<ButtonSelect
 					vertical={false}
 					bind:selected={$settings.language}
@@ -167,7 +171,10 @@
 		<fieldset class="settings-group">
 			<legend><FontAwesomeIcon icon={faClock} /> {$t$('settings.dateTime')}</legend>
 			<div class="setting-content">
-				<ToggleCheckbox bind:checked={$settings.relativeTimeEnabled} onChange={onRelativeTimeChange}>
+				<ToggleCheckbox
+					bind:checked={$settings.relativeTimeEnabled}
+					onChange={onRelativeTimeChange}
+				>
 					{$t$('settings.relativeTime')}
 				</ToggleCheckbox>
 				<ToggleCheckbox
@@ -189,7 +196,10 @@
 					<ButtonSelect
 						vertical
 						bind:selected={$settings.syncNode}
-						options={SYNC_NODES.map((node) => ({ id: node.id, name: `${node.name} (${node.url})` }))}
+						options={SYNC_NODES.map((node) => ({
+							id: node.id,
+							name: `${node.name} (${node.url})`
+						}))}
 						change={onSyncNodeChange}
 					/>
 				{/if}

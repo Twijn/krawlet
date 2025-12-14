@@ -91,7 +91,9 @@
 						},
 						(e) => {
 							const err = e as APIError;
-							notifications.error($t$('name.transferFailed', { message: err.message }));
+							notifications.error(
+								$t$('name.transferFailed', { message: err.message || 'Unknown error' })
+							);
 							loading = false;
 						}
 					);
@@ -107,10 +109,16 @@
 		<Alert variant="danger">
 			<strong>{$t$('name.transferWarning')}</strong>
 			<p>
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 				{@html $t$('name.transferBugWarning')}
 			</p>
 		</Alert>
-		<AddressSelector mode="privatekey" label={$t$('address.address')} bind:privatekey bind:balances />
+		<AddressSelector
+			mode="privatekey"
+			label={$t$('address.address')}
+			bind:privatekey
+			bind:balances
+		/>
 		<label>
 			{$t$('name.name')}
 			{#if allNames.length > 0}
@@ -121,7 +129,12 @@
 				<Alert variant="info">{$t$('name.selectPrivateKeyHint')}</Alert>
 			{/if}
 		</label>
-		<AddressSelector mode="address" label={$t$('transaction.recipient')} bind:address bind:balances />
+		<AddressSelector
+			mode="address"
+			label={$t$('transaction.recipient')}
+			bind:address
+			bind:balances
+		/>
 		<div class="buttons">
 			<Button variant="primary" type="submit" full={true} onClick={transferName}
 				>{$t$('name.transferButton')}</Button

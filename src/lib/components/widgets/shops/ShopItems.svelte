@@ -78,7 +78,8 @@
 							<tr>
 								<th>{$t$('shop.stock')}</th>
 								<td class="right">
-									{stock.toLocaleString()} <small>{stock === 1 ? $t$('shop.item') : $t$('shop.items')}</small>
+									{stock.toLocaleString()}
+									<small>{stock === 1 ? $t$('shop.item') : $t$('shop.items')}</small>
 								</td>
 							</tr>
 							{#each item.prices ?? [] as price (price.id)}

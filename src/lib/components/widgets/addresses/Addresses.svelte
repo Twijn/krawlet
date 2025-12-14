@@ -62,7 +62,10 @@
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
-	<h2><FontAwesomeIcon icon={faAddressBook} /> {rich ? $t$('nav.richestAddresses') : $t$('nav.addresses')}</h2>
+	<h2>
+		<FontAwesomeIcon icon={faAddressBook} />
+		{rich ? $t$('nav.richestAddresses') : $t$('nav.addresses')}
+	</h2>
 	{#if addresses}
 		<div class="table-container">
 			<ModuleLoading absolute={true} bind:loading />

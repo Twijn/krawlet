@@ -114,7 +114,11 @@
 							<th class="right">{$t$('transaction.to')}</th>
 							<th class="right">{$t$('transaction.value')}</th>
 							{#if $settings.showMetadata}
-								<th>{$settings.parseTransactionMessage ? $t$('transaction.message') : $t$('transaction.metadata')}</th>
+								<th
+									>{$settings.parseTransactionMessage
+										? $t$('transaction.message')
+										: $t$('transaction.metadata')}</th
+								>
 							{/if}
 							<th class="right">{$t$('transaction.time')}</th>
 						</tr>

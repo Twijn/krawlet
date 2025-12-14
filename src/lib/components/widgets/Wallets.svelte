@@ -50,7 +50,9 @@
 			confirmButtonLabel: t('common.delete'),
 			confirm: () => {
 				settings.removeWallet(wallet.address);
-				notifications.success(t('wallet.deleteSuccess', { name: wallet.name, address: wallet.address }));
+				notifications.success(
+					t('wallet.deleteSuccess', { name: wallet.name, address: wallet.address })
+				);
 			},
 			cancel: () => {
 				notifications.warning(t('wallet.deleteCancelled'));
@@ -188,11 +190,11 @@
 					<h3>{wallet.name}</h3>
 					<div class="wallet-info">
 						<AddressModule address={wallet.address} />
-					{#if showOtherNodes.value}
-						{@const syncNodeName =
-							SYNC_NODES.find((x) => x.id === wallet.syncNode)?.name ?? 'Unknown'}
-						<small><strong>{$t$('wallet.syncNode')}:</strong> {syncNodeName}</small>
-					{/if}
+						{#if showOtherNodes.value}
+							{@const syncNodeName =
+								SYNC_NODES.find((x) => x.id === wallet.syncNode)?.name ?? 'Unknown'}
+							<small><strong>{$t$('wallet.syncNode')}:</strong> {syncNodeName}</small>
+						{/if}
 					</div>
 				</div>
 				<div class="balance">

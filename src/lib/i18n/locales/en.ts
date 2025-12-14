@@ -68,7 +68,8 @@ export default {
 		// Address search
 		searchTitle: 'Address Search',
 		searchDescription: 'Use the field below to search for addresses.',
-		searchHint: 'If the address you\'re looking for does not show up as a known address, you can also type in the entire address (i.e {exampleAddress}) or name (i.e {exampleName})',
+		searchHint:
+			"If the address you're looking for does not show up as a known address, you can also type in the entire address (i.e {exampleAddress}) or name (i.e {exampleName})",
 		selectAddressFirst: 'Please select an address first!',
 		copiedToClipboard: 'Address {address} copied to clipboard',
 		copyFailed: 'Failed to copy address to clipboard!',
@@ -87,7 +88,7 @@ export default {
 		privateKey: 'Private Key',
 		address: 'Address',
 		noWallets: 'No wallets found',
-		noWalletsSaved: "No wallets saved!",
+		noWalletsSaved: 'No wallets saved!',
 		noWalletsHint: "You haven't saved a wallet yet!",
 		addWalletHere: 'Add one here!',
 		walletCreated: 'Wallet created successfully',
@@ -102,7 +103,8 @@ export default {
 		totalBalance: 'Total Balance',
 		otherNodeNote: 'Balances for wallets on other sync nodes may be inaccurate or not show at all.',
 		syncNode: 'Sync Node',
-		confirmDelete: 'Are you sure you want to delete the wallet {name} ({address})? This action is irreversible!',
+		confirmDelete:
+			'Are you sure you want to delete the wallet {name} ({address})? This action is irreversible!',
 		deleteSuccess: 'Successfully deleted wallet {name} ({address})',
 		deleteCancelled: 'Wallet deletion cancelled',
 		orderSaved: 'Wallet order saved!',
@@ -121,7 +123,8 @@ export default {
 		exportedPassword: 'Exported Password',
 		exportedPasswordOptional: 'Exported Password (Optional)',
 		exportedPasswordPlaceholder: 'Enter the password you want to use to export your wallets',
-		exportedPasswordHint: "This is usually different from your master password. Don't forget this password as you will need it to import your wallets.",
+		exportedPasswordHint:
+			"This is usually different from your master password. Don't forget this password as you will need it to import your wallets.",
 		importPasswordPlaceholder: 'Enter the password you used to export your wallets',
 		exportButton: 'Export',
 		importButton: 'Import',
@@ -129,7 +132,8 @@ export default {
 		importData: 'Import Data',
 		importDataPlaceholder: 'Enter your JSON wallet export',
 		copyToClipboard: 'Copy to Clipboard',
-		exportCopied: 'Copied export data to clipboard. Paste it into the Krawlet app to import your wallets.',
+		exportCopied:
+			'Copied export data to clipboard. Paste it into the Krawlet app to import your wallets.',
 		importSuccess: 'Successfully imported {count} wallet(s)!',
 		importError: 'Error importing wallets: {message}',
 		importInvalid: 'Exported password or data is invalid!'
@@ -179,8 +183,10 @@ export default {
 		metadataHelp: 'This will be displayed on the transaction',
 		lockMetadata: 'Lock metadata (prevent editing)',
 		// Item purchase
-		unitPriceRequired: 'Please provide a unit price in the "unit_price" query parameter to send a purchase.',
-		recipientRequired: 'Please provide a recipient address in the "to" query parameter to send kromer.',
+		unitPriceRequired:
+			'Please provide a unit price in the "unit_price" query parameter to send a purchase.',
+		recipientRequired:
+			'Please provide a recipient address in the "to" query parameter to send kromer.',
 		quantity: 'Quantity',
 		maxQuantity: 'Max Quantity',
 		quantityExceeded: 'Quantity must be less than or equal to {max}.',
@@ -211,13 +217,15 @@ export default {
 		nameAvailable: '{name}.kro is currently available!',
 		nameNotAvailable: '{name}.kro is not available!',
 		purchaseButton: 'Purchase Name',
-		confirmPurchase: "Are you sure you want to purchase '{name}.kro' for {cost} KRO? This action cannot be undone!",
+		confirmPurchase:
+			"Are you sure you want to purchase '{name}.kro' for {cost} KRO? This action cannot be undone!",
 		purchaseSuccess: 'Name purchase successful!',
 		purchaseFailed: 'Failed to purchase name: {message}',
 		purchaseCancelled: 'Name purchase cancelled.',
 		// Transfer name
 		transferWarning: 'DANGER! Read me!',
-		transferBugWarning: 'At this time, this transfers <em>all</em> of the names you own, rather than just the single one. <strong>You should probably not use this feature until this is patched.</strong>',
+		transferBugWarning:
+			'At this time, this transfers <em>all</em> of the names you own, rather than just the single one. <strong>You should probably not use this feature until this is patched.</strong>',
 		selectNameToTransfer: 'You must select a name to transfer.',
 		invalidRecipientAddress: 'You must enter a valid address.',
 		confirmTransfer: 'Are you sure you want to transfer the name {name} to {address}?',
@@ -227,7 +235,8 @@ export default {
 		noOwnedNames: "This address doesn't own any names!",
 		selectPrivateKeyHint: 'Select a private key above to see available names.',
 		// Update name
-		updateWarning: '"A" record data is not currently returned by the Kromer API. This endpoint is useless.',
+		updateWarning:
+			'"A" record data is not currently returned by the Kromer API. This endpoint is useless.',
 		selectNameToUpdate: 'You must select a name to update.',
 		confirmUpdate: 'Are you sure you want to update the data for {name} to {data}?',
 		updateButton: 'Update Name',
@@ -275,7 +284,8 @@ export default {
 		sortStockDesc: 'Stock (High to Low)',
 		// Error messages
 		notFoundTitle: 'Not Found',
-		notFoundMessage: 'The shop you are looking for may have been deleted or does not exist. Select a different shop below!',
+		notFoundMessage:
+			'The shop you are looking for may have been deleted or does not exist. Select a different shop below!',
 		noItemsForShop: 'No items found for this shop.'
 	},
 	settings: {
@@ -380,7 +390,8 @@ export default {
 		},
 		requestPermission: 'Enable Notifications',
 		permissionGranted: 'Notification permission granted!',
-		permissionDenied: 'Notification permission was denied. You can enable it in your browser settings.',
+		permissionDenied:
+			'Notification permission was denied. You can enable it in your browser settings.',
 		permissionRequired: 'Please grant notification permission first.',
 		deniedHint: 'To enable notifications, please update your browser settings for this site.',
 		grantPermissionFirst: 'Grant notification permission above to enable this feature.',

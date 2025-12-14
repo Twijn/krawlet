@@ -46,7 +46,9 @@
 		</p>
 		<AddressSelector label={$t$('address.address')} bind:address />
 		<div class="buttons">
-			<Button type="button" variant="secondary" full onClick={copy}>{$t$('wallet.copyToClipboard')}</Button>
+			<Button type="button" variant="secondary" full onClick={copy}
+				>{$t$('wallet.copyToClipboard')}</Button
+			>
 			<Button
 				variant="primary"
 				full

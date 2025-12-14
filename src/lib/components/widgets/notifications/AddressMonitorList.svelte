@@ -2,8 +2,8 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faPlus, faTrash, faWallet, faDownload } from '@fortawesome/free-solid-svg-icons';
-	import { notificationSettings, type MonitoredAddress } from '$lib/stores/notificationSettings';
+	import { faPlus, faTrash, faDownload } from '@fortawesome/free-solid-svg-icons';
+	import { notificationSettings } from '$lib/stores/notificationSettings';
 	import settings from '$lib/stores/settings';
 	import { notifications } from '$lib/stores/notifications';
 	import { t, t$ } from '$lib/i18n';

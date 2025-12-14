@@ -1,12 +1,7 @@
 <script lang="ts">
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import {
-		faArrowDown,
-		faArrowUp,
-		faTag,
-		faExchangeAlt
-	} from '@fortawesome/free-solid-svg-icons';
+	import { faArrowDown, faArrowUp, faTag, faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
 	import { notificationSettings } from '$lib/stores/notificationSettings';
 	import { t$ } from '$lib/i18n';
 
@@ -47,7 +42,7 @@
 	<p class="section-description">{$t$('pushNotifications.eventTypes.description')}</p>
 
 	<div class="event-types">
-		{#each eventTypes as eventType}
+		{#each eventTypes as eventType (eventType.key)}
 			<div class="event-type-item">
 				<ToggleCheckbox
 					checked={$notificationSettings.eventTypes[eventType.key]}

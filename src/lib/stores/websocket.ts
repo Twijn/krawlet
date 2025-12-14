@@ -54,7 +54,7 @@ function createWebSocketStore() {
 
 			const unsubTransaction = wsClient.on('transaction', (tx: TransactionWithMeta) => {
 				lastTransaction.set(tx);
-				
+
 				const fromDisplay = tx.from || 'Mining reward';
 				notifications.info(
 					t('notifications.newTransaction', {

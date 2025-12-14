@@ -71,7 +71,9 @@
 						},
 						(e) => {
 							const err = e as APIError;
-							notifications.error($t$('name.purchaseFailed', { message: err.message }));
+							notifications.error(
+								$t$('name.purchaseFailed', { message: err.message || 'Unknown error' })
+							);
 						}
 					);
 			},
@@ -88,7 +90,11 @@
 	<h2><FontAwesomeIcon icon={faSignature} /> {$t$('name.purchaseName')}</h2>
 	<form method="POST">
 		<ModuleLoading {loading} absolute={true} />
-		<AddressSelector mode="privatekey" label={$t$('address.address')} bind:privatekey={privateKey} />
+		<AddressSelector
+			mode="privatekey"
+			label={$t$('address.address')}
+			bind:privatekey={privateKey}
+		/>
 		<label>
 			{$t$('name.name')}
 			<input

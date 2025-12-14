@@ -78,7 +78,10 @@
 			notifications.error($t$('transaction.amountMustBePositive'));
 		} else {
 			confirm.confirm({
-				message: $t$('transaction.confirmSend', { amount: amount.value.toFixed(2), address: toAddress }),
+				message: $t$('transaction.confirmSend', {
+					amount: amount.value.toFixed(2),
+					address: toAddress
+				}),
 				confirmButtonLabel: $t$('transaction.sendButton'),
 				confirm: async () => {
 					loading = true;

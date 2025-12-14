@@ -61,11 +61,13 @@
 	onfocus={() => (showTooltip = true)}
 	onblur={() => (showTooltip = false)}
 >
-	<span class="icon" style:color={color}>
+	<span class="icon" style:color>
 		<FontAwesomeIcon {icon} size="1x" />
 	</span>
 	{#if showTooltip}
-		<span class="tooltip" style:border-color={color} transition:fly={{ x: 4, duration: 150 }}>{label}</span>
+		<span class="tooltip" style:border-color={color} transition:fly={{ x: 4, duration: 150 }}
+			>{label}</span
+		>
 	{/if}
 </div>
 

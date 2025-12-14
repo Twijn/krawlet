@@ -198,8 +198,8 @@ self.addEventListener('push', (event) => {
 		event.waitUntil(
 			self.registration.showNotification(title || 'Krawlet', {
 				body: body || '',
-				icon: '/images/icon-192.png',
-				badge: '/images/icon-72.png',
+				icon: '/web-app-manifest-192x192.png',
+				badge: '/favicon-96x96.png',
 				tag: tag || 'krawlet-notification',
 				vibrate: [200, 100, 200],
 				data: notificationData || {}

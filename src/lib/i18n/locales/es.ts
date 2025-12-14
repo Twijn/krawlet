@@ -68,7 +68,8 @@ export default {
 		// Address search
 		searchTitle: 'Buscar Dirección',
 		searchDescription: 'Usa el campo de abajo para buscar direcciones.',
-		searchHint: 'Si la dirección que buscas no aparece como dirección conocida, también puedes escribir la dirección completa (ej. {exampleAddress}) o nombre (ej. {exampleName})',
+		searchHint:
+			'Si la dirección que buscas no aparece como dirección conocida, también puedes escribir la dirección completa (ej. {exampleAddress}) o nombre (ej. {exampleName})',
 		selectAddressFirst: '¡Por favor selecciona una dirección primero!',
 		copiedToClipboard: 'Dirección {address} copiada al portapapeles',
 		copyFailed: '¡Error al copiar dirección al portapapeles!',
@@ -100,9 +101,11 @@ export default {
 		showAllWallets: 'Mostrar billeteras de otros nodos de sincronización',
 		viewAndManage: 'Ver y gestionar todas las billeteras',
 		totalBalance: 'Saldo Total',
-		otherNodeNote: 'Los saldos de billeteras en otros nodos de sincronización pueden ser inexactos o no mostrarse.',
+		otherNodeNote:
+			'Los saldos de billeteras en otros nodos de sincronización pueden ser inexactos o no mostrarse.',
 		syncNode: 'Nodo de Sincronización',
-		confirmDelete: '¿Estás seguro de que quieres eliminar la billetera {name} ({address})? ¡Esta acción es irreversible!',
+		confirmDelete:
+			'¿Estás seguro de que quieres eliminar la billetera {name} ({address})? ¡Esta acción es irreversible!',
 		deleteSuccess: 'Billetera {name} ({address}) eliminada exitosamente',
 		deleteCancelled: 'Eliminación de billetera cancelada',
 		orderSaved: '¡Orden de billeteras guardado!',
@@ -120,8 +123,10 @@ export default {
 		importWallets: 'Importar Billeteras',
 		exportedPassword: 'Contraseña de Exportación',
 		exportedPasswordOptional: 'Contraseña de Exportación (Opcional)',
-		exportedPasswordPlaceholder: 'Ingresa la contraseña que quieres usar para exportar tus billeteras',
-		exportedPasswordHint: 'Esta es usualmente diferente de tu contraseña maestra. ¡No olvides esta contraseña ya que la necesitarás para importar tus billeteras!',
+		exportedPasswordPlaceholder:
+			'Ingresa la contraseña que quieres usar para exportar tus billeteras',
+		exportedPasswordHint:
+			'Esta es usualmente diferente de tu contraseña maestra. ¡No olvides esta contraseña ya que la necesitarás para importar tus billeteras!',
 		importPasswordPlaceholder: 'Ingresa la contraseña que usaste para exportar tus billeteras',
 		exportButton: 'Exportar',
 		importButton: 'Importar',
@@ -129,7 +134,8 @@ export default {
 		importData: 'Datos de Importación',
 		importDataPlaceholder: 'Ingresa tu exportación JSON de billetera',
 		copyToClipboard: 'Copiar al Portapapeles',
-		exportCopied: 'Datos de exportación copiados al portapapeles. Pégalos en la aplicación Krawlet para importar tus billeteras.',
+		exportCopied:
+			'Datos de exportación copiados al portapapeles. Pégalos en la aplicación Krawlet para importar tus billeteras.',
 		importSuccess: '¡{count} billetera(s) importada(s) exitosamente!',
 		importError: 'Error al importar billeteras: {message}',
 		importInvalid: '¡Contraseña de exportación o datos inválidos!'
@@ -179,8 +185,10 @@ export default {
 		metadataHelp: 'Esto se mostrará en la transacción',
 		lockMetadata: 'Bloquear metadatos (prevenir edición)',
 		// Item purchase
-		unitPriceRequired: 'Por favor proporciona un precio unitario en el parámetro "unit_price" para enviar una compra.',
-		recipientRequired: 'Por favor proporciona una dirección de destinatario en el parámetro "to" para enviar kromer.',
+		unitPriceRequired:
+			'Por favor proporciona un precio unitario en el parámetro "unit_price" para enviar una compra.',
+		recipientRequired:
+			'Por favor proporciona una dirección de destinatario en el parámetro "to" para enviar kromer.',
 		quantity: 'Cantidad',
 		maxQuantity: 'Cantidad Máxima',
 		quantityExceeded: 'La cantidad debe ser menor o igual a {max}.',
@@ -211,13 +219,15 @@ export default {
 		nameAvailable: '¡{name}.kro está actualmente disponible!',
 		nameNotAvailable: '¡{name}.kro no está disponible!',
 		purchaseButton: 'Comprar Nombre',
-		confirmPurchase: "¿Estás seguro de que quieres comprar '{name}.kro' por {cost} KRO? ¡Esta acción no se puede deshacer!",
+		confirmPurchase:
+			"¿Estás seguro de que quieres comprar '{name}.kro' por {cost} KRO? ¡Esta acción no se puede deshacer!",
 		purchaseSuccess: '¡Compra de nombre exitosa!',
 		purchaseFailed: 'Error al comprar nombre: {message}',
 		purchaseCancelled: 'Compra de nombre cancelada.',
 		// Transfer name
 		transferWarning: '¡PELIGRO! ¡Lee esto!',
-		transferBugWarning: 'En este momento, esto transfiere <em>todos</em> los nombres que posees, en lugar de solo uno. <strong>Probablemente no deberías usar esta función hasta que se solucione.</strong>',
+		transferBugWarning:
+			'En este momento, esto transfiere <em>todos</em> los nombres que posees, en lugar de solo uno. <strong>Probablemente no deberías usar esta función hasta que se solucione.</strong>',
 		selectNameToTransfer: 'Debes seleccionar un nombre para transferir.',
 		invalidRecipientAddress: 'Debes ingresar una dirección válida.',
 		confirmTransfer: '¿Estás seguro de que quieres transferir el nombre {name} a {address}?',
@@ -227,7 +237,8 @@ export default {
 		noOwnedNames: '¡Esta dirección no posee ningún nombre!',
 		selectPrivateKeyHint: 'Selecciona una clave privada arriba para ver los nombres disponibles.',
 		// Update name
-		updateWarning: 'Los datos del registro "A" no son devueltos actualmente por la API de Kromer. Este endpoint es inútil.',
+		updateWarning:
+			'Los datos del registro "A" no son devueltos actualmente por la API de Kromer. Este endpoint es inútil.',
 		selectNameToUpdate: 'Debes seleccionar un nombre para actualizar.',
 		confirmUpdate: '¿Estás seguro de que quieres actualizar los datos de {name} a {data}?',
 		updateButton: 'Actualizar Nombre',
@@ -275,7 +286,8 @@ export default {
 		sortStockDesc: 'Stock (Alto a Bajo)',
 		// Error messages
 		notFoundTitle: 'No Encontrado',
-		notFoundMessage: 'La tienda que buscas puede haber sido eliminada o no existe. ¡Selecciona una tienda diferente abajo!',
+		notFoundMessage:
+			'La tienda que buscas puede haber sido eliminada o no existe. ¡Selecciona una tienda diferente abajo!',
 		noItemsForShop: 'No se encontraron artículos para esta tienda.'
 	},
 	settings: {
@@ -386,14 +398,17 @@ export default {
 		},
 		requestPermission: 'Habilitar Notificaciones',
 		permissionGranted: '¡Permiso de notificación otorgado!',
-		permissionDenied: 'El permiso de notificación fue denegado. Puedes habilitarlo en la configuración del navegador.',
+		permissionDenied:
+			'El permiso de notificación fue denegado. Puedes habilitarlo en la configuración del navegador.',
 		permissionRequired: 'Por favor otorga el permiso de notificación primero.',
-		deniedHint: 'Para habilitar las notificaciones, actualiza la configuración de tu navegador para este sitio.',
+		deniedHint:
+			'Para habilitar las notificaciones, actualiza la configuración de tu navegador para este sitio.',
 		grantPermissionFirst: 'Otorga el permiso de notificación arriba para habilitar esta función.',
 		settings: 'Configuración de Notificaciones',
 		enableNotifications: 'Habilitar notificaciones push',
 		monitoredAddresses: 'Direcciones Monitoreadas',
-		noAddressesMonitored: 'No hay direcciones siendo monitoreadas. Agrega direcciones para recibir notificaciones.',
+		noAddressesMonitored:
+			'No hay direcciones siendo monitoreadas. Agrega direcciones para recibir notificaciones.',
 		address: 'Dirección',
 		label: 'Etiqueta (opcional)',
 		labelPlaceholder: 'ej., Mi Billetera Principal',
@@ -424,7 +439,8 @@ export default {
 		filters: 'Filtros',
 		minAmount: 'Cantidad Mínima de Transacción',
 		minAmountPlaceholder: 'ej., 100',
-		minAmountHint: 'Solo notificar transacciones superiores a esta cantidad (dejar vacío para todas).',
+		minAmountHint:
+			'Solo notificar transacciones superiores a esta cantidad (dejar vacío para todas).',
 		preferences: 'Preferencias de Visualización',
 		playSound: 'Reproducir sonido de notificación',
 		vibrate: 'Vibrar en notificación',
@@ -534,7 +550,8 @@ export default {
 		viewOnGithub: 'Ver el proyecto en GitHub'
 	},
 	syncNodeWarning: {
-		warning: 'Advertencia: Estás conectado a un nodo de sincronización personalizado {name} - {url}.',
+		warning:
+			'Advertencia: Estás conectado a un nodo de sincronización personalizado {name} - {url}.',
 		privateKeyWarning: '¡No deberías ingresar ninguna clave privada que uses en producción!',
 		revertToOfficial: 'Volver al Nodo Oficial',
 		connectedToCustom: 'Conectado a nodo personalizado {name}',

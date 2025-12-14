@@ -3,7 +3,14 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faBell, faBellSlash, faCheck, faTimes, faQuestionCircle, faVial } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faBell,
+		faBellSlash,
+		faCheck,
+		faTimes,
+		faQuestionCircle,
+		faVial
+	} from '@fortawesome/free-solid-svg-icons';
 	import { notificationSettings } from '$lib/stores/notificationSettings';
 	import { notificationPermission } from '$lib/stores/pwa';
 	import {
@@ -43,7 +50,7 @@
 		}
 	});
 
-	async function handleRequestPermission(_e?: Event) {
+	async function handleRequestPermission() {
 		isRequestingPermission = true;
 		try {
 			const result = await requestNotificationPermission();
@@ -130,7 +137,9 @@
 
 				{#if permissionStatus === 'default'}
 					<Button
-						onClick={() => { handleRequestPermission(); }}
+						onClick={() => {
+							handleRequestPermission();
+						}}
 						disabled={isRequestingPermission}
 					>
 						{#if isRequestingPermission}
@@ -181,9 +190,7 @@
 					value={$notificationSettings.filters.minTransactionAmount ?? ''}
 					onchange={(e) => {
 						const value = e.currentTarget.value;
-						notificationSettings.setMinTransactionAmount(
-							value ? parseInt(value, 10) : undefined
-						);
+						notificationSettings.setMinTransactionAmount(value ? parseInt(value, 10) : undefined);
 					}}
 				/>
 				<small>{$t$('pushNotifications.minAmountHint')}</small>

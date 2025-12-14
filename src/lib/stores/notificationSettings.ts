@@ -136,10 +136,7 @@ function createNotificationSettingsStore() {
 
 				return {
 					...state,
-					monitoredAddresses: [
-						...state.monitoredAddresses,
-						{ address, label, enabled: true }
-					]
+					monitoredAddresses: [...state.monitoredAddresses, { address, label, enabled: true }]
 				};
 			});
 		},
@@ -183,10 +180,7 @@ function createNotificationSettingsStore() {
 		/**
 		 * Set event type notification preference
 		 */
-		setEventType<K extends keyof NotificationEventTypes>(
-			eventType: K,
-			enabled: boolean
-		): void {
+		setEventType<K extends keyof NotificationEventTypes>(eventType: K, enabled: boolean): void {
 			data.update((state) => ({
 				...state,
 				eventTypes: { ...state.eventTypes, [eventType]: enabled }
@@ -224,9 +218,7 @@ function createNotificationSettingsStore() {
 				...state,
 				filters: {
 					...state.filters,
-					excludeMetadata: (state.filters.excludeMetadata || []).filter(
-						(m) => m !== metadata
-					)
+					excludeMetadata: (state.filters.excludeMetadata || []).filter((m) => m !== metadata)
 				}
 			}));
 		},
@@ -234,10 +226,7 @@ function createNotificationSettingsStore() {
 		/**
 		 * Set a notification preference
 		 */
-		setPreference<K extends keyof NotificationPreferences>(
-			preference: K,
-			value: boolean
-		): void {
+		setPreference<K extends keyof NotificationPreferences>(preference: K, value: boolean): void {
 			data.update((state) => ({
 				...state,
 				preferences: { ...state.preferences, [preference]: value }
@@ -288,9 +277,7 @@ function createNotificationSettingsStore() {
 		 */
 		getEnabledAddresses(): string[] {
 			const state = get(data);
-			return state.monitoredAddresses
-				.filter((a) => a.enabled)
-				.map((a) => a.address.toLowerCase());
+			return state.monitoredAddresses.filter((a) => a.enabled).map((a) => a.address.toLowerCase());
 		},
 
 		/**

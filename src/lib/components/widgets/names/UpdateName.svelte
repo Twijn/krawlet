@@ -69,7 +69,10 @@
 		}
 
 		confirm.confirm({
-			message: $t$('name.confirmUpdate', { name: selectedName, data: a && a.length > 0 ? a : $t$('name.nullValue') }),
+			message: $t$('name.confirmUpdate', {
+				name: selectedName,
+				data: a && a.length > 0 ? a : $t$('name.nullValue')
+			}),
 			confirmButtonLabel: $t$('name.updateButton'),
 			danger: true,
 			confirm: () => {
@@ -88,7 +91,9 @@
 						},
 						(e) => {
 							const err = e as APIError;
-							notifications.error($t$('name.updateFailed', { message: err.message }));
+							notifications.error(
+								$t$('name.updateFailed', { message: err.message || 'Unknown error' })
+							);
 							loading = false;
 						}
 					);
@@ -104,7 +109,12 @@
 			{$t$('name.updateWarning')}
 		</Alert>
 		<ModuleLoading {loading} absolute />
-		<AddressSelector mode="privatekey" label={$t$('address.address')} bind:privatekey bind:balances />
+		<AddressSelector
+			mode="privatekey"
+			label={$t$('address.address')}
+			bind:privatekey
+			bind:balances
+		/>
 		<label>
 			{$t$('name.name')}
 			{#if allNames.length > 0}
@@ -120,7 +130,9 @@
 			<input type="text" bind:value={a} />
 		</label>
 		<div class="buttons">
-			<Button variant="primary" type="submit" full={true} onClick={updateName}>{$t$('name.updateButton')}</Button>
+			<Button variant="primary" type="submit" full={true} onClick={updateName}
+				>{$t$('name.updateButton')}</Button
+			>
 		</div>
 	</form>
 </Section>

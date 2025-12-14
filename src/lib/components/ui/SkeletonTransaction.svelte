@@ -19,7 +19,12 @@
 	const { rows = 3 }: Props = $props();
 </script>
 
-<div class="skeleton-transactions" role="status" aria-label={$t$('common.loading')} aria-busy="true">
+<div
+	class="skeleton-transactions"
+	role="status"
+	aria-label={$t$('common.loading')}
+	aria-busy="true"
+>
 	{#each Array.from({ length: rows }, (_, i) => i) as i (i)}
 		<div class="skeleton-transaction">
 			<div class="skeleton-cell id">

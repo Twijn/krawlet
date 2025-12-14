@@ -124,10 +124,8 @@
 				<a href="https://www.twijn.dev" target="_blank" rel="noopener noreferrer">Twijn</a>
 			</p>
 			<p>
-				<a
-					href="https://github.com/Twijn/krawlet"
-					target="_blank"
-					rel="noopener noreferrer">{$t$('footer.viewOnGithub')}</a
+				<a href="https://github.com/Twijn/krawlet" target="_blank" rel="noopener noreferrer"
+					>{$t$('footer.viewOnGithub')}</a
 				>
 			</p>
 		</footer>

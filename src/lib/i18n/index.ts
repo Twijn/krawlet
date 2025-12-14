@@ -135,7 +135,7 @@ export function t(key: string, vars?: Record<string, string | number>): string {
 /**
  * Reactive translation store - updates when locale changes
  * Use this in components for reactive translations: $t$(key)
- * 
+ *
  * @example
  * <script>
  *   import { t$ } from '$lib/i18n';

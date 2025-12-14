@@ -102,7 +102,9 @@
 							<tr>
 								<th>{$t$('shop.totalItems')}</th>
 								<td class="right"
-									>{items.length} <small>{items.length === 1 ? $t$('shop.listing') : $t$('shop.listings')}</small></td
+									>{items.length}
+									<small>{items.length === 1 ? $t$('shop.listing') : $t$('shop.listings')}</small
+									></td
 								>
 							</tr>
 							<tr>

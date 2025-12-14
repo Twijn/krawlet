@@ -155,8 +155,8 @@ export function showNotification(
 
 	try {
 		const notification = new Notification(title, {
-			icon: '/images/icon-192.png',
-			badge: '/images/icon-72.png',
+			icon: '/web-app-manifest-192x192.png',
+			badge: '/favicon-96x96.png',
 			...notificationOptions
 		} as NotificationOptions);
 
@@ -206,8 +206,8 @@ export async function showServiceWorkerNotification(
 		}
 
 		await registration.showNotification(title, {
-			icon: '/images/icon-192.png',
-			badge: '/images/icon-72.png',
+			icon: '/web-app-manifest-192x192.png',
+			badge: '/favicon-96x96.png',
 			...notificationOptions
 		} as NotificationOptions);
 	} catch (error) {
@@ -255,7 +255,9 @@ export function formatTransactionNotification(
 		type: isIncoming ? 'incoming' : 'outgoing',
 		title,
 		body,
-		tag: settings.preferences.groupSimilar ? `transaction-${isIncoming ? 'in' : 'out'}` : `tx-${tx.id}`,
+		tag: settings.preferences.groupSimilar
+			? `transaction-${isIncoming ? 'in' : 'out'}`
+			: `tx-${tx.id}`,
 		data: {
 			url: `/transactions/${tx.id}`,
 			transactionId: tx.id,
@@ -357,7 +359,11 @@ export function shouldNotify(
 	}
 
 	// Check excluded metadata
-	if (settings.filters.excludeMetadata && settings.filters.excludeMetadata.length > 0 && tx.metadata) {
+	if (
+		settings.filters.excludeMetadata &&
+		settings.filters.excludeMetadata.length > 0 &&
+		tx.metadata
+	) {
 		const metadataLower = tx.metadata.toLowerCase();
 		for (const excluded of settings.filters.excludeMetadata) {
 			if (metadataLower.includes(excluded.toLowerCase())) {

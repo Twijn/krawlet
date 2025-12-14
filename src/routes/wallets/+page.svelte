@@ -69,7 +69,9 @@
 			{$t$('wallet.masterPassword')}
 			<input id="new" type="password" name="masterPassword" bind:value={masterPassword} />
 			<small
-				>{#if $settings.wallets.filter((x) => x.syncNode === getSyncNode().id).length > 0}{$t$('wallet.masterPasswordSameHint')}{/if}
+				>{#if $settings.wallets.filter((x) => x.syncNode === getSyncNode().id).length > 0}{$t$(
+						'wallet.masterPasswordSameHint'
+					)}{/if}
 				{$t$('wallet.masterPasswordHint')}</small
 			>
 		</label>
