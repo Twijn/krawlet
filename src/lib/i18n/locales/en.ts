@@ -300,6 +300,7 @@ export default {
 		relativeTimeAbove7d: 'Show relative time above 7 days old',
 		syncNode: 'Sync Node',
 		changeSyncNode: 'Change sync node',
+		walletDisplay: 'Wallet Display',
 		showAllWalletsOption: 'Show "Show wallets from other sync nodes" option in the wallets widget',
 		showAllWalletsDefault: 'Make "Show wallets from other sync nodes" enabled by default'
 	},

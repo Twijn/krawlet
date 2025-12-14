@@ -302,6 +302,7 @@ export default {
 		relativeTimeAbove7d: 'Mostrar tiempo relativo para más de 7 días',
 		syncNode: 'Nodo de Sincronización',
 		changeSyncNode: 'Cambiar nodo de sincronización',
+		walletDisplay: 'Visualización de Billeteras',
 		showAllWalletsOption:
 			'Mostrar opción "Mostrar billeteras de otros nodos" en el widget de billeteras',
 		showAllWalletsDefault:
