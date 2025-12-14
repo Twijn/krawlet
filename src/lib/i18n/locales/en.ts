@@ -544,5 +544,41 @@ export default {
 		revertToOfficial: 'Revert to Official Node',
 		connectedToCustom: 'Connected to custom sync node {name}',
 		closeWarning: 'Close warning'
+	},
+	stats: {
+		// Transaction stats
+		totalTransactions: 'Total Transactions',
+		timeframe: 'Timeframe',
+		volumeInPeriod: 'Volume',
+		transactionsInPeriod: 'Transactions',
+		// Loading states
+		loadingTransactions: 'Loading transactions...',
+		analyzingPeriod: 'Analyzing time period...',
+		calculatingStats: 'Calculating statistics...',
+		// Timeframe descriptions
+		lastHour: 'Last hour',
+		last24Hours: 'Last 24 hours',
+		lastWeek: 'Last 7 days',
+		lastMonth: 'Last 30 days',
+		// Comparison descriptions
+		vsPreviousHour: 'vs previous hour',
+		vsPrevious24Hours: 'vs previous 24 hours',
+		vsPreviousWeek: 'vs previous 7 days',
+		vsPreviousMonth: 'vs previous 30 days',
+		// Name stats
+		totalNames: 'Total Names',
+		recentRegistrations: 'New Registrations',
+		recentNameTransfers: 'Name Transfers',
+		thisWeek: 'this week',
+		// Shop stats
+		totalShops: 'Total Shops',
+		totalListings: 'Total Listings',
+		totalStock: 'Total Stock',
+		uniqueOwners: 'Unique Owners',
+		// Address stats
+		totalAddresses: 'Total Addresses',
+		totalSupply: 'Total Supply',
+		top10Wealth: 'Top 10 Wealth',
+		wealthConcentration: 'Top 10 Share'
 	}
 } as const;

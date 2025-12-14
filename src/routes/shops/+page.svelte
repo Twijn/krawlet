@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import Shops from '$lib/components/widgets/shops/Shops.svelte';
+	import ShopStats from '$lib/components/widgets/shops/ShopStats.svelte';
 	import { t$ } from '$lib/i18n';
 
 	const urlParams: URLSearchParams | null = browser
@@ -23,5 +24,7 @@
 {/if}
 
 <h1><a href="/">Krawlet</a> <span>&raquo;</span> <a href="/shops">{$t$('nav.shops')}</a></h1>
+
+<ShopStats lgCols={12} />
 
 <Shops lgCols={12} />

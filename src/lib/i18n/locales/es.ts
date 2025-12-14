@@ -556,5 +556,41 @@ export default {
 		revertToOfficial: 'Volver al Nodo Oficial',
 		connectedToCustom: 'Conectado a nodo personalizado {name}',
 		closeWarning: 'Cerrar advertencia'
+	},
+	stats: {
+		// Estadísticas de transacciones
+		totalTransactions: 'Transacciones Totales',
+		timeframe: 'Período',
+		volumeInPeriod: 'Volumen',
+		transactionsInPeriod: 'Transacciones',
+		// Estados de carga
+		loadingTransactions: 'Cargando transacciones...',
+		analyzingPeriod: 'Analizando período...',
+		calculatingStats: 'Calculando estadísticas...',
+		// Descripciones de período
+		lastHour: 'Última hora',
+		last24Hours: 'Últimas 24 horas',
+		lastWeek: 'Últimos 7 días',
+		lastMonth: 'Últimos 30 días',
+		// Descripciones de comparación
+		vsPreviousHour: 'vs hora anterior',
+		vsPrevious24Hours: 'vs 24 horas anteriores',
+		vsPreviousWeek: 'vs 7 días anteriores',
+		vsPreviousMonth: 'vs 30 días anteriores',
+		// Estadísticas de nombres
+		totalNames: 'Nombres Totales',
+		recentRegistrations: 'Nuevos Registros',
+		recentNameTransfers: 'Transferencias de Nombres',
+		thisWeek: 'esta semana',
+		// Estadísticas de tiendas
+		totalShops: 'Tiendas Totales',
+		totalListings: 'Listados Totales',
+		totalStock: 'Stock Total',
+		uniqueOwners: 'Propietarios Únicos',
+		// Estadísticas de direcciones
+		totalAddresses: 'Direcciones Totales',
+		totalSupply: 'Suministro Total',
+		top10Wealth: 'Riqueza Top 10',
+		wealthConcentration: 'Participación Top 10'
 	}
 } as const;

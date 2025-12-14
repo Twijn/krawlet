@@ -13,6 +13,8 @@
 	import { paramState } from '$lib/paramState.svelte.js';
 	import { t$ } from '$lib/i18n';
 
+	const SERVERWELF_ADDRESS = 'serverwelf';
+
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
 	const {
@@ -54,6 +56,10 @@
 		loading = true;
 		if (addressesPromise) {
 			addressesPromise.then((result) => {
+				// Filter out serverwelf from rich list
+				if (rich) {
+					result.addresses = result.addresses.filter((addr) => addr.address !== SERVERWELF_ADDRESS);
+				}
 				addresses = result;
 				loading = false;
 			});
