@@ -184,3 +184,64 @@ self.addEventListener('message', (event) => {
 		event.ports[0].postMessage({ version });
 	}
 });
+
+/**
+ * Push notification event - handle incoming push notifications
+ */
+self.addEventListener('push', (event) => {
+	if (!event.data) return;
+
+	try {
+		const data = event.data.json();
+		const { title, body, tag, data: notificationData } = data;
+
+		event.waitUntil(
+			self.registration.showNotification(title || 'Krawlet', {
+				body: body || '',
+				icon: '/images/icon-192.png',
+				badge: '/images/icon-72.png',
+				tag: tag || 'krawlet-notification',
+				vibrate: [200, 100, 200],
+				data: notificationData || {}
+			})
+		);
+	} catch (error) {
+		console.error('Failed to parse push notification:', error);
+	}
+});
+
+/**
+ * Notification click event - handle when user clicks a notification
+ */
+self.addEventListener('notificationclick', (event) => {
+	event.notification.close();
+
+	const urlToOpen = event.notification.data?.url || '/';
+
+	event.waitUntil(
+		self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+			// Check if there's already a window open
+			for (const client of clientList) {
+				if ('focus' in client) {
+					return client.focus().then(() => {
+						if ('navigate' in client) {
+							return (client as WindowClient).navigate(urlToOpen);
+						}
+					});
+				}
+			}
+			// No window open, open a new one
+			if (self.clients.openWindow) {
+				return self.clients.openWindow(urlToOpen);
+			}
+		})
+	);
+});
+
+/**
+ * Notification close event - track when notifications are dismissed
+ */
+self.addEventListener('notificationclose', (event) => {
+	// Could be used for analytics or cleanup
+	console.log('Notification closed:', event.notification.tag);
+});

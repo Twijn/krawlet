@@ -41,6 +41,13 @@ export const updateAvailable = writable(false);
 export const installDismissed = writable(false);
 
 /**
+ * Store for notification permission status
+ */
+export const notificationPermission = writable<NotificationPermission>(
+	browser && 'Notification' in window ? Notification.permission : 'denied'
+);
+
+/**
  * Key for storing install dismissed preference
  */
 const INSTALL_DISMISSED_KEY = 'pwa-install-dismissed';

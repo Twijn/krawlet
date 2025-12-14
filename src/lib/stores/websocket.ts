@@ -9,6 +9,7 @@ import { notifications } from './notifications';
 import { t } from '$lib/i18n';
 import type { TransactionWithMeta } from 'kromer';
 import kromer from '$lib/api/kromer';
+import { processTransactionForNotification } from '$lib/utils/notifications';
 
 /**
  * WebSocket connection states
@@ -62,6 +63,13 @@ function createWebSocketStore() {
 						amount: tx.value.toString()
 					})
 				);
+
+				// Process transaction for push notifications
+				try {
+					processTransactionForNotification(tx);
+				} catch (error) {
+					console.error('Failed to process transaction for notification:', error);
+				}
 			});
 
 			cleanupFns = [unsubReady, unsubError, unsubClose, unsubTransaction];

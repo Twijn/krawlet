@@ -8,6 +8,7 @@
 	import { SYNC_NODE_OFFICIAL, SYNC_NODES } from '$lib/consts';
 	import { notifications } from '$lib/stores/notifications';
 	import { t, t$, locale, LOCALES, type LocaleCode } from '$lib/i18n';
+	import NotificationSettings from '$lib/components/widgets/notifications/NotificationSettings.svelte';
 
 	let allowSyncNodeChange = $state($settings.syncNode !== SYNC_NODE_OFFICIAL.id);
 
@@ -179,3 +180,5 @@
 		</ToggleCheckbox>
 	</fieldset>
 </Section>
+
+<NotificationSettings lgCols={12} mdCols={12} smCols={12} />
