@@ -94,7 +94,7 @@
 		<div class="header-right">
 			<ConnectionStatus />
 			<a href="/settings" class="settings-btn" aria-label={$t$('accessibility.openSettings')}>
-				<FontAwesomeIcon icon={faGear} size="lg" />
+				<FontAwesomeIcon icon={faGear} size="1x" />
 			</a>
 		</div>
 	</header>
@@ -260,12 +260,12 @@
 	.settings-btn {
 		background: none;
 		border: none;
-		color: var(--text-color-1);
+		color: var(--text-color-2);
 		cursor: pointer;
-		padding: 0.5rem 1.5rem;
+		padding: 0.5rem 1rem;
 		display: flex;
 		align-items: center;
-		font-size: 1.2em;
+		font-size: 1em;
 		text-decoration: none;
 		transition: color 0.25s ease-in-out;
 	}
