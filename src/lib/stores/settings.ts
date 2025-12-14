@@ -31,6 +31,8 @@ export type SettingsData = {
 	syncNode: string;
 	showAllWalletsOption: boolean;
 	showAllWalletsDefault: boolean;
+	// language
+	language: string;
 };
 
 const NAME = 'settings';
@@ -152,7 +154,8 @@ class Settings {
 		wallets: [],
 		syncNode: SYNC_NODE_OFFICIAL.id,
 		showAllWalletsOption: false,
-		showAllWalletsDefault: false
+		showAllWalletsDefault: false,
+		language: 'en'
 	};
 	private data: Writable<SettingsData>;
 

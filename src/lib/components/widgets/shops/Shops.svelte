@@ -11,6 +11,7 @@
 	import ShopFilterSort from './filtersort/ShopFilterSort.svelte';
 	import { paramState } from '$lib/paramState.svelte';
 	import { SHOP_SORT_OPTIONS, type ShopSortOption } from '$lib/types/sort';
+	import { t$ } from '$lib/i18n';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -83,7 +84,7 @@
 
 <ShopFilterSort bind:searchQuery={searchQuery.value} bind:sortOption={sortOption.value} />
 <Section {lgCols} {mdCols} {smCols}>
-	<h2><FontAwesomeIcon icon={faShop} /> Shops</h2>
+	<h2><FontAwesomeIcon icon={faShop} /> {$t$('shop.shops')}</h2>
 	{#if shops.length === 0}
 		<ModuleLoading />
 	{/if}
@@ -96,23 +97,23 @@
 					<table>
 						<tbody>
 							<tr>
-								<th>Total Items</th>
+								<th>{$t$('shop.totalItems')}</th>
 								<td class="right"
-									>{items.length} <small>listing{items.length === 1 ? '' : 's'}</small></td
+									>{items.length} <small>{items.length === 1 ? $t$('shop.listing') : $t$('shop.listings')}</small></td
 								>
 							</tr>
 							<tr>
-								<th>Total Stock</th>
+								<th>{$t$('shop.totalStock')}</th>
 								<td class="right"
 									>{totalStock.toLocaleString()}
-									<small>item{totalStock === 1 ? '' : 's'}</small></td
+									<small>{totalStock === 1 ? $t$('shop.item') : $t$('shop.items')}</small></td
 								>
 							</tr>
 							{#if shop.addresses}
 								{#each shop.addresses as address (address)}
 									{#if address.length === 10 && address.startsWith('k')}
 										<tr>
-											<th>Address</th>
+											<th>{$t$('shop.address')}</th>
 											<td class="right"><Address {address} /></td>
 										</tr>
 									{/if}

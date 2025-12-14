@@ -10,6 +10,7 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
 	import AddressSelector from '$lib/components/widgets/addresses/AddressSelector.svelte';
+	import { t$ } from '$lib/i18n';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -50,13 +51,13 @@
 		e.preventDefault();
 
 		if (!nameAvailable) {
-			notifications.error("This name isn't available!");
+			notifications.error($t$('name.nameNotAvailable', { name }));
 			return false;
 		}
 
 		confirm.confirm({
-			message: `Are you sure you want to purchase '${name}.kro' for ${nameCost} KRO? This action cannot be undone!`,
-			confirmButtonLabel: 'Purchase Name',
+			message: $t$('name.confirmPurchase', { name, cost: nameCost }),
+			confirmButtonLabel: $t$('name.purchaseButton'),
 			confirm: () => {
 				kromer.names
 					.register(name, {
@@ -64,18 +65,18 @@
 					})
 					.then(
 						async () => {
-							notifications.success('Name purchase successful!');
+							notifications.success($t$('name.purchaseSuccess'));
 							name = '';
 							showNameStatus = false;
 						},
 						(e) => {
 							const err = e as APIError;
-							notifications.error(`Failed to purchase name: ${err.message}`);
+							notifications.error($t$('name.purchaseFailed', { message: err.message }));
 						}
 					);
 			},
 			cancel: () => {
-				notifications.warning('Name purchase cancelled.');
+				notifications.warning($t$('name.purchaseCancelled'));
 			}
 		});
 
@@ -84,28 +85,28 @@
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
-	<h2><FontAwesomeIcon icon={faSignature} /> Purchase Name</h2>
+	<h2><FontAwesomeIcon icon={faSignature} /> {$t$('name.purchaseName')}</h2>
 	<form method="POST">
 		<ModuleLoading {loading} absolute={true} />
-		<AddressSelector mode="privatekey" label="Address" bind:privatekey={privateKey} />
+		<AddressSelector mode="privatekey" label={$t$('address.address')} bind:privatekey={privateKey} />
 		<label>
-			Name
+			{$t$('name.name')}
 			<input
 				type="text"
 				name="name"
-				placeholder="Don't include .kro at the end!"
+				placeholder={$t$('name.namePlaceholder')}
 				bind:value={name}
 				onblur={checkName}
 				onkeyup={() => (showNameStatus = false)}
 			/>
 			{#if showNameStatus}
 				{#if nameAvailable}
-					<small class="success">{name}.kro is currently available!</small>
+					<small class="success">{$t$('name.nameAvailable', { name })}</small>
 				{:else}
-					<small class="fail">{name}.kro is not available!</small>
+					<small class="fail">{$t$('name.nameNotAvailable', { name })}</small>
 				{/if}
 			{:else}
-				<small>Unfocus from the field above to check if the name is available.</small>
+				<small>{$t$('name.checkNameHint')}</small>
 			{/if}
 		</label>
 		<Button
@@ -115,7 +116,7 @@
 			onClick={buyName}
 			full={true}
 		>
-			Purchase Name
+			{$t$('name.purchaseButton')}
 		</Button>
 	</form>
 </Section>

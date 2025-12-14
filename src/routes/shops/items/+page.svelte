@@ -14,6 +14,7 @@
 	import { paramState } from '$lib/paramState.svelte';
 	import FilterSortControls from '$lib/components/widgets/shops/filtersort/ItemFilterSort.svelte';
 	import { DEFAULT_ITEM_SORT, ITEM_SORT_OPTIONS, type ItemSortOption } from '$lib/types/sort';
+	import { t$ } from '$lib/i18n';
 
 	let listings: ItemListing[] = $state([]);
 
@@ -74,14 +75,14 @@
 
 <h1>
 	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/shops">Shops</a> <span>&raquo;</span>
-	<a href="/shops/items">Items</a>
+	<a href="/shops">{$t$('nav.shops')}</a> <span>&raquo;</span>
+	<a href="/shops/items">{$t$('nav.items')}</a>
 </h1>
 
 <FilterSortControls bind:searchQuery={searchQuery.value} bind:sortOption={sortOption.value} />
 
 <Section lgCols={12}>
-	<h2><FontAwesomeIcon icon={faListNumeric} /> Items</h2>
+	<h2><FontAwesomeIcon icon={faListNumeric} /> {$t$('shop.items')}</h2>
 	{#if listings.length === 0}
 		<ModuleLoading />
 	{/if}
@@ -91,9 +92,9 @@
 				<table>
 					<thead>
 						<tr>
-							<th>Shop Name</th>
-							<th class="right">Stock</th>
-							<th class="right">Price</th>
+							<th>{$t$('shop.shopName')}</th>
+							<th class="right">{$t$('shop.stock')}</th>
+							<th class="right">{$t$('shop.price')}</th>
 						</tr>
 					</thead>
 					<tbody>

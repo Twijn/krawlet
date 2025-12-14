@@ -10,6 +10,7 @@
 	import kromer from '$lib/api/kromer';
 	import type { AddressesResponse } from 'kromer';
 	import { paramState } from '$lib/paramState.svelte.js';
+	import { t$ } from '$lib/i18n';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -60,7 +61,7 @@
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
-	<h2><FontAwesomeIcon icon={faAddressBook} /> {rich ? 'Richest ' : ''}Addresses</h2>
+	<h2><FontAwesomeIcon icon={faAddressBook} /> {rich ? $t$('nav.richestAddresses') : $t$('nav.addresses')}</h2>
 	{#if addresses}
 		<div class="table-container">
 			<ModuleLoading absolute={true} bind:loading />
@@ -68,20 +69,20 @@
 				<Pagination bind:page={page.value} total={addresses.total} {limit} />
 			{:else}
 				<a id="view-all" href="/addresses{rich ? '/rich' : ''}"
-					>View all {rich ? 'of the richest' : ''} addresses</a
+					>{rich ? $t$('address.viewAllRich') : $t$('address.viewAll')}</a
 				>
 			{/if}
 			<table>
 				<thead>
 					<tr>
 						{#if rich}
-							<th class="center">Rank</th>
+							<th class="center">{$t$('address.rank')}</th>
 						{/if}
-						<th>Address</th>
-						<th class="right">Balance</th>
-						<th class="right">Total In</th>
-						<th class="right">Total Out</th>
-						<th class="right">First Seen</th>
+						<th>{$t$('address.address')}</th>
+						<th class="right">{$t$('address.balance')}</th>
+						<th class="right">{$t$('address.totalIn')}</th>
+						<th class="right">{$t$('address.totalOut')}</th>
+						<th class="right">{$t$('address.firstSeen')}</th>
 					</tr>
 				</thead>
 				<tbody>

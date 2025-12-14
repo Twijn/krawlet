@@ -3,9 +3,16 @@
 	import { scale, fade } from 'svelte/transition';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faTimes } from '@fortawesome/free-solid-svg-icons';
+	import { t$ } from '$lib/i18n';
 </script>
 
-<div class="notifications-container">
+<div
+	class="notifications-container"
+	role="region"
+	aria-label="Notifications"
+	aria-live="polite"
+	aria-relevant="additions removals"
+>
 	{#each $notifications as notification (notification.id)}
 		<div
 			class="notification"
@@ -13,12 +20,17 @@
 			class:info={notification.type === 'info'}
 			class:error={notification.type === 'error'}
 			class:warning={notification.type === 'warning'}
+			role={notification.type === 'error' ? 'alert' : 'status'}
+			aria-live={notification.type === 'error' ? 'assertive' : 'polite'}
 			in:scale
 			out:fade
 		>
 			<p>{notification.message}</p>
 			{#if !notification.unclosable}
-				<button on:click={() => notifications.remove(notification.id)}>
+				<button
+					onclick={() => notifications.remove(notification.id)}
+					aria-label={$t$('accessibility.closeNotification')}
+				>
 					<FontAwesomeIcon icon={faTimes} />
 				</button>
 			{/if}

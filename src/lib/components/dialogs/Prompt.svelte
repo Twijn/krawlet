@@ -3,6 +3,14 @@
 	import { prompt } from '$lib/stores/prompt';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Alert from '$lib/components/dialogs/Alert.svelte';
+	import { trapFocus } from '$lib/utils/a11y';
+	import { t$ } from '$lib/i18n';
+
+	const dialogId = 'prompt-dialog';
+	const titleId = `${dialogId}-title`;
+	const descId = `${dialogId}-desc`;
+	const inputId = `${dialogId}-input`;
+	const errorId = `${dialogId}-error`;
 
 	const handleClickOutside = (node: HTMLElement) => {
 		const handleClick = (event: MouseEvent) => {
@@ -52,30 +60,53 @@
 			prompt.clearErrors();
 		}
 	}
+
+	let hasErrors = $derived($prompt?.errors && $prompt.errors.length > 0);
 </script>
 
 {#if $prompt}
 	<div class="modal-backdrop" transition:fade={{ duration: 200 }}>
-		<div class="modal" transition:scale={{ duration: 200 }} use:handleClickOutside>
+		<div
+			class="modal"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby={titleId}
+			aria-describedby={descId}
+			transition:scale={{ duration: 200 }}
+			use:handleClickOutside
+			use:trapFocus
+		>
 			<form>
-				{#if $prompt.errors && $prompt.errors.length > 0}
-					{#each $prompt.errors as error (error)}
-						<Alert variant="danger">
-							{error}
-						</Alert>
-					{/each}
+				<h2 id={titleId} class="sr-only">{$prompt.inputLabel}</h2>
+				{#if hasErrors}
+					<div id={errorId} role="alert" aria-live="assertive">
+						{#each $prompt.errors as error (error)}
+							<Alert variant="danger">
+								{error}
+							</Alert>
+						{/each}
+					</div>
 				{/if}
-				<p class="modal-message">{$prompt.message}</p>
-				<label>
+				<p id={descId} class="modal-message">{$prompt.message}</p>
+				<label for={inputId}>
 					{$prompt.inputLabel}
-					<input type={$prompt.type} bind:value bind:this={inputElement} onkeyup={handleKeyUp} />
+					<input
+						id={inputId}
+						type={$prompt.type}
+						bind:value
+						bind:this={inputElement}
+						onkeyup={handleKeyUp}
+						aria-invalid={hasErrors}
+						aria-describedby={hasErrors ? errorId : undefined}
+						aria-required="true"
+					/>
 				</label>
 				<div class="modal-buttons">
 					<Button variant="secondary" type="button" onClick={() => $prompt.cancel?.()}>
-						{$prompt.cancelButtonLabel ?? 'Cancel'}
+						{$prompt.cancelButtonLabel ?? $t$('common.cancel')}
 					</Button>
 					<Button variant={$prompt.danger ? 'error' : 'primary'} type="submit" onClick={confirm}>
-						{$prompt.confirmButtonLabel ?? 'Confirm'}
+						{$prompt.confirmButtonLabel ?? $t$('common.confirm')}
 					</Button>
 				</div>
 			</form>
@@ -122,5 +153,17 @@
 
 	p {
 		margin-top: 0;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
 	}
 </style>

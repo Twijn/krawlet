@@ -15,6 +15,7 @@
 	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import { onMount } from 'svelte';
 	import { formatCurrency } from '$lib/util';
+	import { t$ } from '$lib/i18n';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -80,18 +81,18 @@
 
 	function copyPayCommand() {
 		if (!to.value) {
-			notifications.error('You must select a recipient!');
+			notifications.error($t$('transaction.selectRecipient'));
 		} else if (amount === 0) {
-			notifications.error('Transaction amount must be greater than 0!');
+			notifications.error($t$('transaction.amountMustBePositive'));
 		} else {
 			let command = `/pay ${to.value} ${amount} ${metadata.value}`.trim();
 			navigator.clipboard.writeText(command).then(
 				() => {
-					notifications.success(`Copied '${command}' to clipboard!`);
+					notifications.success($t$('transaction.payCommandCopied', { command }));
 				},
 				(e) => {
 					console.error(e);
-					notifications.error('Failed to copy to clipboard.');
+					notifications.error($t$('transaction.copyFailed'));
 				}
 			);
 		}
@@ -101,17 +102,17 @@
 		e.preventDefault();
 
 		if (!privatekey) {
-			notifications.error('You must input or select a private key!');
+			notifications.error($t$('transaction.inputPrivateKey'));
 			return false;
 		} else if (!to.value) {
-			notifications.error('You must select a recipient!');
+			notifications.error($t$('transaction.selectRecipient'));
 			return false;
 		} else if (amount <= 0) {
-			notifications.error('Transaction amount must be greater than 0!');
+			notifications.error($t$('transaction.amountMustBePositive'));
 		} else {
 			confirm.confirm({
-				message: `Are you sure you want to send ${amount.toFixed(2)} KRO to ${to.value}?`,
-				confirmButtonLabel: 'Send',
+				message: $t$('transaction.confirmSend', { amount: amount.toFixed(2), address: to.value }),
+				confirmButtonLabel: $t$('transaction.sendButton'),
 				confirm: async () => {
 					loading = true;
 					try {
@@ -127,13 +128,13 @@
 
 						await kromer.transactions.send(data);
 
-						notifications.success('Transaction successful!');
+						notifications.success($t$('transaction.transactionSuccess'));
 
 						balances[fromAddress] = balances[fromAddress] - amount;
 						balances[to.value] = balances[to.value] + amount;
 					} catch (e) {
 						const err = e as APIError;
-						notifications.error(err.message ?? 'Unknown error. Please try again later.');
+						notifications.error(err.message ?? $t$('transaction.unknownError'));
 					}
 					loading = false;
 				}
@@ -151,18 +152,18 @@
 {#if unitPrice.value <= 0}
 	<div class="col-12">
 		<Alert variant="danger">
-			Please provide a unit price in the "unit_price" query parameter to send a purchase.
+			{$t$('transaction.unitPriceRequired')}
 		</Alert>
 	</div>
 {:else if to.value && to.value.length === 10 && typeof balances[to.value] === 'number'}
 	<Section {lgCols} {mdCols} {smCols}>
-		<h2><FontAwesomeIcon icon={faPaperPlane} /> Send Kromer</h2>
+		<h2><FontAwesomeIcon icon={faPaperPlane} /> {$t$('transaction.sendKromer')}</h2>
 		<form method="POST">
 			<ModuleLoading bind:loading absolute={true} />
 			<div class="container">
 				<div class="col-6 col-md-12">
 					<AddressSelector
-						label="Sender / From"
+						label={$t$('transaction.senderFrom')}
 						mode="privatekey"
 						bind:balances
 						bind:privatekey
@@ -170,15 +171,15 @@
 					/>
 				</div>
 				<div class="col-6 col-md-12">
-					<p class="recipient-text">Recipient / To</p>
+					<p class="recipient-text">{$t$('transaction.recipientTo')}</p>
 					<Address bind:address={to.value} />
 				</div>
 				{#if fromAddress.length === 10 && fromAddress === to.value}
-					<div class="col-12 fail center">From address and to address must be different!</div>
+					<div class="col-12 fail center">{$t$('transaction.addressMismatch')}</div>
 				{/if}
 			</div>
 			<label>
-				Quantity
+				{$t$('transaction.quantity')}
 				<input
 					type="number"
 					name="amount"
@@ -189,26 +190,26 @@
 				/>
 				{#if quantity.value > maxQuantity.value}
 					<small class="fail">
-						Quantity must be less than or equal to {maxQuantity.value}.
+						{$t$('transaction.quantityExceeded', { max: maxQuantity.value })}
 					</small>
 				{:else}
-					<strong>Max Quantity:</strong>
+					<strong>{$t$('transaction.maxQuantity')}:</strong>
 					<code>{maxQuantity.value}</code>
 				{/if}
 			</label>
 			<label>
-				Price
+				{$t$('transaction.price')}
 				<input type="text" name="price" bind:value={priceText} disabled />
 			</label>
 			<MetaInput bind:metadata={metadata.value} bind:lock={lock.value} />
 			<div class="buttons">
 				<Button type="button" variant="secondary" full={true} onClick={copyPayCommand}>
 					<FontAwesomeIcon icon={faCopy} />
-					Copy /pay Command
+					{$t$('transaction.copyPayCommand')}
 				</Button>
 				<Button type="submit" variant="primary" full={true} onClick={send}>
 					<FontAwesomeIcon icon={faPaperPlane} />
-					Send
+					{$t$('transaction.sendButton')}
 				</Button>
 			</div>
 		</form>
@@ -216,7 +217,7 @@
 {:else}
 	<div class="col-12">
 		<Alert variant="danger">
-			Please provide a recipient address in the "to" query parameter to send kromer.
+			{$t$('transaction.recipientRequired')}
 		</Alert>
 	</div>
 {/if}

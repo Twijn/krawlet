@@ -5,23 +5,24 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { faSearch } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+	import { t$ } from '$lib/i18n';
 
 	let address = $state('');
 
 	const copy = () => {
 		if (!address || address.length === 0) {
-			notifications.warning('Please select an address first!');
+			notifications.warning($t$('address.selectAddressFirst'));
 			return;
 		}
 
 		navigator.clipboard
 			.writeText(address)
 			.then(() => {
-				notifications.success(`Address ${address} copied to clipboard`);
+				notifications.success($t$('address.copiedToClipboard', { address }));
 			})
 			.catch((e) => {
 				console.error(e);
-				notifications.error('Failed to copy address to clipboard!');
+				notifications.error($t$('address.copyFailed'));
 			});
 	};
 </script>
@@ -32,29 +33,28 @@
 
 <h1>
 	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/addresses">Addresses</a> <span>&raquo;</span>
-	<a href="/addresses/search">Search</a>
+	<a href="/addresses">{$t$('nav.addresses')}</a> <span>&raquo;</span>
+	<a href="/addresses/search">{$t$('common.search')}</a>
 </h1>
 
 <div class="col-12">
 	<Section>
-		<h2><FontAwesomeIcon icon={faSearch} /> Address Search</h2>
-		<p>Use the field below to search for addresses.</p>
+		<h2><FontAwesomeIcon icon={faSearch} /> {$t$('address.searchTitle')}</h2>
+		<p>{$t$('address.searchDescription')}</p>
 		<p>
-			If the address you're looking for does not show up as a known address, you can also type in
-			the entire address (i.e <code>ktwijnmall</code>) or name (i.e <code>reconnected.kro</code>)
+			{$t$('address.searchHint', { exampleAddress: 'ktwijnmall', exampleName: 'reconnected.kro' })}
 		</p>
-		<AddressSelector label="Address" bind:address />
+		<AddressSelector label={$t$('address.address')} bind:address />
 		<div class="buttons">
-			<Button type="button" variant="secondary" full onClick={copy}>Copy to Clipboard</Button>
+			<Button type="button" variant="secondary" full onClick={copy}>{$t$('wallet.copyToClipboard')}</Button>
 			<Button
 				variant="primary"
 				full
 				href={`/addresses/${address}`}
 				disabled={!address}
-				title={!address ? 'Please select an address above' : undefined}
+				title={!address ? $t$('address.selectAddressAbove') : undefined}
 			>
-				View Address
+				{$t$('address.viewAddress')}
 			</Button>
 		</div>
 	</Section>

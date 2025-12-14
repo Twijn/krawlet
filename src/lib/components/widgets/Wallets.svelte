@@ -16,6 +16,7 @@
 	import { getSyncNode, SYNC_NODES } from '$lib/consts';
 	import ToggleCheckbox from '../form/ToggleCheckbox.svelte';
 	import { paramState } from '$lib/paramState.svelte';
+	import { t, t$ } from '$lib/i18n';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -44,15 +45,15 @@
 
 	function deleteWallet(wallet: Wallet) {
 		confirm.confirm({
-			message: `Are you sure you want to delete the wallet ${wallet.name} (${wallet.address})? This action is irreversible!`,
+			message: t('wallet.confirmDelete', { name: wallet.name, address: wallet.address }),
 			danger: true,
-			confirmButtonLabel: 'Delete',
+			confirmButtonLabel: t('common.delete'),
 			confirm: () => {
 				settings.removeWallet(wallet.address);
-				notifications.success(`Successfully deleted wallet ${wallet.name} (${wallet.address})`);
+				notifications.success(t('wallet.deleteSuccess', { name: wallet.name, address: wallet.address }));
 			},
 			cancel: () => {
-				notifications.warning('Wallet deletion cancelled');
+				notifications.warning(t('wallet.deleteCancelled'));
 			}
 		});
 	}
@@ -110,31 +111,31 @@
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
-	<h2><FontAwesomeIcon icon={faWallet} /> Wallets</h2>
+	<h2><FontAwesomeIcon icon={faWallet} /> {$t$('nav.wallets')}</h2>
 	{#if !showDelete}
-		<a href="/wallets" id="view-all"> View &amp; manage all wallets </a>
+		<a href="/wallets" id="view-all"> {$t$('wallet.viewAndManage')} </a>
 	{/if}
 
 	<div class="wallets">
 		{#if $settings.showAllWalletsOption}
 			<ToggleCheckbox bind:checked={showOtherNodes.value} center>
-				Show wallets from other sync nodes
+				{$t$('wallet.showAllWallets')}
 			</ToggleCheckbox>
 		{/if}
 		{#if showOtherNodes.value}
 			<div transition:slide>
 				<Alert variant="info">
-					<strong>Note:</strong>
-					<p>Balances for wallets on other sync nodes may be inaccurate or not show at all.</p>
+					<strong>{$t$('common.note')}:</strong>
+					<p>{$t$('wallet.otherNodeNote')}</p>
 				</Alert>
 			</div>
 		{/if}
 		<ModuleLoading absolute={true} bind:loading />
 		{#if filteredWallets.length === 0}
 			<Alert variant="info">
-				<strong>No wallets saved!</strong>
+				<strong>{$t$('wallet.noWalletsSaved')}</strong>
 				<p>
-					You haven't saved a wallet yet! <a href="/wallets#new">Add one here!</a>
+					{$t$('wallet.noWalletsHint')} <a href="/wallets#new">{$t$('wallet.addWalletHere')}</a>
 				</p>
 			</Alert>
 		{/if}
@@ -175,7 +176,7 @@
 							const [moved] = wallets.splice(fromIdx, 1);
 							wallets.splice(toIdx, 0, moved);
 							settings.setWallets(wallets);
-							notifications.success(`Wallet order saved!`);
+							notifications.success(t('wallet.orderSaved'));
 						}
 					}
 				}}
@@ -187,11 +188,11 @@
 					<h3>{wallet.name}</h3>
 					<div class="wallet-info">
 						<AddressModule address={wallet.address} />
-						{#if showOtherNodes.value}
-							{@const syncNodeName =
-								SYNC_NODES.find((x) => x.id === wallet.syncNode)?.name ?? 'Unknown'}
-							<small><strong>Sync Node:</strong> {syncNodeName}</small>
-						{/if}
+					{#if showOtherNodes.value}
+						{@const syncNodeName =
+							SYNC_NODES.find((x) => x.id === wallet.syncNode)?.name ?? 'Unknown'}
+						<small><strong>{$t$('wallet.syncNode')}:</strong> {syncNodeName}</small>
+					{/if}
 					</div>
 				</div>
 				<div class="balance">
@@ -210,7 +211,7 @@
 		{/each}
 		{#if filteredWallets.length > 0}
 			<p class="total">
-				<strong>Total Balance: </strong>
+				<strong>{$t$('wallet.totalBalance')}: </strong>
 				{formatBalance(totalBalance)}
 				<small>KRO</small>
 			</p>

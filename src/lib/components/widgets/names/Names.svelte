@@ -12,6 +12,7 @@
 	import { paramState } from '$lib/paramState.svelte.js';
 	import { SEVEN_DAYS } from '$lib/consts';
 	import settings from '$lib/stores/settings';
+	import { t$ } from '$lib/i18n';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -67,11 +68,15 @@
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
-	<h2><FontAwesomeIcon icon={faSign} /> Names</h2>
+	<h2><FontAwesomeIcon icon={faSign} /> {$t$('nav.names')}</h2>
 	{#if names}
 		{#if names.names.length === 0}
 			<small class="none-found">
-				No names found{address ? ` for address ${address}` : ''}!
+				{#if address}
+					{$t$('name.noNamesFor', { address })}
+				{:else}
+					{$t$('name.noNames')}
+				{/if}
 			</small>
 		{:else}
 			<div class="table-container">
@@ -80,24 +85,24 @@
 					<Pagination bind:page={page.value} total={names.total} {limit} />
 				{:else if address}
 					<a id="view-all" href="/addresses/{address}/names">
-						View all names for {address}
+						{$t$('name.viewAllFor', { address })}
 					</a>
 				{:else}
-					<a id="view-all" href="/names">View all names</a>
+					<a id="view-all" href="/names">{$t$('name.viewAll')}</a>
 				{/if}
 				<table>
 					<thead>
 						<tr>
-							<th class="right">Name</th>
-							<th class="right">Owner</th>
+							<th class="right">{$t$('name.name')}</th>
+							<th class="right">{$t$('name.owner')}</th>
 							{#if $settings.showOriginalOwner}
-								<th class="right">Original Owner</th>
+								<th class="right">{$t$('name.originalOwner')}</th>
 							{/if}
 							<th class="right">A</th>
 							{#if $settings.showTransferredDate}
-								<th class="right">Last Transferred</th>
+								<th class="right">{$t$('name.lastTransferred')}</th>
 							{/if}
-							<th class="right">Registered</th>
+							<th class="right">{$t$('name.registered')}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -126,7 +131,7 @@
 									{#if name.a}
 										{name.a}
 									{:else}
-										<small>No Data</small>
+										<small>{$t$('name.noData')}</small>
 									{/if}
 								</td>
 								{#if $settings.showTransferredDate}
@@ -144,7 +149,7 @@
 												{name.transferred.toLocaleString()}
 											{/if}
 										{:else}
-											<small>Never Transferred</small>
+											<small>{$t$('name.neverTransferred')}</small>
 										{/if}
 									</td>
 								{/if}

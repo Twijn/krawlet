@@ -11,6 +11,7 @@
 	import { notifications } from '$lib/stores/notifications';
 	import settings from '$lib/stores/settings';
 	import { getSyncNode } from '$lib/consts';
+	import { t$ } from '$lib/i18n';
 
 	let masterPassword = $state('');
 	let name = $state('');
@@ -23,7 +24,7 @@
 		e.preventDefault();
 
 		if (masterPassword.length < 8) {
-			notifications.error('Your master password must be at least 8 characters!');
+			notifications.error($t$('wallet.masterPasswordMinLength'));
 			return false;
 		}
 
@@ -38,10 +39,10 @@
 				masterPassword
 			);
 
+			notifications.success($t$('wallet.walletAddSuccess', { name, address }));
+
 			name = '';
 			pkey = '';
-
-			notifications.success(`Successfully added wallet ${name} (${address})!`);
 		} catch (e) {
 			const err = e as APIError;
 			notifications.error(err.message ?? 'Unknown Error!');
@@ -57,39 +58,38 @@
 
 <h1>
 	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/wallets">Wallets</a>
+	<a href="/wallets">{$t$('nav.wallets')}</a>
 </h1>
 
 <Wallets lgCols={8} mdCols={12} showDelete={true} />
 <Section lgCols={4} mdCols={12}>
-	<h2><FontAwesomeIcon icon={faPlus} /> New Wallet</h2>
+	<h2><FontAwesomeIcon icon={faPlus} /> {$t$('wallet.newWallet')}</h2>
 	<form method="POST">
 		<label>
-			Master Password
+			{$t$('wallet.masterPassword')}
 			<input id="new" type="password" name="masterPassword" bind:value={masterPassword} />
 			<small
-				>{#if $settings.wallets.filter((x) => x.syncNode === getSyncNode().id).length > 0}You must
-					use the same password as your past wallets!{/if}
-				Make sure you keep this safe!</small
+				>{#if $settings.wallets.filter((x) => x.syncNode === getSyncNode().id).length > 0}{$t$('wallet.masterPasswordSameHint')}{/if}
+				{$t$('wallet.masterPasswordHint')}</small
 			>
 		</label>
 		<label>
-			Name
+			{$t$('name.name')}
 			<input type="text" name="name" bind:value={name} />
-			<small>Give your wallet a good name that you'll recognize!</small>
+			<small>{$t$('wallet.nameHint')}</small>
 		</label>
 		<label>
-			Private Key
+			{$t$('wallet.privateKey')}
 			<input type="password" name="pkey" bind:value={pkey} />
-			<small>This private key will be encrypted in your local storage.</small>
+			<small>{$t$('wallet.privateKeyHint')}</small>
 		</label>
 		{#if decodedAddress.length === 10}
 			<p>
-				<strong>Decoded Address:</strong>
+				<strong>{$t$('wallet.decodedAddress')}:</strong>
 				{decodedAddress}
 			</p>
 		{/if}
-		<Button type="submit" full={true} onClick={addWallet}>Add Wallet</Button>
+		<Button type="submit" full={true} onClick={addWallet}>{$t$('wallet.addWallet')}</Button>
 	</form>
 </Section>
 

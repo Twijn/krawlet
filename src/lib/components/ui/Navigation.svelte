@@ -15,10 +15,11 @@
 		faWallet
 	} from '@fortawesome/free-solid-svg-icons';
 	import { getSyncNode, SYNC_NODE_OFFICIAL } from '$lib/consts';
+	import { t$ } from '$lib/i18n';
 
 	type NavigationLink = {
 		icon: IconDefinition;
-		name: string;
+		nameKey: string;
 		href: string;
 		startsWith?: boolean;
 		hideOnInternal?: boolean;
@@ -26,7 +27,7 @@
 	};
 
 	type NavigationGroup = {
-		name: string;
+		nameKey: string;
 		links: NavigationLink[];
 		hideOnInternal?: boolean;
 		hideOnExternal?: boolean;
@@ -34,107 +35,107 @@
 
 	const navigationGroups: NavigationGroup[] = [
 		{
-			name: 'Homepage',
+			nameKey: 'nav.homepage',
 			links: [
 				{
 					icon: faHome,
-					name: 'Home',
+					nameKey: 'nav.home',
 					href: '/'
 				}
 			]
 		},
 		{
-			name: 'Wallets',
+			nameKey: 'nav.wallets',
 			links: [
 				{
 					icon: faWallet,
-					name: 'Wallets',
+					nameKey: 'nav.wallets',
 					href: '/wallets'
 				}
 			]
 		},
 		{
-			name: 'Transactions',
+			nameKey: 'nav.transactions',
 			links: [
 				{
 					icon: faPaperPlane,
-					name: 'Send Kromer',
+					nameKey: 'nav.sendKromer',
 					href: '/transactions/new'
 				},
 				{
 					icon: faAddressBook,
-					name: 'View Transactions',
+					nameKey: 'nav.viewTransactions',
 					href: '/transactions',
 					startsWith: true
 				}
 			]
 		},
 		{
-			name: 'Names',
+			nameKey: 'nav.names',
 			links: [
 				{
 					icon: faFont,
-					name: 'Manage Names',
+					nameKey: 'nav.manageNames',
 					href: '/names/manage'
 				},
 				{
 					icon: faSign,
-					name: 'All Names',
+					nameKey: 'nav.allNames',
 					href: '/names',
 					startsWith: true
 				}
 			]
 		},
 		{
-			name: 'Addresses',
+			nameKey: 'nav.addresses',
 			links: [
 				{
 					icon: faSearch,
-					name: 'Search Addresses',
+					nameKey: 'nav.searchAddresses',
 					href: '/addresses/search'
 				},
 				{
 					icon: faMoneyBillWave,
-					name: 'Richest Addresses',
+					nameKey: 'nav.richestAddresses',
 					href: '/addresses/rich'
 				},
 				{
 					icon: faAddressBook,
-					name: 'All Addresses',
+					nameKey: 'nav.allAddresses',
 					href: '/addresses',
 					startsWith: true
 				}
 			]
 		},
 		{
-			name: 'Reconnected.CC',
+			nameKey: 'nav.reconnectedCC',
 			hideOnExternal: true,
 			links: [
 				{
 					icon: faShop,
-					name: 'Shops',
+					nameKey: 'nav.shops',
 					href: '/shops',
 					startsWith: true
 				},
 				{
 					icon: faListNumeric,
-					name: 'Items',
+					nameKey: 'nav.items',
 					href: '/shops/items'
 				}
 			]
 		},
 		{
-			name: 'Internal Endpoints',
+			nameKey: 'nav.internalEndpoints',
 			hideOnInternal: true,
 			links: [
 				{
 					icon: faWallet,
-					name: 'Create Wallet',
+					nameKey: 'nav.createWallet',
 					href: '/internal/create-wallet'
 				},
 				{
 					icon: faPaperPlane,
-					name: 'Give Money',
+					nameKey: 'nav.giveMoney',
 					href: '/internal/give-money'
 				}
 			]
@@ -149,7 +150,7 @@
 		} else if (link.startsWith && pathname.startsWith(link.href)) {
 			for (const group of navigationGroups) {
 				for (const sublink of group.links) {
-					if (pathname === sublink.href && link.name !== sublink.name) {
+					if (pathname === sublink.href && link.nameKey !== sublink.nameKey) {
 						return false;
 					}
 				}
@@ -172,19 +173,19 @@
 
 <nav>
 	<ul>
-		{#each navigationGroups as group (group.name)}
+		{#each navigationGroups as group (group.nameKey)}
 			{#if shouldShow(group.hideOnInternal, group.hideOnExternal)}
 				<li>
-					<h2>{group.name}</h2>
+					<h2>{$t$(group.nameKey)}</h2>
 					<ul>
-						{#each group.links as link (link.name)}
+						{#each group.links as link (link.nameKey)}
 							{#if shouldShow(link.hideOnInternal, link.hideOnExternal)}
 								<li>
 									<a href={link.href} aria-current={isCurrent(link) ? 'page' : undefined}>
 										<div class="icon">
 											<FontAwesomeIcon icon={link.icon} />
 										</div>
-										{link.name}
+										{$t$(link.nameKey)}
 									</a>
 								</li>
 							{/if}

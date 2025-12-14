@@ -11,6 +11,7 @@
 	import { confirm } from '$lib/stores/confirm';
 	import type { APIError } from 'kromer';
 	import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+	import { t$ } from '$lib/i18n';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -63,13 +64,13 @@
 		e.preventDefault();
 
 		if (selectedName.length === 0) {
-			notifications.warning('You must select a name to update.');
+			notifications.warning($t$('name.selectNameToUpdate'));
 			return;
 		}
 
 		confirm.confirm({
-			message: `Are you sure you want to update the data for ${selectedName} to ${a && a.length > 0 ? a : '<null>'}?`,
-			confirmButtonLabel: 'Update Name',
+			message: $t$('name.confirmUpdate', { name: selectedName, data: a && a.length > 0 ? a : $t$('name.nullValue') }),
+			confirmButtonLabel: $t$('name.updateButton'),
 			danger: true,
 			confirm: () => {
 				loading = true;
@@ -80,14 +81,14 @@
 					})
 					.then(
 						async () => {
-							notifications.success('Name updated successfully!');
+							notifications.success($t$('name.updateSuccess'));
 							selectedName = '';
 							updateNames();
 							loading = false;
 						},
 						(e) => {
 							const err = e as APIError;
-							notifications.error(`Failed to update name: ${err.message}`);
+							notifications.error($t$('name.updateFailed', { message: err.message }));
 							loading = false;
 						}
 					);
@@ -97,29 +98,29 @@
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
-	<h2><FontAwesomeIcon icon={faPenToSquare} /> Update Name</h2>
+	<h2><FontAwesomeIcon icon={faPenToSquare} /> {$t$('name.updateName')}</h2>
 	<form method="POST">
 		<Alert variant="danger">
-			"A" record data is not currently returned by the Kromer API. This endpoint is useless.
+			{$t$('name.updateWarning')}
 		</Alert>
 		<ModuleLoading {loading} absolute />
-		<AddressSelector mode="privatekey" label="Address" bind:privatekey bind:balances />
+		<AddressSelector mode="privatekey" label={$t$('address.address')} bind:privatekey bind:balances />
 		<label>
-			Name
+			{$t$('name.name')}
 			{#if allNames.length > 0}
 				<ButtonSelect vertical bind:options={allNames} bind:selected={selectedName} />
 			{:else if privatekey.length > 0 || loading}
-				<Alert variant="danger">This address doesn't own any names!</Alert>
+				<Alert variant="danger">{$t$('name.noOwnedNames')}</Alert>
 			{:else}
-				<Alert variant="info">Select a private key above to see available names.</Alert>
+				<Alert variant="info">{$t$('name.selectPrivateKeyHint')}</Alert>
 			{/if}
 		</label>
 		<label>
-			Data
+			{$t$('name.dataField')}
 			<input type="text" bind:value={a} />
 		</label>
 		<div class="buttons">
-			<Button variant="primary" type="submit" full={true} onClick={updateName}>Update Name</Button>
+			<Button variant="primary" type="submit" full={true} onClick={updateName}>{$t$('name.updateButton')}</Button>
 		</div>
 	</form>
 </Section>

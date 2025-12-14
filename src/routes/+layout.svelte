@@ -19,6 +19,11 @@
 	import Prompt from '$lib/components/dialogs/Prompt.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import settings from '$lib/stores/settings';
+	import InstallPrompt from '$lib/components/widgets/InstallPrompt.svelte';
+	import ConnectionStatus from '$lib/components/widgets/ConnectionStatus.svelte';
+	import { initPWA, isOnline } from '$lib/stores/pwa';
+	import { websocket } from '$lib/stores/websocket';
+	import { initLocale, t$ } from '$lib/i18n';
 
 	config.autoAddCss = false;
 
@@ -27,6 +32,7 @@
 	let showSyncNodeWarning = $state(true);
 
 	let handleResize: () => void;
+	let cleanupPWA: (() => void) | undefined;
 
 	onMount(() => {
 		handleResize = () => {
@@ -35,11 +41,22 @@
 		handleResize();
 
 		window.addEventListener('resize', handleResize);
+
+		// Initialize PWA features
+		cleanupPWA = initPWA();
+
+		// Initialize i18n with saved language
+		initLocale($settings.language);
+
+		// Connect WebSocket for real-time updates
+		websocket.connect();
 	});
 
 	onDestroy(() => {
 		if (browser) {
 			window.removeEventListener('resize', handleResize);
+			cleanupPWA?.();
+			websocket.disconnect();
 		}
 	});
 
@@ -60,39 +77,58 @@
 
 <svelte:window onclick={handleWindowClick} />
 
+<a href="#main-content" class="skip-link">{$t$('accessibility.skipToContent')}</a>
+
 <div id="app" class:nav-hidden={!showNavigation}>
 	<header>
 		<button
 			id="show-navigation"
 			onclick={() => (showNavigation = !showNavigation)}
-			aria-label="Toggle navigation"
+			aria-label={$t$('accessibility.menuToggle')}
+			aria-expanded={showNavigation}
+			aria-controls="main-navigation"
 		>
 			<FontAwesomeIcon icon={faBars} size="lg" />
 		</button>
-		<a href="/">Krawlet</a>
-		<a href="/settings" class="settings-btn" aria-label="Settings" style="margin-left:auto;">
-			<FontAwesomeIcon icon={faGear} size="lg" />
-		</a>
+		<a href="/" aria-label="Krawlet - Home">Krawlet</a>
+		<div class="header-right">
+			<ConnectionStatus />
+			<a href="/settings" class="settings-btn" aria-label={$t$('accessibility.openSettings')}>
+				<FontAwesomeIcon icon={faGear} size="lg" />
+			</a>
+		</div>
 	</header>
-	<aside>
+	<aside id="main-navigation" role="navigation" aria-label={$t$('accessibility.navigation')}>
 		<Navigation />
 	</aside>
 	<div id="content">
-		<main class="container">
+		<main
+			id="main-content"
+			class="container"
+			aria-label={$t$('accessibility.mainContent')}
+			tabindex="-1"
+		>
 			{@render children?.()}
 		</main>
-		<footer>
+		<footer aria-label={$t$('accessibility.footer')}>
 			<p>
-				Version {VERSION}
+				{$t$('footer.version', { version: VERSION })}
 				<small>&bullet;</small>
-				<a href="/whats-new">What's New</a>
+				<a href="/whats-new">{$t$('footer.whatsNew')}</a>
 			</p>
 			<p>
-				Made for the <a href="https://reconnected.cc/" target="_blank">Reconnected</a> community by
-				<a href="https://www.twijn.dev" target="_blank">Twijn</a>
+				Made for the <a href="https://reconnected.cc/" target="_blank" rel="noopener noreferrer"
+					>Reconnected</a
+				>
+				community by
+				<a href="https://www.twijn.dev" target="_blank" rel="noopener noreferrer">Twijn</a>
 			</p>
 			<p>
-				View the project on <a href="https://github.com/Twijn/krawlet" target="_blank">GitHub</a>
+				<a
+					href="https://github.com/Twijn/krawlet"
+					target="_blank"
+					rel="noopener noreferrer">{$t$('footer.viewOnGithub')}</a
+				>
 			</p>
 		</footer>
 	</div>
@@ -101,28 +137,34 @@
 <Notifications />
 <Confirm />
 <Prompt />
+<InstallPrompt />
+
+{#if !$isOnline}
+	<div class="offline-banner" role="alert" aria-live="assertive">
+		<p>{$t$('pwa.offline')}: {$t$('pwa.offlineMessage')}</p>
+	</div>
+{/if}
 
 {#if !getSyncNode().official}
 	<div class="sync-node-warning" class:hide={!showSyncNodeWarning}>
 		<button
 			class="close-btn"
-			aria-label="Close warning"
+			aria-label={$t$('syncNodeWarning.closeWarning')}
 			onclick={() => (showSyncNodeWarning = !showSyncNodeWarning)}
 		>
 			<FontAwesomeIcon icon={faArrowDown} size="2xs" />
 		</button>
 		{#if showSyncNodeWarning}
 			<p>
-				Warning: You are connected to a custom sync node {getSyncNode().name} -
-				<em>{getSyncNode().url}</em>.
+				{$t$('syncNodeWarning.warning', { name: getSyncNode().name, url: getSyncNode().url })}
 				<br />
-				<strong>!! You should <em>not</em> enter any private keys you use in production !!</strong>
+				<strong>!! {$t$('syncNodeWarning.privateKeyWarning')} !!</strong>
 			</p>
 			<Button variant="error" full type="button" onClick={revertNode}
-				>Revert to Official Node</Button
+				>{$t$('syncNodeWarning.revertToOfficial')}</Button
 			>
 		{:else}
-			Connected to custom sync node {getSyncNode().name}
+			{$t$('syncNodeWarning.connectedToCustom', { name: getSyncNode().name })}
 		{/if}
 	</div>
 {/if}
@@ -154,6 +196,13 @@
 		font-size: 1.4em;
 		color: white;
 		text-decoration: none;
+	}
+
+	.header-right {
+		margin-left: auto;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
 	}
 
 	aside {
@@ -226,6 +275,23 @@
 		color: var(--theme-color-2);
 	}
 
+	.offline-banner {
+		position: fixed;
+		top: 3.8rem;
+		left: 0;
+		right: 0;
+		z-index: 100;
+		text-align: center;
+		background-color: rgba(var(--red), 0.8);
+		padding: 0.5em 1em;
+		color: white;
+		font-size: 0.9rem;
+	}
+
+	.offline-banner p {
+		margin: 0;
+	}
+
 	.sync-node-warning {
 		position: fixed;
 		width: calc(100% - 3em);
@@ -273,5 +339,10 @@
 		top: -0.1em;
 		right: -0.1em;
 		transform: rotate(180deg);
+	}
+
+	/* Focus styles for skip link target */
+	#main-content:focus {
+		outline: none;
 	}
 </style>

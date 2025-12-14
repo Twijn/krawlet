@@ -14,6 +14,7 @@
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 	import settings from '$lib/stores/settings';
 	import { SEVEN_DAYS } from '$lib/consts';
+	import { t$ } from '$lib/i18n';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -76,41 +77,45 @@
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
-	<h2><FontAwesomeIcon icon={faList} /> Recent Transactions</h2>
+	<h2><FontAwesomeIcon icon={faList} /> {$t$('transaction.recentTransactions')}</h2>
 	{#if transactions}
 		{#if transactions.transactions.length === 0}
 			<small class="none-found">
-				No transactions found{address ? ` for address ${address}` : ''}!
+				{#if address}
+					{$t$('transaction.noTransactionsFor', { address })}
+				{:else}
+					{$t$('transaction.noTransactions')}
+				{/if}
 			</small>
 		{:else}
 			{#if !address}
 				<ToggleCheckbox bind:checked={includeMined.value} center>
-					Include Welfare Transactions
+					{$t$('transaction.includeWelfare')}
 				</ToggleCheckbox>
 			{/if}
 			{#if limit > 25}
 				<Pagination bind:page={page.value} total={transactions.total} {limit} />
 			{:else if address}
 				<a id="view-all" href="/addresses/{address}/transactions"
-					>View all transactions for {address}</a
+					>{$t$('transaction.viewAllFor', { address })}</a
 				>
 			{:else}
-				<a id="view-all" href="/transactions">View all transactions</a>
+				<a id="view-all" href="/transactions">{$t$('transaction.viewAll')}</a>
 			{/if}
 			<div class="table-container">
 				<ModuleLoading absolute={true} bind:loading />
 				<table>
 					<thead>
 						<tr>
-							<th class="center">ID</th>
-							<th>Type</th>
-							<th class="right">From</th>
-							<th class="right">To</th>
-							<th class="right">Value</th>
+							<th class="center">{$t$('transaction.id')}</th>
+							<th>{$t$('transaction.type')}</th>
+							<th class="right">{$t$('transaction.from')}</th>
+							<th class="right">{$t$('transaction.to')}</th>
+							<th class="right">{$t$('transaction.value')}</th>
 							{#if $settings.showMetadata}
-								<th>{$settings.parseTransactionMessage ? 'Message' : 'Metadata'}</th>
+								<th>{$settings.parseTransactionMessage ? $t$('transaction.message') : $t$('transaction.metadata')}</th>
 							{/if}
-							<th class="right">Time</th>
+							<th class="right">{$t$('transaction.time')}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -125,7 +130,7 @@
 								>
 								<td class="caps"
 									>{transaction.type === 'mined'
-										? 'welfare'
+										? $t$('transaction.welfare')
 										: transaction.type.replace(/_/g, ' ')}</td
 								>
 								<td class="right">
@@ -152,7 +157,7 @@
 										{:else if transaction.metadata && transaction.metadata.length > 0}
 											<small>{transaction.metadata.substring(0, 75)}</small>
 										{:else}
-											<small>[No metadata]</small>
+											<small>{$t$('transaction.noMetadata')}</small>
 										{/if}
 									</td>
 								{/if}

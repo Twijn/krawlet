@@ -7,8 +7,20 @@
 	import ButtonSelect from '$lib/components/ui/ButtonSelect.svelte';
 	import { SYNC_NODE_OFFICIAL, SYNC_NODES } from '$lib/consts';
 	import { notifications } from '$lib/stores/notifications';
+	import { t, t$, locale, LOCALES, type LocaleCode } from '$lib/i18n';
 
 	let allowSyncNodeChange = $state($settings.syncNode !== SYNC_NODE_OFFICIAL.id);
+
+	// Language options for the selector
+	const languageOptions = Object.entries(LOCALES).map(([code, info]) => ({
+		id: code,
+		name: `${info.nativeName} (${info.name})`
+	}));
+
+	function onLanguageChange() {
+		locale.set($settings.language as LocaleCode);
+		notifications.success(t('notifications.success'));
+	}
 
 	function onShowMetadataChange() {
 		if (!$settings.showMetadata) {
@@ -47,16 +59,10 @@
 	let currentSyncNode = $settings.syncNode;
 	let notificationId: null | string = null;
 	function onSyncNodeChange() {
-		notifications.success(
-			'Sync node changed successfully! Please refresh the app to apply the new sync node.'
-		);
+		notifications.success(t('notifications.syncNodeChanged'));
 		if (currentSyncNode !== $settings.syncNode) {
 			if (!notificationId) {
-				notificationId = notifications.error(
-					'Please refresh the app to apply the new sync node.',
-					null,
-					true
-				);
+				notificationId = notifications.error(t('notifications.refreshRequired'), null, true);
 			}
 		} else if (notificationId) {
 			notifications.remove(notificationId);
@@ -72,77 +78,84 @@
 </script>
 
 <svelte:head>
-	<title>Settings | Krawlet</title>
+	<title>{$t$('settings.title')} | Krawlet</title>
 </svelte:head>
 
-<h1><a href="/">Krawlet</a> <span>&raquo;</span> <a href="/settings">Settings</a></h1>
+<h1><a href="/">Krawlet</a> <span>&raquo;</span> <a href="/settings">{$t$('settings.title')}</a></h1>
 
 <Section lgCols={12} mdCols={12} smCols={12}>
-	<h2><FontAwesomeIcon icon={faCog} /> Settings</h2>
+	<h2><FontAwesomeIcon icon={faCog} /> {$t$('settings.title')}</h2>
 	<fieldset>
-		<legend>Address Display</legend>
+		<legend>{$t$('settings.language')}</legend>
+		<label for="language-select">{$t$('settings.selectLanguage')}</label>
+		<ButtonSelect
+			vertical={false}
+			bind:selected={$settings.language}
+			options={languageOptions}
+			change={onLanguageChange}
+		/>
+	</fieldset>
+	<fieldset>
+		<legend>{$t$('settings.addressDisplay')}</legend>
 		<ToggleCheckbox bind:checked={$settings.replaceAddressesWithPlayer}>
-			Replace addresses with player names when possible
+			{$t$('settings.replaceWithPlayer')}
 		</ToggleCheckbox>
 		<ToggleCheckbox bind:checked={$settings.replaceAddressesWithKnown}>
-			Replace known addresses (shops, verified entities, etc.) when possible
+			{$t$('settings.replaceWithKnown')}
 		</ToggleCheckbox>
 	</fieldset>
 	<fieldset>
-		<legend>Transaction List</legend>
+		<legend>{$t$('settings.transactionList')}</legend>
 		<ToggleCheckbox bind:checked={$settings.showMetadata} onChange={onShowMetadataChange}>
-			Show transaction metadata in the transaction list
+			{$t$('settings.showMetadata')}
 		</ToggleCheckbox>
 		<ToggleCheckbox
 			bind:checked={$settings.parseTransactionMessage}
 			disabled={!$settings.showMetadata}
 			onChange={onParseTransactionMessageChange}
 		>
-			Parse transaction metadata into readable messages when possible
+			{$t$('settings.parseMessage')}
 		</ToggleCheckbox>
 		<ToggleCheckbox
 			bind:checked={$settings.parsePurchaseItem}
 			disabled={!$settings.parseTransactionMessage}
 			onChange={onParsePurchaseItemChange}
 		>
-			Parse transaction metadata into purchased item names when possible
+			{$t$('settings.parseItem')}
 		</ToggleCheckbox>
 		<ToggleCheckbox
 			bind:checked={$settings.parsePurchaseItemQuantity}
 			disabled={!$settings.parsePurchaseItem}
 		>
-			Show quantity of purchased items when possible
-			<small
-				>Note: This isn't 100% reliable as it won't account for price changes over time and only
-				uses the newest price data.</small
-			>
+			{$t$('settings.parseQuantity')}
+			<small>{$t$('settings.quantityNote')}</small>
 		</ToggleCheckbox>
 	</fieldset>
 	<fieldset>
-		<legend>Name List</legend>
+		<legend>{$t$('settings.nameList')}</legend>
 		<ToggleCheckbox bind:checked={$settings.showOriginalOwner}>
-			Show original owner of names in the name list
+			{$t$('settings.showOriginalOwner')}
 		</ToggleCheckbox>
 		<ToggleCheckbox bind:checked={$settings.showTransferredDate}>
-			Show date of last transfer in the name list
+			{$t$('settings.showTransferredDate')}
 		</ToggleCheckbox>
 	</fieldset>
 	<fieldset>
-		<legend>Date &amp; Time</legend>
+		<legend>{$t$('settings.dateTime')}</legend>
 		<ToggleCheckbox bind:checked={$settings.relativeTimeEnabled} onChange={onRelativeTimeChange}>
-			Show relative time in transaction and names logs
+			{$t$('settings.relativeTime')}
 		</ToggleCheckbox>
 		<ToggleCheckbox
 			bind:checked={$settings.relativeTimeAbove7d}
 			disabled={!$settings.relativeTimeEnabled}
 		>
-			Show relative time above 7 days old
+			{$t$('settings.relativeTimeAbove7d')}
 		</ToggleCheckbox>
 	</fieldset>
 	<fieldset>
-		<legend>Sync Node</legend>
+		<legend>{$t$('settings.syncNode')}</legend>
 		<ToggleCheckbox bind:checked={allowSyncNodeChange} onChange={onSyncNodeAllowChange}>
-			Change sync node
+			{$t$('settings.changeSyncNode')}
 		</ToggleCheckbox>
 		{#if allowSyncNodeChange}
 			<ButtonSelect
@@ -156,13 +169,13 @@
 			bind:checked={$settings.showAllWalletsOption}
 			onChange={onShowAllWalletsOptionChange}
 		>
-			Show "Show wallets from other sync nodes" option in the wallets widget
+			{$t$('settings.showAllWalletsOption')}
 		</ToggleCheckbox>
 		<ToggleCheckbox
 			bind:checked={$settings.showAllWalletsDefault}
 			disabled={!$settings.showAllWalletsOption}
 		>
-			Make "Show wallets from other sync nodes" enabled by default
+			{$t$('settings.showAllWalletsDefault')}
 		</ToggleCheckbox>
 	</fieldset>
 </Section>

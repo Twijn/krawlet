@@ -6,6 +6,7 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import { notifications } from '$lib/stores/notifications';
 	import settings, { encryptWithPassword } from '$lib/stores/settings';
+	import { t$ } from '$lib/i18n';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -32,48 +33,45 @@
 
 	function copyToClipboard() {
 		navigator.clipboard.writeText(exportData);
-		notifications.success(
-			'Copied export data to clipboard. Paste it into the Krawlet app to import your wallets.'
-		);
+		notifications.success($t$('wallet.exportCopied'));
 	}
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
 	<h2>
 		<FontAwesomeIcon icon={faFileExport} />
-		Export Wallets
+		{$t$('wallet.exportWallets')}
 	</h2>
 	<form method="post">
 		<label>
-			Exported Password (Optional)
+			{$t$('wallet.exportedPasswordOptional')}
 			<input
 				type="password"
 				name="exported-password"
 				bind:value={exportedPassword}
-				placeholder="Enter the password you want to use to export your wallets"
+				placeholder={$t$('wallet.exportedPasswordPlaceholder')}
 			/>
 			<small>
-				This is usually different from your master password. Don't forget this password as you will
-				need it to import your wallets.
+				{$t$('wallet.exportedPasswordHint')}
 			</small>
 		</label>
 		<Button type="submit" variant="secondary" onClick={exportWallets} full={true}>
 			<FontAwesomeIcon icon={faFileExport} />
-			Export
+			{$t$('wallet.exportButton')}
 		</Button>
 		{#if exportData.length > 0}
 			<label transition:slide>
-				Export Data
+				{$t$('wallet.exportData')}
 				<textarea
 					rows="10"
-					placeholder="Enter your JSON wallet export"
+					placeholder={$t$('wallet.importDataPlaceholder')}
 					name="export-data"
 					bind:value={exportData}
 					disabled
 				></textarea>
 				<Button type="button" variant="secondary" onClick={copyToClipboard} full={true}>
 					<FontAwesomeIcon icon={faCopy} />
-					Copy to Clipboard
+					{$t$('wallet.copyToClipboard')}
 				</Button>
 			</label>
 		{/if}

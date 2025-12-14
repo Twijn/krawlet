@@ -11,6 +11,7 @@
 	import kromer from '$lib/api/kromer';
 	import type { APIError, MakeTransactionBody } from 'kromer';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
+	import { t$ } from '$lib/i18n';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -47,18 +48,18 @@
 
 	function copyPayCommand() {
 		if (!to.value) {
-			notifications.error('You must select a recipient!');
+			notifications.error($t$('transaction.selectRecipient'));
 		} else if (amount.value === 0) {
-			notifications.error('Transaction amount must be greater than 0!');
+			notifications.error($t$('transaction.amountMustBePositive'));
 		} else {
 			let command = `/pay ${to.value} ${amount.value} ${metadata.value}`.trim();
 			navigator.clipboard.writeText(command).then(
 				() => {
-					notifications.success(`Copied '${command}' to clipboard!`);
+					notifications.success($t$('transaction.payCommandCopied', { command }));
 				},
 				(e) => {
 					console.error(e);
-					notifications.error('Failed to copy to clipboard.');
+					notifications.error($t$('transaction.copyFailed'));
 				}
 			);
 		}
@@ -68,17 +69,17 @@
 		e.preventDefault();
 
 		if (!privatekey) {
-			notifications.error('You must input or select a private key!');
+			notifications.error($t$('transaction.inputPrivateKey'));
 			return false;
 		} else if (!to) {
-			notifications.error('You must select a recipient!');
+			notifications.error($t$('transaction.selectRecipient'));
 			return false;
 		} else if (amount.value <= 0) {
-			notifications.error('Transaction amount must be greater than 0!');
+			notifications.error($t$('transaction.amountMustBePositive'));
 		} else {
 			confirm.confirm({
-				message: `Are you sure you want to send ${amount.value.toFixed(2)} KRO to ${toAddress}?`,
-				confirmButtonLabel: 'Send',
+				message: $t$('transaction.confirmSend', { amount: amount.value.toFixed(2), address: toAddress }),
+				confirmButtonLabel: $t$('transaction.sendButton'),
 				confirm: async () => {
 					loading = true;
 					try {
@@ -97,10 +98,10 @@
 						balances[fromAddress] = balances[fromAddress] - amount.value;
 						balances[toAddress] = balances[toAddress] + amount.value;
 
-						notifications.success('Transaction successful!');
+						notifications.success($t$('transaction.transactionSuccess'));
 					} catch (e) {
 						const err = e as APIError;
-						notifications.error(err.message ?? 'Unknown error. Please try again later.');
+						notifications.error(err.message ?? $t$('transaction.unknownError'));
 					}
 					loading = false;
 				}
@@ -112,13 +113,13 @@
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
-	<h2><FontAwesomeIcon icon={faPaperPlane} /> Send Kromer</h2>
+	<h2><FontAwesomeIcon icon={faPaperPlane} /> {$t$('transaction.sendKromer')}</h2>
 	<form method="POST">
 		<ModuleLoading bind:loading absolute={true} />
 		<div class="container">
 			<div class="col-6 col-md-12">
 				<AddressSelector
-					label="Sender / From"
+					label={$t$('transaction.senderFrom')}
 					mode="privatekey"
 					bind:balances
 					bind:privatekey
@@ -127,18 +128,18 @@
 			</div>
 			<div class="col-6 col-md-12">
 				<AddressSelector
-					label="Recipient / To"
+					label={$t$('transaction.recipientTo')}
 					bind:balances
 					bind:query={to.value}
 					bind:address={toAddress}
 				/>
 			</div>
 			{#if fromAddress.length === 10 && fromAddress === toAddress}
-				<div class="col-12 fail center">From address and to address must be different!</div>
+				<div class="col-12 fail center">{$t$('transaction.addressMismatch')}</div>
 			{/if}
 		</div>
 		<label>
-			Amount
+			{$t$('transaction.amount')}
 			<input
 				type="number"
 				name="amount"
@@ -152,18 +153,18 @@
 				class="link"
 				onclick={() => (amount.value = balances[fromAddress] ?? 0)}
 			>
-				Set to current balance (max)
+				{$t$('transaction.setMaxAmount')}
 			</button>
 		</label>
 		<MetaInput bind:metadata={metadata.value} />
 		<div class="buttons">
 			<Button type="button" variant="secondary" full={true} onClick={copyPayCommand}>
 				<FontAwesomeIcon icon={faCopy} />
-				Copy /pay Command
+				{$t$('transaction.copyPayCommand')}
 			</Button>
 			<Button type="submit" variant="primary" full={true} onClick={send}>
 				<FontAwesomeIcon icon={faPaperPlane} />
-				Send
+				{$t$('transaction.sendButton')}
 			</Button>
 		</div>
 	</form>

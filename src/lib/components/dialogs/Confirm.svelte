@@ -2,6 +2,13 @@
 	import { fade, scale } from 'svelte/transition';
 	import { confirm } from '$lib/stores/confirm';
 	import Button from '$lib/components/ui/Button.svelte';
+	import { trapFocus } from '$lib/utils/a11y';
+	import { t$ } from '$lib/i18n';
+
+	let dialogElement: HTMLDivElement | null = $state(null);
+	const dialogId = 'confirm-dialog';
+	const titleId = `${dialogId}-title`;
+	const descId = `${dialogId}-desc`;
 
 	const handleClickOutside = (node: HTMLElement) => {
 		const handleClick = (event: MouseEvent) => {
@@ -30,18 +37,29 @@
 
 {#if $confirm}
 	<div class="modal-backdrop" transition:fade={{ duration: 200 }}>
-		<div class="modal" transition:scale={{ duration: 200 }} use:handleClickOutside>
-			<p class="modal-message">{$confirm.message}</p>
+		<div
+			class="modal"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby={titleId}
+			aria-describedby={descId}
+			transition:scale={{ duration: 200 }}
+			use:handleClickOutside
+			use:trapFocus
+			bind:this={dialogElement}
+		>
+			<h2 id={titleId} class="sr-only">{$t$('common.confirm')}</h2>
+			<p id={descId} class="modal-message">{$confirm.message}</p>
 			<div class="modal-buttons">
 				<Button variant="secondary" type="button" onClick={() => $confirm.cancel?.()}>
-					{$confirm.cancelButtonLabel ?? 'Cancel'}
+					{$confirm.cancelButtonLabel ?? $t$('common.cancel')}
 				</Button>
 				<Button
 					variant={$confirm.danger ? 'error' : 'primary'}
 					type="button"
 					onClick={() => $confirm.confirm()}
 				>
-					{$confirm.confirmButtonLabel ?? 'Confirm'}
+					{$confirm.confirmButtonLabel ?? $t$('common.confirm')}
 				</Button>
 			</div>
 		</div>
@@ -80,5 +98,17 @@
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		gap: 0.5rem;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
 	}
 </style>

@@ -11,6 +11,7 @@
 	import { confirm } from '$lib/stores/confirm';
 	import type { APIError } from 'kromer';
 	import { faUpDownLeftRight } from '@fortawesome/free-solid-svg-icons';
+	import { t$ } from '$lib/i18n';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -63,16 +64,16 @@
 		e.preventDefault();
 
 		if (selectedName.length === 0) {
-			notifications.warning('You must select a name to transfer.');
+			notifications.warning($t$('name.selectNameToTransfer'));
 			return;
 		} else if (address.length !== 10) {
-			notifications.warning('You must enter a valid address.');
+			notifications.warning($t$('name.invalidRecipientAddress'));
 			return;
 		}
 
 		confirm.confirm({
-			message: `Are you sure you want to transfer the name ${selectedName} to ${address}?`,
-			confirmButtonLabel: 'Transfer Name',
+			message: $t$('name.confirmTransfer', { name: selectedName, address }),
+			confirmButtonLabel: $t$('name.transferButton'),
 			danger: true,
 			confirm: () => {
 				loading = true;
@@ -83,14 +84,14 @@
 					})
 					.then(
 						async () => {
-							notifications.success('Name transferred successfully!');
+							notifications.success($t$('name.transferSuccess'));
 							selectedName = '';
 							updateNames();
 							loading = false;
 						},
 						(e) => {
 							const err = e as APIError;
-							notifications.error(`Failed to transfer name: ${err.message}`);
+							notifications.error($t$('name.transferFailed', { message: err.message }));
 							loading = false;
 						}
 					);
@@ -100,31 +101,30 @@
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
-	<h2><FontAwesomeIcon icon={faUpDownLeftRight} /> Transfer Name</h2>
+	<h2><FontAwesomeIcon icon={faUpDownLeftRight} /> {$t$('name.transferName')}</h2>
 	<form method="POST">
 		<ModuleLoading {loading} absolute />
 		<Alert variant="danger">
-			<strong>DANGER! Read me!</strong>
+			<strong>{$t$('name.transferWarning')}</strong>
 			<p>
-				At this time, this transfers <em>all</em> of the names you own, rather than just the single
-				one. <strong>You should probably not use this feature until this is patched.</strong>
+				{@html $t$('name.transferBugWarning')}
 			</p>
 		</Alert>
-		<AddressSelector mode="privatekey" label="Address" bind:privatekey bind:balances />
+		<AddressSelector mode="privatekey" label={$t$('address.address')} bind:privatekey bind:balances />
 		<label>
-			Name
+			{$t$('name.name')}
 			{#if allNames.length > 0}
 				<ButtonSelect vertical bind:options={allNames} bind:selected={selectedName} />
 			{:else if privatekey.length > 0 || loading}
-				<Alert variant="danger">This address doesn't own any names!</Alert>
+				<Alert variant="danger">{$t$('name.noOwnedNames')}</Alert>
 			{:else}
-				<Alert variant="info">Select a private key above to see available names.</Alert>
+				<Alert variant="info">{$t$('name.selectPrivateKeyHint')}</Alert>
 			{/if}
 		</label>
-		<AddressSelector mode="address" label="Recipient" bind:address bind:balances />
+		<AddressSelector mode="address" label={$t$('transaction.recipient')} bind:address bind:balances />
 		<div class="buttons">
 			<Button variant="primary" type="submit" full={true} onClick={transferName}
-				>Transfer Name</Button
+				>{$t$('name.transferButton')}</Button
 			>
 		</div>
 	</form>

@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import Shops from '$lib/components/widgets/shops/Shops.svelte';
+	import { t$ } from '$lib/i18n';
 
 	const urlParams: URLSearchParams | null = browser
 		? new URLSearchParams(window.location.search)
@@ -14,14 +15,13 @@
 
 {#if urlParams && urlParams.get('error') === 'not-found'}
 	<Alert variant="danger">
-		<strong>Not Found</strong>
+		<strong>{$t$('shop.notFoundTitle')}</strong>
 		<p>
-			The shop you are looking for may have been deleted or does not exist. Select a different shop
-			below!
+			{$t$('shop.notFoundMessage')}
 		</p>
 	</Alert>
 {/if}
 
-<h1><a href="/">Krawlet</a> <span>&raquo;</span> <a href="/shops">Shops</a></h1>
+<h1><a href="/">Krawlet</a> <span>&raquo;</span> <a href="/shops">{$t$('nav.shops')}</a></h1>
 
 <Shops lgCols={12} />

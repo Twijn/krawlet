@@ -1,3 +1,23 @@
+<!--
+  @component Button
+
+  A versatile button component supporting multiple variants and states.
+
+  @prop {'primary' | 'secondary' | 'success' | 'error'} variant - Visual style
+  @prop {boolean} disabled - Disables the button
+  @prop {boolean} full - Makes button full width
+  @prop {string} href - If provided, renders as an anchor tag
+  @prop {boolean} newTab - Opens link in new tab (when href is set)
+  @prop {boolean} external - Marks link as external
+  @prop {string} type - Button type ('button' | 'submit' | 'reset')
+  @prop {string} title - Tooltip text
+  @prop {boolean} loading - Shows loading state
+  @prop {(e: Event) => void} onClick - Click handler
+
+  @example
+  <Button variant="primary" onClick={handleClick}>Submit</Button>
+  <Button href="/settings" variant="secondary">Settings</Button>
+-->
 <script lang="ts">
 	export let href: string | undefined = undefined;
 	export let newTab: boolean = false;
@@ -8,9 +28,12 @@
 	export let disabled: boolean = false;
 	export let external: boolean = false;
 	export let title: string | undefined = undefined;
+	export let loading: boolean = false;
+
+	$: isDisabled = disabled || loading;
 
 	function handleClick(e: Event) {
-		if (disabled) {
+		if (isDisabled) {
 			e.preventDefault();
 			return false;
 		}
@@ -24,17 +47,30 @@
 	<a
 		{href}
 		class="button {variant}"
-		class:disabled
+		class:disabled={isDisabled}
 		class:full
+		class:loading
 		target={newTab ? '_blank' : undefined}
-		rel={external ? 'external' : undefined}
+		rel={external || newTab ? 'noopener noreferrer' : undefined}
 		{title}
 		onclick={handleClick}
+		aria-disabled={isDisabled}
+		aria-busy={loading}
 	>
 		<slot />
 	</a>
 {:else}
-	<button onclick={handleClick} {type} class="button {variant}" {disabled} class:full>
+	<button
+		onclick={handleClick}
+		{type}
+		class="button {variant}"
+		class:loading
+		disabled={isDisabled}
+		class:full
+		aria-disabled={isDisabled}
+		aria-busy={loading}
+		{title}
+	>
 		<slot />
 	</button>
 {/if}
@@ -80,20 +116,25 @@
 		color: white;
 	}
 
-	.button:hover:not(.disabled) {
+	.button:hover:not(.disabled):not(.loading) {
 		opacity: 0.9;
 		transform: translateY(-1px);
 	}
 
-	.button:active:not(.disabled) {
+	.button:active:not(.disabled):not(.loading) {
 		transform: translateY(0);
 	}
 
 	.disabled,
-	.button:disabled {
+	.button:disabled,
+	.loading {
 		cursor: not-allowed;
 		background-color: #152127;
 		color: #acb2b3;
+	}
+
+	.loading {
+		position: relative;
 	}
 
 	.full {

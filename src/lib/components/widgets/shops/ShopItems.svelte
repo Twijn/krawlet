@@ -8,6 +8,7 @@
 	import ItemFilterSort from './filtersort/ItemFilterSort.svelte';
 	import { paramState } from '$lib/paramState.svelte';
 	import { DEFAULT_ITEM_SORT, ITEM_SORT_OPTIONS, type ItemSortOption } from '$lib/types/sort';
+	import { t$ } from '$lib/i18n';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -66,7 +67,7 @@
 
 <ItemFilterSort bind:searchQuery={searchQuery.value} bind:sortOption={sortOption.value} />
 <Section {lgCols} {mdCols} {smCols}>
-	<h2><FontAwesomeIcon icon={faListNumeric} /> Items</h2>
+	<h2><FontAwesomeIcon icon={faListNumeric} /> {$t$('shop.items')}</h2>
 	<div class="item-grid">
 		{#each items as item (item.shopId + ':' + item.id)}
 			{@const stock = item.stock ?? 0}
@@ -75,15 +76,15 @@
 					<table>
 						<tbody>
 							<tr>
-								<th>Stock</th>
+								<th>{$t$('shop.stock')}</th>
 								<td class="right">
-									{stock.toLocaleString()} <small>item{stock === 1 ? '' : 's'}</small>
+									{stock.toLocaleString()} <small>{stock === 1 ? $t$('shop.item') : $t$('shop.items')}</small>
 								</td>
 							</tr>
 							{#each item.prices ?? [] as price (price.id)}
 								{@const priceValue = Number(price.value)}
 								<tr>
-									<th>Price <small>({price.currency})</small></th>
+									<th>{$t$('shop.price')} <small>({price.currency})</small></th>
 									<td class="right">{formatCurrency(priceValue)} <small>{price.currency}</small></td
 									>
 								</tr>
@@ -94,7 +95,7 @@
 			</ItemCard>
 		{/each}
 		{#if items.length === 0}
-			<p>No items found for this shop.</p>
+			<p>{$t$('shop.noItemsForShop')}</p>
 		{/if}
 	</div>
 </Section>
