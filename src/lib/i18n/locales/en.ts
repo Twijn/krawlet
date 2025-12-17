@@ -328,7 +328,7 @@ export default {
 		syncNodeChanged:
 			'Sync node changed successfully! Please refresh the app to apply the new sync node.',
 		refreshRequired: 'Please refresh the app to apply the new sync node.',
-		newTransaction: 'New transaction: {from} sent {amount} KMR to {to}'
+		newTransaction: 'New transaction: {from} sent {amount} KRO to {to}'
 	},
 	errors: {
 		networkError: 'Network error. Please try again.',

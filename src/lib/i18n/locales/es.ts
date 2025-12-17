@@ -335,7 +335,7 @@ export default {
 			'¡Nodo de sincronización cambiado exitosamente! Por favor actualiza la aplicación para aplicar el nuevo nodo.',
 		refreshRequired:
 			'Por favor actualiza la aplicación para aplicar el nuevo nodo de sincronización.',
-		newTransaction: 'Nueva transacción: {from} envió {amount} KMR a {to}'
+		newTransaction: 'Nueva transacción: {from} envió {amount} KRO a {to}'
 	},
 	errors: {
 		networkError: 'Error de red. Por favor intenta de nuevo.',
