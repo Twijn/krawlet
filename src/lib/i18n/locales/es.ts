@@ -383,6 +383,8 @@ export default {
 		offlineReady: 'La aplicación está lista para funcionar sin conexión',
 		updateAvailable: 'Una nueva versión está disponible',
 		update: 'Actualizar',
+		updateNow: 'Actualizar Ahora',
+		updating: 'Actualizando...',
 		offline: 'Estás sin conexión',
 		offlineMessage: 'Algunas funciones pueden no estar disponibles sin conexión.',
 		retryConnection: 'Reintentar conexión'

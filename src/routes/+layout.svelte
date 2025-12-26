@@ -20,6 +20,7 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import settings from '$lib/stores/settings';
 	import InstallPrompt from '$lib/components/widgets/InstallPrompt.svelte';
+	import UpdatePrompt from '$lib/components/widgets/UpdatePrompt.svelte';
 	import ConnectionStatus from '$lib/components/widgets/ConnectionStatus.svelte';
 	import { initPWA, isOnline } from '$lib/stores/pwa';
 	import { websocket } from '$lib/stores/websocket';
@@ -136,6 +137,7 @@
 <Confirm />
 <Prompt />
 <InstallPrompt />
+<UpdatePrompt />
 
 {#if !$isOnline}
 	<div class="offline-banner" role="alert" aria-live="assertive">

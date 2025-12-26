@@ -198,9 +198,29 @@ export function resetInstallDismissed(): void {
 
 /**
  * Reload the app to apply updates
+ * Sends SKIP_WAITING to the service worker first to activate the new version
  */
-export function applyUpdate(): void {
-	if (browser) {
+export async function applyUpdate(): Promise<void> {
+	if (!browser) return;
+
+	if ('serviceWorker' in navigator) {
+		const registration = await navigator.serviceWorker.ready;
+		
+		// Tell the waiting service worker to take over
+		if (registration.waiting) {
+			registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+		}
+		
+		// Listen for the controller to change, then reload
+		navigator.serviceWorker.addEventListener('controllerchange', () => {
+			window.location.reload();
+		});
+		
+		// Fallback: reload after a short delay if controllerchange doesn't fire
+		setTimeout(() => {
+			window.location.reload();
+		}, 1000);
+	} else {
 		window.location.reload();
 	}
 }

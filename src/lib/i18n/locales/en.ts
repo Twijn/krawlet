@@ -375,6 +375,8 @@ export default {
 		offlineReady: 'App is ready to work offline',
 		updateAvailable: 'A new version is available',
 		update: 'Update',
+		updateNow: 'Update Now',
+		updating: 'Updating...',
 		offline: 'You are offline',
 		offlineMessage: 'Some features may be unavailable while offline.',
 		retryConnection: 'Retry connection'
