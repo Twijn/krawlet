@@ -61,6 +61,26 @@ export function initPWA(): () => void {
 
 	const cleanupFunctions: (() => void)[] = [];
 
+	// Register the service worker (only in production - dev mode doesn't compile it properly)
+	if ('serviceWorker' in navigator && import.meta.env.PROD) {
+		navigator.serviceWorker
+			.register('/service-worker.js', { scope: '/' })
+			.then((registration) => {
+				console.log('Service worker registered:', registration.scope);
+
+				// Check for updates periodically (every hour)
+				setInterval(
+					() => {
+						registration.update();
+					},
+					60 * 60 * 1000
+				);
+			})
+			.catch((error) => {
+				console.error('Service worker registration failed:', error);
+			});
+	}
+
 	// Check if already installed
 	if (window.matchMedia('(display-mode: standalone)').matches) {
 		isInstalled.set(true);
