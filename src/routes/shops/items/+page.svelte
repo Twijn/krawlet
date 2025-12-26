@@ -101,7 +101,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each listing.shops as shop (shop.id)}
+						{#each listing.shops as shop (shop.listing.id)}
 							{@const stock = shop.listing.stock}
 							<tr>
 								<td>

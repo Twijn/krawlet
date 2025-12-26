@@ -551,15 +551,19 @@ export default {
 		timeframe: 'Timeframe',
 		volumeInPeriod: 'Volume',
 		transactionsInPeriod: 'Transactions',
+		// Section labels
+		allTime: 'All Time',
+		allTimeDesc: 'Since the beginning',
+		totalKroTransferred: 'Total KRO transferred',
 		// Loading states
 		loadingTransactions: 'Loading transactions...',
 		analyzingPeriod: 'Analyzing time period...',
 		calculatingStats: 'Calculating statistics...',
 		// Timeframe descriptions
-		lastHour: 'Last hour',
-		last24Hours: 'Last 24 hours',
-		lastWeek: 'Last 7 days',
-		lastMonth: 'Last 30 days',
+		lastHour: 'Last Hour',
+		last24Hours: 'Last 24 Hours',
+		lastWeek: 'Last 7 Days',
+		lastMonth: 'Last 30 Days',
 		// Comparison descriptions
 		vsPreviousHour: 'vs previous hour',
 		vsPrevious24Hours: 'vs previous 24 hours',
@@ -570,15 +574,30 @@ export default {
 		recentRegistrations: 'New Registrations',
 		recentNameTransfers: 'Name Transfers',
 		thisWeek: 'this week',
+		registeredNames: 'Registered names',
+		newNamesRegistered: 'Newly registered',
+		nameOwnershipChanges: 'Ownership changes',
 		// Shop stats
 		totalShops: 'Total Shops',
 		totalListings: 'Total Listings',
 		totalStock: 'Total Stock',
 		uniqueOwners: 'Unique Owners',
+		shopOverview: 'Shop Overview',
+		activeShops: 'Active shops',
+		shopOwners: 'Distinct owners',
+		inventory: 'Inventory',
+		uniqueItems: 'Unique item types',
+		itemsAvailable: 'Items available',
 		// Address stats
 		totalAddresses: 'Total Addresses',
 		totalSupply: 'Total Supply',
 		top10Wealth: 'Top 10 Wealth',
-		wealthConcentration: 'Top 10 Share'
+		wealthConcentration: 'Top 10 Share',
+		networkOverview: 'Network Overview',
+		uniqueAddresses: 'Unique addresses',
+		circulatingSupply: 'Circulating supply',
+		wealthDistribution: 'Wealth Distribution',
+		excludingWelfare: 'Excluding welfare',
+		ofTotalSupply: 'Of total supply'
 	}
 } as const;

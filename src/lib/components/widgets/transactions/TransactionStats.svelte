@@ -145,83 +145,169 @@
 <div
 	class="col-{lgCols} {mdCols ? `col-md-${mdCols}` : ''} {smCols
 		? `col-sm-${smCols}`
-		: ''} statistics"
+		: ''} transaction-stats-container"
 >
-	<div class="statistic">
-		<h2>{$t$('stats.totalTransactions')}</h2>
-		<div>
-			{#if loading}
-				<span class="loading" title={$t$(loadingStatus)}>
-					<span class="loading-spinner"></span>
-				</span>
-			{:else}
-				{totalTransactions.toLocaleString()}
-			{/if}
+	<!-- All-Time Statistics -->
+	<div class="stats-group">
+		<div class="stats-group-header">
+			<span class="stats-group-label">{$t$('stats.allTime')}</span>
+		</div>
+		<div class="stats-group-content">
+			<div class="statistic">
+				<h2>{$t$('stats.totalTransactions')}</h2>
+				<div class="stat-value">
+					{#if loading}
+						<span class="loading" title={$t$(loadingStatus)}>
+							<span class="loading-spinner"></span>
+						</span>
+					{:else}
+						{totalTransactions.toLocaleString()}
+					{/if}
+				</div>
+				<div class="stat-subtitle">{$t$('stats.allTimeDesc')}</div>
+			</div>
 		</div>
 	</div>
-	<div class="statistic">
-		<h2>{$t$('stats.volumeInPeriod')}</h2>
-		<div>
-			{#if loading}
-				<span class="loading" title={$t$(loadingStatus)}>
-					<span class="loading-spinner"></span>
-				</span>
-			{:else}
-				{formatCurrency(currentVolume)} <small>KRO</small>
-				{#if previousVolume > 0}
-					<span
-						class="change"
-						class:positive={volumeChange > 0}
-						class:negative={volumeChange < 0}
-						title={comparisonLabel}
+
+	<!-- Period Statistics -->
+	<div class="stats-group period-stats">
+		<div class="stats-group-header">
+			<span class="stats-group-label">{$t$(TIMEFRAME_DESCRIPTIONS[timeframe.value])}</span>
+			<div class="timeframe-selector">
+				{#each Object.entries(TIMEFRAME_LABELS) as [key, label] (key)}
+					<button
+						class:active={timeframe.value === key}
+						onclick={() => (timeframe.value = key as TimeFrame)}
+						title={$t$(TIMEFRAME_DESCRIPTIONS[key as TimeFrame])}
 					>
-						{volumeChange > 0 ? '+' : ''}{volumeChange.toFixed(1)}%
-					</span>
-				{/if}
-			{/if}
+						{label}
+					</button>
+				{/each}
+			</div>
 		</div>
-	</div>
-	<div class="statistic mobile-hide">
-		<h2>{$t$('stats.transactionsInPeriod')}</h2>
-		<div>
-			{#if loading}
-				<span class="loading" title={$t$(loadingStatus)}>
-					<span class="loading-spinner"></span>
-				</span>
-			{:else}
-				{currentCount.toLocaleString()}
-				{#if previousCount > 0}
-					<span
-						class="change"
-						class:positive={countChange > 0}
-						class:negative={countChange < 0}
-						title={comparisonLabel}
-					>
-						{countChange > 0 ? '+' : ''}{countChange.toFixed(1)}%
-					</span>
-				{/if}
-			{/if}
-		</div>
-	</div>
-	<div class="statistic timeframe-stat">
-		<div class="timeframe-selector">
-			{#each Object.entries(TIMEFRAME_LABELS) as [key, label] (key)}
-				<button
-					class:active={timeframe.value === key}
-					onclick={() => (timeframe.value = key as TimeFrame)}
-					title={$t$(TIMEFRAME_DESCRIPTIONS[key as TimeFrame])}
-				>
-					{label}
-				</button>
-			{/each}
-		</div>
-		<div class="timeframe-description">
-			{$t$(TIMEFRAME_DESCRIPTIONS[timeframe.value])}
+		<div class="stats-group-content">
+			<div class="statistic">
+				<h2>{$t$('stats.transactionsInPeriod')}</h2>
+				<div class="stat-value">
+					{#if loading}
+						<span class="loading" title={$t$(loadingStatus)}>
+							<span class="loading-spinner"></span>
+						</span>
+					{:else}
+						{currentCount.toLocaleString()}
+						{#if previousCount > 0}
+							<span
+								class="change"
+								class:positive={countChange > 0}
+								class:negative={countChange < 0}
+								title={comparisonLabel}
+							>
+								{countChange > 0 ? '+' : ''}{countChange.toFixed(1)}%
+							</span>
+						{/if}
+					{/if}
+				</div>
+				<div class="stat-subtitle">{comparisonLabel}</div>
+			</div>
+			<div class="statistic">
+				<h2>{$t$('stats.volumeInPeriod')}</h2>
+				<div class="stat-value">
+					{#if loading}
+						<span class="loading" title={$t$(loadingStatus)}>
+							<span class="loading-spinner"></span>
+						</span>
+					{:else}
+						{formatCurrency(currentVolume)} <small>KRO</small>
+						{#if previousVolume > 0}
+							<span
+								class="change"
+								class:positive={volumeChange > 0}
+								class:negative={volumeChange < 0}
+								title={comparisonLabel}
+							>
+								{volumeChange > 0 ? '+' : ''}{volumeChange.toFixed(1)}%
+							</span>
+						{/if}
+					{/if}
+				</div>
+				<div class="stat-subtitle">{$t$('stats.totalKroTransferred')}</div>
+			</div>
 		</div>
 	</div>
 </div>
 
 <style>
+	.transaction-stats-container {
+		display: flex;
+		gap: 1.5rem;
+		margin: 0.5em 0 1.5em 0;
+		flex-wrap: wrap;
+	}
+
+	.stats-group {
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 0.75rem;
+		padding: 1rem 1.25rem;
+		min-width: 180px;
+	}
+
+	.stats-group.period-stats {
+		flex: 1;
+		min-width: 320px;
+	}
+
+	.stats-group-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1rem;
+		padding-bottom: 0.75rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	.stats-group-label {
+		font-size: 0.8rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		color: var(--theme-color-1);
+		letter-spacing: 0.05em;
+	}
+
+	.stats-group-content {
+		display: flex;
+		gap: 2rem;
+		flex-wrap: wrap;
+	}
+
+	.statistic {
+		min-width: 120px;
+	}
+
+	.statistic h2 {
+		color: var(--text-color-2);
+		font-size: 0.75rem;
+		font-weight: 500;
+		text-transform: uppercase;
+		margin: 0;
+		letter-spacing: 0.02em;
+	}
+
+	.stat-value {
+		margin-top: 0.35rem;
+		font-size: 1.5em;
+		font-weight: 600;
+		color: var(--text-color-1);
+	}
+
+	.stat-subtitle {
+		font-size: 0.7rem;
+		color: var(--text-color-2);
+		margin-top: 0.25rem;
+		opacity: 0.8;
+	}
+
 	.loading {
 		display: inline-flex;
 		align-items: center;
@@ -244,18 +330,10 @@
 		}
 	}
 
-	.timeframe-stat {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: flex-end;
-		margin-left: auto;
-	}
-
 	.timeframe-selector {
 		display: flex;
 		gap: 0;
-		border-radius: 0.5rem;
+		border-radius: 0.4rem;
 		overflow: hidden;
 		border: 1px solid rgba(255, 255, 255, 0.15);
 	}
@@ -265,9 +343,9 @@
 		border: none;
 		border-right: 1px solid rgba(255, 255, 255, 0.1);
 		color: var(--text-color-2);
-		padding: 0.5rem 0.75rem;
+		padding: 0.35rem 0.6rem;
 		cursor: pointer;
-		font-size: 0.85rem;
+		font-size: 0.75rem;
 		font-weight: 600;
 		transition: all 0.15s ease;
 	}
@@ -286,18 +364,11 @@
 		color: var(--text-color-1);
 	}
 
-	.timeframe-description {
-		font-size: 0.75rem;
-		color: var(--text-color-2);
-		margin-top: 0.5rem;
-		text-align: center;
-	}
-
 	.change {
 		display: inline-block;
-		font-size: 0.65em;
+		font-size: 0.55em;
 		margin-left: 0.5rem;
-		padding: 0.15rem 0.4rem;
+		padding: 0.2rem 0.4rem;
 		border-radius: 0.25rem;
 		font-weight: 600;
 		vertical-align: middle;
@@ -311,5 +382,25 @@
 	.change.negative {
 		background: rgba(var(--red), 0.2);
 		color: rgb(var(--red));
+	}
+
+	@media only screen and (max-width: 700px) {
+		.transaction-stats-container {
+			flex-direction: column;
+		}
+
+		.stats-group.period-stats {
+			min-width: unset;
+		}
+
+		.stats-group-header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.5rem;
+		}
+
+		.stats-group-content {
+			gap: 1.5rem;
+		}
 	}
 </style>

@@ -563,15 +563,19 @@ export default {
 		timeframe: 'Período',
 		volumeInPeriod: 'Volumen',
 		transactionsInPeriod: 'Transacciones',
+		// Etiquetas de sección
+		allTime: 'Todo el Tiempo',
+		allTimeDesc: 'Desde el inicio',
+		totalKroTransferred: 'Total de KRO transferidos',
 		// Estados de carga
 		loadingTransactions: 'Cargando transacciones...',
 		analyzingPeriod: 'Analizando período...',
 		calculatingStats: 'Calculando estadísticas...',
 		// Descripciones de período
-		lastHour: 'Última hora',
-		last24Hours: 'Últimas 24 horas',
-		lastWeek: 'Últimos 7 días',
-		lastMonth: 'Últimos 30 días',
+		lastHour: 'Última Hora',
+		last24Hours: 'Últimas 24 Horas',
+		lastWeek: 'Últimos 7 Días',
+		lastMonth: 'Últimos 30 Días',
 		// Descripciones de comparación
 		vsPreviousHour: 'vs hora anterior',
 		vsPrevious24Hours: 'vs 24 horas anteriores',
@@ -582,15 +586,30 @@ export default {
 		recentRegistrations: 'Nuevos Registros',
 		recentNameTransfers: 'Transferencias de Nombres',
 		thisWeek: 'esta semana',
+		registeredNames: 'Nombres registrados',
+		newNamesRegistered: 'Recién registrados',
+		nameOwnershipChanges: 'Cambios de propiedad',
 		// Estadísticas de tiendas
 		totalShops: 'Tiendas Totales',
 		totalListings: 'Listados Totales',
 		totalStock: 'Stock Total',
 		uniqueOwners: 'Propietarios Únicos',
+		shopOverview: 'Resumen de Tiendas',
+		activeShops: 'Tiendas activas',
+		shopOwners: 'Propietarios distintos',
+		inventory: 'Inventario',
+		uniqueItems: 'Tipos de artículos únicos',
+		itemsAvailable: 'Artículos disponibles',
 		// Estadísticas de direcciones
 		totalAddresses: 'Direcciones Totales',
 		totalSupply: 'Suministro Total',
 		top10Wealth: 'Riqueza Top 10',
-		wealthConcentration: 'Participación Top 10'
+		wealthConcentration: 'Participación Top 10',
+		networkOverview: 'Resumen de Red',
+		uniqueAddresses: 'Direcciones únicas',
+		circulatingSupply: 'Suministro circulante',
+		wealthDistribution: 'Distribución de Riqueza',
+		excludingWelfare: 'Excluyendo welfare',
+		ofTotalSupply: 'Del suministro total'
 	}
 } as const;

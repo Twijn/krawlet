@@ -113,7 +113,7 @@
 <Section lgCols={12}>
 	<h2><FontAwesomeIcon icon={faShop} /> Shops</h2>
 	<div class="shop-grid">
-		{#each item.shops as shop (shop.id)}
+		{#each item.shops as shop (shop.listing.id)}
 			{@const stock = Number(shop.listing.stock)}
 			<ShopCard {shop}>
 				<ItemBadges item={shop.listing} />
