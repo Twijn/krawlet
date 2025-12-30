@@ -4,6 +4,7 @@
 	import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 	import {
 		faAddressBook,
+		faChartLine,
 		faFont,
 		faHome,
 		faListNumeric,
@@ -121,6 +122,11 @@
 					icon: faListNumeric,
 					nameKey: 'nav.items',
 					href: '/shops/items'
+				},
+				{
+					icon: faChartLine,
+					nameKey: 'nav.reports',
+					href: '/shops/reports'
 				}
 			]
 		},

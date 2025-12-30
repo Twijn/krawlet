@@ -47,6 +47,7 @@ export default {
 		manageNames: 'Gestionar Nombres',
 		shops: 'Tiendas',
 		items: 'Artículos',
+		reports: 'Reportes',
 		wallets: 'Billeteras',
 		settings: 'Configuración',
 		internalEndpoints: 'Endpoints Internos',
@@ -613,5 +614,51 @@ export default {
 		wealthDistribution: 'Distribución de Riqueza',
 		excludingWelfare: 'Excluyendo welfare',
 		ofTotalSupply: 'Del suministro total'
+	},
+	reports: {
+		// Títulos de pestañas
+		statsTitle: 'Estadísticas',
+		itemChanges: 'Cambios de Artículos',
+		priceChanges: 'Cambios de Precios',
+		shopChanges: 'Cambios de Tiendas',
+		validationFailures: 'Fallos de Validación',
+		successfulPosts: 'Envíos Exitosos',
+		// Estadísticas
+		inMemory: 'En Memoria (Reciente)',
+		persistent: 'Persistente (Base de Datos)',
+		itemChangesCount: 'Cambios de Artículos',
+		oldestRecord: 'Registro Más Antiguo',
+		newestRecord: 'Registro Más Reciente',
+		totalRecords: 'Registros Totales',
+		// Campos comunes
+		changeType: 'Tipo',
+		changes: 'Cambios',
+		change: 'Cambio',
+		field: 'Campo',
+		shopId: 'ID de Tienda',
+		computerId: 'ID de Computadora',
+		errors: 'Errores',
+		itemCount: 'Cantidad de Artículos',
+		// Tipos de cambio
+		added: 'Agregado',
+		removed: 'Eliminado',
+		updated: 'Actualizado',
+		newShop: 'Nueva Tienda',
+		all: 'Todo',
+		// Etiquetas de fuente de datos
+		dataSource: 'Fuente',
+		memory: 'Reciente',
+		memoryDesc: 'Cambios en memoria de actividad reciente del servidor',
+		persistentDesc: 'Cambios históricos almacenados en la base de datos',
+		// Descripciones
+		itemAdded: 'El artículo fue agregado a la tienda',
+		itemRemoved: 'El artículo fue eliminado de la tienda',
+		propertyUpdated: 'La propiedad fue actualizada',
+		// Estados vacíos
+		noChanges: 'No se encontraron cambios de artículos.',
+		noPriceChanges: 'No se encontraron cambios de precios.',
+		noShopChanges: 'No se encontraron cambios de tiendas.',
+		noValidationFailures: 'No se encontraron fallos de validación.',
+		noSuccessfulPosts: 'No se encontraron envíos exitosos.'
 	}
 } as const;

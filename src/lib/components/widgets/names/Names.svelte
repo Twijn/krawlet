@@ -80,17 +80,17 @@
 				{/if}
 			</small>
 		{:else}
+			{#if limit > 25}
+				<Pagination bind:page={page.value} total={names.total} {limit} />
+			{:else if address}
+				<a id="view-all" href="/addresses/{address}/names">
+					{$t$('name.viewAllFor', { address })}
+				</a>
+			{:else}
+				<a id="view-all" href="/names">{$t$('name.viewAll')}</a>
+			{/if}
 			<div class="table-container">
 				<ModuleLoading absolute={true} bind:loading />
-				{#if limit > 25}
-					<Pagination bind:page={page.value} total={names.total} {limit} />
-				{:else if address}
-					<a id="view-all" href="/addresses/{address}/names">
-						{$t$('name.viewAllFor', { address })}
-					</a>
-				{:else}
-					<a id="view-all" href="/names">{$t$('name.viewAll')}</a>
-				{/if}
 				<table>
 					<thead>
 						<tr>
@@ -168,8 +168,8 @@
 						{/each}
 					</tbody>
 				</table>
-				<Pagination bind:page={page.value} total={names.total} {limit} />
 			</div>
+			<Pagination bind:page={page.value} total={names.total} {limit} />
 		{/if}
 	{:else}
 		<ModuleLoading>

@@ -73,15 +73,15 @@
 		{rich ? $t$('nav.richestAddresses') : $t$('nav.addresses')}
 	</h2>
 	{#if addresses}
+		{#if limit > 25}
+			<Pagination bind:page={page.value} total={addresses.total} {limit} />
+		{:else}
+			<a id="view-all" href="/addresses{rich ? '/rich' : ''}"
+				>{rich ? $t$('address.viewAllRich') : $t$('address.viewAll')}</a
+			>
+		{/if}
 		<div class="table-container">
 			<ModuleLoading absolute={true} bind:loading />
-			{#if limit > 25}
-				<Pagination bind:page={page.value} total={addresses.total} {limit} />
-			{:else}
-				<a id="view-all" href="/addresses{rich ? '/rich' : ''}"
-					>{rich ? $t$('address.viewAllRich') : $t$('address.viewAll')}</a
-				>
-			{/if}
 			<table>
 				<thead>
 					<tr>
@@ -113,8 +113,8 @@
 					{/each}
 				</tbody>
 			</table>
-			<Pagination bind:page={page.value} total={addresses.total} {limit} />
 		</div>
+		<Pagination bind:page={page.value} total={addresses.total} {limit} />
 	{:else}
 		<ModuleLoading>
 			<SkeletonTable rows={5} columns={rich ? 6 : 5} />

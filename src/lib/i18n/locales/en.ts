@@ -47,6 +47,7 @@ export default {
 		manageNames: 'Manage Names',
 		shops: 'Shops',
 		items: 'Items',
+		reports: 'Reports',
 		wallets: 'Wallets',
 		settings: 'Settings',
 		internalEndpoints: 'Internal Endpoints',
@@ -601,5 +602,51 @@ export default {
 		wealthDistribution: 'Wealth Distribution',
 		excludingWelfare: 'Excluding welfare',
 		ofTotalSupply: 'Of total supply'
+	},
+	reports: {
+		// Tab titles
+		statsTitle: 'Statistics',
+		itemChanges: 'Item Changes',
+		priceChanges: 'Price Changes',
+		shopChanges: 'Shop Changes',
+		validationFailures: 'Validation Failures',
+		successfulPosts: 'Successful Posts',
+		// Stats
+		inMemory: 'In-Memory (Recent)',
+		persistent: 'Persistent (Database)',
+		itemChangesCount: 'Item Changes',
+		oldestRecord: 'Oldest Record',
+		newestRecord: 'Newest Record',
+		totalRecords: 'Total Records',
+		// Common fields
+		changeType: 'Type',
+		changes: 'Changes',
+		change: 'Change',
+		field: 'Field',
+		shopId: 'Shop ID',
+		computerId: 'Computer ID',
+		errors: 'Errors',
+		itemCount: 'Item Count',
+		// Change types
+		added: 'Added',
+		removed: 'Removed',
+		updated: 'Updated',
+		newShop: 'New Shop',
+		all: 'All',
+		// Data source labels
+		dataSource: 'Source',
+		memory: 'Recent',
+		memoryDesc: 'In-memory changes from recent server activity',
+		persistentDesc: 'Historical changes stored in the database',
+		// Descriptions
+		itemAdded: 'Item was added to shop',
+		itemRemoved: 'Item was removed from shop',
+		propertyUpdated: 'Property was updated',
+		// Empty states
+		noChanges: 'No item changes found.',
+		noPriceChanges: 'No price changes found.',
+		noShopChanges: 'No shop changes found.',
+		noValidationFailures: 'No validation failures found.',
+		noSuccessfulPosts: 'No successful posts found.'
 	}
 } as const;
