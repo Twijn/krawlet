@@ -159,9 +159,9 @@
 
 	// For persistent data, we need server-side pagination
 	let persistentOffset = $derived((page.value - 1) * limit);
-	let estimatedPersistentTotal = $derived.by(() => {
+	let persistentTotal = $derived.by(() => {
 		if (!persistentData?.ok) return 0;
-		return persistentData.count === limit ? limit * 100 : (page.value - 1) * limit + persistentData.count;
+		return persistentData.total;
 	});
 
 	async function fetchMemoryData() {
@@ -349,7 +349,7 @@
 	{:else if paginatedChanges.length > 0}
 		<Pagination 
 			bind:page={page.value} 
-			total={source.value === 'persistent' ? estimatedPersistentTotal : totalChanges} 
+			total={source.value === 'persistent' ? persistentTotal : totalChanges} 
 			{limit} 
 		/>
 		
@@ -431,7 +431,7 @@
 		
 		<Pagination 
 			bind:page={page.value} 
-			total={source.value === 'persistent' ? estimatedPersistentTotal : totalChanges} 
+			total={source.value === 'persistent' ? persistentTotal : totalChanges} 
 			{limit} 
 		/>
 	{:else}

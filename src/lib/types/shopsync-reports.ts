@@ -175,6 +175,7 @@ export interface PriceChangeLog {
 export interface PriceChangesResponse {
 	ok: boolean;
 	count: number;
+	total: number;
 	data: PriceChangeLog[];
 }
 
