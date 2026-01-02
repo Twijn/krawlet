@@ -150,7 +150,12 @@
 	});
 
 	let totalChanges = $derived(activeChanges.length);
-	let paginatedChanges = $derived(activeChanges.slice((page.value - 1) * limit, page.value * limit));
+	// For memory data, use client-side pagination. For persistent data, use server-paginated data directly.
+	let paginatedChanges = $derived(
+		source.value === 'persistent' 
+			? activeChanges 
+			: activeChanges.slice((page.value - 1) * limit, page.value * limit)
+	);
 
 	// For persistent data, we need server-side pagination
 	let persistentOffset = $derived((page.value - 1) * limit);
@@ -196,11 +201,11 @@
 		loading = false;
 	}
 
-	// Refetch when source or page changes
+	// Refetch when source changes, or when page changes for persistent data
 	$effect(() => {
 		if (browser) {
-			// Reset page when switching sources
 			const currentSource = source.value;
+			const currentPage = page.value;
 			fetchData();
 		}
 	});
