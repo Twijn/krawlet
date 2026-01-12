@@ -118,6 +118,12 @@ export default {
 		addWallet: 'Add Wallet',
 		masterPasswordMinLength: 'Your master password must be at least 8 characters!',
 		walletAddSuccess: 'Successfully added wallet {name} ({address})!',
+		generatePrivateKey: 'Generate Random Private Key',
+		privateKeyGenerated: 'Private key generated and copied to clipboard!',
+		privateKeyCopyFailed: 'Private key generated but failed to copy to clipboard',
+		clearPrivateKey: 'Clear Private Key',
+		confirmClearPrivateKey: 'Are you sure you want to clear the private key field?',
+		privateKeyCleared: 'Private key field cleared',
 		// Import/Export
 		exportWallets: 'Export Wallets',
 		importWallets: 'Import Wallets',

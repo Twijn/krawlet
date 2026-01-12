@@ -193,7 +193,11 @@ class Settings {
 		});
 	}
 
-	public async addWallet(w: Wallet | Omit<Wallet, 'syncNode'>, encryptionKey: string) {
+	public async addWallet(
+		w: Wallet | Omit<Wallet, 'syncNode'>,
+		encryptionKey: string,
+		kromerApi?: any
+	) {
 		const store = get(this.data);
 		const wallet: Wallet = {
 			syncNode: store.syncNode,
@@ -223,6 +227,31 @@ class Settings {
 				} as APIError;
 			}
 		}
+
+		// Validate the private key can authenticate with the server
+		if (kromerApi) {
+			try {
+				const loginResponse = await kromerApi.login(wallet.private);
+				if (!loginResponse.ok || loginResponse.address !== wallet.address) {
+					throw {
+						ok: false,
+						error: 'invalid_private_key',
+						message: 'The private key is invalid or cannot authenticate with the server!'
+					} as APIError;
+				}
+			} catch (e) {
+				// Re-throw API errors or wrap unknown errors
+				if ((e as APIError).error) {
+					throw e;
+				}
+				throw {
+					ok: false,
+					error: 'authentication_failed',
+					message: 'Failed to authenticate private key with the server!'
+				} as APIError;
+			}
+		}
+
 		const encrypted = await encryptWithPassword(encryptionKey, wallet.private);
 		const entry: Wallet = {
 			name: wallet.name,

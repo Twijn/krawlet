@@ -119,6 +119,12 @@ export default {
 		addWallet: 'Agregar Billetera',
 		masterPasswordMinLength: '¡Tu contraseña maestra debe tener al menos 8 caracteres!',
 		walletAddSuccess: '¡Billetera {name} ({address}) agregada exitosamente!',
+		generatePrivateKey: 'Generar Clave Privada Aleatoria',
+		privateKeyGenerated: '¡Clave privada generada y copiada al portapapeles!',
+		privateKeyCopyFailed: 'Clave privada generada pero no se pudo copiar al portapapeles',
+		clearPrivateKey: 'Limpiar Clave Privada',
+		confirmClearPrivateKey: '¿Estás seguro de que deseas limpiar el campo de clave privada?',
+		privateKeyCleared: 'Campo de clave privada limpiado',
 		// Import/Export
 		exportWallets: 'Exportar Billeteras',
 		importWallets: 'Importar Billeteras',

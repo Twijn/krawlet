@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
-	import { faPlus } from '@fortawesome/free-solid-svg-icons';
+	import { faPlus, faDice } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import Button from '$lib/components/ui/Button.svelte';
 	import kromer from '$lib/api/kromer';
@@ -9,6 +9,7 @@
 	import Import from '$lib/components/widgets/importexport/Import.svelte';
 	import Export from '$lib/components/widgets/importexport/Export.svelte';
 	import { notifications } from '$lib/stores/notifications';
+	import { confirm } from '$lib/stores/confirm';
 	import settings from '$lib/stores/settings';
 	import { getSyncNode } from '$lib/consts';
 	import { t$ } from '$lib/i18n';
@@ -19,6 +20,45 @@
 	let decodedAddress = $derived(
 		pkey.length === 0 ? '' : kromer.addresses.decodeAddressFromPrivateKey(pkey)
 	);
+
+	function generatePrivateKey() {
+		const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+		let result = '';
+		const randomValues = new Uint8Array(64);
+		crypto.getRandomValues(randomValues);
+		for (let i = 0; i < 64; i++) {
+			result += chars[randomValues[i] % chars.length];
+		}
+		pkey = result;
+		
+		// Copy to clipboard
+		navigator.clipboard.writeText(result).then(
+			() => {
+				notifications.success($t$('wallet.privateKeyGenerated'));
+			},
+			() => {
+				notifications.error($t$('wallet.privateKeyCopyFailed'));
+			}
+		);
+	}
+
+	function handlePrivateKeyButton() {
+		if (pkey.length > 0) {
+			// Show confirm dialog to clear
+			confirm.confirm({
+				message: $t$('wallet.confirmClearPrivateKey'),
+				danger: true,
+				confirmButtonLabel: $t$('wallet.clearPrivateKey'),
+				confirm: () => {
+					pkey = '';
+					notifications.success($t$('wallet.privateKeyCleared'));
+				}
+			});
+		} else {
+			// Generate new private key
+			generatePrivateKey();
+		}
+	}
 
 	async function addWallet(e: Event) {
 		e.preventDefault();
@@ -36,7 +76,8 @@
 					address,
 					private: pkey
 				},
-				masterPassword
+				masterPassword,
+				kromer
 			);
 
 			notifications.success($t$('wallet.walletAddSuccess', { name, address }));
@@ -85,6 +126,16 @@
 			<input type="password" name="pkey" bind:value={pkey} />
 			<small>{$t$('wallet.privateKeyHint')}</small>
 		</label>
+		<div style="margin-bottom: 1rem;">
+			<Button type="button" full={true} onClick={handlePrivateKeyButton} variant="secondary">
+				<FontAwesomeIcon icon={faDice} />
+				{#if pkey.length > 0}
+					{$t$('wallet.clearPrivateKey')}
+				{:else}
+					{$t$('wallet.generatePrivateKey')}
+				{/if}
+			</Button>
+		</div>
 		{#if decodedAddress.length === 10}
 			<p>
 				<strong>{$t$('wallet.decodedAddress')}:</strong>
