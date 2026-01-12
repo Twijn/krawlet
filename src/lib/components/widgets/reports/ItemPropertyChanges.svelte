@@ -223,10 +223,24 @@
 		}
 	}
 
-	function formatChangeValue(value: unknown): string {
+	function formatChangeValue(value: unknown, compareValue?: unknown): string {
 		if (value === null || value === undefined) return '—';
 		if (typeof value === 'boolean') return value ? 'Yes' : 'No';
 		if (typeof value === 'number') return value.toLocaleString();
+		
+		// Handle price arrays
+		if (Array.isArray(value) && value.length > 0 && value[0]?.value !== undefined && value[0]?.currency !== undefined) {
+			const compareArray = Array.isArray(compareValue) ? compareValue : null;
+			return value.map((price: any, index: number) => {
+				const val = typeof price.value === 'number' ? price.value.toLocaleString() : price.value;
+				const comparePriceAddress = compareArray?.[index]?.address;
+				// Only show address when comparing and the address has changed
+				const showAddress = price.address && compareArray && comparePriceAddress !== price.address;
+				return showAddress ? `${val} ${price.currency} @ ${price.address}` : `${val} ${price.currency}`;
+			}).join(', ');
+		}
+		
+		if (typeof value === 'object') return JSON.stringify(value);
 		return String(value);
 	}
 
@@ -400,9 +414,9 @@
 									<!-- Single field change (persistent) -->
 									<div class="field-change {getValueChangeClass(change.previousValue, change.newValue)}">
 										<span class="field-name">{change.field}:</span>
-										<span class="field-prev">{formatChangeValue(change.previousValue)}</span>
+										<span class="field-prev">{formatChangeValue(change.previousValue, change.newValue)}</span>
 										<FontAwesomeIcon icon={getValueChangeIcon(change.previousValue, change.newValue)} />
-										<span class="field-new">{formatChangeValue(change.newValue)}</span>
+										<span class="field-new">{formatChangeValue(change.newValue, change.previousValue)}</span>
 									</div>
 								{:else if change.changes && change.changes.length > 0}
 									<!-- Multiple field changes (memory) -->
@@ -410,9 +424,9 @@
 										{#each change.changes as fieldChange (fieldChange.field)}
 											<div class="field-change {getValueChangeClass(fieldChange.previousValue, fieldChange.newValue)}">
 												<span class="field-name">{fieldChange.field}:</span>
-												<span class="field-prev">{formatChangeValue(fieldChange.previousValue)}</span>
+												<span class="field-prev">{formatChangeValue(fieldChange.previousValue, fieldChange.newValue)}</span>
 												<FontAwesomeIcon icon={getValueChangeIcon(fieldChange.previousValue, fieldChange.newValue)} />
-												<span class="field-new">{formatChangeValue(fieldChange.newValue)}</span>
+												<span class="field-new">{formatChangeValue(fieldChange.newValue, fieldChange.previousValue)}</span>
 											</div>
 										{/each}
 									</div>
