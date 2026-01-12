@@ -110,6 +110,64 @@
 	let totalBalance = $derived(
 		filteredWallets.reduce((sum, wallet) => sum + (balances[wallet.address] || 0), 0)
 	);
+
+	// Touch drag state for mobile support
+	let touchDraggedAddress: string | null = $state(null);
+	let touchDragElement: HTMLElement | null = null;
+
+	function handleTouchStart(e: TouchEvent, address: string) {
+		touchDraggedAddress = address;
+		touchDragElement = e.currentTarget as HTMLElement;
+		touchDragElement.classList.add('dragging');
+	}
+
+	function handleTouchMove(e: TouchEvent) {
+		if (!touchDraggedAddress || !touchDragElement) return;
+		
+		e.preventDefault();
+		const touch = e.touches[0];
+		const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+		
+		// Remove drag-over from all wallets
+		document.querySelectorAll('.wallet').forEach((el) => {
+			el.classList.remove('drag-over');
+		});
+		
+		// Add drag-over to the element under the touch
+		if (elementAtPoint) {
+			const walletElement = elementAtPoint.closest('.wallet');
+			if (walletElement && walletElement !== touchDragElement) {
+				walletElement.classList.add('drag-over');
+			}
+		}
+	}
+
+	function handleTouchEnd(e: TouchEvent, toAddress: string) {
+		if (!touchDraggedAddress) return;
+		
+		const fromAddress = touchDraggedAddress;
+		touchDragElement?.classList.remove('dragging');
+		
+		// Remove drag-over from all wallets
+		document.querySelectorAll('.wallet').forEach((el) => {
+			el.classList.remove('drag-over');
+		});
+		
+		if (fromAddress !== toAddress) {
+			const wallets = [...$settings.wallets];
+			const fromIdx = wallets.findIndex((w) => w.address === fromAddress);
+			const toIdx = wallets.findIndex((w) => w.address === toAddress);
+			if (fromIdx !== -1 && toIdx !== -1) {
+				const [moved] = wallets.splice(fromIdx, 1);
+				wallets.splice(toIdx, 0, moved);
+				settings.setWallets(wallets);
+				notifications.success(t('wallet.orderSaved'));
+			}
+		}
+		
+		touchDraggedAddress = null;
+		touchDragElement = null;
+	}
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
@@ -154,15 +212,39 @@
 					if (!e.dataTransfer) return;
 					e.dataTransfer.setData('wallet-address', wallet.address);
 					e.dataTransfer.effectAllowed = 'move';
+					e.currentTarget.classList.add('dragging');
+					console.log('Drag started:', wallet.address);
+				}}
+				ondragend={(e) => {
+					e.currentTarget.classList.remove('dragging');
+					document.querySelectorAll('.wallet').forEach((el) => {
+						el.classList.remove('drag-over');
+					});
+					console.log('Drag ended');
+				}}
+				ondragenter={(e) => {
+					if (!e.dataTransfer) return;
+					e.preventDefault();
+					e.currentTarget.classList.add('drag-over');
+					console.log('Drag enter:', wallet.address);
 				}}
 				ondragover={(e) => {
 					if (!e.dataTransfer) return;
 					e.preventDefault();
 					e.dataTransfer.dropEffect = 'move';
-					e.currentTarget.classList.add('drag-over');
 				}}
 				ondragleave={(e) => {
-					e.currentTarget.classList.remove('drag-over');
+					// Only remove if we're actually leaving this element (not a child)
+					const rect = e.currentTarget.getBoundingClientRect();
+					if (
+						e.clientX <= rect.left ||
+						e.clientX >= rect.right ||
+						e.clientY <= rect.top ||
+						e.clientY >= rect.bottom
+					) {
+						e.currentTarget.classList.remove('drag-over');
+						console.log('Drag leave:', wallet.address);
+					}
 				}}
 				ondrop={(e) => {
 					if (!e.dataTransfer) return;
@@ -182,6 +264,9 @@
 						}
 					}
 				}}
+				ontouchstart={(e) => handleTouchStart(e, wallet.address)}
+				ontouchmove={handleTouchMove}
+				ontouchend={(e) => handleTouchEnd(e, wallet.address)}
 			>
 				<div class="icon">
 					<FontAwesomeIcon icon={faWallet} />
@@ -247,6 +332,22 @@
 		border-radius: 0.25em;
 		gap: 1em;
 		transform-origin: top;
+		cursor: grab;
+		border: 2px solid transparent;
+		position: relative;
+	}
+
+	.wallet :global(.dragging),
+	:global(.wallet.dragging) {
+		opacity: 0.6;
+		cursor: grabbing;
+	}
+
+	.wallet :global(.drag-over),
+	:global(.wallet.drag-over) {
+		background-color: rgba(100, 150, 255, 0.15);
+		border-color: rgba(100, 200, 255, 0.6);
+		border-style: solid;
 	}
 
 	.wallet .icon {
