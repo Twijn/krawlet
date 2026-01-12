@@ -234,8 +234,8 @@
 			return value.map((price: any, index: number) => {
 				const val = typeof price.value === 'number' ? price.value.toLocaleString() : price.value;
 				const comparePriceAddress = compareArray?.[index]?.address;
-				// Only show address when comparing and the address has changed
-				const showAddress = price.address && compareArray && comparePriceAddress !== price.address;
+				// Only show address when comparing and the address has actually changed (not undefined vs defined)
+				const showAddress = price.address && compareArray && comparePriceAddress !== undefined && comparePriceAddress !== price.address;
 				return showAddress ? `${val} ${price.currency} @ ${price.address}` : `${val} ${price.currency}`;
 			}).join(', ');
 		}
