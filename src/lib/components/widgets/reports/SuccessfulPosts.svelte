@@ -6,7 +6,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 	import { getSuccessfulPosts } from '$lib/api/shopsync-reports';
-	import type { SuccessfulPostRecord, SuccessfulPostsResponse } from '$lib/types/shopsync-reports';
+	import type { SuccessfulPostsResponse } from '$lib/types/shopsync-reports';
 	import { relativeTime } from '$lib/util';
 	import { paramState } from '$lib/paramState.svelte';
 	import { onMount } from 'svelte';
@@ -53,7 +53,8 @@
 		if (result.ok) {
 			data = result as SuccessfulPostsResponse;
 		} else {
-			error = 'error' in result ? (result.message ?? result.error) : 'Failed to fetch successful posts';
+			error =
+				'error' in result ? (result.message ?? result.error) : 'Failed to fetch successful posts';
 		}
 
 		loading = false;

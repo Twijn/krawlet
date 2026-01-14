@@ -8,7 +8,7 @@
 	let dismissed = $state(false);
 	let updating = $state(false);
 
-	async function handleUpdate(e: Event): Promise<boolean> {
+	async function handleUpdate(): Promise<boolean> {
 		updating = true;
 		await applyUpdate();
 		return true;

@@ -45,7 +45,8 @@
 		browser
 			? kromer.addresses[rich ? 'getRich' : 'getAll']({
 					offset: (page.value - 1) * limit,
-					limit
+					// Fetch one extra address to account for serverwelf filtering
+					limit: rich ? limit + 1 : limit
 				})
 			: null
 	);
@@ -58,7 +59,13 @@
 			addressesPromise.then((result) => {
 				// Filter out serverwelf from rich list
 				if (rich) {
+					const firstIsServerwelf = result.addresses[0]?.address === SERVERWELF_ADDRESS;
 					result.addresses = result.addresses.filter((addr) => addr.address !== SERVERWELF_ADDRESS);
+
+					// If serverwelf wasn't first (or wasn't present at all), trim the extra address
+					if (!firstIsServerwelf && result.addresses.length > limit) {
+						result.addresses = result.addresses.slice(0, limit);
+					}
 				}
 				addresses = result;
 				loading = false;

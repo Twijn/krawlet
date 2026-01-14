@@ -196,7 +196,7 @@ class Settings {
 	public async addWallet(
 		w: Wallet | Omit<Wallet, 'syncNode'>,
 		encryptionKey: string,
-		kromerApi?: any
+		kromerApi?: unknown
 	) {
 		const store = get(this.data);
 		const wallet: Wallet = {

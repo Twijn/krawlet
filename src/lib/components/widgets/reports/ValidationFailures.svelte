@@ -6,7 +6,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 	import { getValidationFailures } from '$lib/api/shopsync-reports';
-	import type { ValidationFailureRecord, ValidationFailuresResponse } from '$lib/types/shopsync-reports';
+	import type { ValidationFailuresResponse } from '$lib/types/shopsync-reports';
 	import { relativeTime } from '$lib/util';
 	import { paramState } from '$lib/paramState.svelte';
 	import { onMount } from 'svelte';
@@ -53,7 +53,10 @@
 		if (result.ok) {
 			data = result as ValidationFailuresResponse;
 		} else {
-			error = 'error' in result ? (result.message ?? result.error) : 'Failed to fetch validation failures';
+			error =
+				'error' in result
+					? (result.message ?? result.error)
+					: 'Failed to fetch validation failures';
 		}
 
 		loading = false;

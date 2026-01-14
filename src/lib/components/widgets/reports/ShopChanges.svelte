@@ -6,7 +6,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faStore, faPlus, faExchange } from '@fortawesome/free-solid-svg-icons';
 	import { getShopChanges } from '$lib/api/shopsync-reports';
-	import type { ShopChangeRecord, ShopChangesResponse } from '$lib/types/shopsync-reports';
+	import type { ShopChangesResponse } from '$lib/types/shopsync-reports';
 	import { relativeTime } from '$lib/util';
 	import { paramState } from '$lib/paramState.svelte';
 	import { onMount } from 'svelte';
@@ -72,19 +72,38 @@
 		if (value === null || value === undefined) return '—';
 		if (typeof value === 'boolean') return value ? 'Yes' : 'No';
 		if (typeof value === 'number') return value.toLocaleString();
-		
+
 		// Handle price arrays
-		if (Array.isArray(value) && value.length > 0 && value[0]?.value !== undefined && value[0]?.currency !== undefined) {
+		if (
+			Array.isArray(value) &&
+			value.length > 0 &&
+			value[0]?.value !== undefined &&
+			value[0]?.currency !== undefined
+		) {
 			const compareArray = Array.isArray(compareValue) ? compareValue : null;
-			return value.map((price: any, index: number) => {
-				const val = typeof price.value === 'number' ? price.value.toLocaleString() : price.value;
-				const comparePriceAddress = compareArray?.[index]?.address;
-				// Only show address when comparing and the address has actually changed (not undefined vs defined)
-				const showAddress = price.address && compareArray && comparePriceAddress !== undefined && comparePriceAddress !== price.address;
-				return showAddress ? `${val} ${price.currency} @ ${price.address}` : `${val} ${price.currency}`;
-			}).join(', ');
+			return value
+				.map(
+					(
+						price: { value: number | string; currency: string; address?: string },
+						index: number
+					) => {
+						const val =
+							typeof price.value === 'number' ? price.value.toLocaleString() : price.value;
+						const comparePriceAddress = compareArray?.[index]?.address;
+						// Only show address when comparing and the address has actually changed (not undefined vs defined)
+						const showAddress =
+							price.address &&
+							compareArray &&
+							comparePriceAddress !== undefined &&
+							comparePriceAddress !== price.address;
+						return showAddress
+							? `${val} ${price.currency} @ ${price.address}`
+							: `${val} ${price.currency}`;
+					}
+				)
+				.join(', ');
 		}
-		
+
 		if (typeof value === 'object') return JSON.stringify(value);
 		return String(value);
 	}
@@ -140,9 +159,13 @@
 									{#each record.changes as change (change.field)}
 										<div class="field-change">
 											<span class="field-name">{change.field}:</span>
-											<span class="field-prev">{formatChangeValue(change.previousValue, change.newValue)}</span>
+											<span class="field-prev"
+												>{formatChangeValue(change.previousValue, change.newValue)}</span
+											>
 											<span class="arrow">→</span>
-											<span class="field-new">{formatChangeValue(change.newValue, change.previousValue)}</span>
+											<span class="field-new"
+												>{formatChangeValue(change.newValue, change.previousValue)}</span
+											>
 										</div>
 									{/each}
 								</div>

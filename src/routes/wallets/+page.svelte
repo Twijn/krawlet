@@ -30,7 +30,7 @@
 			result += chars[randomValues[i] % chars.length];
 		}
 		pkey = result;
-		
+
 		// Copy to clipboard
 		navigator.clipboard.writeText(result).then(
 			() => {

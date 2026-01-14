@@ -205,17 +205,17 @@ export async function applyUpdate(): Promise<void> {
 
 	if ('serviceWorker' in navigator) {
 		const registration = await navigator.serviceWorker.ready;
-		
+
 		// Tell the waiting service worker to take over
 		if (registration.waiting) {
 			registration.waiting.postMessage({ type: 'SKIP_WAITING' });
 		}
-		
+
 		// Listen for the controller to change, then reload
 		navigator.serviceWorker.addEventListener('controllerchange', () => {
 			window.location.reload();
 		});
-		
+
 		// Fallback: reload after a short delay if controllerchange doesn't fire
 		setTimeout(() => {
 			window.location.reload();

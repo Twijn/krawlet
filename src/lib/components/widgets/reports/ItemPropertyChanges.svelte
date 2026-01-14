@@ -4,16 +4,19 @@
 	import Pagination from '$lib/components/ui/Pagination.svelte';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faHistory, faArrowUp, faArrowDown, faExchange, faPlus, faMinus, faDatabase, faMemory, faFilter } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faHistory,
+		faArrowUp,
+		faArrowDown,
+		faExchange,
+		faPlus,
+		faMinus,
+		faDatabase,
+		faMemory,
+		faFilter
+	} from '@fortawesome/free-solid-svg-icons';
 	import { getItemChanges, getPriceChanges } from '$lib/api/shopsync-reports';
-	import type { 
-		ItemChangeRecord, 
-		ItemChangesResponse, 
-		ItemSummary, 
-		ItemUpdateSummary,
-		PriceChangeLog,
-		PriceChangesResponse 
-	} from '$lib/types/shopsync-reports';
+	import type { ItemChangesResponse, PriceChangesResponse } from '$lib/types/shopsync-reports';
 	import { relativeTime } from '$lib/util';
 	import { paramState } from '$lib/paramState.svelte';
 	import { onMount } from 'svelte';
@@ -58,7 +61,7 @@
 
 	let loading: boolean = $state(true);
 	let error: string | null = $state(null);
-	
+
 	// Data from both sources
 	let memoryData: ItemChangesResponse | null = $state(null);
 	let persistentData: PriceChangesResponse | null = $state(null);
@@ -82,7 +85,7 @@
 	let memoryChanges = $derived.by((): UnifiedChange[] => {
 		if (!memoryData?.ok) return [];
 		const changes: UnifiedChange[] = [];
-		
+
 		for (const event of memoryData.recent) {
 			for (const item of event.added) {
 				changes.push({
@@ -119,41 +122,43 @@
 				});
 			}
 		}
-		
+
 		return changes;
 	});
 
 	// Convert persistent data to unified format
 	let persistentChanges = $derived.by((): UnifiedChange[] => {
 		if (!persistentData?.ok) return [];
-		
-		return persistentData.data.map((record): UnifiedChange => ({
-			id: `p-${record.id}`,
-			timestamp: new Date(record.createdAt),
-			shopId: record.shopId,
-			shopName: record.shopName,
-			itemName: record.itemName,
-			itemDisplayName: record.itemDisplayName,
-			changeType: 'updated',
-			field: record.field,
-			previousValue: parseJsonValue(record.previousValue),
-			newValue: parseJsonValue(record.newValue)
-		}));
+
+		return persistentData.data.map(
+			(record): UnifiedChange => ({
+				id: `p-${record.id}`,
+				timestamp: new Date(record.createdAt),
+				shopId: record.shopId,
+				shopName: record.shopName,
+				itemName: record.itemName,
+				itemDisplayName: record.itemDisplayName,
+				changeType: 'updated',
+				field: record.field,
+				previousValue: parseJsonValue(record.previousValue),
+				newValue: parseJsonValue(record.newValue)
+			})
+		);
 	});
 
 	// Active data based on source selection
 	let activeChanges = $derived.by((): UnifiedChange[] => {
 		const changes = source.value === 'memory' ? memoryChanges : persistentChanges;
-		
+
 		if (changeFilter.value === 'all') return changes;
-		return changes.filter(c => c.changeType === changeFilter.value);
+		return changes.filter((c) => c.changeType === changeFilter.value);
 	});
 
 	let totalChanges = $derived(activeChanges.length);
 	// For memory data, use client-side pagination. For persistent data, use server-paginated data directly.
 	let paginatedChanges = $derived(
-		source.value === 'persistent' 
-			? activeChanges 
+		source.value === 'persistent'
+			? activeChanges
 			: activeChanges.slice((page.value - 1) * limit, page.value * limit)
 	);
 
@@ -184,10 +189,10 @@
 
 	async function fetchData() {
 		if (!browser) return;
-		
+
 		loading = true;
 		error = null;
-		
+
 		try {
 			if (source.value === 'memory') {
 				await fetchMemoryData();
@@ -197,15 +202,15 @@
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to fetch data';
 		}
-		
+
 		loading = false;
 	}
 
 	// Refetch when source changes, or when page changes for persistent data
 	$effect(() => {
 		if (browser) {
-			const currentSource = source.value;
-			const currentPage = page.value;
+			void source.value;
+			void page.value;
 			fetchData();
 		}
 	});
@@ -227,36 +232,61 @@
 		if (value === null || value === undefined) return '—';
 		if (typeof value === 'boolean') return value ? 'Yes' : 'No';
 		if (typeof value === 'number') return value.toLocaleString();
-		
+
 		// Handle price arrays
-		if (Array.isArray(value) && value.length > 0 && value[0]?.value !== undefined && value[0]?.currency !== undefined) {
+		if (
+			Array.isArray(value) &&
+			value.length > 0 &&
+			value[0]?.value !== undefined &&
+			value[0]?.currency !== undefined
+		) {
 			const compareArray = Array.isArray(compareValue) ? compareValue : null;
-			return value.map((price: any, index: number) => {
-				const val = typeof price.value === 'number' ? price.value.toLocaleString() : price.value;
-				const comparePriceAddress = compareArray?.[index]?.address;
-				// Only show address when comparing and the address has actually changed (not undefined vs defined)
-				const showAddress = price.address && compareArray && comparePriceAddress !== undefined && comparePriceAddress !== price.address;
-				return showAddress ? `${val} ${price.currency} @ ${price.address}` : `${val} ${price.currency}`;
-			}).join(', ');
+			return value
+				.map(
+					(
+						price: { value: number | string; currency: string; address?: string },
+						index: number
+					) => {
+						const val =
+							typeof price.value === 'number' ? price.value.toLocaleString() : price.value;
+						const comparePriceAddress = compareArray?.[index]?.address;
+						// Only show address when comparing and the address has actually changed (not undefined vs defined)
+						const showAddress =
+							price.address &&
+							compareArray &&
+							comparePriceAddress !== undefined &&
+							comparePriceAddress !== price.address;
+						return showAddress
+							? `${val} ${price.currency} @ ${price.address}`
+							: `${val} ${price.currency}`;
+					}
+				)
+				.join(', ');
 		}
-		
+
 		if (typeof value === 'object') return JSON.stringify(value);
 		return String(value);
 	}
 
 	function getChangeIcon(changeType: 'added' | 'removed' | 'updated') {
 		switch (changeType) {
-			case 'added': return faPlus;
-			case 'removed': return faMinus;
-			case 'updated': return faExchange;
+			case 'added':
+				return faPlus;
+			case 'removed':
+				return faMinus;
+			case 'updated':
+				return faExchange;
 		}
 	}
 
 	function getChangeClass(changeType: 'added' | 'removed' | 'updated') {
 		switch (changeType) {
-			case 'added': return 'change-added';
-			case 'removed': return 'change-removed';
-			case 'updated': return 'change-updated';
+			case 'added':
+				return 'change-added';
+			case 'removed':
+				return 'change-removed';
+			case 'updated':
+				return 'change-updated';
 		}
 	}
 
@@ -291,21 +321,21 @@
 
 <Section {lgCols} {mdCols} {smCols}>
 	<h2><FontAwesomeIcon icon={faHistory} /> {$t$('reports.itemChanges')}</h2>
-	
+
 	<div class="controls">
 		<div class="control-group">
 			<span class="control-label">{$t$('reports.dataSource')}:</span>
 			<div class="button-group">
-				<button 
-					class:active={source.value === 'persistent'} 
+				<button
+					class:active={source.value === 'persistent'}
 					onclick={() => handleSourceChange('persistent')}
 					title={$t$('reports.persistentDesc')}
 				>
 					<FontAwesomeIcon icon={faDatabase} />
 					{$t$('reports.persistent')}
 				</button>
-				<button 
-					class:active={source.value === 'memory'} 
+				<button
+					class:active={source.value === 'memory'}
 					onclick={() => handleSourceChange('memory')}
 					title={$t$('reports.memoryDesc')}
 				>
@@ -319,28 +349,28 @@
 			<div class="control-group">
 				<span class="control-label"><FontAwesomeIcon icon={faFilter} /></span>
 				<div class="button-group">
-					<button 
-						class:active={changeFilter.value === 'all'} 
+					<button
+						class:active={changeFilter.value === 'all'}
 						onclick={() => handleFilterChange('all')}
 					>
 						{$t$('reports.all')}
 					</button>
-					<button 
-						class:active={changeFilter.value === 'added'} 
+					<button
+						class:active={changeFilter.value === 'added'}
 						onclick={() => handleFilterChange('added')}
 					>
 						<FontAwesomeIcon icon={faPlus} />
 						{$t$('reports.added')}
 					</button>
-					<button 
-						class:active={changeFilter.value === 'removed'} 
+					<button
+						class:active={changeFilter.value === 'removed'}
 						onclick={() => handleFilterChange('removed')}
 					>
 						<FontAwesomeIcon icon={faMinus} />
 						{$t$('reports.removed')}
 					</button>
-					<button 
-						class:active={changeFilter.value === 'updated'} 
+					<button
+						class:active={changeFilter.value === 'updated'}
 						onclick={() => handleFilterChange('updated')}
 					>
 						<FontAwesomeIcon icon={faExchange} />
@@ -361,12 +391,12 @@
 			<SkeletonTable rows={10} columns={5} />
 		</ModuleLoading>
 	{:else if paginatedChanges.length > 0}
-		<Pagination 
-			bind:page={page.value} 
-			total={source.value === 'persistent' ? persistentTotal : totalChanges} 
-			{limit} 
+		<Pagination
+			bind:page={page.value}
+			total={source.value === 'persistent' ? persistentTotal : totalChanges}
+			{limit}
 		/>
-		
+
 		<div class="table-container">
 			<table>
 				<thead>
@@ -392,8 +422,8 @@
 								</td>
 							{/if}
 							<td class="item-cell">
-								<img 
-									src={getItemImageUrlFromName(change.itemName)} 
+								<img
+									src={getItemImageUrlFromName(change.itemName)}
 									alt={change.itemDisplayName}
 									class="item-icon"
 								/>
@@ -412,21 +442,49 @@
 									<span class="change-desc">{$t$('reports.itemRemoved')}</span>
 								{:else if change.field}
 									<!-- Single field change (persistent) -->
-									<div class="field-change {getValueChangeClass(change.previousValue, change.newValue)}">
+									<div
+										class="field-change {getValueChangeClass(
+											change.previousValue,
+											change.newValue
+										)}"
+									>
 										<span class="field-name">{change.field}:</span>
-										<span class="field-prev">{formatChangeValue(change.previousValue, change.newValue)}</span>
-										<FontAwesomeIcon icon={getValueChangeIcon(change.previousValue, change.newValue)} />
-										<span class="field-new">{formatChangeValue(change.newValue, change.previousValue)}</span>
+										<span class="field-prev"
+											>{formatChangeValue(change.previousValue, change.newValue)}</span
+										>
+										<FontAwesomeIcon
+											icon={getValueChangeIcon(change.previousValue, change.newValue)}
+										/>
+										<span class="field-new"
+											>{formatChangeValue(change.newValue, change.previousValue)}</span
+										>
 									</div>
 								{:else if change.changes && change.changes.length > 0}
 									<!-- Multiple field changes (memory) -->
 									<div class="changes-list">
 										{#each change.changes as fieldChange (fieldChange.field)}
-											<div class="field-change {getValueChangeClass(fieldChange.previousValue, fieldChange.newValue)}">
+											<div
+												class="field-change {getValueChangeClass(
+													fieldChange.previousValue,
+													fieldChange.newValue
+												)}"
+											>
 												<span class="field-name">{fieldChange.field}:</span>
-												<span class="field-prev">{formatChangeValue(fieldChange.previousValue, fieldChange.newValue)}</span>
-												<FontAwesomeIcon icon={getValueChangeIcon(fieldChange.previousValue, fieldChange.newValue)} />
-												<span class="field-new">{formatChangeValue(fieldChange.newValue, fieldChange.previousValue)}</span>
+												<span class="field-prev"
+													>{formatChangeValue(
+														fieldChange.previousValue,
+														fieldChange.newValue
+													)}</span
+												>
+												<FontAwesomeIcon
+													icon={getValueChangeIcon(fieldChange.previousValue, fieldChange.newValue)}
+												/>
+												<span class="field-new"
+													>{formatChangeValue(
+														fieldChange.newValue,
+														fieldChange.previousValue
+													)}</span
+												>
 											</div>
 										{/each}
 									</div>
@@ -442,11 +500,11 @@
 				</tbody>
 			</table>
 		</div>
-		
-		<Pagination 
-			bind:page={page.value} 
-			total={source.value === 'persistent' ? persistentTotal : totalChanges} 
-			{limit} 
+
+		<Pagination
+			bind:page={page.value}
+			total={source.value === 'persistent' ? persistentTotal : totalChanges}
+			{limit}
 		/>
 	{:else}
 		<p class="no-data">{$t$('reports.noChanges')}</p>
@@ -462,7 +520,11 @@
 		gap: 1.25rem;
 		margin-bottom: 1.25rem;
 		padding: 0.75rem 1rem;
-		background: linear-gradient(135deg, var(--background-color-2) 0%, rgba(var(--theme-color-rgb), 0.08) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--background-color-2) 0%,
+			rgba(var(--theme-color-rgb), 0.08) 100%
+		);
 		border-radius: 0.75rem;
 		border: 1px solid rgba(var(--theme-color-rgb), 0.2);
 	}

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { paramState } from '$lib/paramState.svelte';
 	import { t$ } from '$lib/i18n';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';

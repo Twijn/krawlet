@@ -123,16 +123,16 @@
 
 	function handleTouchMove(e: TouchEvent) {
 		if (!touchDraggedAddress || !touchDragElement) return;
-		
+
 		e.preventDefault();
 		const touch = e.touches[0];
 		const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
-		
+
 		// Remove drag-over from all wallets
 		document.querySelectorAll('.wallet').forEach((el) => {
 			el.classList.remove('drag-over');
 		});
-		
+
 		// Add drag-over to the element under the touch
 		if (elementAtPoint) {
 			const walletElement = elementAtPoint.closest('.wallet');
@@ -144,15 +144,15 @@
 
 	function handleTouchEnd(e: TouchEvent, toAddress: string) {
 		if (!touchDraggedAddress) return;
-		
+
 		const fromAddress = touchDraggedAddress;
 		touchDragElement?.classList.remove('dragging');
-		
+
 		// Remove drag-over from all wallets
 		document.querySelectorAll('.wallet').forEach((el) => {
 			el.classList.remove('drag-over');
 		});
-		
+
 		if (fromAddress !== toAddress) {
 			const wallets = [...$settings.wallets];
 			const fromIdx = wallets.findIndex((w) => w.address === fromAddress);
@@ -164,7 +164,7 @@
 				notifications.success(t('wallet.orderSaved'));
 			}
 		}
-		
+
 		touchDraggedAddress = null;
 		touchDragElement = null;
 	}

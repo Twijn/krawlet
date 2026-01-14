@@ -69,7 +69,13 @@
 {#if primaryAddress}
 	<DailyInOut lgCols={6} mdCols={12} bind:loading bind:transactions address={primaryAddress} />
 
-	<TransfersByAddress lgCols={6} mdCols={12} bind:loading bind:transactions address={primaryAddress} />
+	<TransfersByAddress
+		lgCols={6}
+		mdCols={12}
+		bind:loading
+		bind:transactions
+		address={primaryAddress}
+	/>
 
 	{#if addressObj}
 		<BalanceOverTime lgCols={12} bind:loading bind:transactions address={addressObj} {timeLimit} />
