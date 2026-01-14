@@ -6,6 +6,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 
 	import '@fontsource/inter/300.css';
 	import '@fontsource/inter/400.css';
@@ -27,6 +28,8 @@
 	import { initLocale, t$ } from '$lib/i18n';
 
 	config.autoAddCss = false;
+
+	injectAnalytics();
 
 	const { children } = $props();
 	let showNavigation = $state(false);
