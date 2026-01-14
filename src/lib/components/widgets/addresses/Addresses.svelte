@@ -44,7 +44,9 @@
 	let addressesPromise = $derived(
 		browser
 			? kromer.addresses[rich ? 'getRich' : 'getAll']({
-					offset: (page.value - 1) * limit,
+					offset: rich
+						? (page.value - 1) * limit + (page.value > 1 ? 1 : 0)
+						: (page.value - 1) * limit,
 					// Fetch one extra address to account for serverwelf filtering
 					limit: rich ? limit + 1 : limit
 				})
