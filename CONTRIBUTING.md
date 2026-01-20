@@ -19,6 +19,28 @@ Some files are frequently updated as part of normal maintenance:
 - `src/routes/`: Contains page routes and their components
 - `src/lib/components/`: Reusable Svelte components
 
+## Adding Translations
+
+To add a new language or update existing translations:
+
+1. **Create or edit a locale file** in `src/lib/i18n/locales/`
+   - For a new language: Create a new file (e.g., `fr.ts` for French)
+   - Copy the structure from `en.ts` and translate all strings
+
+2. **Register the new language** in `src/lib/i18n/index.ts`
+   - Import your locale file
+   - Add it to the `locales` object
+   - Add the language code to the `availableLocales` array
+
+3. **Test your translations**
+   - Run the development server: `pnpm run dev`
+   - Change the language in Settings to verify all translations appear correctly
+   - Check that parameter interpolation works (e.g., transaction notifications)
+
+**Important**: Keep the exact same structure and keys as `en.ts` - only translate the values.
+
+For more details about the i18n system, see [docs/I18N.md](docs/I18N.md).
+
 ## Making Changes
 
 1. Create a new branch for your changes
