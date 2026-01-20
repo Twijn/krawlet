@@ -1,9 +1,11 @@
 /**
  * ShopSync Reports API client
  * Browser-only fetching of ShopSync stats and reporting data
+ * Uses the krawlet-js library
  */
 
 import { browser } from '$app/environment';
+import krawletClient from '$lib/api/krawlet';
 import type {
 	BaseQueryParams,
 	ItemChangesParams,
@@ -18,31 +20,10 @@ import type {
 	ValidationFailuresResponse
 } from '$lib/types/shopsync-reports';
 
-const BASE_URL = 'https://krawlet-api.twijn.dev/shopsync/reports';
-
 /**
- * Build URL with query parameters
+ * Helper to check for browser environment
  */
-function buildUrl(endpoint: string, params: object = {}): string {
-	const url = new URL(`${BASE_URL}/${endpoint}`);
-
-	for (const [key, value] of Object.entries(params)) {
-		if (value !== undefined && value !== null) {
-			url.searchParams.set(key, String(value));
-		}
-	}
-
-	return url.toString();
-}
-
-/**
- * Make a fetch request to the reports API
- */
-async function fetchReports<T>(
-	endpoint: string,
-	params: object = {},
-	apiKey?: string
-): Promise<T | ShopSyncReportError> {
+function checkBrowser(): ShopSyncReportError | null {
 	if (!browser) {
 		return {
 			ok: false,
@@ -50,42 +31,41 @@ async function fetchReports<T>(
 			message: 'This API can only be called from the browser'
 		};
 	}
+	return null;
+}
 
-	try {
-		const headers: HeadersInit = {
-			'Content-Type': 'application/json'
-		};
-
-		if (apiKey) {
-			headers['Authorization'] = `Bearer ${apiKey}`;
-		}
-
-		const response = await fetch(buildUrl(endpoint, params), { headers });
-
-		if (!response.ok) {
-			const errorData = (await response.json().catch(() => ({}))) as Partial<ShopSyncReportError>;
-			return {
-				ok: false,
-				error: errorData.error ?? 'request-failed',
-				message: errorData.message ?? `Request failed with status ${response.status}`
-			};
-		}
-
-		return (await response.json()) as T;
-	} catch (error) {
-		return {
-			ok: false,
-			error: 'network-error',
-			message: error instanceof Error ? error.message : 'Network request failed'
-		};
-	}
+/**
+ * Helper to handle API errors
+ */
+function handleError(error: unknown): ShopSyncReportError {
+	return {
+		ok: false,
+		error: 'request-failed',
+		message: error instanceof Error ? error.message : 'Request failed'
+	};
 }
 
 /**
  * Get overall statistics about recorded data
  */
 export async function getStats(apiKey?: string): Promise<StatsResponse | ShopSyncReportError> {
-	return fetchReports<StatsResponse>('stats', {}, apiKey);
+	const browserError = checkBrowser();
+	if (browserError) return browserError;
+
+	try {
+		// Create a client with API key if provided
+		const client = apiKey
+			? new (await import('krawlet-js')).KrawletClient({ apiKey })
+			: krawletClient;
+
+		const stats = await client.reports.getStats();
+		return {
+			ok: true,
+			data: stats as StatsResponse['data']
+		};
+	} catch (error) {
+		return handleError(error);
+	}
 }
 
 /**
@@ -95,7 +75,23 @@ export async function getValidationFailures(
 	params: BaseQueryParams = {},
 	apiKey?: string
 ): Promise<ValidationFailuresResponse | ShopSyncReportError> {
-	return fetchReports<ValidationFailuresResponse>('validation-failures', params, apiKey);
+	const browserError = checkBrowser();
+	if (browserError) return browserError;
+
+	try {
+		const client = apiKey
+			? new (await import('krawlet-js')).KrawletClient({ apiKey })
+			: krawletClient;
+
+		const result = await client.reports.getValidationFailures({ limit: params.limit });
+		return {
+			ok: true,
+			count: result.count,
+			data: result.records as ValidationFailuresResponse['data']
+		};
+	} catch (error) {
+		return handleError(error);
+	}
 }
 
 /**
@@ -105,7 +101,23 @@ export async function getSuccessfulPosts(
 	params: BaseQueryParams = {},
 	apiKey?: string
 ): Promise<SuccessfulPostsResponse | ShopSyncReportError> {
-	return fetchReports<SuccessfulPostsResponse>('successful-posts', params, apiKey);
+	const browserError = checkBrowser();
+	if (browserError) return browserError;
+
+	try {
+		const client = apiKey
+			? new (await import('krawlet-js')).KrawletClient({ apiKey })
+			: krawletClient;
+
+		const result = await client.reports.getSuccessfulPosts({ limit: params.limit });
+		return {
+			ok: true,
+			count: result.count,
+			data: result.records as SuccessfulPostsResponse['data']
+		};
+	} catch (error) {
+		return handleError(error);
+	}
 }
 
 /**
@@ -115,7 +127,39 @@ export async function getShopChanges(
 	params: ShopChangesParams = {},
 	apiKey?: string
 ): Promise<ShopChangesResponse | ShopSyncReportError> {
-	return fetchReports<ShopChangesResponse>('shop-changes', params, apiKey);
+	const browserError = checkBrowser();
+	if (browserError) return browserError;
+
+	try {
+		const client = apiKey
+			? new (await import('krawlet-js')).KrawletClient({ apiKey })
+			: krawletClient;
+
+		// Get in-memory shop changes
+		const recentResult = await client.reports.getShopChanges({
+			limit: params.limit,
+			shopId: params.shopId
+		});
+
+		// Get persistent shop change logs
+		const historyResult = await client.reports.getShopChangeLogs({
+			limit: params.limit,
+			offset: params.offset,
+			shopId: params.shopId,
+			since: params.since,
+			until: params.until
+		});
+
+		return {
+			ok: true,
+			recent: recentResult.records as ShopChangesResponse['recent'],
+			recentCount: recentResult.count,
+			history: historyResult.logs as ShopChangesResponse['history'],
+			historyCount: historyResult.count
+		};
+	} catch (error) {
+		return handleError(error);
+	}
 }
 
 /**
@@ -125,7 +169,39 @@ export async function getItemChanges(
 	params: ItemChangesParams = {},
 	apiKey?: string
 ): Promise<ItemChangesResponse | ShopSyncReportError> {
-	return fetchReports<ItemChangesResponse>('item-changes', params, apiKey);
+	const browserError = checkBrowser();
+	if (browserError) return browserError;
+
+	try {
+		const client = apiKey
+			? new (await import('krawlet-js')).KrawletClient({ apiKey })
+			: krawletClient;
+
+		// Get in-memory item changes
+		const recentResult = await client.reports.getItemChanges({
+			limit: params.limit,
+			shopId: params.shopId
+		});
+
+		// Get persistent item change logs
+		const historyResult = await client.reports.getItemChangeLogs({
+			limit: params.limit,
+			offset: params.offset,
+			shopId: params.shopId,
+			since: params.since,
+			until: params.until
+		});
+
+		return {
+			ok: true,
+			recent: recentResult.records as ItemChangesResponse['recent'],
+			recentCount: recentResult.count,
+			history: historyResult.logs as ItemChangesResponse['history'],
+			historyCount: historyResult.count
+		};
+	} catch (error) {
+		return handleError(error);
+	}
 }
 
 /**
@@ -135,5 +211,29 @@ export async function getPriceChanges(
 	params: PriceChangesParams = {},
 	apiKey?: string
 ): Promise<PriceChangesResponse | ShopSyncReportError> {
-	return fetchReports<PriceChangesResponse>('price-changes', params, apiKey);
+	const browserError = checkBrowser();
+	if (browserError) return browserError;
+
+	try {
+		const client = apiKey
+			? new (await import('krawlet-js')).KrawletClient({ apiKey })
+			: krawletClient;
+
+		const result = await client.reports.getPriceChangeLogs({
+			limit: params.limit,
+			offset: params.offset,
+			shopId: params.shopId,
+			since: params.since,
+			until: params.until
+		});
+
+		return {
+			ok: true,
+			count: result.count,
+			total: result.count,
+			data: result.logs as PriceChangesResponse['data']
+		};
+	} catch (error) {
+		return handleError(error);
+	}
 }

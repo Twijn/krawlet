@@ -11,12 +11,7 @@ export type FetchedResponse<T> = {
 	data: T[];
 };
 
-async function fetchItems<T>(url: string): Promise<T[]> {
-	const response = await fetch(url);
-	if (!response.ok) throw new Error(`Failed to fetch ${url}`);
-	const data = (await response.json()) as FetchedResponse<T>;
-	return data.data;
-}
+export type FetchFunction<T> = () => Promise<T[]>;
 
 export default class FetchedStore<T> {
 	protected initialData: FetchedStoreData<T> = {
@@ -28,7 +23,7 @@ export default class FetchedStore<T> {
 
 	constructor(
 		itemName: string,
-		protected itemUrl: string,
+		protected fetchFn: FetchFunction<T>,
 		frequency: number = 30_000
 	) {
 		if (browser) {
@@ -78,7 +73,7 @@ export default class FetchedStore<T> {
 
 	public async updateItems(): Promise<FetchedStoreData<T>> {
 		const data = {
-			data: await fetchItems<T>(this.itemUrl),
+			data: await this.fetchFn(),
 			updated: Date.now()
 		};
 		this.sort(data.data);

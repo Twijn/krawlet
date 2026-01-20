@@ -1,8 +1,9 @@
 import FetchedStore from '$lib/stores/FetchedStore';
 import { browser } from '$app/environment';
+import krawletClient from '$lib/api/krawlet';
+import type { Player as PlayerApi } from 'krawlet-js';
 
 const itemName = 'player-wallets';
-const itemUrl = 'https://krawlet-api.twijn.dev/playeraddresses/all';
 const interval = 30_000;
 
 export type Player = {
@@ -16,6 +17,16 @@ export type Player = {
 
 	online: boolean;
 };
+
+// Transform krawlet-js Player to our local type
+const transformPlayer = (player: PlayerApi): Player => ({
+	minecraftUUID: player.minecraftUUID,
+	minecraftName: player.minecraftName,
+	kromerAddress: player.kromerAddress,
+	createdDate: player.createdDate ?? undefined,
+	updatedDate: player.updatedDate ?? undefined,
+	online: player.online
+});
 
 // TODO: Remove this in a future release.
 if (browser && localStorage.getItem('playerWalletStore')) {
@@ -36,4 +47,9 @@ class PlayerWalletStore extends FetchedStore<Player> {
 	}
 }
 
-export default new PlayerWalletStore(itemName, itemUrl, interval);
+const fetchPlayers = async (): Promise<Player[]> => {
+	const players = await krawletClient.players.getAll();
+	return players.map(transformPlayer);
+};
+
+export default new PlayerWalletStore(itemName, fetchPlayers, interval);

@@ -1,12 +1,57 @@
 import FetchedStore, { type FetchedStoreData } from '$lib/stores/FetchedStore';
 import type { Listing, Shop } from '$lib/types/shops';
 import { get } from 'svelte/store';
+import krawletClient from '$lib/api/krawlet';
+import { KrawletError, type Shop as ShopApi, type Item as ItemApi } from 'krawlet-js';
 
 const itemName = 'shopsync';
-const itemUrl = 'https://krawlet-api.twijn.dev/shopsync/shops';
 const itemExpiry = 1000 * 60 * 10; // 10 minutes
 
 const itemsRequiringNbt: string[] = ['minecraft:enchanted_book'];
+
+// Transform krawlet-js Item to our Listing type
+const transformItem = (item: ItemApi): Listing => ({
+	id: item.id,
+	shopId: item.shopId,
+	itemName: item.itemName,
+	itemNbt: item.itemNbt,
+	itemDisplayName: item.itemDisplayName,
+	itemDescription: item.itemDescription,
+	shopBuysItem: item.shopBuysItem,
+	noLimit: item.noLimit,
+	dynamicPrice: item.dynamicPrice,
+	madeOnDemand: item.madeOnDemand,
+	requiresInteraction: item.requiresInteraction,
+	stock: item.stock,
+	prices: item.prices?.map((p) => ({
+		id: p.id,
+		value: p.value,
+		currency: p.currency,
+		address: p.address,
+		requiredMeta: p.requiredMeta
+	})),
+	addresses: item.addresses,
+	createdDate: item.createdDate,
+	updatedDate: item.updatedDate
+});
+
+// Transform krawlet-js Shop to our Shop type
+const transformShop = (shop: ShopApi): Shop => ({
+	id: shop.id,
+	name: shop.name,
+	description: shop.description,
+	owner: shop.owner,
+	computerId: shop.computerId,
+	softwareName: shop.softwareName,
+	softwareVersion: shop.softwareVersion,
+	locationCoordinates: shop.locationCoordinates,
+	locationDescription: shop.locationDescription,
+	locationDimension: shop.locationDimension,
+	items: shop.items?.map(transformItem),
+	addresses: shop.addresses,
+	createdDate: shop.createdDate,
+	updatedDate: shop.updatedDate
+});
 
 class ShopSyncStore extends FetchedStore<Shop> {
 	public sort(data: Shop[]): Shop[] {
@@ -17,7 +62,12 @@ class ShopSyncStore extends FetchedStore<Shop> {
 	}
 }
 
-const store = new ShopSyncStore(itemName, itemUrl, itemExpiry);
+const fetchShops = async (): Promise<Shop[]> => {
+	const shops = await krawletClient.shops.getAll();
+	return shops.map(transformShop);
+};
+
+const store = new ShopSyncStore(itemName, fetchShops, itemExpiry);
 
 // TODO: Move this into krawlet-api
 export const cleanShopData = (str: string) => {
@@ -25,10 +75,15 @@ export const cleanShopData = (str: string) => {
 };
 
 const fetchShopById = async (id: string): Promise<Shop | null> => {
-	const response = await fetch(`${itemUrl}/${encodeURIComponent(id)}`);
-	if (!response.ok) return null;
-	const shop = (await response.json()) as { ok: boolean; data: Shop };
-	return shop.data ?? null;
+	try {
+		const shop = await krawletClient.shops.get(id);
+		return transformShop(shop);
+	} catch (error) {
+		if (error instanceof KrawletError && error.code === 'SHOP_NOT_FOUND') {
+			return null;
+		}
+		throw error;
+	}
 };
 
 export const getShopById = async (id: string): Promise<Shop | null> => {

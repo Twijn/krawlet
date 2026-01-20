@@ -32,6 +32,9 @@ importers:
       crypto-js:
         specifier: ^4.2.0
         version: 4.2.0
+      krawlet-js:
+        specifier: ^1.0.1
+        version: 1.0.1
       kromer:
         specifier: ^1.5.1
         version: 1.5.1
@@ -1333,6 +1336,10 @@ packages:
 
   known-css-properties@0.37.0:
     resolution: {integrity: sha512-JCDrsP4Z1Sb9JwG0aJ8Eo2r7k4Ou5MwmThS/6lcIe1ICyb7UBJKGRIUUdqc2ASdE/42lgz6zFUnzAIhtXnBVrQ==}
+
+  krawlet-js@1.0.1:
+    resolution: {integrity: sha512-9akmvbvhrm8iuMVFu6D/dxMmzIAm1uh1Ee3O5okxpZD0itfNOuuLyuIvlKJbWjupmIsGZh7XOKkIrLWeDNlgmA==}
+    engines: {node: '>=18.0.0'}
 
   kromer@1.5.1:
     resolution: {integrity: sha512-HZ7ce2WlSfb4OpZmcC7W9mUXap1VaqbImilyUCg1AHi3he11sev0DcBgon9SgrG0ZAxk95e1D8pPyE1WBOZ8mA==}
@@ -2904,6 +2911,8 @@ snapshots:
   kleur@4.1.5: {}
 
   known-css-properties@0.37.0: {}
+
+  krawlet-js@1.0.1: {}
 
   kromer@1.5.1:
     dependencies:
