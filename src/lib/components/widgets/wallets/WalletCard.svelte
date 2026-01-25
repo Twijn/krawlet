@@ -8,7 +8,7 @@
 		faCopy,
 		faCircleInfo,
 		faTrash,
-		faBars,
+		faGripVertical,
 		faChevronDown,
 		faChevronUp
 	} from '@fortawesome/free-solid-svg-icons';
@@ -19,6 +19,8 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import { notifications } from '$lib/stores/notifications';
 	import { t } from '$lib/i18n';
+	import kromer from '$lib/api/kromer';
+	import type { Transaction } from 'kromer';
 
 	type WalletStats = {
 		totalSent: number;
@@ -38,21 +40,168 @@
 		balanceChange = null,
 		stats = null,
 		showDelete = false,
+		canMoveUp = false,
+		canMoveDown = false,
 		onDelete,
 		onSend,
-		onViewHistory
+		onViewHistory,
+		onMoveUp,
+		onMoveDown
 	}: {
 		wallet: Wallet;
 		balance?: number;
 		balanceChange?: BalanceChange | null;
 		stats?: WalletStats | null;
 		showDelete?: boolean;
+		canMoveUp?: boolean;
+		canMoveDown?: boolean;
 		onDelete?: () => void;
 		onSend?: () => void;
 		onViewHistory?: () => void;
+		onMoveUp?: () => void;
+		onMoveDown?: () => void;
 	} = $props();
 
 	let expanded = $state(false);
+	let loadingStats = $state(false);
+	let statsLoaded = $state(false);
+	let transactions: Transaction[] = $state([]);
+
+	// Timeframe definitions in milliseconds
+	const TIMEFRAMES = {
+		'24h': 24 * 60 * 60 * 1000,
+		'7d': 7 * 24 * 60 * 60 * 1000,
+		'30d': 30 * 24 * 60 * 60 * 1000
+	};
+
+	// Calculated statistics
+	type TimeframeStats = {
+		totalIn: number;
+		totalOut: number;
+		netChange: number;
+		txCount: number;
+	};
+
+	let stats24h: TimeframeStats = $state({ totalIn: 0, totalOut: 0, netChange: 0, txCount: 0 });
+	let stats7d: TimeframeStats = $state({ totalIn: 0, totalOut: 0, netChange: 0, txCount: 0 });
+	let stats30d: TimeframeStats = $state({ totalIn: 0, totalOut: 0, netChange: 0, txCount: 0 });
+	let allTimeStats: TimeframeStats = $state({ totalIn: 0, totalOut: 0, netChange: 0, txCount: 0 });
+	let uniqueAddresses = $state(0);
+	let largestTxIn = $state(0);
+	let largestTxOut = $state(0);
+	let avgTxSize = $state(0);
+
+	function calculateStats(txs: Transaction[], cutoffMs: number): TimeframeStats {
+		const cutoffTime = Date.now() - cutoffMs;
+		const filtered = txs.filter((tx) => tx.time.getTime() >= cutoffTime);
+
+		let totalIn = 0;
+		let totalOut = 0;
+
+		for (const tx of filtered) {
+			if (tx.to === wallet.address) {
+				totalIn += tx.value;
+			}
+			if (tx.from === wallet.address) {
+				totalOut += tx.value;
+			}
+		}
+
+		return {
+			totalIn,
+			totalOut,
+			netChange: totalIn - totalOut,
+			txCount: filtered.length
+		};
+	}
+
+	function calculateAllTimeStats(txs: Transaction[]): TimeframeStats {
+		let totalIn = 0;
+		let totalOut = 0;
+
+		for (const tx of txs) {
+			if (tx.to === wallet.address) {
+				totalIn += tx.value;
+			}
+			if (tx.from === wallet.address) {
+				totalOut += tx.value;
+			}
+		}
+
+		return {
+			totalIn,
+			totalOut,
+			netChange: totalIn - totalOut,
+			txCount: txs.length
+		};
+	}
+
+	async function fetchWalletStats() {
+		if (statsLoaded || loadingStats || !browser) return;
+
+		loadingStats = true;
+		try {
+			// Fetch transactions for this address (up to 500 for reasonable stats)
+			const allTxs: Transaction[] = [];
+			let offset = 0;
+			const limit = 100;
+			let keepFetching = true;
+			const maxTxs = 500;
+
+			while (keepFetching && allTxs.length < maxTxs) {
+				const resp = await kromer.addresses.getTransactions(wallet.address, {
+					offset,
+					limit
+				});
+
+				allTxs.push(...resp.transactions);
+
+				if (resp.transactions.length < limit) {
+					keepFetching = false;
+				} else {
+					offset += limit;
+				}
+			}
+
+			transactions = allTxs;
+
+			// Calculate timeframe-based stats
+			stats24h = calculateStats(allTxs, TIMEFRAMES['24h']);
+			stats7d = calculateStats(allTxs, TIMEFRAMES['7d']);
+			stats30d = calculateStats(allTxs, TIMEFRAMES['30d']);
+			allTimeStats = calculateAllTimeStats(allTxs);
+
+			// Calculate unique addresses interacted with
+			const addresses = new Set<string>();
+			let maxIn = 0;
+			let maxOut = 0;
+			let totalValue = 0;
+
+			for (const tx of allTxs) {
+				if (tx.from && tx.from !== wallet.address) addresses.add(tx.from);
+				if (tx.to && tx.to !== wallet.address) addresses.add(tx.to);
+
+				if (tx.to === wallet.address && tx.value > maxIn) {
+					maxIn = tx.value;
+				}
+				if (tx.from === wallet.address && tx.value > maxOut) {
+					maxOut = tx.value;
+				}
+				totalValue += tx.value;
+			}
+
+			uniqueAddresses = addresses.size;
+			largestTxIn = maxIn;
+			largestTxOut = maxOut;
+			avgTxSize = allTxs.length > 0 ? totalValue / allTxs.length : 0;
+
+			statsLoaded = true;
+		} catch (error) {
+			console.error('Failed to fetch wallet stats:', error);
+		} finally {
+			loadingStats = false;
+		}
+	}
 
 	function formatBalance(bal: number) {
 		if (!browser) return '0.00';
@@ -82,6 +231,17 @@
 
 	function toggleExpanded() {
 		expanded = !expanded;
+		if (expanded && !statsLoaded) {
+			fetchWalletStats();
+		}
+	}
+
+	function formatCurrency(amount: number): string {
+		if (!browser) return '0.00';
+		return amount.toLocaleString(navigator.language, {
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		});
 	}
 </script>
 
@@ -104,8 +264,28 @@
 		</div>
 		{#if showDelete}
 			<div class="header-actions">
-				<div class="drag-handle" title={t('wallet.dragToReorder')}>
-					<FontAwesomeIcon icon={faBars} />
+				<div class="reorder-controls">
+					<button
+						class="move-btn"
+						onclick={onMoveUp}
+						disabled={!canMoveUp}
+						aria-label={t('wallet.moveUp')}
+						title={t('wallet.moveUp')}
+					>
+						<FontAwesomeIcon icon={faChevronUp} />
+					</button>
+					<div class="drag-handle" title={t('wallet.dragToReorder')}>
+						<FontAwesomeIcon icon={faGripVertical} />
+					</div>
+					<button
+						class="move-btn"
+						onclick={onMoveDown}
+						disabled={!canMoveDown}
+						aria-label={t('wallet.moveDown')}
+						title={t('wallet.moveDown')}
+					>
+						<FontAwesomeIcon icon={faChevronDown} />
+					</button>
 				</div>
 				<button
 					class="delete-btn"
@@ -186,7 +366,57 @@
 
 	{#if expanded}
 		<div class="expanded-content" transition:slide={{ duration: 200 }}>
-			<p class="expanded-placeholder">{t('wallet.moreDetailsComingSoon')}</p>
+			{#if loadingStats}
+				<div class="loading-stats">
+					<span class="loading-spinner"></span>
+					<span>{t('wallet.loadingStats')}</span>
+				</div>
+			{:else if statsLoaded}
+				<div class="expanded-stats">
+					<!-- Flow by Timeframe -->
+					<div class="flow-section">
+						<div class="flow-period">
+							<span class="period-label">24h</span>
+							<div class="flow-values">
+								<span class="in-value">+{formatCompact(stats24h.totalIn)} <small>KRO</small></span>
+								<span class="out-value">-{formatCompact(stats24h.totalOut)} <small>KRO</small></span>
+							</div>
+						</div>
+						<div class="flow-period">
+							<span class="period-label">7d</span>
+							<div class="flow-values">
+								<span class="in-value">+{formatCompact(stats7d.totalIn)} <small>KRO</small></span>
+								<span class="out-value">-{formatCompact(stats7d.totalOut)} <small>KRO</small></span>
+							</div>
+						</div>
+						<div class="flow-period">
+							<span class="period-label">30d</span>
+							<div class="flow-values">
+								<span class="in-value">+{formatCompact(stats30d.totalIn)} <small>KRO</small></span>
+								<span class="out-value">-{formatCompact(stats30d.totalOut)} <small>KRO</small></span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Summary Stats -->
+					<div class="summary-stats">
+						<div class="summary-stat">
+							<span class="summary-value">{allTimeStats.txCount.toLocaleString()}</span>
+							<span class="summary-label">{t('wallet.totalTxCount')}</span>
+						</div>
+						<div class="summary-stat">
+							<span class="summary-value">{uniqueAddresses.toLocaleString()}</span>
+							<span class="summary-label">{t('wallet.uniqueAddresses')}</span>
+						</div>
+						<div class="summary-stat">
+							<span class="summary-value">{formatCompact(avgTxSize)} <small>KRO</small></span>
+							<span class="summary-label">{t('wallet.avgTxSize')}</span>
+						</div>
+					</div>
+				</div>
+			{:else}
+				<p class="expanded-placeholder">{t('wallet.noStatsAvailable')}</p>
+			{/if}
 		</div>
 	{/if}
 </div>
@@ -227,19 +457,58 @@
 	.header-actions {
 		display: flex;
 		align-items: center;
-		gap: 0.25rem;
+		gap: 0.5rem;
+	}
+
+	.reorder-controls {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0;
+		background: rgba(0, 0, 0, 0.2);
+		border-radius: 0.375rem;
+		padding: 0.125rem;
+	}
+
+	.move-btn {
+		background: transparent;
+		border: none;
+		color: var(--text-color-2);
+		cursor: pointer;
+		padding: 0.25rem 0.5rem;
+		font-size: 0.75rem;
+		transition: color 0.15s ease, background 0.15s ease;
+		border-radius: 0.25rem;
+	}
+
+	/* Hide move up/down buttons on larger screens where wallets display in multiple columns */
+	@media only screen and (min-width: 769px) {
+		.move-btn {
+			display: none;
+		}
+	}
+
+	.move-btn:hover:not(:disabled) {
+		color: var(--text-color-1);
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.move-btn:disabled {
+		opacity: 0.3;
+		cursor: not-allowed;
 	}
 
 	.drag-handle {
 		color: var(--text-color-2);
 		cursor: grab;
-		padding: 0.5rem;
-		opacity: 0.5;
-		transition: opacity 0.2s ease;
+		padding: 0.25rem 0.375rem;
+		opacity: 0.6;
+		transition: opacity 0.15s ease, color 0.15s ease;
 	}
 
 	.drag-handle:hover {
 		opacity: 1;
+		color: var(--text-color-1);
 	}
 
 	.icon {
@@ -403,6 +672,115 @@
 		color: var(--text-color-2);
 		font-style: italic;
 		margin: 0;
+	}
+
+	.loading-stats {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 1rem;
+		color: var(--text-color-2);
+	}
+
+	.loading-spinner {
+		width: 1rem;
+		height: 1rem;
+		border: 2px solid rgba(255, 255, 255, 0.2);
+		border-top-color: var(--theme-color);
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.expanded-stats {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.flow-section {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.flow-period {
+		flex: 1;
+		background: rgba(0, 0, 0, 0.2);
+		border-radius: 0.5rem;
+		padding: 0.75rem 0.5rem;
+		text-align: center;
+	}
+
+	.period-label {
+		display: block;
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: var(--text-color-2);
+		margin-bottom: 0.5rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.flow-values {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.in-value {
+		color: #51cf66;
+		font-size: 0.85rem;
+		font-weight: 500;
+	}
+
+	.out-value {
+		color: #ff6b6b;
+		font-size: 0.85rem;
+		font-weight: 500;
+	}
+
+	.in-value small,
+	.out-value small {
+		font-size: 0.65rem;
+		opacity: 0.7;
+	}
+
+	.summary-stats {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.5rem;
+		padding-top: 0.5rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.summary-stat {
+		text-align: center;
+	}
+
+	.summary-value {
+		display: block;
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--text-color-1);
+	}
+
+	.summary-value small {
+		font-size: 0.7rem;
+		color: var(--text-color-2);
+		font-weight: 400;
+	}
+
+	.summary-label {
+		display: block;
+		font-size: 0.7rem;
+		color: var(--text-color-2);
+		margin-top: 0.125rem;
 	}
 
 	@media only screen and (max-width: 768px) {

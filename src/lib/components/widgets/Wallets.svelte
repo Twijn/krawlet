@@ -123,6 +123,7 @@
 
 	// Drag and drop for reordering
 	let draggedWallet: Wallet | null = $state(null);
+	let dragOverWallet: Wallet | null = $state(null);
 
 	function handleDragStart(e: DragEvent, wallet: Wallet) {
 		if (!e.dataTransfer) return;
@@ -133,12 +134,20 @@
 
 	function handleDragEnd() {
 		draggedWallet = null;
+		dragOverWallet = null;
 	}
 
-	function handleDragOver(e: DragEvent) {
+	function handleDragOver(e: DragEvent, wallet: Wallet) {
 		if (!e.dataTransfer) return;
 		e.preventDefault();
 		e.dataTransfer.dropEffect = 'move';
+		if (draggedWallet && wallet.address !== draggedWallet.address) {
+			dragOverWallet = wallet;
+		}
+	}
+
+	function handleDragLeave() {
+		dragOverWallet = null;
 	}
 
 	function handleDrop(e: DragEvent, targetWallet: Wallet) {
@@ -158,6 +167,20 @@
 		}
 
 		draggedWallet = null;
+		dragOverWallet = null;
+	}
+
+	function moveWallet(wallet: Wallet, direction: 'up' | 'down') {
+		const wallets = [...$settings.wallets];
+		const idx = wallets.findIndex((w) => w.address === wallet.address);
+		if (idx === -1) return;
+
+		const newIdx = direction === 'up' ? idx - 1 : idx + 1;
+		if (newIdx < 0 || newIdx >= wallets.length) return;
+
+		const [moved] = wallets.splice(idx, 1);
+		wallets.splice(newIdx, 0, moved);
+		settings.setWallets(wallets);
 	}
 
 	function handleAddWallet() {
@@ -213,14 +236,17 @@
 			</Alert>
 		{/if}
 		<div class="wallets-grid" role="list">
-			{#each filteredWallets.slice(0, limit) as wallet (wallet.address)}
+			{#each filteredWallets.slice(0, limit) as wallet, index (wallet.address)}
 				<div
 					class="wallet-card-wrapper"
+					class:dragging={draggedWallet?.address === wallet.address}
+					class:drag-over={dragOverWallet?.address === wallet.address}
 					role="listitem"
 					draggable={showDelete}
 					ondragstart={(e) => showDelete && handleDragStart(e, wallet)}
 					ondragend={handleDragEnd}
-					ondragover={handleDragOver}
+					ondragover={(e) => handleDragOver(e, wallet)}
+					ondragleave={handleDragLeave}
 					ondrop={(e) => showDelete && handleDrop(e, wallet)}
 					animate:flip={{ duration: 300 }}
 				>
@@ -230,9 +256,13 @@
 						balanceChange={null}
 						stats={null}
 						{showDelete}
+						canMoveUp={index > 0}
+						canMoveDown={index < filteredWallets.length - 1}
 						onDelete={() => deleteWallet(wallet)}
 						onSend={() => handleSend(wallet)}
 						onViewHistory={() => handleViewHistory(wallet)}
+						onMoveUp={() => moveWallet(wallet, 'up')}
+						onMoveDown={() => moveWallet(wallet, 'down')}
 					/>
 				</div>
 			{/each}
@@ -273,6 +303,8 @@
 
 	.wallet-card-wrapper {
 		position: relative;
+		border-radius: 0.5rem;
+		transition: transform 0.15s ease, opacity 0.15s ease;
 	}
 
 	.wallet-card-wrapper[draggable='true'] {
@@ -281,6 +313,25 @@
 
 	.wallet-card-wrapper[draggable='true']:active {
 		cursor: grabbing;
+	}
+
+	.wallet-card-wrapper.dragging {
+		opacity: 0.5;
+		transform: scale(0.98);
+	}
+
+	.wallet-card-wrapper.drag-over {
+		transform: scale(1.02);
+	}
+
+	.wallet-card-wrapper.drag-over::before {
+		content: '';
+		position: absolute;
+		inset: -4px;
+		border: 2px dashed var(--theme-color-1);
+		border-radius: 0.75rem;
+		pointer-events: none;
+		z-index: 1;
 	}
 
 	.total-section {
