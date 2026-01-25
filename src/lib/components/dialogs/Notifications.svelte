@@ -43,7 +43,7 @@
 		position: fixed;
 		bottom: 1rem;
 		right: 1rem;
-		z-index: 1000;
+		z-index: 1200;
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;

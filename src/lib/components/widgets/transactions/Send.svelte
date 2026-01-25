@@ -32,6 +32,11 @@
 	let privatekey = $state('');
 	let fromAddress = $state('');
 
+	let from = paramState('from', '', {
+		shouldSet: (v) => v.length > 0
+	});
+	let fromQuery = $state(from.value);
+
 	let to = paramState('to', '', {
 		shouldSet: (v) => v.length > 0
 	});
@@ -127,6 +132,7 @@
 					bind:balances
 					bind:privatekey
 					bind:address={fromAddress}
+					bind:query={fromQuery}
 				/>
 			</div>
 			<div class="col-6 col-md-12">

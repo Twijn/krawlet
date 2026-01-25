@@ -5,6 +5,7 @@
 	import type { Transaction, TransactionsResponse } from 'kromer';
 	import { t$ } from '$lib/i18n';
 	import { paramState } from '$lib/paramState.svelte';
+	import { withRateLimitRetry, batchDelay } from '$lib/utils/rateLimit';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 	type TimeFrame = '1h' | '1d' | '1w' | '1m';
@@ -65,11 +66,18 @@
 	): Promise<Transaction[]> {
 		const allTxs: Transaction[] = [];
 		let offset = 0;
-		const limit = 250;
+		let limit = 250;
 		let keepFetching = true;
 
 		while (keepFetching) {
-			const resp = await kromer.transactions.getLatest({ offset, limit, excludeMined: true });
+			// Add delay between requests to avoid rate limiting
+			if (offset > 0) {
+				await batchDelay(150);
+			}
+			
+			const resp = await withRateLimitRetry(() =>
+				kromer.transactions.getLatest({ offset, limit, excludeMined: true })
+			);
 
 			for (const tx of resp.transactions) {
 				const txTime = tx.time.getTime();
@@ -88,6 +96,8 @@
 				keepFetching = false;
 			} else {
 				offset += limit;
+				// Increase limit after first request for faster fetching
+				limit = 1000;
 			}
 		}
 
@@ -106,8 +116,7 @@
 			const previousEnd = currentStart;
 
 			// Get total count
-			kromer.transactions
-				.getLatest({ limit: 1, excludeMined: true })
+			withRateLimitRetry(() => kromer.transactions.getLatest({ limit: 1, excludeMined: true }))
 				.then((result: TransactionsResponse) => {
 					totalTransactions = result.total;
 				})

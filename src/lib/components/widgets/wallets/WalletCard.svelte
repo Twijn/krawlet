@@ -21,6 +21,7 @@
 	import { t } from '$lib/i18n';
 	import kromer from '$lib/api/kromer';
 	import type { Transaction } from 'kromer';
+	import { withRateLimitRetry, batchDelay } from '$lib/utils/rateLimit';
 
 	type WalletStats = {
 		totalSent: number;
@@ -78,14 +79,17 @@
 	type TimeframeStats = {
 		totalIn: number;
 		totalOut: number;
+		welfare: number;
 		netChange: number;
 		txCount: number;
 	};
 
-	let stats24h: TimeframeStats = $state({ totalIn: 0, totalOut: 0, netChange: 0, txCount: 0 });
-	let stats7d: TimeframeStats = $state({ totalIn: 0, totalOut: 0, netChange: 0, txCount: 0 });
-	let stats30d: TimeframeStats = $state({ totalIn: 0, totalOut: 0, netChange: 0, txCount: 0 });
-	let allTimeStats: TimeframeStats = $state({ totalIn: 0, totalOut: 0, netChange: 0, txCount: 0 });
+	const emptyStats = (): TimeframeStats => ({ totalIn: 0, totalOut: 0, welfare: 0, netChange: 0, txCount: 0 });
+
+	let stats24h: TimeframeStats = $state(emptyStats());
+	let stats7d: TimeframeStats = $state(emptyStats());
+	let stats30d: TimeframeStats = $state(emptyStats());
+	let allTimeStats: TimeframeStats = $state(emptyStats());
 	let uniqueAddresses = $state(0);
 	let largestTxIn = $state(0);
 	let largestTxOut = $state(0);
@@ -97,10 +101,15 @@
 
 		let totalIn = 0;
 		let totalOut = 0;
+		let welfare = 0;
 
 		for (const tx of filtered) {
 			if (tx.to === wallet.address) {
-				totalIn += tx.value;
+				if (tx.type === 'mined') {
+					welfare += tx.value;
+				} else {
+					totalIn += tx.value;
+				}
 			}
 			if (tx.from === wallet.address) {
 				totalOut += tx.value;
@@ -110,7 +119,8 @@
 		return {
 			totalIn,
 			totalOut,
-			netChange: totalIn - totalOut,
+			welfare,
+			netChange: totalIn + welfare - totalOut,
 			txCount: filtered.length
 		};
 	}
@@ -118,10 +128,15 @@
 	function calculateAllTimeStats(txs: Transaction[]): TimeframeStats {
 		let totalIn = 0;
 		let totalOut = 0;
+		let welfare = 0;
 
 		for (const tx of txs) {
 			if (tx.to === wallet.address) {
-				totalIn += tx.value;
+				if (tx.type === 'mined') {
+					welfare += tx.value;
+				} else {
+					totalIn += tx.value;
+				}
 			}
 			if (tx.from === wallet.address) {
 				totalOut += tx.value;
@@ -131,7 +146,8 @@
 		return {
 			totalIn,
 			totalOut,
-			netChange: totalIn - totalOut,
+			welfare,
+			netChange: totalIn + welfare - totalOut,
 			txCount: txs.length
 		};
 	}
@@ -141,18 +157,24 @@
 
 		loadingStats = true;
 		try {
-			// Fetch transactions for this address (up to 1000 for reasonable stats)
+			// Fetch transactions for this address (up to 5000 for comprehensive stats)
 			const allTxs: Transaction[] = [];
 			let offset = 0;
-			const limit = 250;
+			let limit = 250;
 			let keepFetching = true;
-			const maxTxs = 1000;
+			const maxTxs = 5000;
+			let iteration = 0;
 
 			while (keepFetching && allTxs.length < maxTxs) {
-				const resp = await kromer.addresses.getTransactions(wallet.address, {
-					offset,
-					limit
-				});
+				// Add delay between batches to respect rate limits
+				await batchDelay(iteration, 3, 150);
+
+				const resp = await withRateLimitRetry(() =>
+					kromer.addresses.getTransactions(wallet.address, {
+						offset,
+						limit
+					})
+				);
 
 				allTxs.push(...resp.transactions);
 
@@ -160,7 +182,10 @@
 					keepFetching = false;
 				} else {
 					offset += limit;
+					// Increase limit after first request for faster fetching
+					limit = 1000;
 				}
+				iteration++;
 			}
 
 			transactions = allTxs;
@@ -212,10 +237,10 @@
 	}
 
 	function formatCompact(num: number) {
-		if (!browser) return '0';
-		if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-		if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-		return num.toFixed(0);
+		if (!browser) return '0.00';
+		if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
+		if (num >= 1000) return (num / 1000).toFixed(2) + 'K';
+		return num.toFixed(2);
 	}
 
 	function copyAddress() {
@@ -378,22 +403,31 @@
 						<div class="flow-period">
 							<span class="period-label">24h</span>
 							<div class="flow-values">
-								<span class="in-value">+{formatCompact(stats24h.totalIn)} <small>KRO</small></span>
-								<span class="out-value">-{formatCompact(stats24h.totalOut)} <small>KRO</small></span>
+								<span class="flow-row in-value"><span class="num">+{formatCompact(stats24h.totalIn)}</span><span class="unit">KRO</span></span>
+								{#if stats24h.welfare > 0}
+									<span class="flow-row welfare-value" title="{t('wallet.welfareTooltip')}"><span class="num">+{formatCompact(stats24h.welfare)}</span><span class="unit">WELFARE</span></span>
+								{/if}
+								<span class="flow-row out-value"><span class="num">-{formatCompact(stats24h.totalOut)}</span><span class="unit">KRO</span></span>
 							</div>
 						</div>
 						<div class="flow-period">
 							<span class="period-label">7d</span>
 							<div class="flow-values">
-								<span class="in-value">+{formatCompact(stats7d.totalIn)} <small>KRO</small></span>
-								<span class="out-value">-{formatCompact(stats7d.totalOut)} <small>KRO</small></span>
+								<span class="flow-row in-value"><span class="num">+{formatCompact(stats7d.totalIn)}</span><span class="unit">KRO</span></span>
+								{#if stats7d.welfare > 0}
+									<span class="flow-row welfare-value" title="{t('wallet.welfareTooltip')}"><span class="num">+{formatCompact(stats7d.welfare)}</span><span class="unit">WELFARE</span></span>
+								{/if}
+								<span class="flow-row out-value"><span class="num">-{formatCompact(stats7d.totalOut)}</span><span class="unit">KRO</span></span>
 							</div>
 						</div>
 						<div class="flow-period">
 							<span class="period-label">30d</span>
 							<div class="flow-values">
-								<span class="in-value">+{formatCompact(stats30d.totalIn)} <small>KRO</small></span>
-								<span class="out-value">-{formatCompact(stats30d.totalOut)} <small>KRO</small></span>
+								<span class="flow-row in-value"><span class="num">+{formatCompact(stats30d.totalIn)}</span><span class="unit">KRO</span></span>
+								{#if stats30d.welfare > 0}
+									<span class="flow-row welfare-value" title="{t('wallet.welfareTooltip')}"><span class="num">+{formatCompact(stats30d.welfare)}</span><span class="unit">WELFARE</span></span>
+								{/if}
+								<span class="flow-row out-value"><span class="num">-{formatCompact(stats30d.totalOut)}</span><span class="unit">KRO</span></span>
 							</div>
 						</div>
 					</div>
@@ -404,12 +438,12 @@
 							<span class="summary-value">{allTimeStats.txCount.toLocaleString()}</span>
 							<span class="summary-label">{t('wallet.totalTxCount')}</span>
 						</div>
-						<div class="summary-stat">
+						<div class="summary-stat" title={t('wallet.contactsTooltip')}>
 							<span class="summary-value">{uniqueAddresses.toLocaleString()}</span>
 							<span class="summary-label">{t('wallet.uniqueAddresses')}</span>
 						</div>
-						<div class="summary-stat">
-							<span class="summary-value">{formatCompact(avgTxSize)} <small>KRO</small></span>
+						<div class="summary-stat" title={t('wallet.avgTxTooltip')}>
+							<span class="summary-value"><span class="num">{formatCompact(avgTxSize)}</span> <span class="unit-inline">KRO</span></span>
 							<span class="summary-label">{t('wallet.avgTxSize')}</span>
 						</div>
 					</div>
@@ -733,22 +767,43 @@
 		gap: 0.25rem;
 	}
 
+	.flow-row {
+		display: flex;
+		justify-content: center;
+		align-items: baseline;
+		gap: 0.25rem;
+	}
+
+	.flow-row .num {
+		text-align: right;
+		min-width: 4.5rem;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.flow-row .unit {
+		text-align: left;
+		min-width: 4rem;
+		font-size: 0.65rem;
+		opacity: 0.7;
+	}
+
 	.in-value {
 		color: #51cf66;
 		font-size: 0.85rem;
 		font-weight: 500;
 	}
 
+	.welfare-value {
+		color: #fcc419;
+		font-size: 0.85rem;
+		font-weight: 500;
+		cursor: help;
+	}
+
 	.out-value {
 		color: #ff6b6b;
 		font-size: 0.85rem;
 		font-weight: 500;
-	}
-
-	.in-value small,
-	.out-value small {
-		font-size: 0.65rem;
-		opacity: 0.7;
 	}
 
 	.summary-stats {
@@ -771,6 +826,12 @@
 	}
 
 	.summary-value small {
+		font-size: 0.7rem;
+		color: var(--text-color-2);
+		font-weight: 400;
+	}
+
+	.summary-value .unit-inline {
 		font-size: 0.7rem;
 		color: var(--text-color-2);
 		font-weight: 400;

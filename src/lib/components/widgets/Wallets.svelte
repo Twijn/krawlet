@@ -117,7 +117,7 @@
 
 	// Quick action handlers
 	function handleSend(wallet: Wallet) {
-		goto(`/transactions?from=${wallet.address}`);
+		goto(`/transactions/new?from=${wallet.address}`);
 	}
 
 	function handleViewHistory(wallet: Wallet) {
