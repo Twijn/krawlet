@@ -6,7 +6,7 @@ export type AddWalletModalState = {
 };
 
 function createAddWalletModalStore() {
-	const { subscribe, set, update } = writable<AddWalletModalState>({ open: false });
+	const { subscribe, set } = writable<AddWalletModalState>({ open: false });
 
 	return {
 		subscribe,

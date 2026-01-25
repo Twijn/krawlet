@@ -74,7 +74,7 @@
 			if (offset > 0) {
 				await batchDelay(150);
 			}
-			
+
 			const resp = await withRateLimitRetry(() =>
 				kromer.transactions.getLatest({ offset, limit, excludeMined: true })
 			);

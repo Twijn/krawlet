@@ -52,7 +52,10 @@
 	</div>
 	<button
 		class="send-btn"
-		onclick={(e) => { e.stopPropagation(); onSend?.(); }}
+		onclick={(e) => {
+			e.stopPropagation();
+			onSend?.();
+		}}
 		title={t('wallet.send')}
 		aria-label={t('wallet.send')}
 	>
@@ -140,7 +143,9 @@
 		border-radius: 0.375rem;
 		cursor: pointer;
 		font-size: 0.85rem;
-		transition: background 0.15s ease, transform 0.1s ease;
+		transition:
+			background 0.15s ease,
+			transform 0.1s ease;
 		flex-shrink: 0;
 	}
 

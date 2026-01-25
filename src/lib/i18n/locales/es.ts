@@ -326,6 +326,12 @@ export default {
 	},
 	settings: {
 		title: 'Configuración',
+		tabs: {
+			general: 'General',
+			display: 'Pantalla',
+			notifications: 'Notificaciones',
+			advanced: 'Avanzado'
+		},
 		language: 'Idioma',
 		selectLanguage: 'Seleccionar Idioma',
 		addressDisplay: 'Visualización de Direcciones',
@@ -355,7 +361,8 @@ export default {
 			'Hacer que "Mostrar billeteras de otros nodos" esté habilitado por defecto',
 		apiKeys: 'Claves API',
 		krawletApiKey: 'Clave API de Krawlet',
-		krawletApiKeyDescription: 'Ingresa tu clave API de Krawlet para acceder a funciones adicionales',
+		krawletApiKeyDescription:
+			'Ingresa tu clave API de Krawlet para acceder a funciones adicionales',
 		krawletApiKeyPlaceholder: 'Ingresa tu clave API',
 		apiKeySaved: 'Clave API guardada exitosamente',
 		apiKeyInfo: 'Info de Clave API',

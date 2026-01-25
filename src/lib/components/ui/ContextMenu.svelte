@@ -119,7 +119,7 @@
 		tabindex="-1"
 		transition:scale={{ duration: 100, start: 0.95, opacity: 0 }}
 	>
-		{#each items as item}
+		{#each items as item (item.label)}
 			{#if item.separator}
 				<div class="separator" role="separator"></div>
 			{:else if item.href}

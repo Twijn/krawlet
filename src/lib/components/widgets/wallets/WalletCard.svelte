@@ -66,7 +66,6 @@
 	let expanded = $state(false);
 	let loadingStats = $state(false);
 	let statsLoaded = $state(false);
-	let transactions: Transaction[] = $state([]);
 
 	// Timeframe view modes
 	type TimeframeMode = 'cumulative' | 'daily' | 'weekly';
@@ -91,7 +90,13 @@
 		txCount: number;
 	};
 
-	const emptyStats = (): TimeframeStats => ({ totalIn: 0, totalOut: 0, welfare: 0, netChange: 0, txCount: 0 });
+	const emptyStats = (): TimeframeStats => ({
+		totalIn: 0,
+		totalOut: 0,
+		welfare: 0,
+		netChange: 0,
+		txCount: 0
+	});
 
 	// Cumulative view stats (24h, 7d, 30d)
 	let stats24h: TimeframeStats = $state(emptyStats());
@@ -110,8 +115,6 @@
 
 	let allTimeStats: TimeframeStats = $state(emptyStats());
 	let uniqueAddresses = $state(0);
-	let largestTxIn = $state(0);
-	let largestTxOut = $state(0);
 	let avgTxSize = $state(0);
 
 	function calculateStats(txs: Transaction[], cutoffMs: number): TimeframeStats {
@@ -145,7 +148,11 @@
 	}
 
 	// Calculate stats for a specific time window (from startMs ago to endMs ago)
-	function calculateStatsWindow(txs: Transaction[], startMsAgo: number, endMsAgo: number): TimeframeStats {
+	function calculateStatsWindow(
+		txs: Transaction[],
+		startMsAgo: number,
+		endMsAgo: number
+	): TimeframeStats {
 		const now = Date.now();
 		const startTime = now - startMsAgo;
 		const endTime = now - endMsAgo;
@@ -262,28 +269,21 @@
 
 			allTimeStats = calculateAllTimeStats(allTxs);
 
-			// Calculate unique addresses interacted with
-			const addresses = new Set<string>();
-			let maxIn = 0;
-			let maxOut = 0;
+			// Calculate unique addresses interacted with and average transaction size
+			const addresses: string[] = [];
 			let totalValue = 0;
 
 			for (const tx of allTxs) {
-				if (tx.from && tx.from !== wallet.address) addresses.add(tx.from);
-				if (tx.to && tx.to !== wallet.address) addresses.add(tx.to);
-
-				if (tx.to === wallet.address && tx.value > maxIn) {
-					maxIn = tx.value;
+				if (tx.from && tx.from !== wallet.address && !addresses.includes(tx.from)) {
+					addresses.push(tx.from);
 				}
-				if (tx.from === wallet.address && tx.value > maxOut) {
-					maxOut = tx.value;
+				if (tx.to && tx.to !== wallet.address && !addresses.includes(tx.to)) {
+					addresses.push(tx.to);
 				}
 				totalValue += tx.value;
 			}
 
-			uniqueAddresses = addresses.size;
-			largestTxIn = maxIn;
-			largestTxOut = maxOut;
+			uniqueAddresses = addresses.length;
 			avgTxSize = allTxs.length > 0 ? totalValue / allTxs.length : 0;
 
 			statsLoaded = true;
@@ -325,14 +325,6 @@
 		if (expanded && !statsLoaded) {
 			fetchWalletStats();
 		}
-	}
-
-	function formatCurrency(amount: number): string {
-		if (!browser) return '0.00';
-		return amount.toLocaleString(navigator.language, {
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 2
-		});
 	}
 </script>
 
@@ -402,9 +394,7 @@
 				class:positive={balanceChange.direction === 'up'}
 				class:negative={balanceChange.direction === 'down'}
 			>
-				<FontAwesomeIcon
-					icon={balanceChange.direction === 'up' ? faArrowUp : faArrowDown}
-				/>
+				<FontAwesomeIcon icon={balanceChange.direction === 'up' ? faArrowUp : faArrowDown} />
 				<span>{Math.abs(balanceChange.percentage).toFixed(2)}%</span>
 				<span class="change-amount">
 					({balanceChange.amount >= 0 ? '+' : ''}{formatCompact(balanceChange.amount)})
@@ -473,21 +463,21 @@
 						<button
 							class="mode-btn"
 							class:active={timeframeMode === 'cumulative'}
-							onclick={() => timeframeMode = 'cumulative'}
+							onclick={() => (timeframeMode = 'cumulative')}
 						>
 							{t('wallet.timeframeCumulative')}
 						</button>
 						<button
 							class="mode-btn"
 							class:active={timeframeMode === 'daily'}
-							onclick={() => timeframeMode = 'daily'}
+							onclick={() => (timeframeMode = 'daily')}
 						>
 							{t('wallet.timeframeDaily')}
 						</button>
 						<button
 							class="mode-btn"
 							class:active={timeframeMode === 'weekly'}
-							onclick={() => timeframeMode = 'weekly'}
+							onclick={() => (timeframeMode = 'weekly')}
 						>
 							{t('wallet.timeframeWeekly')}
 						</button>
@@ -501,16 +491,32 @@
 								{ label: '7d', stats: stats7d },
 								{ label: '24h', stats: stats24h }
 							]}
-							{#each periods as { label, stats }}
+							{#each periods as { label, stats } (label)}
 								<div class="flow-period">
 									<span class="period-label">{label}</span>
 									<div class="flow-values">
-										<span class="flow-row in-value"><span class="num">+{formatCompact(stats.totalIn)}</span><span class="unit">KRO</span></span>
+										<span class="flow-row in-value"
+											><span class="num">+{formatCompact(stats.totalIn)}</span><span class="unit"
+												>KRO</span
+											></span
+										>
 										{#if stats.welfare > 0}
-											<span class="flow-row welfare-value" title="{t('wallet.welfareTooltip')}"><span class="num">+{formatCompact(stats.welfare)}</span><span class="unit">WELFARE</span></span>
+											<span class="flow-row welfare-value" title={t('wallet.welfareTooltip')}
+												><span class="num">+{formatCompact(stats.welfare)}</span><span class="unit"
+													>WELFARE</span
+												></span
+											>
 										{/if}
-										<span class="flow-row out-value"><span class="num">-{formatCompact(stats.totalOut)}</span><span class="unit">KRO</span></span>
-										<span class="flow-row net-value"><span class="num">{stats.netChange >= 0 ? '+' : ''}{formatCompact(stats.netChange)}</span><span class="unit">NET</span></span>
+										<span class="flow-row out-value"
+											><span class="num">-{formatCompact(stats.totalOut)}</span><span class="unit"
+												>KRO</span
+											></span
+										>
+										<span class="flow-row net-value"
+											><span class="num"
+												>{stats.netChange >= 0 ? '+' : ''}{formatCompact(stats.netChange)}</span
+											><span class="unit">NET</span></span
+										>
 									</div>
 								</div>
 							{/each}
@@ -520,16 +526,32 @@
 								{ label: t('wallet.oneDayAgo'), stats: statsDay1Ago },
 								{ label: t('wallet.last24h'), stats: statsLast24h }
 							]}
-							{#each periods as { label, stats }}
+							{#each periods as { label, stats } (label)}
 								<div class="flow-period">
 									<span class="period-label">{label}</span>
 									<div class="flow-values">
-										<span class="flow-row in-value"><span class="num">+{formatCompact(stats.totalIn)}</span><span class="unit">KRO</span></span>
+										<span class="flow-row in-value"
+											><span class="num">+{formatCompact(stats.totalIn)}</span><span class="unit"
+												>KRO</span
+											></span
+										>
 										{#if stats.welfare > 0}
-											<span class="flow-row welfare-value" title="{t('wallet.welfareTooltip')}"><span class="num">+{formatCompact(stats.welfare)}</span><span class="unit">WELFARE</span></span>
+											<span class="flow-row welfare-value" title={t('wallet.welfareTooltip')}
+												><span class="num">+{formatCompact(stats.welfare)}</span><span class="unit"
+													>WELFARE</span
+												></span
+											>
 										{/if}
-										<span class="flow-row out-value"><span class="num">-{formatCompact(stats.totalOut)}</span><span class="unit">KRO</span></span>
-										<span class="flow-row net-value"><span class="num">{stats.netChange >= 0 ? '+' : ''}{formatCompact(stats.netChange)}</span><span class="unit">NET</span></span>
+										<span class="flow-row out-value"
+											><span class="num">-{formatCompact(stats.totalOut)}</span><span class="unit"
+												>KRO</span
+											></span
+										>
+										<span class="flow-row net-value"
+											><span class="num"
+												>{stats.netChange >= 0 ? '+' : ''}{formatCompact(stats.netChange)}</span
+											><span class="unit">NET</span></span
+										>
 									</div>
 								</div>
 							{/each}
@@ -539,16 +561,32 @@
 								{ label: t('wallet.oneWeekAgo'), stats: statsWeek1Ago },
 								{ label: t('wallet.lastWeek'), stats: statsLastWeek }
 							]}
-							{#each periods as { label, stats }}
+							{#each periods as { label, stats } (label)}
 								<div class="flow-period">
 									<span class="period-label">{label}</span>
 									<div class="flow-values">
-										<span class="flow-row in-value"><span class="num">+{formatCompact(stats.totalIn)}</span><span class="unit">KRO</span></span>
+										<span class="flow-row in-value"
+											><span class="num">+{formatCompact(stats.totalIn)}</span><span class="unit"
+												>KRO</span
+											></span
+										>
 										{#if stats.welfare > 0}
-											<span class="flow-row welfare-value" title="{t('wallet.welfareTooltip')}"><span class="num">+{formatCompact(stats.welfare)}</span><span class="unit">WELFARE</span></span>
+											<span class="flow-row welfare-value" title={t('wallet.welfareTooltip')}
+												><span class="num">+{formatCompact(stats.welfare)}</span><span class="unit"
+													>WELFARE</span
+												></span
+											>
 										{/if}
-										<span class="flow-row out-value"><span class="num">-{formatCompact(stats.totalOut)}</span><span class="unit">KRO</span></span>
-										<span class="flow-row net-value"><span class="num">{stats.netChange >= 0 ? '+' : ''}{formatCompact(stats.netChange)}</span><span class="unit">NET</span></span>
+										<span class="flow-row out-value"
+											><span class="num">-{formatCompact(stats.totalOut)}</span><span class="unit"
+												>KRO</span
+											></span
+										>
+										<span class="flow-row net-value"
+											><span class="num"
+												>{stats.netChange >= 0 ? '+' : ''}{formatCompact(stats.netChange)}</span
+											><span class="unit">NET</span></span
+										>
 									</div>
 								</div>
 							{/each}
@@ -566,7 +604,10 @@
 							<span class="summary-label">{t('wallet.uniqueAddresses')}</span>
 						</div>
 						<div class="summary-stat" title={t('wallet.avgTxTooltip')}>
-							<span class="summary-value"><span class="num">{formatCompact(avgTxSize)}</span> <span class="unit-inline">KRO</span></span>
+							<span class="summary-value"
+								><span class="num">{formatCompact(avgTxSize)}</span>
+								<span class="unit-inline">KRO</span></span
+							>
 							<span class="summary-label">{t('wallet.avgTxSize')}</span>
 						</div>
 					</div>
@@ -634,7 +675,9 @@
 		cursor: pointer;
 		padding: 0.25rem 0.5rem;
 		font-size: 0.75rem;
-		transition: color 0.15s ease, background 0.15s ease;
+		transition:
+			color 0.15s ease,
+			background 0.15s ease;
 		border-radius: 0.25rem;
 	}
 
@@ -660,7 +703,9 @@
 		cursor: grab;
 		padding: 0.25rem 0.375rem;
 		opacity: 0.6;
-		transition: opacity 0.15s ease, color 0.15s ease;
+		transition:
+			opacity 0.15s ease,
+			color 0.15s ease;
 	}
 
 	.drag-handle:hover {

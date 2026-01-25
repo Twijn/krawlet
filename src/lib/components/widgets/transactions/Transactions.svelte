@@ -1,12 +1,7 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import {
-		faCopy,
-		faEye,
-		faList,
-		faPaperPlane
-	} from '@fortawesome/free-solid-svg-icons';
+	import { faCopy, faEye, faList, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import SkeletonTable from '$lib/components/ui/SkeletonTable.svelte';
 	import { formatCurrency, relativeTime } from '$lib/util.js';

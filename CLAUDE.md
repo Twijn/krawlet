@@ -94,18 +94,23 @@ src/
 ### State Management Pattern
 
 **Svelte 5 Runes** - Use modern reactive primitives in components:
+
 ```typescript
 let state = $state(initialValue);
 const computed = $derived(state * 2);
-$effect(() => { /* runs when dependencies change */ });
+$effect(() => {
+	/* runs when dependencies change */
+});
 ```
 
 **Svelte Stores** - For shared application state:
+
 - `writable` - Mutable stores
 - `derived` - Computed stores
 - `get()` - Synchronous value retrieval
 
 **FetchedStore Pattern** - Reusable base class for data fetching:
+
 - Periodic updates with configurable intervals
 - Automatic localStorage persistence and hydration
 - Store subscription interface
@@ -132,14 +137,16 @@ Both are singleton instances exported for use throughout the app.
 ### Data Fetching Strategy
 
 1. **SvelteKit Load Functions** - Server-side data loading in `+page.ts` or `+layout.ts`:
+
    ```typescript
    export async function load({ params }) {
-       const data = await fetchData(params.id);
-       return { data };
+   	const data = await fetchData(params.id);
+   	return { data };
    }
    ```
 
 2. **Client-side Stores** - For reactive, auto-updating data:
+
    ```typescript
    import { knownAddresses } from '$lib/stores/knownAddresses';
    // Automatically fetches and updates every 30s
@@ -168,24 +175,26 @@ Both are singleton instances exported for use throughout the app.
    ```
 
 **Usage in Components:**
+
 ```svelte
 <script>
-import { t } from '$lib/i18n';
+	import { t } from '$lib/i18n';
 </script>
 
-<h1>{$t('nav.home')}</h1>
-<p>{$t('greeting', { name: userName })}</p>
+<h1>{$t('nav.home')}</h1><p>{$t('greeting', { name: userName })}</p>
 ```
 
 ### PWA Features
 
 **Service Worker** (`service-worker.ts`):
+
 - Cache-first strategy for static assets
 - Network-first for API requests with cache fallback
 - Automatic cache versioning and cleanup
 - Push notification handling
 
 **PWA Store** (`src/lib/stores/pwa.ts`):
+
 - Install prompt management
 - Online/offline status tracking
 - Service worker update detection
@@ -193,10 +202,11 @@ import { t } from '$lib/i18n';
 ### Component Patterns
 
 **Svelte 5 Props:**
+
 ```typescript
 type Props = {
-    title: string;
-    count?: number;
+	title: string;
+	count?: number;
 };
 const { title, count = 0 }: Props = $props();
 ```
@@ -207,12 +217,13 @@ When discussing code locations, use `file_path:line_number` format for easy navi
 ### URL State Synchronization
 
 Use `paramState.svelte.ts` to sync component state with URL search parameters:
+
 ```typescript
 import { paramState } from '$lib/paramState.svelte';
 
 const page = paramState<number>('page', 1, {
-    parse: (v) => parseInt(v) || 1,
-    serialize: (v) => v.toString()
+	parse: (v) => parseInt(v) || 1,
+	serialize: (v) => v.toString()
 });
 ```
 
@@ -234,12 +245,14 @@ const page = paramState<number>('page', 1, {
 ### Common Modifications
 
 **Frequently Updated Files:**
+
 - `src/lib/verified.ts` - List of verified shops/services
 - `src/routes/` - Page components and routing
 - `src/lib/components/` - Reusable components
 - `src/lib/i18n/locales/` - Translations
 
 **Version Management:**
+
 - Version number in `package.json` is injected globally as `__VERSION__`
 - Used in service worker for cache versioning
 - Displayed in UI settings
@@ -247,6 +260,7 @@ const page = paramState<number>('page', 1, {
 ### Testing & Quality
 
 Run before committing:
+
 ```bash
 pnpm run format  # Formats with Prettier and runs ESLint
 pnpm run check   # TypeScript type checking

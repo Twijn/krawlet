@@ -343,6 +343,12 @@ export default {
 	},
 	settings: {
 		title: 'Settings',
+		tabs: {
+			general: 'General',
+			display: 'Display',
+			notifications: 'Notifications',
+			advanced: 'Advanced'
+		},
 		language: 'Language',
 		selectLanguage: 'Select Language',
 		addressDisplay: 'Address Display',

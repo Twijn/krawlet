@@ -12,7 +12,7 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
 	import settings, { type Wallet } from '$lib/stores/settings';
-	import { getSyncNode, SYNC_NODES } from '$lib/consts';
+	import { getSyncNode } from '$lib/consts';
 	import ToggleCheckbox from '../form/ToggleCheckbox.svelte';
 	import { paramState } from '$lib/paramState.svelte';
 	import { t, t$ } from '$lib/i18n';
@@ -327,7 +327,9 @@
 	.wallet-card-wrapper {
 		position: relative;
 		border-radius: 0.5rem;
-		transition: transform 0.15s ease, opacity 0.15s ease;
+		transition:
+			transform 0.15s ease,
+			opacity 0.15s ease;
 	}
 
 	.wallet-card-wrapper[draggable='true'] {

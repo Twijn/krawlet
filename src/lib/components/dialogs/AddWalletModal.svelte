@@ -153,23 +153,12 @@
 
 		<label>
 			{$t$('wallet.privateKey')}
-			<input
-				type="password"
-				name="pkey"
-				bind:value={pkey}
-				required
-				autocomplete="off"
-			/>
+			<input type="password" name="pkey" bind:value={pkey} required autocomplete="off" />
 			<small>{$t$('wallet.privateKeyHint')}</small>
 		</label>
 
 		<div class="button-group">
-			<Button
-				type="button"
-				full={true}
-				onClick={handlePrivateKeyButton}
-				variant="secondary"
-			>
+			<Button type="button" full={true} onClick={handlePrivateKeyButton} variant="secondary">
 				<FontAwesomeIcon icon={faDice} />
 				{#if pkey.length > 0}
 					{$t$('wallet.clearPrivateKey')}

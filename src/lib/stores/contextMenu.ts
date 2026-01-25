@@ -16,7 +16,7 @@ const initialState: ContextMenuState = {
 };
 
 function createContextMenuStore() {
-	const { subscribe, set, update } = writable<ContextMenuState>(initialState);
+	const { subscribe, set } = writable<ContextMenuState>(initialState);
 
 	return {
 		subscribe,

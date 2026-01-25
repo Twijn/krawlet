@@ -1,12 +1,7 @@
 <script lang="ts">
-	import Section from '$lib/components/ui/Section.svelte';
-	import { faPlus } from '@fortawesome/free-solid-svg-icons';
-	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import Button from '$lib/components/ui/Button.svelte';
 	import Wallets from '$lib/components/widgets/Wallets.svelte';
 	import Import from '$lib/components/widgets/importexport/Import.svelte';
 	import Export from '$lib/components/widgets/importexport/Export.svelte';
-	import { addWalletModal } from '$lib/stores/addWalletModal';
 	import { t$ } from '$lib/i18n';
 </script>
 

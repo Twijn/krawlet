@@ -2,12 +2,7 @@
 	import Section from '$lib/components/ui/Section.svelte';
 	import { browser } from '$app/environment';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import {
-		faCopy,
-		faEye,
-		faSign,
-		faUser
-	} from '@fortawesome/free-solid-svg-icons';
+	import { faCopy, faEye, faSign, faUser } from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import SkeletonTable from '$lib/components/ui/SkeletonTable.svelte';
 	import AddressModule from '$lib/components/widgets/addresses/Address.svelte';
