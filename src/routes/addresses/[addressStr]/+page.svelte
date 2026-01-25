@@ -34,7 +34,7 @@
 <div class="col-12 statistics">
 	<div class="statistic">
 		<div>
-			<Button href="/transactions/new?to_address={address.address}">Send Kromer</Button>
+			<Button href="/transactions/new?to={address.address}">Send Kromer</Button>
 		</div>
 	</div>
 	<div class="statistic">

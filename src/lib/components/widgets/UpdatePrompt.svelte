@@ -85,4 +85,17 @@
 	.dismiss-btn:hover {
 		color: var(--color-text, #fff);
 	}
+
+	@media (max-width: 480px) {
+		.update-banner {
+			flex-direction: column;
+			gap: 0.75rem;
+			text-align: center;
+		}
+
+		.update-actions {
+			width: 100%;
+			justify-content: center;
+		}
+	}
 </style>

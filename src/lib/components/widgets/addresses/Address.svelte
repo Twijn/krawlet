@@ -17,9 +17,11 @@
 	import { getSyncNode } from '$lib/consts';
 
 	let {
-		address = $bindable()
+		address = $bindable(),
+		showCopy = true
 	}: {
 		address: string;
+		showCopy?: boolean;
 	} = $props();
 
 	let wallet: Wallet | null = $derived(
@@ -93,9 +95,11 @@
 	{/if}
 </a>
 
-<button type="button" class="copy-address" onclick={copyAddress} aria-label="Copy Address">
-	<FontAwesomeIcon icon={faCopy} />
-</button>
+{#if showCopy}
+	<button type="button" class="copy-address" onclick={copyAddress} aria-label="Copy Address">
+		<FontAwesomeIcon icon={faCopy} />
+	</button>
+{/if}
 
 <style>
 	a {

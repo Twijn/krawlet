@@ -18,6 +18,7 @@
 	import Notifications from '$lib/components/dialogs/Notifications.svelte';
 	import Confirm from '$lib/components/dialogs/Confirm.svelte';
 	import Prompt from '$lib/components/dialogs/Prompt.svelte';
+	import AddWalletModal from '$lib/components/dialogs/AddWalletModal.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import settings from '$lib/stores/settings';
 	import InstallPrompt from '$lib/components/widgets/InstallPrompt.svelte';
@@ -139,6 +140,7 @@
 <Notifications />
 <Confirm />
 <Prompt />
+<AddWalletModal />
 <InstallPrompt />
 <UpdatePrompt />
 

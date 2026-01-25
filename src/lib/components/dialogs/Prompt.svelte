@@ -65,14 +65,14 @@
 </script>
 
 {#if $prompt}
-	<div class="modal-backdrop" transition:fade={{ duration: 200 }}>
+	<div class="modal-backdrop" transition:fade={{ duration: 120 }}>
 		<div
 			class="modal"
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby={titleId}
 			aria-describedby={descId}
-			transition:scale={{ duration: 200 }}
+			transition:scale={{ duration: 120, start: 0.95 }}
 			use:handleClickOutside
 			use:trapFocus
 		>
@@ -123,7 +123,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		z-index: 1000;
+		z-index: 1100;
 	}
 
 	.modal {

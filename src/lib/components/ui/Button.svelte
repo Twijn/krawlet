@@ -22,6 +22,7 @@
 	export let href: string | undefined = undefined;
 	export let newTab: boolean = false;
 	export let variant: 'primary' | 'secondary' | 'success' | 'error' = 'primary';
+	export let size: 'small' | 'medium' | 'large' = 'medium';
 	export let onClick: ((e: Event) => void | boolean | Promise<boolean>) | undefined = undefined;
 	export let full: boolean = false;
 	export let type: 'button' | 'submit' | 'reset' = 'button';
@@ -46,7 +47,7 @@
 {#if href}
 	<a
 		{href}
-		class="button {variant}"
+		class="button {variant} {size}"
 		class:disabled={isDisabled}
 		class:full
 		class:loading
@@ -63,7 +64,7 @@
 	<button
 		onclick={handleClick}
 		{type}
-		class="button {variant}"
+		class="button {variant} {size}"
 		class:loading
 		disabled={isDisabled}
 		class:full
@@ -139,5 +140,20 @@
 
 	.full {
 		width: 100%;
+	}
+
+	.small {
+		font-size: 0.875rem;
+		padding: 0.375em 0.75em;
+	}
+
+	.medium {
+		font-size: 1rem;
+		padding: 0.5em 1em;
+	}
+
+	.large {
+		font-size: 1.125rem;
+		padding: 0.625em 1.25em;
 	}
 </style>

@@ -1,6 +1,6 @@
 import { writable, get, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
-import type { APIError } from 'kromer';
+import type { APIError, KromerApi } from 'kromer';
 import { getSyncNode, SYNC_NODE_OFFICIAL, updateActiveNode } from '$lib/consts';
 
 export type Wallet = {
@@ -196,7 +196,7 @@ class Settings {
 	public async addWallet(
 		w: Wallet | Omit<Wallet, 'syncNode'>,
 		encryptionKey: string,
-		kromerApi?: unknown
+		kromerApi?: KromerApi
 	) {
 		const store = get(this.data);
 		const wallet: Wallet = {
