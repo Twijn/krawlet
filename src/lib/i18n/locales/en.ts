@@ -365,7 +365,25 @@ export default {
 		changeSyncNode: 'Change sync node',
 		walletDisplay: 'Wallet Display',
 		showAllWalletsOption: 'Show "Show wallets from other sync nodes" option in the wallets widget',
-		showAllWalletsDefault: 'Make "Show wallets from other sync nodes" enabled by default'
+		showAllWalletsDefault: 'Make "Show wallets from other sync nodes" enabled by default',
+		apiKeys: 'API Keys',
+		krawletApiKey: 'Krawlet API Key',
+		krawletApiKeyDescription: 'Enter your Krawlet API key to access additional features',
+		krawletApiKeyPlaceholder: 'Enter your API key',
+		apiKeySaved: 'API key saved successfully',
+		apiKeyInfo: 'API Key Info',
+		apiKeyName: 'Name',
+		apiKeyTier: 'Tier',
+		apiKeyStatus: 'Status',
+		apiKeyActive: 'Active',
+		apiKeyInactive: 'Inactive',
+		apiKeyRateLimit: 'Rate Limit',
+		apiKeyRequestsPerMinute: 'req/min',
+		apiKeyRequests: 'requests',
+		apiKeyUsage24h: 'Last 24h',
+		apiKeyUsage7d: 'Last 7 days',
+		apiKeyLastUsed: 'Last Used',
+		apiKeyNoInfo: 'Unable to fetch API key info'
 	},
 	notifications: {
 		success: 'Success',
@@ -700,5 +718,24 @@ export default {
 		noShopChanges: 'No shop changes found.',
 		noValidationFailures: 'No validation failures found.',
 		noSuccessfulPosts: 'No successful posts found.'
+	},
+	contextMenu: {
+		// Address actions
+		viewAddress: 'View Address',
+		viewTransactions: 'View Transactions',
+		viewNames: 'View Names',
+		sendKromer: 'Send Kromer',
+		copyAddress: 'Copy Address',
+		monitorAddress: 'Monitor Address',
+		viewOnKrist: 'View on Krist',
+		// Transaction actions
+		viewTransaction: 'View Transaction',
+		copyTransactionId: 'Copy Transaction ID',
+		sendToRecipient: 'Send to Recipient',
+		sendToSender: 'Send to Sender',
+		// Name actions
+		viewName: 'View Name',
+		copyName: 'Copy Name',
+		viewNameOwner: 'View Owner'
 	}
 } as const;

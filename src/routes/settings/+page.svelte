@@ -10,11 +10,16 @@
 		faClock,
 		faServer,
 		faWallet,
-		faEye
+		faEye,
+		faKey,
+		faSync,
+		faCheckCircle,
+		faTimesCircle
 	} from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 	import ButtonSelect from '$lib/components/ui/ButtonSelect.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 	import { SYNC_NODE_OFFICIAL, SYNC_NODES, SEVEN_DAYS } from '$lib/consts';
 	import { notifications } from '$lib/stores/notifications';
 	import { t, t$, locale, LOCALES, type LocaleCode } from '$lib/i18n';
@@ -24,10 +29,13 @@
 	import Names from '$lib/components/widgets/names/Names.svelte';
 	import WalletCardCompact from '$lib/components/widgets/wallets/WalletCardCompact.svelte';
 	import { relativeTime } from '$lib/util';
+	import krawletClient from '$lib/api/krawlet';
+	import type { ApiKeyInfo } from 'krawlet-js';
 
-	// Example address for previews - uses a real address to show actual data
-	const EXAMPLE_ADDRESS = 'kkrawletii';
+	// Example address for previews - uses Twijn's address to demonstrate player name feature
+	const EXAMPLE_ADDRESS = 'ks0d5iqb6p';
 	const EXAMPLE_SHOP_ADDRESS = 'ktwijnmall';
+	const KRAWLET_ADDRESS = 'kkrawletii';
 
 	// Example wallet for wallet display preview
 	const EXAMPLE_WALLET = {
@@ -107,6 +115,43 @@
 			$settings.showAllWalletsDefault = false;
 		}
 	}
+
+	// API Key info state
+	let apiKeyInfo: ApiKeyInfo | null = $state(null);
+	let apiKeyLoading = $state(false);
+	let apiKeyError: string | null = $state(null);
+
+	async function fetchApiKeyInfo() {
+		if (!$settings.krawletApiKey) {
+			apiKeyInfo = null;
+			apiKeyError = null;
+			return;
+		}
+
+		apiKeyLoading = true;
+		apiKeyError = null;
+
+		try {
+			apiKeyInfo = await krawletClient.apiKey.getInfo({ usage: true });
+		} catch (err: unknown) {
+			console.error('Failed to fetch API key info:', err);
+			apiKeyInfo = null;
+			apiKeyError = err instanceof Error ? err.message : 'Failed to fetch API key info';
+		} finally {
+			apiKeyLoading = false;
+		}
+	}
+
+	// Fetch API key info when the key changes
+	$effect(() => {
+		if ($settings.krawletApiKey) {
+			// Small delay to allow the client to update with the new key
+			setTimeout(fetchApiKeyInfo, 100);
+		} else {
+			apiKeyInfo = null;
+			apiKeyError = null;
+		}
+	});
 </script>
 
 <svelte:head>
@@ -153,6 +198,8 @@
 					<div class="preview-label"><FontAwesomeIcon icon={faEye} /> Preview</div>
 					<div class="preview-content address-preview">
 						<Address address={EXAMPLE_ADDRESS} showCopy={false} />
+						<Address address={EXAMPLE_SHOP_ADDRESS} showCopy={false} />
+						<Address address={KRAWLET_ADDRESS} showCopy={false} />
 					</div>
 				</div>
 			</div>
@@ -315,6 +362,91 @@
 						{/if}
 					</div>
 				</div>
+			</div>
+		</fieldset>
+
+		<fieldset class="settings-group">
+			<legend><FontAwesomeIcon icon={faKey} /> {$t$('settings.apiKeys')}</legend>
+			<div class="settings-columns">
+				<div class="setting-content">
+					<label for="krawlet-api-key" class="setting-description">
+						{$t$('settings.krawletApiKeyDescription')}
+					</label>
+					<input
+						type="password"
+						id="krawlet-api-key"
+						class="api-key-input"
+						bind:value={$settings.krawletApiKey}
+						placeholder={$t$('settings.krawletApiKeyPlaceholder')}
+						autocomplete="off"
+					/>
+				</div>
+				{#if $settings.krawletApiKey}
+					<div class="setting-preview api-key-preview">
+						<div class="preview-label">
+							<FontAwesomeIcon icon={faEye} /> {$t$('settings.apiKeyInfo')}
+							<button
+								type="button"
+								class="refresh-btn"
+								onclick={fetchApiKeyInfo}
+								disabled={apiKeyLoading}
+								aria-label={$t$('common.refresh')}
+							>
+								<FontAwesomeIcon icon={faSync} spin={apiKeyLoading} />
+							</button>
+						</div>
+						<div class="preview-content api-key-info">
+							{#if apiKeyLoading}
+								<div class="api-key-loading">{$t$('common.loading')}</div>
+							{:else if apiKeyError}
+								<div class="api-key-error">
+									<FontAwesomeIcon icon={faTimesCircle} />
+									{apiKeyError}
+								</div>
+							{:else if apiKeyInfo}
+								<div class="api-key-details">
+									<div class="api-key-row">
+										<span class="api-key-label">{$t$('settings.apiKeyName')}</span>
+										<span class="api-key-value">{apiKeyInfo.name}</span>
+									</div>
+									<div class="api-key-row">
+										<span class="api-key-label">{$t$('settings.apiKeyTier')}</span>
+										<span class="api-key-value tier-{apiKeyInfo.tier}">{apiKeyInfo.tier}</span>
+									</div>
+									<div class="api-key-row">
+										<span class="api-key-label">{$t$('settings.apiKeyStatus')}</span>
+										<span class="api-key-value" class:active={apiKeyInfo.isActive} class:inactive={!apiKeyInfo.isActive}>
+											<FontAwesomeIcon icon={apiKeyInfo.isActive ? faCheckCircle : faTimesCircle} />
+											{apiKeyInfo.isActive ? $t$('settings.apiKeyActive') : $t$('settings.apiKeyInactive')}
+										</span>
+									</div>
+									<div class="api-key-row">
+										<span class="api-key-label">{$t$('settings.apiKeyRateLimit')}</span>
+										<span class="api-key-value">{apiKeyInfo.rateLimit} {$t$('settings.apiKeyRequestsPerMinute')}</span>
+									</div>
+									{#if apiKeyInfo.usage}
+										<div class="api-key-row">
+											<span class="api-key-label">{$t$('settings.apiKeyUsage24h')}</span>
+											<span class="api-key-value">{apiKeyInfo.usage.last24h.toLocaleString()} {$t$('settings.apiKeyRequests')}</span>
+										</div>
+										<div class="api-key-row">
+											<span class="api-key-label">{$t$('settings.apiKeyUsage7d')}</span>
+											<span class="api-key-value">{apiKeyInfo.usage.last7d.toLocaleString()} {$t$('settings.apiKeyRequests')}</span>
+										</div>
+									{/if}
+									{#if apiKeyInfo.lastUsedAt}
+										<div class="api-key-row">
+											<span class="api-key-label">{$t$('settings.apiKeyLastUsed')}</span>
+											<span class="api-key-value">{relativeTime(new Date(apiKeyInfo.lastUsedAt))}</span>
+										</div>
+									{/if}
+								</div>
+							{:else}
+								<div class="api-key-empty">{$t$('settings.apiKeyNoInfo')}</div>
+							{/if}
+						</div>
+					</div>
+				{/if}
 			</div>
 		</fieldset>
 	</div>
@@ -485,6 +617,116 @@
 		color: rgba(255, 255, 255, 0.5);
 		text-align: center;
 		font-style: italic;
+	}
+
+	.api-key-input {
+		width: 100%;
+		padding: 0.75rem;
+		margin-top: 0.5rem;
+		background-color: var(--background-color-2);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 0.5rem;
+		color: var(--text-color-1);
+		font-family: monospace;
+		font-size: 0.9rem;
+	}
+
+	.api-key-input:focus {
+		outline: none;
+		border-color: var(--theme-color-2);
+	}
+
+	.api-key-input::placeholder {
+		color: rgba(255, 255, 255, 0.3);
+	}
+
+	.api-key-preview {
+		margin-top: 1rem;
+	}
+
+	.refresh-btn {
+		background: transparent;
+		border: none;
+		color: rgba(255, 255, 255, 0.5);
+		cursor: pointer;
+		padding: 0.25rem;
+		margin-left: auto;
+		transition: color 0.2s ease;
+	}
+
+	.refresh-btn:hover:not(:disabled) {
+		color: var(--theme-color-2);
+	}
+
+	.refresh-btn:disabled {
+		cursor: not-allowed;
+	}
+
+	.api-key-info {
+		background-color: rgba(0, 0, 0, 0.2);
+		border-radius: 0.5rem;
+		padding: 0.75rem;
+	}
+
+	.api-key-loading,
+	.api-key-empty {
+		text-align: center;
+		color: rgba(255, 255, 255, 0.5);
+		font-size: 0.85rem;
+		padding: 0.5rem;
+	}
+
+	.api-key-error {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		color: rgb(var(--red));
+		font-size: 0.85rem;
+		padding: 0.5rem;
+	}
+
+	.api-key-details {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.api-key-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.25rem 0;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.api-key-row:last-child {
+		border-bottom: none;
+	}
+
+	.api-key-label {
+		color: rgba(255, 255, 255, 0.6);
+		font-size: 0.8rem;
+	}
+
+	.api-key-value {
+		font-size: 0.85rem;
+		font-weight: 500;
+	}
+
+	.api-key-value.active {
+		color: rgb(var(--green));
+	}
+
+	.api-key-value.inactive {
+		color: rgb(var(--red));
+	}
+
+	.api-key-value.tier-free {
+		color: rgba(255, 255, 255, 0.8);
+	}
+
+	.api-key-value.tier-premium {
+		color: rgb(var(--theme-color-rgb));
 	}
 
 	@media (max-width: 900px) {

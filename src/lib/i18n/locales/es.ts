@@ -352,7 +352,25 @@ export default {
 		showAllWalletsOption:
 			'Mostrar opción "Mostrar billeteras de otros nodos" en el widget de billeteras',
 		showAllWalletsDefault:
-			'Hacer que "Mostrar billeteras de otros nodos" esté habilitado por defecto'
+			'Hacer que "Mostrar billeteras de otros nodos" esté habilitado por defecto',
+		apiKeys: 'Claves API',
+		krawletApiKey: 'Clave API de Krawlet',
+		krawletApiKeyDescription: 'Ingresa tu clave API de Krawlet para acceder a funciones adicionales',
+		krawletApiKeyPlaceholder: 'Ingresa tu clave API',
+		apiKeySaved: 'Clave API guardada exitosamente',
+		apiKeyInfo: 'Info de Clave API',
+		apiKeyName: 'Nombre',
+		apiKeyTier: 'Nivel',
+		apiKeyStatus: 'Estado',
+		apiKeyActive: 'Activa',
+		apiKeyInactive: 'Inactiva',
+		apiKeyRateLimit: 'Límite de Tasa',
+		apiKeyRequestsPerMinute: 'req/min',
+		apiKeyRequests: 'solicitudes',
+		apiKeyUsage24h: 'Últimas 24h',
+		apiKeyUsage7d: 'Últimos 7 días',
+		apiKeyLastUsed: 'Último Uso',
+		apiKeyNoInfo: 'No se pudo obtener info de la clave API'
 	},
 	notifications: {
 		success: 'Éxito',
@@ -693,5 +711,24 @@ export default {
 		noShopChanges: 'No se encontraron cambios de tiendas.',
 		noValidationFailures: 'No se encontraron fallos de validación.',
 		noSuccessfulPosts: 'No se encontraron envíos exitosos.'
+	},
+	contextMenu: {
+		// Acciones de dirección
+		viewAddress: 'Ver Dirección',
+		viewTransactions: 'Ver Transacciones',
+		viewNames: 'Ver Nombres',
+		sendKromer: 'Enviar Kromer',
+		copyAddress: 'Copiar Dirección',
+		monitorAddress: 'Monitorear Dirección',
+		viewOnKrist: 'Ver en Krist',
+		// Acciones de transacción
+		viewTransaction: 'Ver Transacción',
+		copyTransactionId: 'Copiar ID de Transacción',
+		sendToRecipient: 'Enviar al Destinatario',
+		sendToSender: 'Enviar al Remitente',
+		// Acciones de nombre
+		viewName: 'Ver Nombre',
+		copyName: 'Copiar Nombre',
+		viewNameOwner: 'Ver Propietario'
 	}
 } as const;

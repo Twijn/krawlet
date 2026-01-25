@@ -1,7 +1,12 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faList } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faCopy,
+		faEye,
+		faList,
+		faPaperPlane
+	} from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import SkeletonTable from '$lib/components/ui/SkeletonTable.svelte';
 	import { formatCurrency, relativeTime } from '$lib/util.js';
@@ -9,13 +14,16 @@
 	import { browser } from '$app/environment';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import kromer from '$lib/api/kromer';
-	import type { TransactionsResponse } from 'kromer';
+	import type { Transaction, TransactionsResponse } from 'kromer';
 	import { paramState } from '$lib/paramState.svelte.js';
 	import ParsedMetadata from '$lib/components/widgets/transactions/ParsedMetadata.svelte';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 	import settings from '$lib/stores/settings';
 	import { SEVEN_DAYS } from '$lib/consts';
 	import { t$ } from '$lib/i18n';
+	import { contextMenu } from '$lib/stores/contextMenu';
+	import { notifications } from '$lib/stores/notifications';
+	import type { ContextMenuItem } from '$lib/components/ui/ContextMenu.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -48,6 +56,59 @@
 	});
 
 	let loading: boolean = $state(false);
+
+	const handleTransactionContextMenu = (e: MouseEvent, transaction: Transaction) => {
+		e.preventDefault();
+
+		const copyTransactionId = async () => {
+			try {
+				await navigator.clipboard.writeText(transaction.id.toString());
+				notifications.success(`Transaction ID '${transaction.id}' copied to clipboard.`);
+			} catch (err) {
+				console.error(err);
+				notifications.error('Failed to copy transaction ID to clipboard.');
+			}
+		};
+
+		const menuItems: ContextMenuItem[] = [
+			{
+				label: $t$('contextMenu.viewTransaction'),
+				icon: faEye,
+				href: `/transactions/${transaction.id}`
+			},
+			{
+				label: $t$('contextMenu.copyTransactionId'),
+				icon: faCopy,
+				action: copyTransactionId
+			}
+		];
+
+		// Add send to recipient option if there's a recipient
+		if (transaction.to) {
+			menuItems.push(
+				{ separator: true, label: '' },
+				{
+					label: $t$('contextMenu.sendToRecipient'),
+					icon: faPaperPlane,
+					href: `/transactions/new?to=${transaction.to}`
+				}
+			);
+		}
+
+		// Add send to sender option if there's a sender
+		if (transaction.from) {
+			if (!transaction.to) {
+				menuItems.push({ separator: true, label: '' });
+			}
+			menuItems.push({
+				label: $t$('contextMenu.sendToSender'),
+				icon: faPaperPlane,
+				href: `/transactions/new?to=${transaction.from}`
+			});
+		}
+
+		contextMenu.show(e.clientX, e.clientY, menuItems);
+	};
 
 	let transactionsPromise = $derived(
 		browser
@@ -130,7 +191,7 @@
 								$settings.relativeTimeEnabled &&
 								($settings.relativeTimeAbove7d ||
 									Date.now() - transaction.time.getTime() <= SEVEN_DAYS)}
-							<tr>
+							<tr oncontextmenu={(e) => handleTransactionContextMenu(e, transaction)}>
 								<td class="center"><a href="/transactions/{transaction.id}">{transaction.id}</a></td
 								>
 								<td class="caps"
@@ -207,5 +268,14 @@
 
 	.time {
 		font-size: 0.9rem;
+	}
+
+	tbody tr {
+		cursor: context-menu;
+		transition: background-color 0.15s ease;
+	}
+
+	tbody tr:hover {
+		background-color: rgba(var(--theme-color-rgb), 0.05);
 	}
 </style>

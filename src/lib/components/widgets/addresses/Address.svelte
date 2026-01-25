@@ -4,17 +4,26 @@
 	import playerWalletStore, { type Player } from '$lib/stores/playerWallets';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import {
+		faBell,
 		faBuilding,
 		faCheck,
 		faCopy,
 		faDice,
+		faExchange,
+		faExternalLinkAlt,
+		faEye,
+		faPaperPlane,
 		faStore,
+		faTag,
 		faWallet
 	} from '@fortawesome/free-solid-svg-icons';
 	import { notifications } from '$lib/stores/notifications';
 	import { getAddress, type KnownAddress } from '$lib/stores/knownAddresses';
 	import settings, { type Wallet } from '$lib/stores/settings';
 	import { getSyncNode } from '$lib/consts';
+	import { contextMenu } from '$lib/stores/contextMenu';
+	import { t$ } from '$lib/i18n';
+	import type { ContextMenuItem } from '$lib/components/ui/ContextMenu.svelte';
 
 	let {
 		address = $bindable(),
@@ -48,6 +57,59 @@
 		}
 	};
 
+	const handleContextMenu = (e: MouseEvent) => {
+		e.preventDefault();
+
+		const menuItems: ContextMenuItem[] = [
+			{
+				label: $t$('contextMenu.viewAddress'),
+				icon: faEye,
+				href: `/addresses/${address}`
+			},
+			{
+				label: $t$('contextMenu.viewTransactions'),
+				icon: faExchange,
+				href: `/addresses/${address}/transactions`
+			},
+			{
+				label: $t$('contextMenu.viewNames'),
+				icon: faTag,
+				href: `/addresses/${address}/names`
+			},
+			{ separator: true, label: '' },
+			{
+				label: $t$('contextMenu.sendKromer'),
+				icon: faPaperPlane,
+				href: `/transactions/new?to=${address}`
+			},
+			{ separator: true, label: '' },
+			{
+				label: $t$('contextMenu.copyAddress'),
+				icon: faCopy,
+				action: copyAddress
+			},
+			{
+				label: $t$('contextMenu.monitorAddress'),
+				icon: faBell,
+				href: `/settings?monitor=${address}`
+			},
+			{ separator: true, label: '' },
+			{
+				label: $t$('contextMenu.viewOnKrist'),
+				icon: faExternalLinkAlt,
+				href: `${getSyncNode().url.replace('/api/krist/', '')}/#/addresses/${address}`,
+				action: () => {
+					window.open(
+						`${getSyncNode().url.replace('/api/krist/', '')}/#/addresses/${address}`,
+						'_blank'
+					);
+				}
+			}
+		];
+
+		contextMenu.show(e.clientX, e.clientY, menuItems);
+	};
+
 	let special = $derived(
 		Boolean(
 			wallet ||
@@ -67,6 +129,7 @@
 	class:gamble={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'gamble'}
 	class:company={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'company'}
 	title={special ? 'Go to ' + address : undefined}
+	oncontextmenu={handleContextMenu}
 >
 	{#if verifiedEntry && $settings.replaceAddressesWithKnown}
 		{#if verifiedEntry.imageSrc}

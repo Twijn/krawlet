@@ -24,8 +24,10 @@
 	import InstallPrompt from '$lib/components/widgets/InstallPrompt.svelte';
 	import UpdatePrompt from '$lib/components/widgets/UpdatePrompt.svelte';
 	import ConnectionStatus from '$lib/components/widgets/ConnectionStatus.svelte';
+	import ContextMenu from '$lib/components/ui/ContextMenu.svelte';
 	import { initPWA, isOnline } from '$lib/stores/pwa';
 	import { websocket } from '$lib/stores/websocket';
+	import { contextMenu } from '$lib/stores/contextMenu';
 	import { initLocale, t$ } from '$lib/i18n';
 
 	config.autoAddCss = false;
@@ -143,6 +145,13 @@
 <AddWalletModal />
 <InstallPrompt />
 <UpdatePrompt />
+<ContextMenu
+	items={$contextMenu.items}
+	x={$contextMenu.x}
+	y={$contextMenu.y}
+	visible={$contextMenu.visible}
+	onClose={contextMenu.hide}
+/>
 
 {#if !$isOnline}
 	<div class="offline-banner" role="alert" aria-live="assertive">

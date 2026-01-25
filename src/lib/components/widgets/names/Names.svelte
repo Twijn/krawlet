@@ -2,18 +2,26 @@
 	import Section from '$lib/components/ui/Section.svelte';
 	import { browser } from '$app/environment';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faSign } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faCopy,
+		faEye,
+		faSign,
+		faUser
+	} from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import SkeletonTable from '$lib/components/ui/SkeletonTable.svelte';
 	import AddressModule from '$lib/components/widgets/addresses/Address.svelte';
 	import Pagination from '$lib/components/ui/Pagination.svelte';
 	import kromer from '$lib/api/kromer';
-	import type { NamesResponse } from 'kromer';
+	import type { Name, NamesResponse } from 'kromer';
 	import { relativeTime } from '$lib/util';
 	import { paramState } from '$lib/paramState.svelte.js';
 	import { SEVEN_DAYS } from '$lib/consts';
 	import settings from '$lib/stores/settings';
 	import { t$ } from '$lib/i18n';
+	import { contextMenu } from '$lib/stores/contextMenu';
+	import { notifications } from '$lib/stores/notifications';
+	import type { ContextMenuItem } from '$lib/components/ui/ContextMenu.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -56,6 +64,41 @@
 	);
 
 	let names: NamesResponse | null = $state(null);
+
+	const handleNameContextMenu = (e: MouseEvent, name: Name) => {
+		e.preventDefault();
+
+		const copyName = async () => {
+			try {
+				await navigator.clipboard.writeText(`${name.name}.kro`);
+				notifications.success(`Name '${name.name}.kro' copied to clipboard.`);
+			} catch (err) {
+				console.error(err);
+				notifications.error('Failed to copy name to clipboard.');
+			}
+		};
+
+		const menuItems: ContextMenuItem[] = [
+			{
+				label: $t$('contextMenu.viewName'),
+				icon: faEye,
+				href: `/names/${name.name}`
+			},
+			{
+				label: $t$('contextMenu.copyName'),
+				icon: faCopy,
+				action: copyName
+			},
+			{ separator: true, label: '' },
+			{
+				label: $t$('contextMenu.viewNameOwner'),
+				icon: faUser,
+				href: `/addresses/${name.owner}`
+			}
+		];
+
+		contextMenu.show(e.clientX, e.clientY, menuItems);
+	};
 
 	$effect(() => {
 		loading = true;
@@ -118,7 +161,7 @@
 								$settings.relativeTimeEnabled &&
 								($settings.relativeTimeAbove7d ||
 									Date.now() - name.registered.getTime() <= SEVEN_DAYS)}
-							<tr>
+							<tr oncontextmenu={(e) => handleNameContextMenu(e, name)}>
 								<td class="right"><code>{name.name}</code></td>
 								<td class="right">
 									<AddressModule address={name.owner} />
@@ -208,5 +251,14 @@
 
 	.time {
 		font-size: 0.9rem;
+	}
+
+	tbody tr {
+		cursor: context-menu;
+		transition: background-color 0.15s ease;
+	}
+
+	tbody tr:hover {
+		background-color: rgba(var(--theme-color-rgb), 0.05);
 	}
 </style>

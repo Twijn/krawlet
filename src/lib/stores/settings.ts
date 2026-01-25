@@ -33,6 +33,8 @@ export type SettingsData = {
 	showAllWalletsDefault: boolean;
 	// language
 	language: string;
+	// API keys
+	krawletApiKey: string;
 };
 
 const NAME = 'settings';
@@ -155,7 +157,8 @@ class Settings {
 		syncNode: SYNC_NODE_OFFICIAL.id,
 		showAllWalletsOption: false,
 		showAllWalletsDefault: false,
-		language: 'en'
+		language: 'en',
+		krawletApiKey: ''
 	};
 	private data: Writable<SettingsData>;
 
