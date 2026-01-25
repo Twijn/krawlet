@@ -68,11 +68,18 @@
 	let statsLoaded = $state(false);
 	let transactions: Transaction[] = $state([]);
 
+	// Timeframe view modes
+	type TimeframeMode = 'cumulative' | 'daily' | 'weekly';
+	let timeframeMode: TimeframeMode = $state('cumulative');
+
 	// Timeframe definitions in milliseconds
+	const DAY_MS = 24 * 60 * 60 * 1000;
+	const WEEK_MS = 7 * DAY_MS;
+
 	const TIMEFRAMES = {
-		'24h': 24 * 60 * 60 * 1000,
-		'7d': 7 * 24 * 60 * 60 * 1000,
-		'30d': 30 * 24 * 60 * 60 * 1000
+		'24h': DAY_MS,
+		'7d': WEEK_MS,
+		'30d': 30 * DAY_MS
 	};
 
 	// Calculated statistics
@@ -86,9 +93,21 @@
 
 	const emptyStats = (): TimeframeStats => ({ totalIn: 0, totalOut: 0, welfare: 0, netChange: 0, txCount: 0 });
 
+	// Cumulative view stats (24h, 7d, 30d)
 	let stats24h: TimeframeStats = $state(emptyStats());
 	let stats7d: TimeframeStats = $state(emptyStats());
 	let stats30d: TimeframeStats = $state(emptyStats());
+
+	// Daily comparison stats (2 days ago, 1 day ago, last 24h)
+	let statsDay2Ago: TimeframeStats = $state(emptyStats());
+	let statsDay1Ago: TimeframeStats = $state(emptyStats());
+	let statsLast24h: TimeframeStats = $state(emptyStats());
+
+	// Weekly comparison stats (2 weeks ago, 1 week ago, last 7d)
+	let statsWeek2Ago: TimeframeStats = $state(emptyStats());
+	let statsWeek1Ago: TimeframeStats = $state(emptyStats());
+	let statsLastWeek: TimeframeStats = $state(emptyStats());
+
 	let allTimeStats: TimeframeStats = $state(emptyStats());
 	let uniqueAddresses = $state(0);
 	let largestTxIn = $state(0);
@@ -98,6 +117,42 @@
 	function calculateStats(txs: Transaction[], cutoffMs: number): TimeframeStats {
 		const cutoffTime = Date.now() - cutoffMs;
 		const filtered = txs.filter((tx) => tx.time.getTime() >= cutoffTime);
+
+		let totalIn = 0;
+		let totalOut = 0;
+		let welfare = 0;
+
+		for (const tx of filtered) {
+			if (tx.to === wallet.address) {
+				if (tx.type === 'mined') {
+					welfare += tx.value;
+				} else {
+					totalIn += tx.value;
+				}
+			}
+			if (tx.from === wallet.address) {
+				totalOut += tx.value;
+			}
+		}
+
+		return {
+			totalIn,
+			totalOut,
+			welfare,
+			netChange: totalIn + welfare - totalOut,
+			txCount: filtered.length
+		};
+	}
+
+	// Calculate stats for a specific time window (from startMs ago to endMs ago)
+	function calculateStatsWindow(txs: Transaction[], startMsAgo: number, endMsAgo: number): TimeframeStats {
+		const now = Date.now();
+		const startTime = now - startMsAgo;
+		const endTime = now - endMsAgo;
+		const filtered = txs.filter((tx) => {
+			const txTime = tx.time.getTime();
+			return txTime >= startTime && txTime < endTime;
+		});
 
 		let totalIn = 0;
 		let totalOut = 0;
@@ -190,10 +245,21 @@
 
 			transactions = allTxs;
 
-			// Calculate timeframe-based stats
+			// Calculate cumulative timeframe stats (24h, 7d, 30d from now)
 			stats24h = calculateStats(allTxs, TIMEFRAMES['24h']);
 			stats7d = calculateStats(allTxs, TIMEFRAMES['7d']);
 			stats30d = calculateStats(allTxs, TIMEFRAMES['30d']);
+
+			// Calculate daily comparison stats (each individual day)
+			statsLast24h = calculateStatsWindow(allTxs, DAY_MS, 0); // Last 24 hours
+			statsDay1Ago = calculateStatsWindow(allTxs, 2 * DAY_MS, DAY_MS); // 24-48 hours ago
+			statsDay2Ago = calculateStatsWindow(allTxs, 3 * DAY_MS, 2 * DAY_MS); // 48-72 hours ago
+
+			// Calculate weekly comparison stats (each individual week)
+			statsLastWeek = calculateStatsWindow(allTxs, WEEK_MS, 0); // Last 7 days
+			statsWeek1Ago = calculateStatsWindow(allTxs, 2 * WEEK_MS, WEEK_MS); // 7-14 days ago
+			statsWeek2Ago = calculateStatsWindow(allTxs, 3 * WEEK_MS, 2 * WEEK_MS); // 14-21 days ago
+
 			allTimeStats = calculateAllTimeStats(allTxs);
 
 			// Calculate unique addresses interacted with
@@ -384,9 +450,13 @@
 	</div>
 
 	<!-- Expandable details (future use) -->
-	<button class="expand-toggle" onclick={toggleExpanded} aria-expanded={expanded}>
-		<FontAwesomeIcon icon={expanded ? faChevronUp : faChevronDown} />
-		{expanded ? t('common.showLess') : t('common.showMore')}
+	<button class="expand-toggle" class:expanded onclick={toggleExpanded} aria-expanded={expanded}>
+		<span class="toggle-icon">
+			<FontAwesomeIcon icon={faChevronDown} />
+		</span>
+		<span class="toggle-text">
+			{expanded ? t('wallet.hideStatistics') : t('wallet.showStatistics')}
+		</span>
 	</button>
 
 	{#if expanded}
@@ -398,38 +468,91 @@
 				</div>
 			{:else if statsLoaded}
 				<div class="expanded-stats">
+					<!-- Timeframe Mode Toggle -->
+					<div class="timeframe-toggle">
+						<button
+							class="mode-btn"
+							class:active={timeframeMode === 'cumulative'}
+							onclick={() => timeframeMode = 'cumulative'}
+						>
+							{t('wallet.timeframeCumulative')}
+						</button>
+						<button
+							class="mode-btn"
+							class:active={timeframeMode === 'daily'}
+							onclick={() => timeframeMode = 'daily'}
+						>
+							{t('wallet.timeframeDaily')}
+						</button>
+						<button
+							class="mode-btn"
+							class:active={timeframeMode === 'weekly'}
+							onclick={() => timeframeMode = 'weekly'}
+						>
+							{t('wallet.timeframeWeekly')}
+						</button>
+					</div>
+
 					<!-- Flow by Timeframe -->
 					<div class="flow-section">
-						<div class="flow-period">
-							<span class="period-label">24h</span>
-							<div class="flow-values">
-								<span class="flow-row in-value"><span class="num">+{formatCompact(stats24h.totalIn)}</span><span class="unit">KRO</span></span>
-								{#if stats24h.welfare > 0}
-									<span class="flow-row welfare-value" title="{t('wallet.welfareTooltip')}"><span class="num">+{formatCompact(stats24h.welfare)}</span><span class="unit">WELFARE</span></span>
-								{/if}
-								<span class="flow-row out-value"><span class="num">-{formatCompact(stats24h.totalOut)}</span><span class="unit">KRO</span></span>
-							</div>
-						</div>
-						<div class="flow-period">
-							<span class="period-label">7d</span>
-							<div class="flow-values">
-								<span class="flow-row in-value"><span class="num">+{formatCompact(stats7d.totalIn)}</span><span class="unit">KRO</span></span>
-								{#if stats7d.welfare > 0}
-									<span class="flow-row welfare-value" title="{t('wallet.welfareTooltip')}"><span class="num">+{formatCompact(stats7d.welfare)}</span><span class="unit">WELFARE</span></span>
-								{/if}
-								<span class="flow-row out-value"><span class="num">-{formatCompact(stats7d.totalOut)}</span><span class="unit">KRO</span></span>
-							</div>
-						</div>
-						<div class="flow-period">
-							<span class="period-label">30d</span>
-							<div class="flow-values">
-								<span class="flow-row in-value"><span class="num">+{formatCompact(stats30d.totalIn)}</span><span class="unit">KRO</span></span>
-								{#if stats30d.welfare > 0}
-									<span class="flow-row welfare-value" title="{t('wallet.welfareTooltip')}"><span class="num">+{formatCompact(stats30d.welfare)}</span><span class="unit">WELFARE</span></span>
-								{/if}
-								<span class="flow-row out-value"><span class="num">-{formatCompact(stats30d.totalOut)}</span><span class="unit">KRO</span></span>
-							</div>
-						</div>
+						{#if timeframeMode === 'cumulative'}
+							{@const periods = [
+								{ label: '30d', stats: stats30d },
+								{ label: '7d', stats: stats7d },
+								{ label: '24h', stats: stats24h }
+							]}
+							{#each periods as { label, stats }}
+								<div class="flow-period">
+									<span class="period-label">{label}</span>
+									<div class="flow-values">
+										<span class="flow-row in-value"><span class="num">+{formatCompact(stats.totalIn)}</span><span class="unit">KRO</span></span>
+										{#if stats.welfare > 0}
+											<span class="flow-row welfare-value" title="{t('wallet.welfareTooltip')}"><span class="num">+{formatCompact(stats.welfare)}</span><span class="unit">WELFARE</span></span>
+										{/if}
+										<span class="flow-row out-value"><span class="num">-{formatCompact(stats.totalOut)}</span><span class="unit">KRO</span></span>
+										<span class="flow-row net-value"><span class="num">{stats.netChange >= 0 ? '+' : ''}{formatCompact(stats.netChange)}</span><span class="unit">NET</span></span>
+									</div>
+								</div>
+							{/each}
+						{:else if timeframeMode === 'daily'}
+							{@const periods = [
+								{ label: t('wallet.twoDaysAgo'), stats: statsDay2Ago },
+								{ label: t('wallet.oneDayAgo'), stats: statsDay1Ago },
+								{ label: t('wallet.last24h'), stats: statsLast24h }
+							]}
+							{#each periods as { label, stats }}
+								<div class="flow-period">
+									<span class="period-label">{label}</span>
+									<div class="flow-values">
+										<span class="flow-row in-value"><span class="num">+{formatCompact(stats.totalIn)}</span><span class="unit">KRO</span></span>
+										{#if stats.welfare > 0}
+											<span class="flow-row welfare-value" title="{t('wallet.welfareTooltip')}"><span class="num">+{formatCompact(stats.welfare)}</span><span class="unit">WELFARE</span></span>
+										{/if}
+										<span class="flow-row out-value"><span class="num">-{formatCompact(stats.totalOut)}</span><span class="unit">KRO</span></span>
+										<span class="flow-row net-value"><span class="num">{stats.netChange >= 0 ? '+' : ''}{formatCompact(stats.netChange)}</span><span class="unit">NET</span></span>
+									</div>
+								</div>
+							{/each}
+						{:else if timeframeMode === 'weekly'}
+							{@const periods = [
+								{ label: t('wallet.twoWeeksAgo'), stats: statsWeek2Ago },
+								{ label: t('wallet.oneWeekAgo'), stats: statsWeek1Ago },
+								{ label: t('wallet.lastWeek'), stats: statsLastWeek }
+							]}
+							{#each periods as { label, stats }}
+								<div class="flow-period">
+									<span class="period-label">{label}</span>
+									<div class="flow-values">
+										<span class="flow-row in-value"><span class="num">+{formatCompact(stats.totalIn)}</span><span class="unit">KRO</span></span>
+										{#if stats.welfare > 0}
+											<span class="flow-row welfare-value" title="{t('wallet.welfareTooltip')}"><span class="num">+{formatCompact(stats.welfare)}</span><span class="unit">WELFARE</span></span>
+										{/if}
+										<span class="flow-row out-value"><span class="num">-{formatCompact(stats.totalOut)}</span><span class="unit">KRO</span></span>
+										<span class="flow-row net-value"><span class="num">{stats.netChange >= 0 ? '+' : ''}{formatCompact(stats.netChange)}</span><span class="unit">NET</span></span>
+									</div>
+								</div>
+							{/each}
+						{/if}
 					</div>
 
 					<!-- Summary Stats -->
@@ -694,6 +817,21 @@
 		color: var(--text-color-1);
 	}
 
+	.expand-toggle .toggle-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: transform 0.3s ease;
+	}
+
+	.expand-toggle.expanded .toggle-icon {
+		transform: rotate(180deg);
+	}
+
+	.expand-toggle .toggle-text {
+		transition: opacity 0.2s ease;
+	}
+
 	.expanded-content {
 		padding: 1rem;
 		background: rgba(0, 0, 0, 0.2);
@@ -738,16 +876,49 @@
 		gap: 1rem;
 	}
 
+	.timeframe-toggle {
+		display: flex;
+		background: rgba(0, 0, 0, 0.2);
+		border-radius: 0.5rem;
+		padding: 0.25rem;
+		gap: 0.25rem;
+	}
+
+	.mode-btn {
+		flex: 1;
+		background: transparent;
+		border: none;
+		color: var(--text-color-2);
+		padding: 0.4rem 0.5rem;
+		border-radius: 0.35rem;
+		font-size: 0.7rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.mode-btn:hover {
+		background: rgba(255, 255, 255, 0.1);
+		color: var(--text-color);
+	}
+
+	.mode-btn.active {
+		background: rgba(var(--theme-color-rgb), 0.25);
+		color: rgb(var(--theme-color-rgb));
+	}
+
 	.flow-section {
 		display: flex;
 		gap: 0.5rem;
+		overflow: hidden;
 	}
 
 	.flow-period {
 		flex: 1;
+		min-width: 0;
 		background: rgba(0, 0, 0, 0.2);
 		border-radius: 0.5rem;
-		padding: 0.75rem 0.5rem;
+		padding: 0.75rem 0.25rem;
 		text-align: center;
 	}
 
@@ -771,39 +942,43 @@
 		display: flex;
 		justify-content: center;
 		align-items: baseline;
-		gap: 0.25rem;
+		gap: 0.15rem;
 	}
 
 	.flow-row .num {
 		text-align: right;
-		min-width: 4.5rem;
 		font-variant-numeric: tabular-nums;
+		font-size: 0.8rem;
 	}
 
 	.flow-row .unit {
 		text-align: left;
-		min-width: 4rem;
-		font-size: 0.65rem;
+		font-size: 0.55rem;
 		opacity: 0.7;
 	}
 
 	.in-value {
 		color: #51cf66;
-		font-size: 0.85rem;
 		font-weight: 500;
 	}
 
 	.welfare-value {
 		color: #fcc419;
-		font-size: 0.85rem;
 		font-weight: 500;
 		cursor: help;
 	}
 
 	.out-value {
 		color: #ff6b6b;
-		font-size: 0.85rem;
 		font-weight: 500;
+	}
+
+	.net-value {
+		color: rgb(var(--theme-color-rgb));
+		font-weight: 600;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		padding-top: 0.25rem;
+		margin-top: 0.25rem;
 	}
 
 	.summary-stats {
