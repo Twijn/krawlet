@@ -126,7 +126,7 @@
 	};
 
 	const copyPayCommand = () => {
-		let command = `/pay ${toAddress?.address ?? ''} ${amount.value}`;
+		let command = `/pay ${toAddress?.address ?? ''} ${Math.round(amount.value * 100) / 100}`;
 		if (metadata.value && metadata.value.length > 0) {
 			command += ` ${metadata.value}`;
 		}
