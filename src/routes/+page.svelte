@@ -16,8 +16,8 @@
 
 <h1><a href="/">Krawlet</a></h1>
 
-<Wallets lgCols={5} mdCols={12} limit={4} showAddButton={true} />
-<Transactions lgCols={7} mdCols={12} limit={5} queryPrefix="trans_" />
+<Wallets lgCols={5} mdCols={12} limit={8} showAddButton={true} compact={true} />
+<Transactions lgCols={7} mdCols={12} limit={10} queryPrefix="trans_" />
 
 <Names lgCols={6} mdCols={12} limit={3} queryPrefix="name_" />
 <Addresses lgCols={6} mdCols={12} limit={3} rich={true} queryPrefix="addr_" />

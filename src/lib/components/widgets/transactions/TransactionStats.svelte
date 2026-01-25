@@ -65,7 +65,7 @@
 	): Promise<Transaction[]> {
 		const allTxs: Transaction[] = [];
 		let offset = 0;
-		const limit = 100;
+		const limit = 250;
 		let keepFetching = true;
 
 		while (keepFetching) {

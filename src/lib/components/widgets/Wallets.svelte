@@ -17,6 +17,7 @@
 	import { paramState } from '$lib/paramState.svelte';
 	import { t, t$ } from '$lib/i18n';
 	import WalletCard from './wallets/WalletCard.svelte';
+	import WalletCardCompact from './wallets/WalletCardCompact.svelte';
 	import Button from '../ui/Button.svelte';
 	import { addWalletModal } from '$lib/stores/addWalletModal';
 	import { goto } from '$app/navigation';
@@ -29,6 +30,7 @@
 		smCols = null,
 		showDelete = false,
 		showAddButton = false,
+		compact = false,
 		limit = 1000
 	}: {
 		lgCols?: ColumnCount;
@@ -36,6 +38,7 @@
 		smCols?: ColumnCount;
 		showDelete?: boolean;
 		showAddButton?: boolean;
+		compact?: boolean;
 		limit?: number;
 	} = $props();
 
@@ -235,38 +238,53 @@
 				</p>
 			</Alert>
 		{/if}
-		<div class="wallets-grid" role="list">
-			{#each filteredWallets.slice(0, limit) as wallet, index (wallet.address)}
-				<div
-					class="wallet-card-wrapper"
-					class:dragging={draggedWallet?.address === wallet.address}
-					class:drag-over={dragOverWallet?.address === wallet.address}
-					role="listitem"
-					draggable={showDelete}
-					ondragstart={(e) => showDelete && handleDragStart(e, wallet)}
-					ondragend={handleDragEnd}
-					ondragover={(e) => handleDragOver(e, wallet)}
-					ondragleave={handleDragLeave}
-					ondrop={(e) => showDelete && handleDrop(e, wallet)}
-					animate:flip={{ duration: 300 }}
-				>
-					<WalletCard
-						{wallet}
-						balance={balances[wallet.address] || 0}
-						balanceChange={null}
-						stats={null}
-						{showDelete}
-						canMoveUp={index > 0}
-						canMoveDown={index < filteredWallets.length - 1}
-						onDelete={() => deleteWallet(wallet)}
-						onSend={() => handleSend(wallet)}
-						onViewHistory={() => handleViewHistory(wallet)}
-						onMoveUp={() => moveWallet(wallet, 'up')}
-						onMoveDown={() => moveWallet(wallet, 'down')}
-					/>
-				</div>
-			{/each}
-		</div>
+		{#if compact}
+			<div class="wallets-grid compact" role="list">
+				{#each filteredWallets.slice(0, limit) as wallet (wallet.address)}
+					<div class="wallet-card-wrapper" role="listitem">
+						<WalletCardCompact
+							{wallet}
+							balance={balances[wallet.address] || 0}
+							onSend={() => handleSend(wallet)}
+							onViewHistory={() => handleViewHistory(wallet)}
+						/>
+					</div>
+				{/each}
+			</div>
+		{:else}
+			<div class="wallets-grid" role="list">
+				{#each filteredWallets.slice(0, limit) as wallet, index (wallet.address)}
+					<div
+						class="wallet-card-wrapper"
+						class:dragging={draggedWallet?.address === wallet.address}
+						class:drag-over={dragOverWallet?.address === wallet.address}
+						role="listitem"
+						draggable={showDelete}
+						ondragstart={(e) => showDelete && handleDragStart(e, wallet)}
+						ondragend={handleDragEnd}
+						ondragover={(e) => handleDragOver(e, wallet)}
+						ondragleave={handleDragLeave}
+						ondrop={(e) => showDelete && handleDrop(e, wallet)}
+						animate:flip={{ duration: 300 }}
+					>
+						<WalletCard
+							{wallet}
+							balance={balances[wallet.address] || 0}
+							balanceChange={null}
+							stats={null}
+							{showDelete}
+							canMoveUp={index > 0}
+							canMoveDown={index < filteredWallets.length - 1}
+							onDelete={() => deleteWallet(wallet)}
+							onSend={() => handleSend(wallet)}
+							onViewHistory={() => handleViewHistory(wallet)}
+							onMoveUp={() => moveWallet(wallet, 'up')}
+							onMoveDown={() => moveWallet(wallet, 'down')}
+						/>
+					</div>
+				{/each}
+			</div>
+		{/if}
 		{#if filteredWallets.length > 0}
 			<div class="total-section" transition:fade>
 				<p class="total">
@@ -299,6 +317,11 @@
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
 		gap: 1rem;
+	}
+
+	.wallets-grid.compact {
+		grid-template-columns: 1fr;
+		gap: 0.5rem;
 	}
 
 	.wallet-card-wrapper {

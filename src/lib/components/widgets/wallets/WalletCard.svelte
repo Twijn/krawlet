@@ -141,12 +141,12 @@
 
 		loadingStats = true;
 		try {
-			// Fetch transactions for this address (up to 500 for reasonable stats)
+			// Fetch transactions for this address (up to 1000 for reasonable stats)
 			const allTxs: Transaction[] = [];
 			let offset = 0;
-			const limit = 100;
+			const limit = 250;
 			let keepFetching = true;
-			const maxTxs = 500;
+			const maxTxs = 1000;
 
 			while (keepFetching && allTxs.length < maxTxs) {
 				const resp = await kromer.addresses.getTransactions(wallet.address, {

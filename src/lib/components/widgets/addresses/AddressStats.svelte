@@ -8,7 +8,7 @@
 
 	let {
 		address = $bindable(),
-		limit = 1000,
+		limit = 250,
 		timeLimit = 1000 * 60 * 60 * 24 * 14
 	}: {
 		address: string;
