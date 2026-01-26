@@ -279,6 +279,20 @@ class Settings {
 		}));
 	}
 
+	public async updateWallet(address: string, updates: Partial<Omit<Wallet, 'address' | 'private'>>) {
+		this.data.update((state) => ({
+			...state,
+			wallets: state.wallets.map((w) =>
+				w.address === address
+					? {
+							...w,
+							...updates
+					  }
+					: w
+			)
+		}));
+	}
+
 	public async decryptWallet(wallet: Wallet, encryptionKey: string) {
 		if (!wallet?.private) return null;
 		try {

@@ -170,6 +170,10 @@ export default {
 		confirmClearPrivateKey: 'Are you sure you want to clear the private key field?',
 		privateKeyCleared: 'Private key field cleared',
 		confirmCloseWithData: 'You have unsaved data. Are you sure you want to close?',
+		// Edit
+		editWallet: 'Edit Wallet',
+		walletEditSuccess: 'Successfully updated wallet {name}!',
+		walletEditCancelled: 'Wallet edit cancelled',
 		// Import/Export
 		exportWallets: 'Export Wallets',
 		importWallets: 'Import Wallets',

@@ -152,6 +152,10 @@ export default {
 		confirmClearPrivateKey: '¿Estás seguro de que deseas limpiar el campo de clave privada?',
 		privateKeyCleared: 'Campo de clave privada limpiado',
 		confirmCloseWithData: 'Tienes datos sin guardar. ¿Estás seguro de que quieres cerrar?',
+		// Edit
+		editWallet: 'Editar Billetera',
+		walletEditSuccess: '¡Billetera {name} actualizada con éxito!',
+		walletEditCancelled: 'Edición de billetera cancelada',
 		// Import/Export
 		exportWallets: 'Exportar Billeteras',
 		importWallets: 'Importar Billeteras',

@@ -10,7 +10,8 @@
 		faTrash,
 		faGripVertical,
 		faChevronDown,
-		faChevronUp
+		faChevronUp,
+		faPencil
 	} from '@fortawesome/free-solid-svg-icons';
 	import { fade, slide } from 'svelte/transition';
 	import { browser } from '$app/environment';
@@ -44,6 +45,7 @@
 		canMoveUp = false,
 		canMoveDown = false,
 		onDelete,
+		onEdit,
 		onSend,
 		onViewHistory,
 		onMoveUp,
@@ -57,6 +59,7 @@
 		canMoveUp?: boolean;
 		canMoveDown?: boolean;
 		onDelete?: () => void;
+		onEdit?: () => void;
 		onSend?: () => void;
 		onViewHistory?: () => void;
 		onMoveUp?: () => void;
@@ -370,6 +373,14 @@
 						<FontAwesomeIcon icon={faChevronDown} />
 					</button>
 				</div>
+				<button
+					class="edit-btn"
+					onclick={onEdit}
+					aria-label={t('wallet.editWallet')}
+					title={t('wallet.editWallet')}
+				>
+					<FontAwesomeIcon icon={faPencil} />
+				</button>
 				<button
 					class="delete-btn"
 					onclick={onDelete}
@@ -738,7 +749,8 @@
 		font-size: 0.9rem;
 	}
 
-	.delete-btn {
+	.delete-btn,
+	.edit-btn {
 		color: var(--text-color-2);
 		background: transparent;
 		border: none;
@@ -751,6 +763,11 @@
 	.delete-btn:hover,
 	.delete-btn:focus {
 		color: #ff6b6b;
+	}
+
+	.edit-btn:hover,
+	.edit-btn:focus {
+		color: var(--theme-color);
 	}
 
 	.balance-section {

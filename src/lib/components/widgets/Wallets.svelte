@@ -20,6 +20,7 @@
 	import WalletCardCompact from './wallets/WalletCardCompact.svelte';
 	import Button from '../ui/Button.svelte';
 	import { addWalletModal } from '$lib/stores/addWalletModal';
+	import { editWalletModal } from '$lib/stores/editWalletModal';
 	import { goto } from '$app/navigation';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
@@ -189,6 +190,10 @@
 	function handleAddWallet() {
 		addWalletModal.open();
 	}
+
+	function handleEditWallet(wallet: Wallet) {
+		editWalletModal.open(wallet);
+	}
 </script>
 
 <Section {lgCols} {mdCols} {smCols}>
@@ -276,6 +281,7 @@
 							canMoveUp={index > 0}
 							canMoveDown={index < filteredWallets.length - 1}
 							onDelete={() => deleteWallet(wallet)}
+							onEdit={() => handleEditWallet(wallet)}
 							onSend={() => handleSend(wallet)}
 							onViewHistory={() => handleViewHistory(wallet)}
 							onMoveUp={() => moveWallet(wallet, 'up')}
