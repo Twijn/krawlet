@@ -212,38 +212,53 @@
 
 	h2 {
 		color: var(--text-color-2);
-		padding: 0.8em;
+		padding: 0.8em 1.2em;
 		margin: 0;
-		font-size: 0.9em;
-		font-weight: 500;
+		font-size: 0.75em;
+		font-weight: 600;
 		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		opacity: 0.8;
 	}
 
 	a {
 		display: flex;
 		align-items: center;
-		padding: 0.8em 1.5em;
-		transition: 250ms;
+		padding: 0.75em 1.2em;
+		margin: 0.15em 0.5em;
+		border-radius: 0.5rem;
+		transition: all 0.2s ease;
 		color: var(--text-color-1);
-		font-weight: 300;
+		font-weight: 400;
 		text-decoration: none;
+		position: relative;
 	}
 
 	.icon {
 		display: inline-flex;
-		width: 1.1em;
-		height: 1.1em;
-		margin-right: 0.5em;
+		width: 1.2em;
+		height: 1.2em;
+		margin-right: 0.75em;
 		align-items: center;
 		justify-content: center;
+		transition: transform 0.2s ease;
 	}
 
 	a:hover,
 	a:focus-visible {
-		background-color: rgba(0, 0, 0, 0.25);
+		background-color: rgba(255, 255, 255, 0.08);
+		color: var(--text-color-1);
+		transform: translateX(2px);
+	}
+
+	a:hover .icon {
+		transform: scale(1.1);
 	}
 
 	a[aria-current='page'] {
-		background-color: var(--theme-color-1);
+		background: linear-gradient(90deg, rgba(var(--theme-color-rgb), 0.2) 0%, rgba(var(--theme-color-rgb), 0.1) 100%);
+		color: rgb(var(--theme-color-rgb));
+		font-weight: 500;
+		border-left: 3px solid rgb(var(--theme-color-rgb));
 	}
 </style>

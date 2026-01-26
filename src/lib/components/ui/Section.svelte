@@ -44,8 +44,13 @@
 	section {
 		background-color: var(--background-color-2);
 		padding: 1rem;
-		border-radius: 0.5rem;
-		box-shadow: 0 0 1em rgba(0, 0, 0, 0.2);
+		border-radius: 0.75rem;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+		transition: box-shadow 0.2s ease;
+	}
+
+	section:hover {
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
 	}
 
 	header {
@@ -53,18 +58,19 @@
 		justify-content: space-between;
 		align-items: center;
 		gap: 1rem;
-		padding: 0.8rem 1rem;
-		margin: -1rem -1rem 1rem -1rem;
-		background-color: rgba(0, 0, 0, 0.1);
-		border-radius: 0.5rem 0.5rem 0 0;
-		box-shadow: 0 0 1em rgba(0, 0, 0, 0.2) inset;
+		padding: 1rem 1.25rem;
+		margin: -1rem -1rem 1.25rem -1rem;
+		background: linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.1) 100%);
+		border-radius: 0.75rem 0.75rem 0 0;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 	}
 
 	header h2 {
-		font-size: 0.95rem;
-		font-weight: 500;
+		font-size: 0.875rem;
+		font-weight: 600;
 		text-transform: uppercase;
 		margin: 0;
+		letter-spacing: 0.05em;
 	}
 
 	.header-actions {
