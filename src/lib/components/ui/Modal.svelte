@@ -27,12 +27,25 @@
 	const handleClickOutside = (node: HTMLElement) => {
 		const handleClick = (event: MouseEvent) => {
 			const target = event.target as Node;
-			// Don't close if clicking inside another modal (prompt, confirm, etc.)
-			const clickedInsideOtherModal = (target as Element).closest?.('.modal-backdrop:not(:has(> .modal))') 
-				|| (target as Element).closest?.('#prompt-dialog, #confirm-dialog');
-			if (node && !node.contains(target) && !clickedInsideOtherModal) {
-				onClose();
+			
+			// Don't close if target is no longer in the document (was in a now-closed modal)
+			if (!document.body.contains(target)) {
+				return;
 			}
+			
+			// Don't close if clicking inside this modal
+			if (node && node.contains(target)) {
+				return;
+			}
+			
+			// Don't close if clicking inside another modal (prompt, confirm, etc.)
+			const closestBackdrop = (target as Element).closest?.('.modal-backdrop');
+			if (closestBackdrop && closestBackdrop !== node.parentElement) {
+				return;
+			}
+			
+			// Close if clicking outside (on this modal's backdrop or elsewhere)
+			onClose();
 		};
 
 		const handleKeydown = (event: KeyboardEvent) => {

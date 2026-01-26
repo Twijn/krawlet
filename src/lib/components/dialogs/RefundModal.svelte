@@ -173,7 +173,7 @@
 						</div>
 						<div class="detail-row">
 							<span class="detail-label">{$t$('wallet.balance')}</span>
-							<span class="detail-value amount">{refundFromAddress.balance.toFixed(2)} KRO</span>
+							<span class="detail-value amount">{(refundFromAddress.balance ?? 0).toFixed(2)} KRO</span>
 						</div>
 					</div>
 				{/if}
