@@ -38,9 +38,10 @@
 <style>
 	.select-wrapper {
 		display: flex;
-		border-radius: 0.5em;
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		margin: 0.5em 0;
+		border-radius: 0.75rem;
+		background: rgba(0, 0, 0, 0.3);
+		padding: 0.375rem;
+		gap: 0.375rem;
 		overflow: hidden;
 	}
 
@@ -62,14 +63,43 @@
 	}
 
 	.select-wrapper .option {
-		background-color: rgba(255, 255, 255, 0.1);
-		font-weight: 500;
+		position: relative;
 		flex-grow: 1;
-		text-align: center;
-		transition: 0.25s background-color ease-in-out;
 	}
 
-	.select-wrapper .option:has(input:checked) {
-		background-color: var(--theme-color-1);
+	.select-wrapper .option label {
+		display: block;
+		background: transparent;
+		color: var(--text-color-2);
+		font-weight: 500;
+		font-size: 0.9375rem;
+		text-align: center;
+		padding: 0.75rem 1rem;
+		border-radius: 0.5rem;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease,
+			transform 0.1s ease;
+		user-select: none;
+	}
+
+	.select-wrapper .option label:hover {
+		background: rgba(255, 255, 255, 0.05);
+		color: var(--text-color-1);
+	}
+
+	.select-wrapper .option:has(input:checked) label {
+		background: rgba(var(--theme-color-rgb), 0.25);
+		color: rgb(var(--theme-color-rgb));
+		font-weight: 600;
+	}
+
+	.select-wrapper .option label:active {
+		transform: scale(0.97);
+	}
+
+	.select-wrapper.vertical .option label {
+		text-align: left;
 	}
 </style>

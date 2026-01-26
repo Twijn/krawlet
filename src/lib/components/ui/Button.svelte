@@ -84,16 +84,18 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		gap: 0.35em;
 		padding: 0.5em 1em;
-		border-radius: 0.5em;
+		border-radius: 0.5rem;
 		font-size: 1rem;
 		font-weight: 500;
 		text-decoration: none;
 		cursor: pointer;
-		border: none;
+		border: 1px solid rgba(255, 255, 255, 0.1);
 		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 		position: relative;
 		overflow: hidden;
+		backdrop-filter: blur(8px);
 	}
 
 	.button::before {
@@ -110,7 +112,6 @@
 	}
 
 	.button :global(svg) {
-		margin-right: 0.5em;
 		transition: transform 0.2s ease;
 	}
 
@@ -123,10 +124,19 @@
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 	}
 
+	.primary:hover:not(.disabled):not(.loading) {
+		border-color: rgba(255, 255, 255, 0.15);
+	}
+
 	.secondary {
-		background-color: #323537;
+		background-color: rgba(50, 53, 55, 0.6);
 		color: #e4e4e4;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	}
+
+	.secondary:hover:not(.disabled):not(.loading) {
+		background-color: rgba(50, 53, 55, 0.8);
+		border-color: rgba(255, 255, 255, 0.15);
 	}
 
 	.success {

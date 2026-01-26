@@ -32,7 +32,10 @@ export default {
 		offline: 'Estás sin Conexión',
 		note: 'Nota',
 		showMore: 'Mostrar Más',
-		showLess: 'Mostrar Menos'
+		showLess: 'Mostrar Menos',
+		maximum: 'Máximo',
+		unknown: 'Desconocido',
+		authorize: 'Autorizar'
 	},
 	nav: {
 		home: 'Inicio',
@@ -204,7 +207,12 @@ export default {
 		confirm: '¿Estás seguro de que quieres reembolsar {amount} KRO a {address}?',
 		reference: 'Reembolso de',
 		refundedBy: 'Reembolsado por',
-		invalidPrivateKey: 'Clave privada inválida - autenticación fallida'
+		invalidPrivateKey: 'Clave privada inválida - autenticación fallida',
+		refundFrom: 'Reembolsar Desde',
+		refundingFrom: 'Reembolsando Desde',
+		selectWallet: 'Por favor selecciona una billetera e ingresa tu contraseña maestra',
+		noWallets: 'No tienes billeteras guardadas. Por favor agrega una billetera primero.',
+		enterMasterPassword: 'Ingresa la contraseña maestra para desbloquear esta billetera'
 	},
 	transaction: {
 		newTransaction: 'Nueva Transacción',

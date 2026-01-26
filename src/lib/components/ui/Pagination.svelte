@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
+	import { faEllipsis, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 	let {
 		page = $bindable(1),
@@ -16,7 +16,11 @@
 <nav class="pagination" aria-label="Pagination">
 	<ul>
 		{#if page > 1}
-			<li><button onclick={() => page--} aria-label="Previous Page">&lt;</button></li>
+			<li>
+				<button class="nav-btn" onclick={() => page--} aria-label="Previous Page">
+					<FontAwesomeIcon icon={faChevronLeft} />
+				</button>
+			</li>
 		{/if}
 		{#if startNumber > 0}
 			<li><button onclick={() => (page = 1)}>1</button></li>
@@ -42,14 +46,18 @@
 			<li><button onclick={() => (page = maxPage)}>{maxPage}</button></li>
 		{/if}
 		{#if page < maxPage}
-			<li><button onclick={() => page++} aria-label="Next Page">&gt;</button></li>
+			<li>
+				<button class="nav-btn" onclick={() => page++} aria-label="Next Page">
+					<FontAwesomeIcon icon={faChevronRight} />
+				</button>
+			</li>
 		{/if}
 	</ul>
 </nav>
 
 <style>
 	nav {
-		margin: 1em 0;
+		margin: 1.5em 0;
 	}
 
 	ul {
@@ -57,7 +65,7 @@
 		align-items: center;
 		justify-content: center;
 		list-style-type: none;
-		gap: 0.5rem;
+		gap: 0.375rem;
 		margin: 0;
 		padding: 0;
 	}
@@ -65,8 +73,8 @@
 	li,
 	button {
 		display: block;
-		min-width: 2rem;
-		height: 2rem;
+		min-width: 2.25rem;
+		height: 2.25rem;
 	}
 
 	button,
@@ -77,24 +85,49 @@
 	}
 
 	button {
-		background-color: rgba(255, 255, 255, 0.1);
-		font-size: 1rem;
+		background: rgba(255, 255, 255, 0.04);
+		backdrop-filter: blur(8px);
+		font-size: 0.95rem;
 		font-family: var(--font-family), sans-serif;
+		font-weight: 500;
 		color: var(--text-color-1);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 0.25rem;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 0.5rem;
 		cursor: pointer;
-		transition:
-			background-color 0.2s ease-in-out,
-			color 0.2s ease-in-out,
-			border-color 0.2s ease-in-out;
+		transition: all 0.2s ease;
+	}
+
+	button:hover:not([aria-current='page']) {
+		background: rgba(255, 255, 255, 0.08);
+		border-color: rgba(255, 255, 255, 0.12);
+		transform: translateY(-1px);
+	}
+
+	button:active {
+		transform: translateY(0);
 	}
 
 	button[aria-current='page'] {
 		background-color: var(--theme-color-1);
+		border-color: var(--theme-color-1);
+		color: white;
+		font-weight: 600;
+		cursor: default;
+	}
+
+	button.nav-btn {
+		min-width: 2.5rem;
+		font-size: 0.875rem;
+	}
+
+	button.nav-btn:hover {
+		background: var(--theme-color-1);
+		border-color: var(--theme-color-1);
+		color: white;
 	}
 
 	.ellipsis {
-		opacity: 0.5;
+		opacity: 0.4;
+		font-size: 0.875rem;
 	}
 </style>

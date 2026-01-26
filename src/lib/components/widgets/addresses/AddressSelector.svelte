@@ -392,102 +392,147 @@
 	}
 
 	.dropdown {
-		background-color: var(--background-color-1);
+		background: var(--background-color-2);
 		position: absolute;
-		top: calc(100% + 0.5em);
+		top: calc(100% + 0.5rem);
 		left: 0;
 		width: 100%;
 		margin: 0;
-		padding: 0;
+		padding: 0.5rem;
 		list-style-type: none;
-		border-radius: 0.25em;
-		box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.5);
+		border-radius: 0.75rem;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		box-shadow:
+			0 10px 40px rgba(0, 0, 0, 0.4),
+			0 0 0 1px rgba(255, 255, 255, 0.05);
 		z-index: 9999;
 		overflow: hidden auto;
 		visibility: hidden;
 		opacity: 0;
-		transform: translateY(-10px) scaleY(0.9);
+		transform: translateY(-8px);
 		transition:
-			opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-			transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-			visibility 0s linear 0.25s;
-		max-height: 20em;
-		opacity: 0;
-		transform: translateY(-10px) scaleY(0.9);
-		transition:
-			opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-			transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+			opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+			transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+			visibility 0s linear 0.2s;
+		max-height: 24rem;
+		backdrop-filter: blur(10px);
 	}
 
 	.address-selector:not(.hidden):focus-within .dropdown {
 		visibility: visible;
 		opacity: 1;
-		transform: unset; /* FUCK SAFARI */
+		transform: translateY(0);
 		transition-delay: 0s;
 	}
 
 	.dropdown strong {
 		display: block;
-		background-color: rgba(0, 0, 0, 0.2);
+		background: transparent;
 		color: var(--text-color-2);
-		font-size: 0.8em;
+		font-size: 0.75rem;
 		font-weight: 600;
 		text-transform: uppercase;
-		padding: 0.6em 0.5em;
-		text-align: center;
+		letter-spacing: 0.05em;
+		padding: 0.75rem 0.75rem 0.5rem 0.75rem;
+		margin-top: 0.5rem;
+	}
+
+	.dropdown li:first-child strong {
+		margin-top: 0;
 	}
 
 	.dropdown button {
 		display: flex;
 		align-items: center;
-		gap: 0.35em;
+		gap: 0.75rem;
 		width: 100%;
-		background-color: transparent;
+		background: transparent;
 		border: none;
-		font-size: 1rem;
-		padding: 0.6em 0.75em;
+		border-radius: 0.5rem;
+		font-size: 0.9375rem;
+		padding: 0.75rem;
 		cursor: pointer;
 		text-align: left;
-		transition: 0.25s background-color;
+		transition:
+			background-color 0.15s ease,
+			transform 0.1s ease;
 		color: var(--text-color-1);
 		-webkit-tap-highlight-color: transparent;
-		appearance: none;
-		box-shadow: none;
-		outline: none;
 	}
 
 	.dropdown button img {
-		width: 0.8em;
-		height: 0.8em;
-		border-radius: 0.2em;
+		width: 1.5rem;
+		height: 1.5rem;
+		border-radius: 0.375rem;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 	}
 
 	.dropdown button .right {
 		flex-grow: 1;
+		text-align: right;
+		font-weight: 500;
 	}
 
 	.dropdown button:hover,
 	.dropdown button:focus-visible {
-		background-color: rgba(0, 0, 0, 0.2);
+		background: rgba(var(--theme-color-rgb), 0.15);
+		outline: none;
+	}
+
+	.dropdown button:active {
+		transform: scale(0.98);
 	}
 
 	.dropdown button :global(svg) {
-		opacity: 0.5;
+		opacity: 0.6;
+		width: 1rem;
+		height: 1rem;
+	}
+
+	.dropdown button:hover :global(svg),
+	.dropdown button:focus-visible :global(svg) {
+		opacity: 1;
 	}
 
 	.dropdown a {
 		display: block;
 		color: var(--text-color-2);
 		text-decoration: none;
-		font-size: 0.8em;
-		line-height: 0.9em;
+		font-size: 0.875rem;
+		line-height: 1.4;
 		text-align: center;
-		padding: 0.6em 0.75em;
+		padding: 1rem;
+		border-radius: 0.5rem;
+		background: rgba(255, 255, 255, 0.03);
+		transition: background-color 0.15s ease;
+	}
+
+	.dropdown a:hover,
+	.dropdown a:focus-visible {
+		background: rgba(255, 255, 255, 0.06);
+		outline: none;
 	}
 
 	.detail {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		padding: 0.75rem 1rem;
+		margin-top: 0.5rem;
+		background: rgba(var(--theme-color-rgb), 0.1);
+		border-radius: 0.5rem;
+		border: 1px solid rgba(var(--theme-color-rgb), 0.2);
+	}
+
+	.selected {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.balance {
+		font-weight: 600;
+		color: rgb(var(--theme-color-rgb));
+		white-space: nowrap;
 	}
 </style>

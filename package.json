@@ -44,6 +44,7 @@
 	},
 	"dependencies": {
 		"@fontsource/inter": "^5.2.6",
+		"@fontsource/space-grotesk": "^5.2.10",
 		"@fortawesome/fontawesome-svg-core": "^7.0.0",
 		"@fortawesome/free-brands-svg-icons": "^7.0.0",
 		"@fortawesome/free-solid-svg-icons": "^7.0.0",

@@ -12,6 +12,7 @@
 	import '@fontsource/inter/400.css';
 	import '@fontsource/inter/500.css';
 	import '@fontsource/inter/600.css';
+	import '@fontsource/space-grotesk/600.css';
 
 	import Navigation from '$lib/components/ui/Navigation.svelte';
 	import { getSyncNode, SYNC_NODE_OFFICIAL, VERSION } from '$lib/consts';
@@ -99,7 +100,7 @@
 		>
 			<FontAwesomeIcon icon={faBars} size="lg" />
 		</button>
-		<a href="/" aria-label="Krawlet - Home">Krawlet</a>
+		<a href="/" class="logo" aria-label="Krawlet - Home">Krawlet</a>
 		<div class="header-right">
 			<ConnectionStatus />
 			<a href="/settings" class="settings-btn" aria-label={$t$('accessibility.openSettings')}>
@@ -214,6 +215,18 @@
 		font-size: 1.4em;
 		color: white;
 		text-decoration: none;
+	}
+
+	header a.logo {
+		font-family: 'Space Grotesk', sans-serif;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		color: var(--theme-color);
+		transition: opacity 0.2s ease;
+	}
+
+	header a.logo:hover {
+		opacity: 0.85;
 	}
 
 	.header-right {

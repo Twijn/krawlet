@@ -32,7 +32,10 @@ export default {
 		offline: 'You are Offline',
 		note: 'Note',
 		showMore: 'Show More',
-		showLess: 'Show Less'
+		showLess: 'Show Less',
+		maximum: 'Maximum',
+		unknown: 'Unknown',
+		authorize: 'Authorize'
 	},
 	nav: {
 		home: 'Home',
@@ -221,7 +224,12 @@ export default {
 		confirm: 'Are you sure you want to refund {amount} KRO to {address}?',
 		reference: 'Refund of',
 		refundedBy: 'Refunded by',
-		invalidPrivateKey: 'Invalid private key - authentication failed'
+		invalidPrivateKey: 'Invalid private key - authentication failed',
+		refundFrom: 'Refund From',
+		refundingFrom: 'Refunding From',
+		selectWallet: 'Please select a wallet and enter your master password',
+		noWallets: 'You have no wallets saved. Please add a wallet first.',
+		enterMasterPassword: 'Enter master password to unlock this wallet'
 	},
 	transaction: {
 		newTransaction: 'New Transaction',

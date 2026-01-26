@@ -22,31 +22,36 @@ function createPromptStore() {
 
 	return {
 		subscribe,
-		prompt: (message: Omit<PromptMessage, 'errors'>) => {
-			const handle = async (result: string | null) => {
-				if (result) {
-					if (message.validate) {
-						const errors = await message.validate(result);
-						if (errors.length > 0) {
-							update((current) => ({
-								...current!,
-								errors
-							}));
-							return;
+		prompt: (message: Omit<PromptMessage, 'errors' | 'confirm' | 'cancel'> & { confirm?: (value: string) => void; cancel?: () => void }): Promise<string | null> => {
+			return new Promise((resolve) => {
+				const handle = async (result: string | null) => {
+					if (result) {
+						if (message.validate) {
+							const errors = await message.validate(result);
+							if (errors.length > 0) {
+								update((current) => ({
+									...current!,
+									errors
+								}));
+								return;
+							}
 						}
+						message.confirm?.(result);
+						update(() => null);
+						resolve(result);
+					} else {
+						message.cancel?.();
+						update(() => null);
+						resolve(null);
 					}
-					message.confirm(result);
-				} else if (message.cancel) {
-					message.cancel();
-				}
-				update(() => null);
-			};
-			update(() => {
-				return {
-					...message,
-					confirm: (result) => handle(result),
-					cancel: () => handle(null)
 				};
+				update(() => {
+					return {
+						...message,
+						confirm: (result) => handle(result),
+						cancel: () => handle(null)
+					};
+				});
 			});
 		},
 		clearErrors: () => {
