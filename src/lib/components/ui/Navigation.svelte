@@ -257,7 +257,7 @@
 
 	a[aria-current='page'] {
 		background: linear-gradient(90deg, rgba(var(--theme-color-rgb), 0.2) 0%, rgba(var(--theme-color-rgb), 0.1) 100%);
-		color: rgb(var(--theme-color-rgb));
+		color: var(--text-color-1);
 		font-weight: 500;
 		border-left: 3px solid rgb(var(--theme-color-rgb));
 	}

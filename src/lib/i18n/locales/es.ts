@@ -183,6 +183,29 @@ export default {
 		importError: 'Error al importar billeteras: {message}',
 		importInvalid: '¡Contraseña de exportación o datos inválidos!'
 	},
+	refund: {
+		refundTransaction: 'Reembolsar Transacción',
+		transactionToRefund: 'Reembolsando Transacción',
+		originalAmount: 'Cantidad Original',
+		refundAmount: 'Cantidad de Reembolso',
+		refundPercentage: 'Porcentaje de Reembolso',
+		amount: 'Cantidad (KRO)',
+		percentage: 'Porcentaje (%)',
+		message: 'Mensaje',
+		defaultMessage: 'Reembolso de transacción #{id}',
+		privateKey: 'Clave Privada',
+		privateKeyHint: 'Ingresa tu clave privada para autorizar el reembolso',
+		refundMode: 'Modo de Reembolso',
+		processing: 'Procesando reembolso...',
+		success: '¡Reembolso enviado con éxito!',
+		error: 'Error al enviar el reembolso',
+		invalidAmount: 'Cantidad de reembolso inválida',
+		exceedsMaximum: 'La cantidad de reembolso excede la cantidad de la transacción original',
+		confirm: '¿Estás seguro de que quieres reembolsar {amount} KRO a {address}?',
+		reference: 'Reembolso de',
+		refundedBy: 'Reembolsado por',
+		invalidPrivateKey: 'Clave privada inválida - autenticación fallida'
+	},
 	transaction: {
 		newTransaction: 'Nueva Transacción',
 		amount: 'Cantidad',
@@ -742,6 +765,8 @@ export default {
 		copyTransactionId: 'Copiar ID de Transacción',
 		sendToRecipient: 'Enviar al Destinatario',
 		sendToSender: 'Enviar al Remitente',
+		refundTransaction: 'Reembolsar Transacción',
+		// Name actions
 		// Acciones de nombre
 		viewName: 'Ver Nombre',
 		copyName: 'Copiar Nombre',

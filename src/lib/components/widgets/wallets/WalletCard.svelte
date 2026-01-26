@@ -636,7 +636,8 @@
 		position: relative;
 		background-color: var(--background-color-2);
 		border-radius: 0.5rem;
-		box-shadow: 0 0 1em rgba(0, 0, 0, 0.2);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.1) inset;
 		padding: 1rem;
 		transition: all 0.2s ease;
 		display: flex;
@@ -645,7 +646,9 @@
 	}
 
 	.wallet-card:hover {
-		box-shadow: 0 0 1.5em rgba(0, 0, 0, 0.3);
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 1px rgba(255, 255, 255, 0.15) inset;
+		border-color: rgba(255, 255, 255, 0.12);
+		transform: translateY(-2px);
 	}
 
 	.wallet-card:global(.dragging) {

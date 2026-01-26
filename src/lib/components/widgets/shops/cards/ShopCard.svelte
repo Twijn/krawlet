@@ -63,55 +63,71 @@
 
 <style>
 	.shop {
+		position: relative;
 		display: flex;
 		flex-direction: column;
-		background-color: var(--background-color-1);
+		background-color: var(--background-color-2);
 		min-width: 0;
 		max-width: 100%;
-		padding: 0.8em;
-		border-radius: 0.75em 0.25em;
-		box-shadow: var(--shadow);
+		padding: 1rem;
+		border-radius: 0.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.1) inset;
+		transition: all 0.2s ease;
+		gap: 1rem;
+	}
+
+	.shop:hover {
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 1px rgba(255, 255, 255, 0.15) inset;
+		border-color: rgba(255, 255, 255, 0.12);
+		transform: translateY(-2px);
 	}
 
 	.shop-head {
 		display: flex;
-		gap: 0.75em;
-		align-items: center;
+		gap: 1rem;
+		align-items: flex-start;
 	}
 
 	.shop-head-icon {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 1.2em;
-		width: 2em;
-		height: 2em;
-		background-color: var(--theme-color-2);
-		color: var(--background-color-1);
-		border-radius: 1em;
-		box-shadow: var(--shadow);
-		text-shadow: var(--shadow);
+		font-size: 2rem;
+		color: var(--theme-color);
+		flex-shrink: 0;
 	}
 
 	.shop-head-text {
-		flex-grow: 1;
+		flex: 1;
+		min-width: 0;
 	}
 
 	.shop-head-text h3 {
-		margin: 0;
-		font-weight: 300;
+		margin: 0 0 0.5rem 0;
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: var(--text-color-1);
 	}
 
 	.shop-head-text small {
 		display: block;
+		font-size: 0.875rem;
+		color: var(--text-color-2);
+		margin-bottom: 0.25rem;
 	}
 
 	.shop-body {
 		flex-grow: 1;
-		margin: 0.5em 0;
 	}
 
 	small[title] {
-		cursor: pointer;
+		cursor: help;
+	}
+
+	.buttons {
+		display: flex;
+		gap: 0.5rem;
+		margin-top: auto;
 	}
 </style>

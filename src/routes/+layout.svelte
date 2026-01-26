@@ -20,6 +20,7 @@
 	import Prompt from '$lib/components/dialogs/Prompt.svelte';
 	import AddWalletModal from '$lib/components/dialogs/AddWalletModal.svelte';
 	import EditWalletModal from '$lib/components/dialogs/EditWalletModal.svelte';
+	import RefundModal from '$lib/components/dialogs/RefundModal.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import settings from '$lib/stores/settings';
 	import InstallPrompt from '$lib/components/widgets/InstallPrompt.svelte';
@@ -145,6 +146,7 @@
 <Prompt />
 <AddWalletModal />
 <EditWalletModal />
+<RefundModal />
 <InstallPrompt />
 <UpdatePrompt />
 <ContextMenu

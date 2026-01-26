@@ -1,7 +1,13 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faCopy, faEye, faList, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faCopy,
+		faEye,
+		faList,
+		faMoneyBillTransfer,
+		faPaperPlane
+	} from '@fortawesome/free-solid-svg-icons';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import SkeletonTable from '$lib/components/ui/SkeletonTable.svelte';
 	import { formatCurrency, relativeTime } from '$lib/util.js';
@@ -18,6 +24,7 @@
 	import { t$ } from '$lib/i18n';
 	import { contextMenu } from '$lib/stores/contextMenu';
 	import { notifications } from '$lib/stores/notifications';
+	import { refundModal } from '$lib/stores/refundModal';
 	import type { ContextMenuItem } from '$lib/components/ui/ContextMenu.svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
@@ -77,6 +84,22 @@
 				action: copyTransactionId
 			}
 		];
+
+		// Check if user owns the recipient address for refund option
+		const ownsToAddress =
+			transaction.to &&
+			$settings.wallets.some((wallet) => wallet.address === transaction.to);
+
+		if (ownsToAddress) {
+			menuItems.push(
+				{ separator: true, label: '' },
+				{
+					label: $t$('contextMenu.refundTransaction'),
+					icon: faMoneyBillTransfer,
+					action: () => refundModal.open(transaction)
+				}
+			);
+		}
 
 		// Add send to recipient option if there's a recipient
 		if (transaction.to) {

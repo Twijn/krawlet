@@ -153,7 +153,7 @@ export default {
 		avgTxSize: 'Avg Tx Value',
 		avgTxTooltip: 'Average transaction amount',
 		welfare: 'Welfare',
-		welfareTooltip: 'Welfare income (mined transactions)',
+		welfareTooltip: 'Welfare income',
 		newWallet: 'New Wallet',
 		quickAddHint: 'Click the button below to add a new wallet to your collection.',
 		masterPasswordHint: 'Make sure you keep this safe!',
@@ -199,6 +199,29 @@ export default {
 		importSuccess: 'Successfully imported {count} wallet(s)!',
 		importError: 'Error importing wallets: {message}',
 		importInvalid: 'Exported password or data is invalid!'
+	},
+	refund: {
+		refundTransaction: 'Refund Transaction',
+		transactionToRefund: 'Refunding Transaction',
+		originalAmount: 'Original Amount',
+		refundAmount: 'Refund Amount',
+		refundPercentage: 'Refund Percentage',
+		amount: 'Amount (KRO)',
+		percentage: 'Percentage (%)',
+		message: 'Message',
+		defaultMessage: 'Refund for transaction #{id}',
+		privateKey: 'Private Key',
+		privateKeyHint: 'Enter your private key to authorize the refund',
+		refundMode: 'Refund Mode',
+		processing: 'Processing refund...',
+		success: 'Refund sent successfully!',
+		error: 'Failed to send refund',
+		invalidAmount: 'Invalid refund amount',
+		exceedsMaximum: 'Refund amount exceeds original transaction amount',
+		confirm: 'Are you sure you want to refund {amount} KRO to {address}?',
+		reference: 'Refund of',
+		refundedBy: 'Refunded by',
+		invalidPrivateKey: 'Invalid private key - authentication failed'
 	},
 	transaction: {
 		newTransaction: 'New Transaction',
@@ -748,6 +771,8 @@ export default {
 		copyTransactionId: 'Copy Transaction ID',
 		sendToRecipient: 'Send to Recipient',
 		sendToSender: 'Send to Sender',
+		refundTransaction: 'Refund Transaction',
+		// Name actions
 		// Name actions
 		viewName: 'View Name',
 		copyName: 'Copy Name',
