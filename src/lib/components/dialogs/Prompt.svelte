@@ -21,6 +21,7 @@
 
 		const handleKeydown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
+				event.stopPropagation();
 				$prompt?.cancel?.();
 			}
 		};
@@ -76,7 +77,7 @@
 			use:handleClickOutside
 			use:trapFocus
 		>
-			<form>
+			<form onsubmit={confirm}>
 				<h2 id={titleId} class="sr-only">{$prompt.inputLabel}</h2>
 				{#if hasErrors}
 					<div id={errorId} role="alert" aria-live="assertive">
@@ -105,7 +106,7 @@
 					<Button variant="secondary" type="button" onClick={() => $prompt.cancel?.()}>
 						{$prompt.cancelButtonLabel ?? $t$('common.cancel')}
 					</Button>
-					<Button variant={$prompt.danger ? 'error' : 'primary'} type="submit" onClick={confirm}>
+					<Button variant={$prompt.danger ? 'error' : 'primary'} type="submit">
 						{$prompt.confirmButtonLabel ?? $t$('common.confirm')}
 					</Button>
 				</div>

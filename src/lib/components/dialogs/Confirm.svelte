@@ -19,6 +19,7 @@
 
 		const handleKeydown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
+				event.stopPropagation();
 				$confirm?.cancel?.();
 			}
 		};

@@ -2,9 +2,9 @@
 	import { editWalletModal } from '$lib/stores/editWalletModal';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Modal from '$lib/components/ui/Modal.svelte';
-	import { t$ } from '$lib/i18n';
+	import { t, t$ } from '$lib/i18n';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faCopy } from '@fortawesome/free-solid-svg-icons';
+	import { faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
 	import { prompt } from '$lib/stores/prompt';
@@ -109,6 +109,23 @@
 			}
 		});
 	}
+
+	function handleDeleteWallet() {
+		if (!originalWallet) return;
+
+		confirm.confirm({
+			message: t('wallet.confirmDelete', { name: originalWallet.name, address: originalWallet.address }),
+			danger: true,
+			confirmButtonLabel: t('common.delete'),
+			confirm: () => {
+				settings.removeWallet(originalWallet.address);
+				notifications.success(
+					t('wallet.deleteSuccess', { name: originalWallet.name, address: originalWallet.address })
+				);
+				editWalletModal.close();
+			}
+		});
+	}
 </script>
 
 <Modal open={$editWalletModal.open} title={$t$('wallet.editWallet')} onClose={handleClose}>
@@ -127,9 +144,13 @@
 		{/if}
 
 		<div class="button-group">
-			<Button type="button" full={true} onClick={handleCopyPrivateKey} variant="secondary">
+			<Button type="button" onClick={handleCopyPrivateKey} variant="secondary">
 				<FontAwesomeIcon icon={faCopy} />
 				{$t$('wallet.copyPrivateKey')}
+			</Button>
+			<Button type="button" onClick={handleDeleteWallet} variant="error">
+				<FontAwesomeIcon icon={faTrash} />
+				{$t$('wallet.deleteWallet')}
 			</Button>
 		</div>
 
@@ -200,6 +221,9 @@
 	}
 
 	.button-group {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.75rem;
 		margin-bottom: 0.5rem;
 	}
 

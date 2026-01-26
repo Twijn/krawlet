@@ -4,15 +4,11 @@
 	import { t$ } from '$lib/i18n';
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
-	import { prompt } from '$lib/stores/prompt';
 	import { refundModal } from '$lib/stores/refundModal';
 	import kromer from '$lib/api/kromer';
 	import type { APIError, Address as AddressType } from 'kromer';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import AddressSelector from '$lib/components/widgets/addresses/AddressSelector.svelte';
-	import settings from '$lib/stores/settings';
-	import { getSyncNode } from '$lib/consts';
-	import type { Wallet } from '$lib/stores/settings';
 
 	let refundFromAddress: AddressType | null = $state(null);
 	let privateKey = $state('');
@@ -46,55 +42,6 @@
 			balances[refundFromAddress.address] = refundFromAddress.balance;
 		}
 	});
-
-	// Check if the current query matches a wallet that needs authentication
-	let matchingWallet = $derived.by(() => {
-		if (!fromQuery || privateKey) return null;
-		return $settings.wallets
-			.filter((x) => x.syncNode === getSyncNode().id)
-			.find((x) => x.address === fromQuery);
-	});
-
-	async function enterMasterPassword() {
-		if (!matchingWallet) return;
-
-		const result = await prompt.prompt({
-			type: 'password',
-			message: $t$('wallet.confirmCopyPrivateKey'),
-			inputLabel: $t$('wallet.masterPassword'),
-			confirmButtonLabel: $t$('common.authorize'),
-			cancelButtonLabel: $t$('common.cancel'),
-			validate: async (value) => {
-				try {
-					if (await settings.decryptWallet(matchingWallet, value)) {
-						return [];
-					}
-					return [$t$('wallet.invalidPassword')];
-				} catch (e) {
-					console.error(e);
-					return [$t$('errors.unknownError')];
-				}
-			}
-		});
-
-		if (result) {
-			const decrypted = await settings.decryptWallet(matchingWallet, result);
-			if (decrypted) {
-				privateKey = decrypted;
-				loading = true;
-				try {
-					const response = await kromer.login(privateKey);
-					if (response?.address) {
-						refundFromAddress = await kromer.addresses.get(response.address);
-					}
-				} catch (e) {
-					console.error(e);
-					notifications.error($t$('wallet.invalidPassword'));
-				}
-				loading = false;
-			}
-		}
-	}
 
 	let calculatedRefund = $derived.by(() => {
 		if (!$refundModal.transaction) return 0;
@@ -215,12 +162,6 @@
 					bind:privatekey={privateKey}
 					bind:address={refundFromAddress}
 				/>
-				
-				{#if matchingWallet && !privateKey}
-					<button type="button" class="text-button" onclick={enterMasterPassword}>
-						{$t$('refund.enterMasterPassword')}
-					</button>
-				{/if}
 				
 				{#if refundFromAddress}
 					<div class="from-address-info">

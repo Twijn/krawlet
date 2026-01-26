@@ -112,9 +112,10 @@
 						console.error(e);
 						return ['An unknown error occurred!'];
 					}
-				},
-				confirm: async (value) => {
-					const decrypted = await settings.decryptWallet(addr, value);
+				}
+			}).then(async (result) => {
+				if (result) {
+					const decrypted = await settings.decryptWallet(addr, result);
 					if (decrypted) {
 						privatekey = decrypted;
 						selected = addr;
@@ -123,8 +124,7 @@
 							query = address;
 						}
 					}
-				},
-				cancel: clear
+				}
 			});
 		} else {
 			selected = addr;

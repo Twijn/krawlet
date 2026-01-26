@@ -26,13 +26,19 @@
 
 	const handleClickOutside = (node: HTMLElement) => {
 		const handleClick = (event: MouseEvent) => {
-			if (node && !node.contains(event.target as Node)) {
+			const target = event.target as Node;
+			// Don't close if clicking inside another modal (prompt, confirm, etc.)
+			const clickedInsideOtherModal = (target as Element).closest?.('.modal-backdrop:not(:has(> .modal))') 
+				|| (target as Element).closest?.('#prompt-dialog, #confirm-dialog');
+			if (node && !node.contains(target) && !clickedInsideOtherModal) {
 				onClose();
 			}
 		};
 
 		const handleKeydown = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') {
+			// Don't close on Escape if another modal is open on top
+			const hasOtherModalOpen = document.querySelectorAll('.modal-backdrop').length > 1;
+			if (event.key === 'Escape' && !hasOtherModalOpen) {
 				onClose();
 			}
 		};

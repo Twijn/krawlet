@@ -6,6 +6,7 @@ interface Notification {
 	message: string;
 	unclosable?: boolean;
 	timeout?: number | null;
+	createdAt: number;
 }
 
 function createNotificationStore() {
@@ -21,9 +22,10 @@ function createNotificationStore() {
 			store.add({ type: 'error', message, timeout, unclosable }),
 		warning: (message: string, timeout: number | null = 5000, unclosable: boolean = false) =>
 			store.add({ type: 'warning', message, timeout, unclosable }),
-		add: (notification: Omit<Notification, 'id'>) => {
+		add: (notification: Omit<Notification, 'id' | 'createdAt'>) => {
 			const id = crypto.randomUUID();
-			update((notifications) => [...notifications, { ...notification, id }]);
+			const createdAt = Date.now();
+			update((notifications) => [...notifications, { ...notification, id, createdAt }]);
 
 			if (notification.timeout) {
 				setTimeout(() => {

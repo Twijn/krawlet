@@ -403,6 +403,8 @@ export default {
 		krawletApiKey: 'Clave API de Krawlet',
 		krawletApiKeyDescription:
 			'Ingresa tu clave API de Krawlet para acceder a funciones adicionales',
+		krawletApiKeyHintPrefix: 'Ejecuta',
+		krawletApiKeyHintSuffix: 'en el juego en ReconnectedCC para obtener tu clave API.',
 		krawletApiKeyPlaceholder: 'Ingresa tu clave API',
 		apiKeySaved: 'Clave API guardada exitosamente',
 		apiKeyInfo: 'Info de Clave API',

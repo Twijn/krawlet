@@ -21,6 +21,17 @@
 	// Infer ApiKeyInfo type from the client method
 	type ApiKeyInfo = Awaited<ReturnType<typeof krawletClient.apiKey.getInfo>>;
 
+	const API_KEY_COMMAND = '\\krawlet api';
+
+	async function copyCommand() {
+		try {
+			await navigator.clipboard.writeText(API_KEY_COMMAND);
+			notifications.success(t('common.copied'));
+		} catch {
+			notifications.error(t('wallet.addressCopyFailed'));
+		}
+	}
+
 	let allowSyncNodeChange = $state($settings.syncNode !== SYNC_NODE_OFFICIAL.id);
 
 	function onSyncNodeAllowChange() {
@@ -115,6 +126,13 @@
 					<label for="krawlet-api-key" class="setting-description">
 						{$t$('settings.krawletApiKeyDescription')}
 					</label>
+					<small class="api-key-hint">
+						{$t$('settings.krawletApiKeyHintPrefix')}
+						<button type="button" class="command-copy" onclick={copyCommand} title={$t$('common.copy')}>
+							{API_KEY_COMMAND}
+						</button>
+						{$t$('settings.krawletApiKeyHintSuffix')}
+					</small>
 					<input
 						type="password"
 						id="krawlet-api-key"
@@ -284,6 +302,31 @@
 
 	.preview-content {
 		font-size: 0.9rem;
+	}
+
+	.api-key-hint {
+		display: block;
+		margin-top: 0.25rem;
+		font-size: 0.85rem;
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	.command-copy {
+		display: inline;
+		background: rgba(0, 0, 0, 0.3);
+		border: none;
+		border-radius: 0.25rem;
+		padding: 0.125rem 0.375rem;
+		font-family: monospace;
+		font-size: 0.85rem;
+		color: var(--theme-color);
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.command-copy:hover {
+		background: rgba(0, 0, 0, 0.5);
+		color: var(--theme-color-2);
 	}
 
 	.api-key-input {

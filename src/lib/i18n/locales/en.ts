@@ -415,6 +415,8 @@ export default {
 		apiKeys: 'API Keys',
 		krawletApiKey: 'Krawlet API Key',
 		krawletApiKeyDescription: 'Enter your Krawlet API key to access additional features',
+		krawletApiKeyHintPrefix: 'Run',
+		krawletApiKeyHintSuffix: 'in-game on ReconnectedCC to get your API key.',
 		krawletApiKeyPlaceholder: 'Enter your API key',
 		apiKeySaved: 'API key saved successfully',
 		apiKeyInfo: 'API Key Info',

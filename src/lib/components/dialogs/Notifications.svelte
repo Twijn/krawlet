@@ -34,6 +34,12 @@
 					<FontAwesomeIcon icon={faTimes} />
 				</button>
 			{/if}
+			{#if notification.timeout}
+				<div 
+					class="timeout-bar" 
+					style="animation-duration: {notification.timeout}ms"
+				></div>
+			{/if}
 		</div>
 	{/each}
 </div>
@@ -73,6 +79,7 @@
 
 	.notification {
 		--rgb-color: 255, 255, 255;
+		position: relative;
 		padding: 1rem;
 		border-radius: 0.5rem;
 		background-color: rgba(var(--rgb-color), 0.3);
@@ -86,6 +93,7 @@
 		justify-content: space-between;
 		align-items: center;
 		gap: 1rem;
+		overflow: hidden;
 	}
 
 	.notification p {
@@ -103,5 +111,25 @@
 
 	.notification button:hover {
 		opacity: 1;
+	}
+
+	.timeout-bar {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		height: 3px;
+		width: 100%;
+		background: rgba(255, 255, 255, 0.5);
+		transform-origin: left;
+		animation: shrink linear forwards;
+	}
+
+	@keyframes shrink {
+		from {
+			transform: scaleX(1);
+		}
+		to {
+			transform: scaleX(0);
+		}
 	}
 </style>
