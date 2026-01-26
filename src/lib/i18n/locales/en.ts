@@ -84,6 +84,7 @@ export default {
 		send: 'Send',
 		receive: 'Receive',
 		copy: 'Copy',
+		copyAddress: 'Copy Address',
 		details: 'Details',
 		delete: 'Delete',
 		moveUp: 'Move Up',

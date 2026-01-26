@@ -119,6 +119,7 @@
 	let allTimeStats: TimeframeStats = $state(emptyStats());
 	let uniqueAddresses = $state(0);
 	let avgTxSize = $state(0);
+	let transactions: Transaction[] = $state([]);
 
 	function calculateStats(txs: Transaction[], cutoffMs: number): TimeframeStats {
 		const cutoffTime = Date.now() - cutoffMs;
@@ -436,7 +437,7 @@
 	<div class="actions-section">
 		<Button variant="secondary" size="small" full={true} onClick={copyAddress}>
 			<FontAwesomeIcon icon={faCopy} />
-			{t('wallet.copy')}
+			{t('wallet.copyAddress')}
 		</Button>
 		<Button variant="secondary" size="small" full={true} onClick={onViewHistory}>
 			<FontAwesomeIcon icon={faCircleInfo} />

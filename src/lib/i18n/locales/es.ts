@@ -84,6 +84,7 @@ export default {
 		send: 'Enviar',
 		receive: 'Recibir',
 		copy: 'Copiar',
+		copyAddress: 'Copiar Dirección',
 		history: 'Historial',
 		delete: 'Eliminar',
 		createWallet: 'Crear Billetera',
