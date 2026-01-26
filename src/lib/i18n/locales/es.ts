@@ -216,6 +216,7 @@ export default {
 	},
 	transaction: {
 		newTransaction: 'Nueva Transacción',
+		thisTransaction: 'Esta Transacción',
 		amount: 'Cantidad',
 		recipient: 'Destinatario',
 		sender: 'Remitente',

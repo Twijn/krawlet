@@ -6,11 +6,11 @@
 	import { confirm } from '$lib/stores/confirm';
 	import { refundModal } from '$lib/stores/refundModal';
 	import kromer from '$lib/api/kromer';
-	import type { APIError, Address as AddressType } from 'kromer';
+	import type { APIError } from 'kromer';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import AddressSelector from '$lib/components/widgets/addresses/AddressSelector.svelte';
 
-	let refundFromAddress: AddressType | null = $state(null);
+	let refundFromAddress: string = $state('');
 	let privateKey = $state('');
 	let fromQuery = $state('');
 	let refundMode: 'amount' | 'percentage' = $state('percentage');
@@ -24,7 +24,7 @@
 	// Reset form when modal opens
 	$effect(() => {
 		if ($refundModal.open && $refundModal.transaction) {
-			refundFromAddress = null;
+			refundFromAddress = '';
 			privateKey = '';
 			fromQuery = $refundModal.transaction.to || '';
 			refundMode = 'percentage';
@@ -33,13 +33,6 @@
 			message = $t$('refund.defaultMessage', { id: $refundModal.transaction.id });
 			loading = false;
 			balances = {};
-		}
-	});
-
-	// Update balance when address changes
-	$effect(() => {
-		if (refundFromAddress) {
-			balances[refundFromAddress.address] = refundFromAddress.balance;
 		}
 	});
 
@@ -77,7 +70,7 @@
 			return;
 		}
 
-		if (calculatedRefund > refundFromAddress.balance) {
+		if (calculatedRefund > (balances[refundFromAddress] ?? 0)) {
 			notifications.error($t$('errors.insufficientFunds'));
 			return;
 		}
@@ -86,7 +79,7 @@
 		
 		try {
 			// Build metadata with reference
-			const metadata = `ref=${transaction.id};type=refund;amount=${calculatedRefund};original=${transaction.value};${message}`;
+			const metadata = `ref=${transaction.id};type=refund;amount=${calculatedRefund};original=${transaction.value};message=${message}`;
 
 			await kromer.transactions.send({
 				privatekey: privateKey,
@@ -162,21 +155,6 @@
 					bind:privatekey={privateKey}
 					bind:address={refundFromAddress}
 				/>
-				
-				{#if refundFromAddress}
-					<div class="from-address-info">
-						<div class="detail-row">
-							<span class="detail-label">{$t$('refund.refundingFrom')}</span>
-							<span class="detail-value">
-								<Address address={refundFromAddress.address} />
-							</span>
-						</div>
-						<div class="detail-row">
-							<span class="detail-label">{$t$('wallet.balance')}</span>
-							<span class="detail-value amount">{(refundFromAddress.balance ?? 0).toFixed(2)} KRO</span>
-						</div>
-					</div>
-				{/if}
 			</div>
 
 			<label>
@@ -238,16 +216,16 @@
 				{$t$('refund.message')}
 				<input type="text" bind:value={message} maxlength="255" />
 			</label>
-		{/if}
 
-		<div class="modal-buttons">
-			<Button type="button" variant="secondary" onClick={handleClose}>
-				{$t$('common.cancel')}
-			</Button>
-			<Button type="submit" variant="primary" disabled={submitting || !refundFromAddress || loading}>
-				{submitting ? $t$('refund.processing') : $t$('common.confirm')}
-			</Button>
-		</div>
+			<div class="modal-buttons">
+				<Button type="button" variant="secondary" onClick={handleClose}>
+					{$t$('common.cancel')}
+				</Button>
+				<Button type="submit" variant="primary" disabled={submitting || !refundFromAddress || loading}>
+					{submitting ? $t$('refund.processing') : $t$('common.confirm')}
+				</Button>
+			</div>
+		{/if}
 	</form>
 </Modal>
 
@@ -339,16 +317,6 @@
 
 	.text-button:active {
 		opacity: 0.6;
-	}
-
-	.from-address-info {
-		padding: 1rem;
-		background: rgba(0, 0, 0, 0.2);
-		border-radius: 0.5rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-		margin-top: 0.5rem;
 	}
 
 	label {

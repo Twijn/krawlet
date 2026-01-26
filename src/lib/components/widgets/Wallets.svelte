@@ -52,23 +52,6 @@
 		});
 	}
 
-	function deleteWallet(wallet: Wallet) {
-		confirm.confirm({
-			message: t('wallet.confirmDelete', { name: wallet.name, address: wallet.address }),
-			danger: true,
-			confirmButtonLabel: t('common.delete'),
-			confirm: () => {
-				settings.removeWallet(wallet.address);
-				notifications.success(
-					t('wallet.deleteSuccess', { name: wallet.name, address: wallet.address })
-				);
-			},
-			cancel: () => {
-				notifications.warning(t('wallet.deleteCancelled'));
-			}
-		});
-	}
-
 	let balances: Record<string, number> = $state({});
 	let loading: boolean = $state(false);
 
@@ -280,7 +263,6 @@
 							{showDelete}
 							canMoveUp={index > 0}
 							canMoveDown={index < filteredWallets.length - 1}
-							onDelete={() => deleteWallet(wallet)}
 							onEdit={() => handleEditWallet(wallet)}
 							onSend={() => handleSend(wallet)}
 							onViewHistory={() => handleViewHistory(wallet)}

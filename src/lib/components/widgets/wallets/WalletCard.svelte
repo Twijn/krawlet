@@ -7,7 +7,6 @@
 		faPaperPlane,
 		faCopy,
 		faCircleInfo,
-		faTrash,
 		faGripVertical,
 		faChevronDown,
 		faChevronUp,
@@ -44,7 +43,6 @@
 		showDelete = false,
 		canMoveUp = false,
 		canMoveDown = false,
-		onDelete,
 		onEdit,
 		onSend,
 		onViewHistory,
@@ -58,7 +56,6 @@
 		showDelete?: boolean;
 		canMoveUp?: boolean;
 		canMoveDown?: boolean;
-		onDelete?: () => void;
 		onEdit?: () => void;
 		onSend?: () => void;
 		onViewHistory?: () => void;
@@ -381,14 +378,6 @@
 					title={t('wallet.editWallet')}
 				>
 					<FontAwesomeIcon icon={faPencil} />
-				</button>
-				<button
-					class="delete-btn"
-					onclick={onDelete}
-					aria-label={t('wallet.delete')}
-					title={t('wallet.delete')}
-				>
-					<FontAwesomeIcon icon={faTrash} />
 				</button>
 			</div>
 		{/if}
@@ -753,7 +742,6 @@
 		font-size: 0.9rem;
 	}
 
-	.delete-btn,
 	.edit-btn {
 		color: var(--text-color-2);
 		background: transparent;
@@ -762,11 +750,6 @@
 		cursor: pointer;
 		transition: color 0.2s ease;
 		font-size: 1rem;
-	}
-
-	.delete-btn:hover,
-	.delete-btn:focus {
-		color: #ff6b6b;
 	}
 
 	.edit-btn:hover,

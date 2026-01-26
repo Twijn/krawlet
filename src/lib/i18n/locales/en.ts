@@ -233,6 +233,7 @@ export default {
 	},
 	transaction: {
 		newTransaction: 'New Transaction',
+		thisTransaction: 'This Transaction',
 		amount: 'Amount',
 		recipient: 'Recipient',
 		sender: 'Sender',
