@@ -156,6 +156,10 @@ export default {
 		editWallet: 'Editar Billetera',
 		walletEditSuccess: '¡Billetera {name} actualizada con éxito!',
 		walletEditCancelled: 'Edición de billetera cancelada',
+		copyPrivateKey: 'Copiar Clave Privada',
+		confirmCopyPrivateKey: '¡Ingresa tu contraseña maestra para copiar la clave privada a tu portapapeles. Mantén esta clave segura y nunca la compartas con nadie!',
+		privateKeyCopied: '¡Clave privada copiada al portapapeles!',
+		privateKeyCopyError: 'Error al copiar la clave privada',
 		// Import/Export
 		exportWallets: 'Exportar Billeteras',
 		importWallets: 'Importar Billeteras',

@@ -3,8 +3,11 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import Modal from '$lib/components/ui/Modal.svelte';
 	import { t$ } from '$lib/i18n';
+	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+	import { faCopy } from '@fortawesome/free-solid-svg-icons';
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
+	import { prompt } from '$lib/stores/prompt';
 	import settings from '$lib/stores/settings';
 
 	let name = $state('');
@@ -71,6 +74,41 @@
 			editWalletModal.close();
 		}
 	}
+
+	async function handleCopyPrivateKey() {
+		if (!originalWallet) return;
+
+		prompt.prompt({
+			type: 'password',
+			message: $t$('wallet.confirmCopyPrivateKey'),
+			inputLabel: $t$('wallet.masterPassword'),
+			danger: true,
+			confirmButtonLabel: $t$('wallet.copyPrivateKey'),
+			validate: async (password: string) => {
+				if (password.length < 8) {
+					return [$t$('wallet.masterPasswordMinLength')];
+				}
+				const isValid = await settings.validateMasterPassword(password);
+				if (!isValid) {
+					return [$t$('wallet.invalidPassword')];
+				}
+				return [];
+			},
+			confirm: async (password: string) => {
+				try {
+					const privateKey = await settings.decryptWallet(originalWallet, password);
+					if (!privateKey) {
+						notifications.error($t$('wallet.privateKeyCopyError'));
+						return;
+					}
+					await navigator.clipboard.writeText(privateKey);
+					notifications.success($t$('wallet.privateKeyCopied'));
+				} catch (err) {
+					notifications.error($t$('wallet.privateKeyCopyError'));
+				}
+			}
+		});
+	}
 </script>
 
 <Modal open={$editWalletModal.open} title={$t$('wallet.editWallet')} onClose={handleClose}>
@@ -87,6 +125,13 @@
 				<code>{originalWallet.address}</code>
 			</div>
 		{/if}
+
+		<div class="button-group">
+			<Button type="button" full={true} onClick={handleCopyPrivateKey} variant="secondary">
+				<FontAwesomeIcon icon={faCopy} />
+				{$t$('wallet.copyPrivateKey')}
+			</Button>
+		</div>
 
 		<div class="modal-buttons">
 			<Button type="button" variant="secondary" onClick={handleClose}>
@@ -152,6 +197,10 @@
 		font-family: monospace;
 		word-break: break-all;
 		color: var(--text-color-1);
+	}
+
+	.button-group {
+		margin-bottom: 0.5rem;
 	}
 
 	.modal-buttons {

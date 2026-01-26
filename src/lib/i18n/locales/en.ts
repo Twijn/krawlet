@@ -174,6 +174,10 @@ export default {
 		editWallet: 'Edit Wallet',
 		walletEditSuccess: 'Successfully updated wallet {name}!',
 		walletEditCancelled: 'Wallet edit cancelled',
+		copyPrivateKey: 'Copy Private Key',
+		confirmCopyPrivateKey: 'Enter your master password to copy the private key to your clipboard. Keep this key safe and never share it with anyone!',
+		privateKeyCopied: 'Private key copied to clipboard!',
+		privateKeyCopyError: 'Failed to copy private key',
 		// Import/Export
 		exportWallets: 'Export Wallets',
 		importWallets: 'Import Wallets',
