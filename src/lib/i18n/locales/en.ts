@@ -432,7 +432,18 @@ export default {
 		apiKeyUsage24h: 'Last 24h',
 		apiKeyUsage7d: 'Last 7 days',
 		apiKeyLastUsed: 'Last Used',
-		apiKeyNoInfo: 'Unable to fetch API key info'
+		apiKeyNoInfo: 'Unable to fetch API key info',
+		quickCode: 'Quick Code',
+		quickCodeDescription: 'Use a quick code to quickly set up your API key without typing the full key.',
+		quickCodePlaceholder: 'Enter quick code',
+		quickCodeRedeem: 'Redeem',
+		quickCodeRedeemed: 'API key from {name} redeemed and saved!',
+		quickCodeGenerated: 'API key generated successfully!',
+		quickCodeRedeemFailed: 'Failed to redeem quick code',
+		quickCodeSaveToKrawlet: 'Save API key to Krawlet',
+		quickCodeOverwriteConfirm: 'You already have an API key saved. Redeeming this quick code will overwrite your existing API key. Are you sure you want to continue?',
+		generatedApiKey: 'Your API Key',
+		quickCodeClear: 'Clear & Enter Another Code'
 	},
 	notifications: {
 		success: 'Success',

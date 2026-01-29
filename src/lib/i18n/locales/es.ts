@@ -420,7 +420,18 @@ export default {
 		apiKeyUsage24h: 'Últimas 24h',
 		apiKeyUsage7d: 'Últimos 7 días',
 		apiKeyLastUsed: 'Último Uso',
-		apiKeyNoInfo: 'No se pudo obtener info de la clave API'
+		apiKeyNoInfo: 'No se pudo obtener info de la clave API',
+		quickCode: 'Código Rápido',
+		quickCodeDescription: 'Usa un código rápido para configurar tu clave API sin escribir la clave completa.',
+		quickCodePlaceholder: 'Ingresa el código rápido',
+		quickCodeRedeem: 'Canjear',
+		quickCodeRedeemed: '¡Clave API de {name} canjeada y guardada!',
+		quickCodeGenerated: '¡Clave API generada exitosamente!',
+		quickCodeRedeemFailed: 'Error al canjear el código rápido',
+		quickCodeSaveToKrawlet: 'Guardar clave API en Krawlet',
+		quickCodeOverwriteConfirm: 'Ya tienes una clave API guardada. Canjear este código rápido sobrescribirá tu clave API existente. ¿Estás seguro de que quieres continuar?',
+		generatedApiKey: 'Tu Clave API',
+		quickCodeClear: 'Limpiar e Ingresar Otro Código'
 	},
 	notifications: {
 		success: 'Éxito',

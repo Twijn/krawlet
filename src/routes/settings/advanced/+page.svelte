@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 	import settings from '$lib/stores/settings';
 	import {
 		faServer,
@@ -7,7 +8,11 @@
 		faEye,
 		faSync,
 		faCheckCircle,
-		faTimesCircle
+		faTimesCircle,
+		faCopy,
+		faBolt,
+		faArrowRight,
+		faRotateLeft
 	} from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
@@ -16,7 +21,9 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { t, t$ } from '$lib/i18n';
 	import { relativeTime } from '$lib/util';
-	import krawletClient from '$lib/api/krawlet';
+	import krawletClient, { getKrawletClient } from '$lib/api/krawlet';
+	import { confirm } from '$lib/stores/confirm';
+	import { browser } from '$app/environment';
 
 	// Infer ApiKeyInfo type from the client method
 	type ApiKeyInfo = Awaited<ReturnType<typeof krawletClient.apiKey.getInfo>>;
@@ -91,6 +98,111 @@
 			apiKeyError = null;
 		}
 	});
+
+	// Quick Code state
+	let quickCodeInput = $state('');
+	let quickCodeLoading = $state(false);
+	let quickCodeError: string | null = $state(null);
+	let quickCodeMode: 'redeem' | 'generate' = $state('redeem');
+	let generatedApiKey: string | null = $state(null);
+
+	// Prefill quick code from URL hash (e.g., /settings/advanced#123456)
+	// Hash is used for security - it's not sent to the server
+	$effect(() => {
+		if (browser && window.location.hash) {
+			const hashCode = window.location.hash.slice(1); // Remove the '#'
+			if (hashCode) {
+				quickCodeInput = hashCode;
+				// Clear the hash from URL for security (without triggering navigation)
+				history.replaceState(null, '', window.location.pathname + window.location.search);
+			}
+		}
+	});
+
+	async function copyApiKey() {
+		if (!$settings.krawletApiKey) return;
+		try {
+			await navigator.clipboard.writeText($settings.krawletApiKey);
+			notifications.success(t('common.copied'));
+		} catch {
+			notifications.error(t('wallet.addressCopyFailed'));
+		}
+	}
+
+	async function redeemQuickCode() {
+		if (!quickCodeInput.trim()) return;
+
+		// If there's already an API key, confirm overwrite
+		if ($settings.krawletApiKey) {
+			confirm.confirm({
+				message: t('settings.quickCodeOverwriteConfirm'),
+				danger: true,
+				confirmButtonLabel: t('common.confirm'),
+				cancelButtonLabel: t('common.cancel'),
+				confirm: () => doRedeemQuickCode()
+			});
+		} else {
+			doRedeemQuickCode();
+		}
+	}
+
+	async function doRedeemQuickCode() {
+		quickCodeLoading = true;
+		quickCodeError = null;
+
+		try {
+			const response = await getKrawletClient().apiKey.redeemQuickCode(quickCodeInput.trim());
+			$settings.krawletApiKey = response.apiKey;
+			notifications.success(t('settings.quickCodeRedeemed', { name: response.name }));
+			quickCodeInput = '';
+			if (response.warning) {
+				notifications.warning(response.warning);
+			}
+		} catch (err: unknown) {
+			console.error('Failed to redeem quick code:', err);
+			quickCodeError = err instanceof Error ? err.message : t('settings.quickCodeRedeemFailed');
+		} finally {
+			quickCodeLoading = false;
+		}
+	}
+
+	async function generateQuickCode() {
+		if (!quickCodeInput.trim()) return;
+
+		quickCodeLoading = true;
+		quickCodeError = null;
+		generatedApiKey = null;
+
+		try {
+			const response = await getKrawletClient().apiKey.redeemQuickCode(quickCodeInput.trim());
+			generatedApiKey = response.apiKey;
+			notifications.success(t('settings.quickCodeGenerated'));
+			if (response.warning) {
+				notifications.warning(response.warning);
+			}
+		} catch (err: unknown) {
+			console.error('Failed to generate API key from quick code:', err);
+			quickCodeError = err instanceof Error ? err.message : t('settings.quickCodeRedeemFailed');
+		} finally {
+			quickCodeLoading = false;
+		}
+	}
+
+	async function copyGeneratedApiKey() {
+		if (!generatedApiKey) return;
+		try {
+			await navigator.clipboard.writeText(generatedApiKey);
+			notifications.success(t('common.copied'));
+		} catch {
+			notifications.error(t('wallet.addressCopyFailed'));
+		}
+	}
+
+	function clearGeneratedApiKey() {
+		generatedApiKey = null;
+		quickCodeInput = '';
+		quickCodeError = null;
+	}
 </script>
 
 <Section lgCols={12} mdCols={12} smCols={12}>
@@ -133,15 +245,102 @@
 						</button>
 						{$t$('settings.krawletApiKeyHintSuffix')}
 					</small>
-					<input
-						type="password"
-						id="krawlet-api-key"
-						class="api-key-input"
-						bind:value={$settings.krawletApiKey}
-						placeholder={$t$('settings.krawletApiKeyPlaceholder')}
-						autocomplete="off"
-					/>
+					<div class="api-key-input-wrapper">
+						<input
+							type="password"
+							id="krawlet-api-key"
+							class="api-key-input"
+							bind:value={$settings.krawletApiKey}
+							placeholder={$t$('settings.krawletApiKeyPlaceholder')}
+							autocomplete="off"
+						/>
+						{#if $settings.krawletApiKey}
+							<button
+								type="button"
+								class="api-key-copy-btn"
+								onclick={copyApiKey}
+								title={$t$('common.copy')}
+								aria-label={$t$('common.copy')}
+							>
+								<FontAwesomeIcon icon={faCopy} />
+							</button>
+						{/if}
+					</div>
+
+					<!-- Quick Code Section -->
+					<div class="quick-code-section">
+						<span class="setting-description quick-code-label">
+							<FontAwesomeIcon icon={faBolt} />
+							{$t$('settings.quickCode')}
+						</span>
+						<small class="api-key-hint">
+							{$t$('settings.quickCodeDescription')}
+						</small>
+
+					<ToggleCheckbox
+						checked={quickCodeMode === 'redeem'}
+						onChange={() => { quickCodeMode = quickCodeMode === 'redeem' ? 'generate' : 'redeem'; generatedApiKey = null; quickCodeError = null; }}
+					>
+						{$t$('settings.quickCodeSaveToKrawlet')}
+					</ToggleCheckbox>
+
+					<div class="quick-code-input-wrapper">
+						<input
+							type="text"
+							class="quick-code-input"
+							bind:value={quickCodeInput}
+							placeholder={$t$('settings.quickCodePlaceholder')}
+							autocomplete="off"
+							disabled={quickCodeLoading}
+						/>
+						<Button
+							variant="primary"
+							onClick={() => { quickCodeMode === 'redeem' ? redeemQuickCode() : generateQuickCode(); }}
+							disabled={!quickCodeInput.trim() || quickCodeLoading}
+							loading={quickCodeLoading}
+						>
+							<FontAwesomeIcon icon={faArrowRight} />
+							{$t$('settings.quickCodeRedeem')}
+						</Button>
+					</div>
+
+					{#if quickCodeError}
+						<div class="quick-code-error">
+							<FontAwesomeIcon icon={faTimesCircle} />
+							{quickCodeError}
+						</div>
+					{/if}
+
+					{#if generatedApiKey}
+						<div class="generated-key-display">
+							<span class="generated-key-label">{$t$('settings.generatedApiKey')}</span>
+							<div class="generated-key-wrapper">
+								<code class="generated-key">{generatedApiKey}</code>
+								<Button
+									variant="success"
+									size="small"
+									onClick={() => { copyGeneratedApiKey(); }}
+									title={$t$('common.copy')}
+								>
+									<FontAwesomeIcon icon={faCopy} />
+									{$t$('common.copy')}
+								</Button>
+							</div>
+							<div class="generated-key-actions">
+								<Button
+									variant="secondary"
+									size="small"
+									onClick={() => { clearGeneratedApiKey(); }}
+								>
+									<FontAwesomeIcon icon={faRotateLeft} />
+									{$t$('settings.quickCodeClear')}
+								</Button>
+							</div>
+						</div>
+					{/if}
+					</div>
 				</div>
+
 				{#if $settings.krawletApiKey}
 					<div class="setting-preview api-key-preview">
 						<div class="preview-label">
@@ -329,10 +528,17 @@
 		color: var(--theme-color-2);
 	}
 
+	.api-key-input-wrapper {
+		position: relative;
+		display: flex;
+		align-items: center;
+		margin-top: 0.5rem;
+	}
+
 	.api-key-input {
 		width: 100%;
 		padding: 0.75rem;
-		margin-top: 0.5rem;
+		padding-right: 2.5rem;
 		background-color: var(--background-color-2);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 0.5rem;
@@ -348,6 +554,128 @@
 
 	.api-key-input::placeholder {
 		color: rgba(255, 255, 255, 0.3);
+	}
+
+	.api-key-copy-btn {
+		position: absolute;
+		right: 0.5rem;
+		background: transparent;
+		border: none;
+		color: rgba(255, 255, 255, 0.5);
+		cursor: pointer;
+		padding: 0.5rem;
+		border-radius: 0.25rem;
+		transition: all 0.2s ease;
+	}
+
+	.api-key-copy-btn:hover {
+		color: var(--theme-color-2);
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	/* Quick Code Styles */
+	.quick-code-section {
+		margin-top: 1.5rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.quick-code-section .setting-description {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.quick-code-section .setting-description :global(svg) {
+		color: var(--theme-color);
+	}
+
+	.quick-code-input-wrapper {
+		display: flex;
+		gap: 0.5rem;
+		margin-top: 0.75rem;
+	}
+
+	.quick-code-input {
+		flex: 1;
+		padding: 0.75rem;
+		background-color: var(--background-color-2);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 0.5rem;
+		color: var(--text-color-1);
+		font-family: monospace;
+		font-size: 0.9rem;
+	}
+
+	.quick-code-input:focus {
+		outline: none;
+		border-color: var(--theme-color-2);
+	}
+
+	.quick-code-input::placeholder {
+		color: rgba(255, 255, 255, 0.3);
+	}
+
+	.quick-code-input:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.quick-code-error {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: 0.5rem;
+		color: rgb(var(--red));
+		font-size: 0.85rem;
+	}
+
+	.quick-code-hint {
+		display: block;
+		margin-top: 0.5rem;
+		font-size: 0.8rem;
+		color: rgba(255, 255, 255, 0.4);
+	}
+
+	.generated-key-display {
+		margin-top: 0.75rem;
+		padding: 1rem;
+		background-color: rgba(var(--green), 0.1);
+		border: 1px solid rgba(var(--green), 0.3);
+		border-radius: 0.5rem;
+	}
+
+	.generated-key-label {
+		display: block;
+		font-size: 0.8rem;
+		color: rgb(var(--green));
+		margin-bottom: 0.5rem;
+		font-weight: 500;
+	}
+
+	.generated-key-wrapper {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+
+	.generated-key {
+		flex: 1;
+		min-width: 0;
+		padding: 0.5rem 0.75rem;
+		background-color: rgba(0, 0, 0, 0.3);
+		border-radius: 0.25rem;
+		font-family: monospace;
+		font-size: 0.85rem;
+		word-break: break-all;
+		color: var(--text-color-1);
+	}
+
+	.generated-key-actions {
+		margin-top: 0.75rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid rgba(var(--green), 0.2);
 	}
 
 	.api-key-preview {

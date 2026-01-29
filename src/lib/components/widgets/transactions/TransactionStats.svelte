@@ -5,7 +5,7 @@
 	import type { Transaction, TransactionsResponse } from 'kromer';
 	import { t$ } from '$lib/i18n';
 	import { paramState } from '$lib/paramState.svelte';
-	import { withRateLimitRetry, batchDelay } from '$lib/utils/rateLimit';
+	import { withRateLimitRetry, rateLimitDelay } from '$lib/utils/rateLimit';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 	type TimeFrame = '1h' | '1d' | '1w' | '1m';
@@ -72,7 +72,7 @@
 		while (keepFetching) {
 			// Add delay between requests to avoid rate limiting
 			if (offset > 0) {
-				await batchDelay(150);
+				await rateLimitDelay();
 			}
 
 			const resp = await withRateLimitRetry(() =>

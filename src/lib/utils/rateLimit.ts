@@ -2,9 +2,50 @@
  * Rate limit handling utilities with exponential backoff
  */
 
+import { browser } from '$app/environment';
+
+// Default rate limit values for unauthenticated users
 const DEFAULT_INITIAL_DELAY = 1000; // 1 second
 const DEFAULT_MAX_DELAY = 30000; // 30 seconds
 const DEFAULT_MAX_RETRIES = 5;
+const DEFAULT_BATCH_DELAY = 200; // 200ms between batches
+
+// Rate limit values for authenticated users (with API key)
+const AUTH_INITIAL_DELAY = 300; // 300ms
+const AUTH_MAX_DELAY = 10000; // 10 seconds
+const AUTH_MAX_RETRIES = 3;
+const AUTH_BATCH_DELAY = 50; // 50ms between batches
+
+/**
+ * Check if the user has a Krawlet API key configured
+ */
+function hasApiKey(): boolean {
+	if (!browser) return false;
+	try {
+		const settings = localStorage.getItem('settings');
+		if (settings) {
+			const parsed = JSON.parse(settings);
+			return !!parsed.krawletApiKey;
+		}
+	} catch {
+		// Ignore parse errors
+	}
+	return false;
+}
+
+/**
+ * Get rate limit configuration based on authentication status
+ */
+export function getRateLimitConfig() {
+	const authenticated = hasApiKey();
+	return {
+		initialDelay: authenticated ? AUTH_INITIAL_DELAY : DEFAULT_INITIAL_DELAY,
+		maxDelay: authenticated ? AUTH_MAX_DELAY : DEFAULT_MAX_DELAY,
+		maxRetries: authenticated ? AUTH_MAX_RETRIES : DEFAULT_MAX_RETRIES,
+		batchDelay: authenticated ? AUTH_BATCH_DELAY : DEFAULT_BATCH_DELAY,
+		authenticated
+	};
+}
 
 interface RetryOptions {
 	initialDelay?: number;
@@ -40,15 +81,17 @@ function isRateLimitError(error: unknown): boolean {
 /**
  * Execute a function with automatic retry on rate limit errors
  * Uses exponential backoff with jitter
+ * Automatically uses shorter delays when user is authenticated with an API key
  */
 export async function withRateLimitRetry<T>(
 	fn: () => Promise<T>,
 	options: RetryOptions = {}
 ): Promise<T> {
+	const config = getRateLimitConfig();
 	const {
-		initialDelay = DEFAULT_INITIAL_DELAY,
-		maxDelay = DEFAULT_MAX_DELAY,
-		maxRetries = DEFAULT_MAX_RETRIES,
+		initialDelay = config.initialDelay,
+		maxDelay = config.maxDelay,
+		maxRetries = config.maxRetries,
 		onRetry
 	} = options;
 
@@ -111,15 +154,29 @@ export function createRateLimitedFn<T extends (...args: unknown[]) => Promise<un
 }
 
 /**
+ * Simple delay helper - waits for a specified time
+ * Automatically uses shorter delays when user is authenticated with an API key
+ * @param ms - Optional delay in milliseconds. If not provided, uses default based on auth status.
+ */
+export async function rateLimitDelay(ms?: number): Promise<void> {
+	const config = getRateLimitConfig();
+	const actualDelay = ms ?? config.batchDelay;
+	await sleep(actualDelay);
+}
+
+/**
  * Batch delay helper - adds delay between iterations in a loop
  * Use this in while loops that make API calls
+ * Automatically uses shorter delays when user is authenticated with an API key
  */
 export async function batchDelay(
 	currentIteration: number,
 	delayEveryN: number = 5,
-	delayMs: number = 200
+	delayMs?: number
 ): Promise<void> {
+	const config = getRateLimitConfig();
+	const actualDelay = delayMs ?? config.batchDelay;
 	if (currentIteration > 0 && currentIteration % delayEveryN === 0) {
-		await sleep(delayMs);
+		await sleep(actualDelay);
 	}
 }
