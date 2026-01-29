@@ -16,7 +16,7 @@
 	import { goto } from '$app/navigation';
 
 	const SPECIAL_META: string[] = ['winner', 'loser', 'payout'];
-	const REFUND_INTERNAL_META: string[] = ['ref', 'type', 'amount', 'original'];
+	const REFUND_INTERNAL_META: string[] = ['ref', 'type', 'original'];
 
 	const {
 		transaction
@@ -46,7 +46,6 @@
 	const isRefund = refundType?.value?.toLowerCase() === 'refund';
 	const refundRef = findMeta(meta, 'ref');
 	const refundOriginal = findMeta(meta, 'original');
-	const refundAmount = findMeta(meta, 'amount');
 	const refundMessage = findMeta(meta, 'message') ?? findMeta(meta, 'msg');
 	const refundError = findMeta(meta, 'error');
 

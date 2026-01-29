@@ -79,7 +79,7 @@
 		
 		try {
 			// Build metadata with reference
-			const metadata = `ref=${transaction.id};type=refund;amount=${calculatedRefund};original=${transaction.value};message=${message}`;
+			const metadata = `ref=${transaction.id};type=refund;original=${transaction.value};message=${message}`;
 
 			await kromer.transactions.send({
 				privatekey: privateKey,
