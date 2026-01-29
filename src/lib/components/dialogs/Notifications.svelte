@@ -35,10 +35,7 @@
 				</button>
 			{/if}
 			{#if notification.timeout}
-				<div 
-					class="timeout-bar" 
-					style="animation-duration: {notification.timeout}ms"
-				></div>
+				<div class="timeout-bar" style="animation-duration: {notification.timeout}ms"></div>
 			{/if}
 		</div>
 	{/each}

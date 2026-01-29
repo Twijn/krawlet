@@ -179,7 +179,8 @@ export default {
 		walletEditSuccess: 'Successfully updated wallet {name}!',
 		walletEditCancelled: 'Wallet edit cancelled',
 		copyPrivateKey: 'Copy Private Key',
-		confirmCopyPrivateKey: 'Enter your master password to copy the private key to your clipboard. Keep this key safe and never share it with anyone!',
+		confirmCopyPrivateKey:
+			'Enter your master password to copy the private key to your clipboard. Keep this key safe and never share it with anyone!',
 		privateKeyCopied: 'Private key copied to clipboard!',
 		privateKeyCopyError: 'Failed to copy private key',
 		// Import/Export
@@ -434,14 +435,16 @@ export default {
 		apiKeyLastUsed: 'Last Used',
 		apiKeyNoInfo: 'Unable to fetch API key info',
 		quickCode: 'Quick Code',
-		quickCodeDescription: 'Use a quick code to quickly set up your API key without typing the full key.',
+		quickCodeDescription:
+			'Use a quick code to quickly set up your API key without typing the full key.',
 		quickCodePlaceholder: 'Enter quick code',
 		quickCodeRedeem: 'Redeem',
 		quickCodeRedeemed: 'API key from {name} redeemed and saved!',
 		quickCodeGenerated: 'API key generated successfully!',
 		quickCodeRedeemFailed: 'Failed to redeem quick code',
 		quickCodeSaveToKrawlet: 'Save API key to Krawlet',
-		quickCodeOverwriteConfirm: 'You already have an API key saved. Redeeming this quick code will overwrite your existing API key. Are you sure you want to continue?',
+		quickCodeOverwriteConfirm:
+			'You already have an API key saved. Redeeming this quick code will overwrite your existing API key. Are you sure you want to continue?',
 		generatedApiKey: 'Your API Key',
 		quickCodeClear: 'Clear & Enter Another Code'
 	},

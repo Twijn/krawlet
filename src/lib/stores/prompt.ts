@@ -22,7 +22,12 @@ function createPromptStore() {
 
 	return {
 		subscribe,
-		prompt: (message: Omit<PromptMessage, 'errors' | 'confirm' | 'cancel'> & { confirm?: (value: string) => void; cancel?: () => void }): Promise<string | null> => {
+		prompt: (
+			message: Omit<PromptMessage, 'errors' | 'confirm' | 'cancel'> & {
+				confirm?: (value: string) => void;
+				cancel?: () => void;
+			}
+		): Promise<string | null> => {
 			return new Promise((resolve) => {
 				const handle = async (result: string | null) => {
 					if (result) {

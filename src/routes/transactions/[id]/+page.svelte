@@ -1,7 +1,12 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faDatabase, faInfoCircle, faRepeat, faRotateLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faDatabase,
+		faInfoCircle,
+		faRepeat,
+		faRotateLeft
+	} from '@fortawesome/free-solid-svg-icons';
 	import { relativeTime, formatCurrency } from '$lib/util';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import kromer from '$lib/api/kromer.js';
@@ -10,7 +15,7 @@
 	import { t$ } from '$lib/i18n';
 
 	const { data } = $props();
-	
+
 	// Make transaction reactive so it updates when navigating between transactions
 	const transaction = $derived(data.transaction as Transaction);
 
@@ -27,25 +32,16 @@
 	const refundOriginal = $derived(findMeta('original'));
 
 	// Fetch referenced transaction if this is a refund
-	let referencedTransaction: Transaction | null = $state(null);
-	let loadingRef = $state(false);
-
 	$effect(() => {
 		if (isRefund && refundRef?.value) {
-			loadingRef = true;
-			referencedTransaction = null; // Reset when transaction changes
-			kromer.transactions.get(Number(refundRef.value))
+			kromer.transactions
+				.get(Number(refundRef.value))
 				.then((tx) => {
-					referencedTransaction = tx;
+					console.log('Referenced transaction:', tx);
 				})
 				.catch((e) => {
 					console.error('Failed to fetch referenced transaction:', e);
-				})
-				.finally(() => {
-					loadingRef = false;
 				});
-		} else {
-			referencedTransaction = null;
 		}
 	});
 </script>
@@ -105,7 +101,9 @@
 		{#if refundOriginal}
 			{@const percentage = (transaction.value / Number(refundOriginal.value)) * 100}
 			<span class="refund-stats">
-				({formatCurrency(transaction.value)} of {formatCurrency(Number(refundOriginal.value))} KRO, {percentage.toFixed(0)}%)
+				({formatCurrency(transaction.value)} of {formatCurrency(Number(refundOriginal.value))} KRO, {percentage.toFixed(
+					0
+				)}%)
 			</span>
 		{/if}
 	</div>

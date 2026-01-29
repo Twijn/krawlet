@@ -103,7 +103,7 @@
 					}
 					await navigator.clipboard.writeText(privateKey);
 					notifications.success($t$('wallet.privateKeyCopied'));
-				} catch (err) {
+				} catch {
 					notifications.error($t$('wallet.privateKeyCopyError'));
 				}
 			}
@@ -114,7 +114,10 @@
 		if (!originalWallet) return;
 
 		confirm.confirm({
-			message: t('wallet.confirmDelete', { name: originalWallet.name, address: originalWallet.address }),
+			message: t('wallet.confirmDelete', {
+				name: originalWallet.name,
+				address: originalWallet.address
+			}),
 			danger: true,
 			confirmButtonLabel: t('common.delete'),
 			confirm: () => {

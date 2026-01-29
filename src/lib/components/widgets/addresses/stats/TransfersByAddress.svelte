@@ -80,7 +80,7 @@
 			<tbody>
 				{#each ioAddresses as ioa (ioa.address)}
 					<tr>
-					<td><AddressComponent address={ioa.address} /></td>
+						<td><AddressComponent address={ioa.address} /></td>
 						<td class="right">{formatCurrency(ioa.in)} <small>KRO</small></td>
 						<td class="right">{formatCurrency(ioa.out)} <small>KRO</small></td>
 						<td class="right">{formatCurrency(ioa.in - ioa.out)} <small>KRO</small></td>

@@ -116,7 +116,6 @@
 	let allTimeStats: TimeframeStats = $state(emptyStats());
 	let uniqueAddresses = $state(0);
 	let avgTxSize = $state(0);
-	let transactions: Transaction[] = $state([]);
 
 	function calculateStats(txs: Transaction[], cutoffMs: number): TimeframeStats {
 		const cutoffTime = Date.now() - cutoffMs;
@@ -250,8 +249,6 @@
 				}
 				iteration++;
 			}
-
-			transactions = allTxs;
 
 			// Calculate cumulative timeframe stats (24h, 7d, 30d from now)
 			stats24h = calculateStats(allTxs, TIMEFRAMES['24h']);
@@ -626,7 +623,9 @@
 		background-color: var(--background-color-2);
 		border-radius: 0.5rem;
 		border: 1px solid rgba(255, 255, 255, 0.08);
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.1) inset;
+		box-shadow:
+			0 2px 8px rgba(0, 0, 0, 0.3),
+			0 0 1px rgba(255, 255, 255, 0.1) inset;
 		padding: 1rem;
 		transition: all 0.2s ease;
 		display: flex;
@@ -635,7 +634,9 @@
 	}
 
 	.wallet-card:hover {
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 1px rgba(255, 255, 255, 0.15) inset;
+		box-shadow:
+			0 4px 16px rgba(0, 0, 0, 0.4),
+			0 0 1px rgba(255, 255, 255, 0.15) inset;
 		border-color: rgba(255, 255, 255, 0.12);
 		transform: translateY(-2px);
 	}

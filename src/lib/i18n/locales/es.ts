@@ -161,7 +161,8 @@ export default {
 		walletEditSuccess: '¡Billetera {name} actualizada con éxito!',
 		walletEditCancelled: 'Edición de billetera cancelada',
 		copyPrivateKey: 'Copiar Clave Privada',
-		confirmCopyPrivateKey: '¡Ingresa tu contraseña maestra para copiar la clave privada a tu portapapeles. Mantén esta clave segura y nunca la compartas con nadie!',
+		confirmCopyPrivateKey:
+			'¡Ingresa tu contraseña maestra para copiar la clave privada a tu portapapeles. Mantén esta clave segura y nunca la compartas con nadie!',
 		privateKeyCopied: '¡Clave privada copiada al portapapeles!',
 		privateKeyCopyError: 'Error al copiar la clave privada',
 		// Import/Export
@@ -422,14 +423,16 @@ export default {
 		apiKeyLastUsed: 'Último Uso',
 		apiKeyNoInfo: 'No se pudo obtener info de la clave API',
 		quickCode: 'Código Rápido',
-		quickCodeDescription: 'Usa un código rápido para configurar tu clave API sin escribir la clave completa.',
+		quickCodeDescription:
+			'Usa un código rápido para configurar tu clave API sin escribir la clave completa.',
 		quickCodePlaceholder: 'Ingresa el código rápido',
 		quickCodeRedeem: 'Canjear',
 		quickCodeRedeemed: '¡Clave API de {name} canjeada y guardada!',
 		quickCodeGenerated: '¡Clave API generada exitosamente!',
 		quickCodeRedeemFailed: 'Error al canjear el código rápido',
 		quickCodeSaveToKrawlet: 'Guardar clave API en Krawlet',
-		quickCodeOverwriteConfirm: 'Ya tienes una clave API guardada. Canjear este código rápido sobrescribirá tu clave API existente. ¿Estás seguro de que quieres continuar?',
+		quickCodeOverwriteConfirm:
+			'Ya tienes una clave API guardada. Canjear este código rápido sobrescribirá tu clave API existente. ¿Estás seguro de que quieres continuar?',
 		generatedApiKey: 'Tu Clave API',
 		quickCodeClear: 'Limpiar e Ingresar Otro Código'
 	},

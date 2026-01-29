@@ -39,9 +39,7 @@
 	let calculatedRefund = $derived.by(() => {
 		if (!$refundModal.transaction) return 0;
 		if (refundMode === 'percentage') {
-			return (
-				Math.floor(($refundModal.transaction.value * refundPercentage) / 100 * 100) / 100
-			);
+			return Math.floor((($refundModal.transaction.value * refundPercentage) / 100) * 100) / 100;
 		}
 		return Math.floor(refundAmount * 100) / 100;
 	});
@@ -76,7 +74,7 @@
 		}
 
 		submitting = true;
-		
+
 		try {
 			// Build metadata with reference
 			const metadata = `ref=${transaction.id};type=refund;original=${transaction.value};message=${message}`;
@@ -147,7 +145,7 @@
 			</div>
 
 			<div class="wallet-selector">
-				<AddressSelector 
+				<AddressSelector
 					label={$t$('refund.refundFrom')}
 					mode="privatekey"
 					bind:query={fromQuery}
@@ -182,14 +180,7 @@
 			{#if refundMode === 'percentage'}
 				<label>
 					{$t$('refund.refundPercentage')}
-					<input
-						type="number"
-						min="0"
-						max="100"
-						step="1"
-						bind:value={refundPercentage}
-						required
-					/>
+					<input type="number" min="0" max="100" step="1" bind:value={refundPercentage} required />
 					<small>0% - 100%</small>
 				</label>
 			{:else}
@@ -221,7 +212,11 @@
 				<Button type="button" variant="secondary" onClick={handleClose}>
 					{$t$('common.cancel')}
 				</Button>
-				<Button type="submit" variant="primary" disabled={submitting || !refundFromAddress || loading}>
+				<Button
+					type="submit"
+					variant="primary"
+					disabled={submitting || !refundFromAddress || loading}
+				>
 					{submitting ? $t$('refund.processing') : $t$('common.confirm')}
 				</Button>
 			</div>
@@ -394,7 +389,11 @@
 
 	.calculated-refund {
 		padding: 0.75rem 1rem;
-		background: linear-gradient(135deg, rgba(var(--theme-color-rgb), 0.15) 0%, rgba(var(--theme-color-rgb), 0.05) 100%);
+		background: linear-gradient(
+			135deg,
+			rgba(var(--theme-color-rgb), 0.15) 0%,
+			rgba(var(--theme-color-rgb), 0.05) 100%
+		);
 		border-radius: 0.5rem;
 		display: flex;
 		justify-content: space-between;

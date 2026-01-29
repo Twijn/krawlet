@@ -45,12 +45,16 @@
 		background-color: var(--background-color-2);
 		padding: 1rem;
 		border-radius: 0.75rem;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+		box-shadow:
+			0 2px 8px rgba(0, 0, 0, 0.3),
+			0 0 0 1px rgba(255, 255, 255, 0.05);
 		transition: box-shadow 0.2s ease;
 	}
 
 	section:hover {
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
+		box-shadow:
+			0 4px 12px rgba(0, 0, 0, 0.4),
+			0 0 0 1px rgba(255, 255, 255, 0.08);
 	}
 
 	header {

@@ -87,8 +87,7 @@
 
 		// Check if user owns the recipient address for refund option
 		const ownsToAddress =
-			transaction.to &&
-			$settings.wallets.some((wallet) => wallet.address === transaction.to);
+			transaction.to && $settings.wallets.some((wallet) => wallet.address === transaction.to);
 
 		if (ownsToAddress) {
 			menuItems.push(

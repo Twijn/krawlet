@@ -116,7 +116,9 @@ body {
 	font-size: 0.8125rem;
 	font-weight: 500;
 	z-index: 10000;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+	box-shadow:
+		0 4px 12px rgba(0, 0, 0, 0.5),
+		0 0 0 1px rgba(255, 255, 255, 0.1);
 	white-space: nowrap;
 	pointer-events: none;
 	transform: translateX(-50%);
@@ -407,7 +409,9 @@ input[type='number']:focus,
 select:focus,
 textarea:focus {
 	border-color: var(--theme-color-2);
-	box-shadow: 0 2px 8px rgba(var(--theme-color-rgb), 0.3), 0 0 0 3px rgba(var(--theme-color-rgb), 0.1);
+	box-shadow:
+		0 2px 8px rgba(var(--theme-color-rgb), 0.3),
+		0 0 0 3px rgba(var(--theme-color-rgb), 0.1);
 }
 
 label:has(.fail) input {

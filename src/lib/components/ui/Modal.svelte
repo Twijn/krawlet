@@ -27,23 +27,23 @@
 	const handleClickOutside = (node: HTMLElement) => {
 		const handleClick = (event: MouseEvent) => {
 			const target = event.target as Node;
-			
+
 			// Don't close if target is no longer in the document (was in a now-closed modal)
 			if (!document.body.contains(target)) {
 				return;
 			}
-			
+
 			// Don't close if clicking inside this modal
 			if (node && node.contains(target)) {
 				return;
 			}
-			
+
 			// Don't close if clicking inside another modal (prompt, confirm, etc.)
 			const closestBackdrop = (target as Element).closest?.('.modal-backdrop');
 			if (closestBackdrop && closestBackdrop !== node.parentElement) {
 				return;
 			}
-			
+
 			// Close if clicking outside (on this modal's backdrop or elsewhere)
 			onClose();
 		};
@@ -127,7 +127,9 @@
 		background: var(--background-color-2);
 		padding: 1.5rem;
 		border-radius: 0.75rem;
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+		box-shadow:
+			0 8px 32px rgba(0, 0, 0, 0.5),
+			0 0 0 1px rgba(255, 255, 255, 0.1);
 		width: calc(100% - 4rem);
 		max-height: 90vh;
 		overflow-y: auto;

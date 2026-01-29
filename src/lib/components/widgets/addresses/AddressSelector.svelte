@@ -96,36 +96,38 @@
 
 	function setAddress(addr: Addr | Address, setQuery: boolean = true) {
 		if (mode === 'privatekey' && 'private' in addr) {
-			prompt.prompt({
-				type: 'password',
-				message: 'Enter your master password to decrypt your private keys.',
-				inputLabel: 'Master Password',
-				confirmButtonLabel: 'Authorize',
-				cancelButtonLabel: 'Cancel',
-				validate: async (value) => {
-					try {
-						if (await settings.decryptWallet(addr, value)) {
-							return [];
-						}
-						return ['Invalid master password!'];
-					} catch (e) {
-						console.error(e);
-						return ['An unknown error occurred!'];
-					}
-				}
-			}).then(async (result) => {
-				if (result) {
-					const decrypted = await settings.decryptWallet(addr, result);
-					if (decrypted) {
-						privatekey = decrypted;
-						selected = addr;
-						address = getAddress(addr);
-						if (setQuery) {
-							query = address;
+			prompt
+				.prompt({
+					type: 'password',
+					message: 'Enter your master password to decrypt your private keys.',
+					inputLabel: 'Master Password',
+					confirmButtonLabel: 'Authorize',
+					cancelButtonLabel: 'Cancel',
+					validate: async (value) => {
+						try {
+							if (await settings.decryptWallet(addr, value)) {
+								return [];
+							}
+							return ['Invalid master password!'];
+						} catch (e) {
+							console.error(e);
+							return ['An unknown error occurred!'];
 						}
 					}
-				}
-			});
+				})
+				.then(async (result) => {
+					if (result) {
+						const decrypted = await settings.decryptWallet(addr, result);
+						if (decrypted) {
+							privatekey = decrypted;
+							selected = addr;
+							address = getAddress(addr);
+							if (setQuery) {
+								query = address;
+							}
+						}
+					}
+				});
 		} else {
 			selected = addr;
 			address = getAddress(addr);

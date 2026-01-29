@@ -10,7 +10,6 @@
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import { notifications } from '$lib/stores/notifications';
-	import { confirm } from '$lib/stores/confirm';
 	import settings, { type Wallet } from '$lib/stores/settings';
 	import { getSyncNode } from '$lib/consts';
 	import ToggleCheckbox from '../form/ToggleCheckbox.svelte';

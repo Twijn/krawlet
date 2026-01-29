@@ -279,7 +279,10 @@ class Settings {
 		}));
 	}
 
-	public async updateWallet(address: string, updates: Partial<Omit<Wallet, 'address' | 'private'>>) {
+	public async updateWallet(
+		address: string,
+		updates: Partial<Omit<Wallet, 'address' | 'private'>>
+	) {
 		this.data.update((state) => ({
 			...state,
 			wallets: state.wallets.map((w) =>
@@ -287,7 +290,7 @@ class Settings {
 					? {
 							...w,
 							...updates
-					  }
+						}
 					: w
 			)
 		}));

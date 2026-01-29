@@ -240,7 +240,12 @@
 					</label>
 					<small class="api-key-hint">
 						{$t$('settings.krawletApiKeyHintPrefix')}
-						<button type="button" class="command-copy" onclick={copyCommand} title={$t$('common.copy')}>
+						<button
+							type="button"
+							class="command-copy"
+							onclick={copyCommand}
+							title={$t$('common.copy')}
+						>
 							{API_KEY_COMMAND}
 						</button>
 						{$t$('settings.krawletApiKeyHintSuffix')}
@@ -277,67 +282,81 @@
 							{$t$('settings.quickCodeDescription')}
 						</small>
 
-					<ToggleCheckbox
-						checked={quickCodeMode === 'redeem'}
-						onChange={() => { quickCodeMode = quickCodeMode === 'redeem' ? 'generate' : 'redeem'; generatedApiKey = null; quickCodeError = null; }}
-					>
-						{$t$('settings.quickCodeSaveToKrawlet')}
-					</ToggleCheckbox>
-
-					<div class="quick-code-input-wrapper">
-						<input
-							type="text"
-							class="quick-code-input"
-							bind:value={quickCodeInput}
-							placeholder={$t$('settings.quickCodePlaceholder')}
-							autocomplete="off"
-							disabled={quickCodeLoading}
-						/>
-						<Button
-							variant="primary"
-							onClick={() => { quickCodeMode === 'redeem' ? redeemQuickCode() : generateQuickCode(); }}
-							disabled={!quickCodeInput.trim() || quickCodeLoading}
-							loading={quickCodeLoading}
+						<ToggleCheckbox
+							checked={quickCodeMode === 'redeem'}
+							onChange={() => {
+								quickCodeMode = quickCodeMode === 'redeem' ? 'generate' : 'redeem';
+								generatedApiKey = null;
+								quickCodeError = null;
+							}}
 						>
-							<FontAwesomeIcon icon={faArrowRight} />
-							{$t$('settings.quickCodeRedeem')}
-						</Button>
-					</div>
+							{$t$('settings.quickCodeSaveToKrawlet')}
+						</ToggleCheckbox>
 
-					{#if quickCodeError}
-						<div class="quick-code-error">
-							<FontAwesomeIcon icon={faTimesCircle} />
-							{quickCodeError}
+						<div class="quick-code-input-wrapper">
+							<input
+								type="text"
+								class="quick-code-input"
+								bind:value={quickCodeInput}
+								placeholder={$t$('settings.quickCodePlaceholder')}
+								autocomplete="off"
+								disabled={quickCodeLoading}
+							/>
+							<Button
+								variant="primary"
+								onClick={() => {
+									if (quickCodeMode === 'redeem') {
+										redeemQuickCode();
+									} else {
+										generateQuickCode();
+									}
+								}}
+								disabled={!quickCodeInput.trim() || quickCodeLoading}
+								loading={quickCodeLoading}
+							>
+								<FontAwesomeIcon icon={faArrowRight} />
+								{$t$('settings.quickCodeRedeem')}
+							</Button>
 						</div>
-					{/if}
 
-					{#if generatedApiKey}
-						<div class="generated-key-display">
-							<span class="generated-key-label">{$t$('settings.generatedApiKey')}</span>
-							<div class="generated-key-wrapper">
-								<code class="generated-key">{generatedApiKey}</code>
-								<Button
-									variant="success"
-									size="small"
-									onClick={() => { copyGeneratedApiKey(); }}
-									title={$t$('common.copy')}
-								>
-									<FontAwesomeIcon icon={faCopy} />
-									{$t$('common.copy')}
-								</Button>
+						{#if quickCodeError}
+							<div class="quick-code-error">
+								<FontAwesomeIcon icon={faTimesCircle} />
+								{quickCodeError}
 							</div>
-							<div class="generated-key-actions">
-								<Button
-									variant="secondary"
-									size="small"
-									onClick={() => { clearGeneratedApiKey(); }}
-								>
-									<FontAwesomeIcon icon={faRotateLeft} />
-									{$t$('settings.quickCodeClear')}
-								</Button>
+						{/if}
+
+						{#if generatedApiKey}
+							<div class="generated-key-display">
+								<span class="generated-key-label">{$t$('settings.generatedApiKey')}</span>
+								<div class="generated-key-wrapper">
+									<code class="generated-key">{generatedApiKey}</code>
+									<Button
+										variant="success"
+										size="small"
+										onClick={() => {
+											copyGeneratedApiKey();
+										}}
+										title={$t$('common.copy')}
+									>
+										<FontAwesomeIcon icon={faCopy} />
+										{$t$('common.copy')}
+									</Button>
+								</div>
+								<div class="generated-key-actions">
+									<Button
+										variant="secondary"
+										size="small"
+										onClick={() => {
+											clearGeneratedApiKey();
+										}}
+									>
+										<FontAwesomeIcon icon={faRotateLeft} />
+										{$t$('settings.quickCodeClear')}
+									</Button>
+								</div>
 							</div>
-						</div>
-					{/if}
+						{/if}
 					</div>
 				</div>
 

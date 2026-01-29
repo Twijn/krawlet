@@ -1,5 +1,10 @@
 <script lang="ts">
-	import type { Transaction, TransactionMetadata, TransactionMetadataEntry, TransactionWithMeta } from 'kromer';
+	import type {
+		Transaction,
+		TransactionMetadata,
+		TransactionMetadataEntry,
+		TransactionWithMeta
+	} from 'kromer';
 	import shopsync, { getItemImageUrl, getRelativeItemUrl } from '$lib/stores/shopsync';
 	import type { Listing } from '$lib/types/shops';
 	import settings from '$lib/stores/settings';
@@ -57,10 +62,11 @@
 	function openRefundModal(e: MouseEvent) {
 		e.preventDefault();
 		showRefundModal = true;
-		
+
 		if (refundRef?.value && !referencedTransaction) {
 			loadingRef = true;
-			kromer.transactions.get(Number(refundRef.value))
+			kromer.transactions
+				.get(Number(refundRef.value))
 				.then((tx) => {
 					referencedTransaction = tx;
 				})
@@ -137,7 +143,9 @@
 			{:else}
 				<!-- Check for success= or plain text after filtering refund internal fields -->
 				{@const successMeta = findMeta(meta, 'success')}
-				{@const plainText = meta.entries.find((e) => !e.value && !REFUND_INTERNAL_META.includes(e.name.toLowerCase()))}
+				{@const plainText = meta.entries.find(
+					(e) => !e.value && !REFUND_INTERNAL_META.includes(e.name.toLowerCase())
+				)}
 				{#if successMeta}
 					<span class="refund-meta success">{successMeta.value}</span>
 				{:else if plainText}
@@ -200,14 +208,21 @@
 
 <!-- Refund Details Modal -->
 {#if isRefund && refundRef}
-	<Modal open={showRefundModal} title={$t$('refund.refundTransaction')} onClose={() => showRefundModal = false} maxWidth="550px">
+	<Modal
+		open={showRefundModal}
+		title={$t$('refund.refundTransaction')}
+		onClose={() => (showRefundModal = false)}
+		maxWidth="550px"
+	>
 		<div class="refund-modal-content">
 			<!-- This Transaction (the refund) -->
 			<div class="refund-section">
 				<h3>{$t$('transaction.thisTransaction')}</h3>
 				<div class="tx-card current">
 					<div class="tx-header">
-						<button class="tx-id" onclick={() => navigateToTransaction(transaction.id)}>#{transaction.id}</button>
+						<button class="tx-id" onclick={() => navigateToTransaction(transaction.id)}
+							>#{transaction.id}</button
+						>
 						<span class="tx-amount refund-amount">+{formatCurrency(transaction.value)} KRO</span>
 					</div>
 					<div class="tx-parties">
@@ -238,7 +253,9 @@
 					</div>
 					<div class="summary-row">
 						<span class="summary-label">{$t$('refund.refundPercentage')}</span>
-						<span class="summary-value percentage" class:full={percentage >= 100}>{percentage.toFixed(1)}%</span>
+						<span class="summary-value percentage" class:full={percentage >= 100}
+							>{percentage.toFixed(1)}%</span
+						>
 					</div>
 				</div>
 			{/if}
@@ -246,11 +263,13 @@
 			<!-- Message or Error -->
 			{#if refundError}
 				<div class="refund-message error">
-					<strong>Error:</strong> {refundError.value}
+					<strong>Error:</strong>
+					{refundError.value}
 				</div>
 			{:else if refundMessage}
 				<div class="refund-message">
-					<strong>{$t$('refund.message')}:</strong> {refundMessage.value}
+					<strong>{$t$('refund.message')}:</strong>
+					{refundMessage.value}
 				</div>
 			{:else if displayMeta && !displayMeta.value}
 				<div class="refund-message">
@@ -267,7 +286,9 @@
 					{@const refTxId = referencedTransaction.id}
 					<div class="tx-card original">
 						<div class="tx-header">
-							<button class="tx-id" onclick={() => navigateToTransaction(refTxId)}>#{referencedTransaction.id}</button>
+							<button class="tx-id" onclick={() => navigateToTransaction(refTxId)}
+								>#{referencedTransaction.id}</button
+							>
 							<span class="tx-amount">{formatCurrency(referencedTransaction.value)} KRO</span>
 						</div>
 						<div class="tx-parties">
@@ -283,7 +304,9 @@
 						{#if referencedTransaction.metadata}
 							{@const refMeta = kromer.transactions.parseMetadata(referencedTransaction)}
 							{@const refDisplayMeta = findDisplayMeta(refMeta)}
-							{@const refPlainText = refMeta.entries.find((e) => !e.value && !REFUND_INTERNAL_META.includes(e.name.toLowerCase()))}
+							{@const refPlainText = refMeta.entries.find(
+								(e) => !e.value && !REFUND_INTERNAL_META.includes(e.name.toLowerCase())
+							)}
 							{#if refDisplayMeta}
 								<div class="tx-meta">
 									<small class:error={refDisplayMeta.name.toLowerCase() === 'error'}>
@@ -347,7 +370,9 @@
 		font-size: 0.85em;
 		font-family: inherit;
 		cursor: pointer;
-		transition: background-color 0.15s ease, border-color 0.15s ease;
+		transition:
+			background-color 0.15s ease,
+			border-color 0.15s ease;
 		flex-shrink: 0;
 	}
 
