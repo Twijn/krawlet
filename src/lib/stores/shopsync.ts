@@ -5,7 +5,7 @@ import krawletClient from '$lib/api/krawlet';
 import { KrawletError, type Shop as ShopApi, type Item as ItemApi } from 'krawlet-js';
 
 const itemName = 'shopsync';
-const itemExpiry = 1000 * 60 * 10; // 10 minutes
+const itemExpiry = 1000 * 60 * 30; // 30 minutes
 
 const itemsRequiringNbt: string[] = ['minecraft:enchanted_book'];
 

@@ -13,6 +13,10 @@ export type FetchedResponse<T> = {
 
 export type FetchFunction<T> = () => Promise<T[]>;
 
+// Minimum time to wait after a failed request before retrying
+const MIN_RETRY_DELAY = 10_000; // 10 seconds
+const MAX_RETRY_DELAY = 60_000; // 60 seconds
+
 export default class FetchedStore<T> {
 	protected initialData: FetchedStoreData<T> = {
 		updated: Date.now(),
@@ -21,10 +25,15 @@ export default class FetchedStore<T> {
 	protected store: Writable<FetchedStoreData<T>> = writable<FetchedStoreData<T>>(this.initialData);
 	protected interval: NodeJS.Timeout | null = null;
 
+	// Request deduplication and error handling
+	private pendingRequest: Promise<FetchedStoreData<T>> | null = null;
+	private lastFailure: number = 0;
+	private failureCount: number = 0;
+
 	constructor(
-		itemName: string,
+		protected itemName: string,
 		protected fetchFn: FetchFunction<T>,
-		frequency: number = 30_000
+		protected frequency: number = 30_000
 	) {
 		if (browser) {
 			// Load from localStorage on init
@@ -71,14 +80,76 @@ export default class FetchedStore<T> {
 		return data;
 	}
 
+	/**
+	 * Check if we should retry after a failure (with exponential backoff)
+	 */
+	private canRetryAfterFailure(): boolean {
+		if (this.failureCount === 0) return true;
+
+		const backoffDelay = Math.min(
+			MIN_RETRY_DELAY * Math.pow(2, this.failureCount - 1),
+			MAX_RETRY_DELAY
+		);
+		const timeSinceFailure = Date.now() - this.lastFailure;
+
+		return timeSinceFailure >= backoffDelay;
+	}
+
+	/**
+	 * Update items from the API. Deduplicates concurrent requests.
+	 */
 	public async updateItems(): Promise<FetchedStoreData<T>> {
-		const data = {
-			data: await this.fetchFn(),
-			updated: Date.now()
-		};
-		this.sort(data.data);
-		this.store.update(() => data);
-		return data;
+		// If there's already a pending request, return that promise
+		if (this.pendingRequest) {
+			return this.pendingRequest;
+		}
+
+		// Check if we should wait due to recent failures
+		if (!this.canRetryAfterFailure()) {
+			// Return current data without making a new request
+			return get(this.store);
+		}
+
+		// Create the request and store the promise
+		this.pendingRequest = this.doFetch();
+
+		try {
+			const result = await this.pendingRequest;
+			return result;
+		} finally {
+			// Clear the pending request when done
+			this.pendingRequest = null;
+		}
+	}
+
+	/**
+	 * Actually perform the fetch operation
+	 */
+	private async doFetch(): Promise<FetchedStoreData<T>> {
+		try {
+			const fetchedData = await this.fetchFn();
+			const data = {
+				data: fetchedData,
+				updated: Date.now()
+			};
+			this.sort(data.data);
+			this.store.update(() => data);
+
+			// Reset failure tracking on success
+			this.failureCount = 0;
+			this.lastFailure = 0;
+
+			return data;
+		} catch (error) {
+			// Track the failure for backoff
+			this.failureCount++;
+			this.lastFailure = Date.now();
+
+			console.error(`Failed to fetch ${this.itemName} (attempt ${this.failureCount}):`, error);
+
+			// Re-throw the error so callers know it failed
+			throw error;
+		}
 	}
 
 	public get subscribe() {

@@ -4,7 +4,7 @@ import krawletClient from '$lib/api/krawlet';
 import type { Player as PlayerApi } from 'krawlet-js';
 
 const itemName = 'player-wallets';
-const interval = 30_000;
+const interval = 60_000; // 1 minute
 
 export type Player = {
 	minecraftUUID: string;
