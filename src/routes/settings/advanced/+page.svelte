@@ -337,7 +337,6 @@
 										onClick={() => {
 											copyGeneratedApiKey();
 										}}
-										title={$t$('common.copy')}
 									>
 										<FontAwesomeIcon icon={faCopy} />
 										{$t$('common.copy')}
