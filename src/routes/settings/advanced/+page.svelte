@@ -21,7 +21,7 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { t, t$ } from '$lib/i18n';
 	import { relativeTime } from '$lib/util';
-	import krawletClient, { getKrawletClient } from '$lib/api/krawlet';
+	import krawletClient, { getKrawletClient, isValidApiKey } from '$lib/api/krawlet';
 	import { confirm } from '$lib/stores/confirm';
 	import { browser } from '$app/environment';
 
@@ -68,7 +68,8 @@
 	let apiKeyError: string | null = $state(null);
 
 	async function fetchApiKeyInfo() {
-		if (!$settings.krawletApiKey) {
+		// Only fetch info for valid API keys (must start with 'kraw_')
+		if (!$settings.krawletApiKey || !isValidApiKey($settings.krawletApiKey)) {
 			apiKeyInfo = null;
 			apiKeyError = null;
 			return;
@@ -90,7 +91,8 @@
 
 	// Fetch API key info when the key changes
 	$effect(() => {
-		if ($settings.krawletApiKey) {
+		// Only fetch info for valid API keys (must start with 'kraw_')
+		if ($settings.krawletApiKey && isValidApiKey($settings.krawletApiKey)) {
 			// Small delay to allow the client to update with the new key
 			setTimeout(fetchApiKeyInfo, 100);
 		} else {

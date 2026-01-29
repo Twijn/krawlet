@@ -17,7 +17,8 @@ const AUTH_MAX_RETRIES = 3;
 const AUTH_BATCH_DELAY = 50; // 50ms between batches
 
 /**
- * Check if the user has a Krawlet API key configured
+ * Check if the user has a valid Krawlet API key configured
+ * Only API keys starting with 'kraw_' are considered valid
  */
 function hasApiKey(): boolean {
 	if (!browser) return false;
@@ -25,7 +26,8 @@ function hasApiKey(): boolean {
 		const settings = localStorage.getItem('settings');
 		if (settings) {
 			const parsed = JSON.parse(settings);
-			return !!parsed.krawletApiKey;
+			const apiKey = parsed.krawletApiKey;
+			return typeof apiKey === 'string' && apiKey.startsWith('kraw_');
 		}
 	} catch {
 		// Ignore parse errors

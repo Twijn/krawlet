@@ -10,11 +10,19 @@ import { browser } from '$app/environment';
 let _client = new KrawletClient();
 
 /**
+ * Validates that an API key has the correct format (starts with 'kraw_')
+ */
+export function isValidApiKey(apiKey: string): boolean {
+	return apiKey.startsWith('kraw_');
+}
+
+/**
  * Updates the Krawlet client with a new API key
+ * Only accepts API keys starting with 'kraw_', ignores all others
  */
 export function updateKrawletApiKey(apiKey: string) {
 	_client = new KrawletClient({
-		apiKey: apiKey || undefined
+		apiKey: apiKey && isValidApiKey(apiKey) ? apiKey : undefined
 	});
 }
 
