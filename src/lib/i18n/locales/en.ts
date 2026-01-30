@@ -446,7 +446,13 @@ export default {
 		quickCodeOverwriteConfirm:
 			'You already have an API key saved. Redeeming this quick code will overwrite your existing API key. Are you sure you want to continue?',
 		generatedApiKey: 'Your API Key',
-		quickCodeClear: 'Clear & Enter Another Code'
+		quickCodeClear: 'Clear & Enter Another Code',
+		developerResources: 'Developer Resources',
+		developerResourcesDescription:
+			'Build your own applications and integrations with the Krawlet API using these libraries. The Krawlet API provides player lookups (by address, name, or UUID), shop & item listing from Shop Sync, known address registry, shop change logs & statistics, and public ender storage data (scanned weekly).',
+		krawletJsDescription:
+			'Official JavaScript/TypeScript library for Node.js and browser applications (you\'re using it currently to view this site!)',
+		krawletLuaDescription: 'Official Lua library for ComputerCraft and CC:Tweaked integration.'
 	},
 	notifications: {
 		success: 'Success',

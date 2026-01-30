@@ -12,7 +12,9 @@
 		faCopy,
 		faBolt,
 		faArrowRight,
-		faRotateLeft
+		faRotateLeft,
+		faCode,
+		faExternalLinkAlt
 	} from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
@@ -446,6 +448,51 @@
 				{/if}
 			</div>
 		</fieldset>
+
+		<fieldset class="settings-group">
+			<legend><FontAwesomeIcon icon={faCode} /> {$t$('settings.developerResources')}</legend>
+			<div class="developer-resources">
+				<p class="resources-description">{$t$('settings.developerResourcesDescription')}</p>
+				<div class="resource-cards">
+					<a
+						href="https://www.npmjs.com/package/krawlet-js"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="resource-card"
+					>
+						<div class="resource-icon ts-icon">
+							<span class="ts-text">TS</span>
+						</div>
+						<div class="resource-content">
+							<h3>Krawlet-js</h3>
+							<p>{$t$('settings.krawletJsDescription')}</p>
+							<span class="resource-link">
+								npmjs.com
+								<FontAwesomeIcon icon={faExternalLinkAlt} />
+							</span>
+						</div>
+					</a>
+					<a
+						href="https://krawlet.cc/docs/lua"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="resource-card"
+					>
+						<div class="resource-icon lua-icon">
+							<FontAwesomeIcon icon={faCode} />
+						</div>
+						<div class="resource-content">
+							<h3>Krawlet Lua</h3>
+							<p>{$t$('settings.krawletLuaDescription')}</p>
+							<span class="resource-link">
+								krawlet.cc/docs
+								<FontAwesomeIcon icon={faExternalLinkAlt} />
+							</span>
+						</div>
+					</a>
+				</div>
+			</div>
+		</fieldset>
 	</div>
 </Section>
 
@@ -797,9 +844,179 @@
 		}
 	}
 
+	/* Developer Resources Styles */
+	.developer-resources {
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+	}
+
+	.resources-description {
+		color: rgba(255, 255, 255, 0.6);
+		font-size: 0.875rem;
+		margin: 0;
+		line-height: 1.5;
+	}
+
+	.resource-cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		gap: 1.25rem;
+	}
+
+	.resource-card {
+		position: relative;
+		display: flex;
+		align-items: flex-start;
+		gap: 1.25rem;
+		padding: 1.25rem 1.5rem;
+		background: linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.04) 0%,
+			rgba(255, 255, 255, 0.01) 100%
+		);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 0.75rem;
+		text-decoration: none;
+		color: inherit;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		overflow: hidden;
+		box-shadow:
+			0 2px 8px rgba(0, 0, 0, 0.15),
+			inset 0 1px 0 rgba(255, 255, 255, 0.05);
+	}
+
+	.resource-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: linear-gradient(
+			135deg,
+			rgba(var(--theme-color-rgb), 0.05) 0%,
+			transparent 50%
+		);
+		opacity: 0;
+		transition: opacity 0.3s ease;
+		pointer-events: none;
+	}
+
+	.resource-card:hover {
+		border-color: rgba(var(--theme-color-rgb), 0.4);
+		transform: translateY(-3px);
+		box-shadow:
+			0 8px 24px rgba(0, 0, 0, 0.25),
+			0 4px 12px rgba(var(--theme-color-rgb), 0.1),
+			inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	}
+
+	.resource-card:hover::before {
+		opacity: 1;
+	}
+
+	.resource-icon {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 3.5rem;
+		height: 3.5rem;
+		border-radius: 0.75rem;
+		flex-shrink: 0;
+		transition: all 0.3s ease;
+	}
+
+	.resource-card:hover .resource-icon {
+		transform: scale(1.05);
+	}
+
+	.resource-icon :global(svg) {
+		width: 1.75rem;
+		height: 1.75rem;
+	}
+
+	.resource-icon.ts-icon {
+		background: linear-gradient(135deg, rgba(49, 120, 198, 0.25) 0%, rgba(49, 120, 198, 0.15) 100%);
+		color: #3178c6;
+		box-shadow:
+			0 2px 8px rgba(49, 120, 198, 0.2),
+			inset 0 1px 0 rgba(255, 255, 255, 0.1);
+	}
+
+	.ts-text {
+		font-weight: 800;
+		font-size: 1.15rem;
+		letter-spacing: -0.5px;
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	}
+
+	.resource-icon.lua-icon {
+		background: linear-gradient(135deg, rgba(0, 0, 180, 0.25) 0%, rgba(0, 0, 128, 0.15) 100%);
+		color: #7eb0e0;
+		box-shadow:
+			0 2px 8px rgba(0, 0, 128, 0.2),
+			inset 0 1px 0 rgba(255, 255, 255, 0.1);
+	}
+
+	.resource-content {
+		flex: 1;
+		min-width: 0;
+		position: relative;
+		z-index: 1;
+	}
+
+	.resource-content h3 {
+		margin: 0 0 0.375rem 0;
+		font-size: 1.05rem;
+		font-weight: 600;
+		color: var(--text-color-1);
+		letter-spacing: -0.01em;
+	}
+
+	.resource-content p {
+		margin: 0 0 0.75rem 0;
+		font-size: 0.85rem;
+		color: rgba(255, 255, 255, 0.55);
+		line-height: 1.5;
+	}
+
+	.resource-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.8rem;
+		font-weight: 500;
+		color: var(--theme-color-2);
+		padding: 0.35rem 0.65rem;
+		background: rgba(var(--theme-color-rgb), 0.1);
+		border-radius: 0.375rem;
+		transition: all 0.2s ease;
+	}
+
+	.resource-card:hover .resource-link {
+		background: rgba(var(--theme-color-rgb), 0.15);
+		color: var(--theme-color);
+	}
+
+	.resource-link :global(svg) {
+		width: 0.65rem;
+		height: 0.65rem;
+		transition: transform 0.2s ease;
+	}
+
+	.resource-card:hover .resource-link :global(svg) {
+		transform: translateX(2px);
+	}
+
 	@media (max-width: 768px) {
 		.settings-group {
 			padding: 0.75rem;
+		}
+
+		.resource-cards {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>
