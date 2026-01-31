@@ -12,6 +12,7 @@
 	import kromer from '$lib/api/kromer.js';
 	import type { Transaction, TransactionMetadataEntry } from 'kromer';
 	import Button from '$lib/components/ui/Button.svelte';
+	import Placeholder from '$lib/components/ui/Placeholder.svelte';
 	import { t$ } from '$lib/i18n';
 
 	const { data } = $props();
@@ -213,7 +214,7 @@
 									{/if}
 								</td>
 							{:else}
-								<th><small>[no name]</small></th>
+							<th><small><Placeholder text="[no name]" /></small></th>
 								<td>{metadata.name}</td>
 							{/if}
 						</tr>

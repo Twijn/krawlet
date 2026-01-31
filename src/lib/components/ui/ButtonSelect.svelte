@@ -4,22 +4,26 @@
 		name: string;
 	};
 
+	type Size = 'sm' | 'md' | 'lg';
+
 	let {
 		vertical,
 		options = $bindable(),
 		selected = $bindable(),
+		size = 'md',
 		change = () => {}
 	}: {
 		vertical: boolean;
 		options: Option[];
 		selected?: string;
+		size?: Size;
 		change?: (value: string) => void;
 	} = $props();
 
 	const name = crypto.randomUUID();
 </script>
 
-<div class="select-wrapper" class:vertical>
+<div class="select-wrapper size-{size}" class:vertical>
 	{#each options as option (option.id)}
 		<div class="option">
 			<input
@@ -101,5 +105,21 @@
 
 	.select-wrapper.vertical .option label {
 		text-align: left;
+	}
+
+	/* Size variants */
+	.select-wrapper.size-sm {
+		padding: 0.25rem;
+		gap: 0.25rem;
+	}
+
+	.select-wrapper.size-sm .option label {
+		font-size: 0.8125rem;
+		padding: 0.5rem 0.75rem;
+	}
+
+	.select-wrapper.size-lg .option label {
+		font-size: 1rem;
+		padding: 1rem 1.25rem;
 	}
 </style>

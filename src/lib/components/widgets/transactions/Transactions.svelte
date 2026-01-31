@@ -20,6 +20,7 @@
 	import ParsedMetadata from '$lib/components/widgets/transactions/ParsedMetadata.svelte';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 	import settings from '$lib/stores/settings';
+	import Placeholder from '$lib/components/ui/Placeholder.svelte';
 	import { SEVEN_DAYS } from '$lib/consts';
 	import { t$ } from '$lib/i18n';
 	import { contextMenu } from '$lib/stores/contextMenu';
@@ -240,7 +241,7 @@
 										{:else if transaction.metadata && transaction.metadata.length > 0}
 											<small>{transaction.metadata.substring(0, 75)}</small>
 										{:else}
-											<small>{$t$('transaction.noMetadata')}</small>
+											<small><Placeholder text={$t$('transaction.noMetadata')} /></small>
 										{/if}
 									</td>
 								{/if}

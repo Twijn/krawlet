@@ -260,6 +260,23 @@ export default {
 		metadataPlaceholder: 'Ingresa un mensaje opcional para la transacción',
 		metadataHelp: 'Esto se mostrará en la transacción',
 		lockMetadata: 'Bloquear metadatos (prevenir edición)',
+		// Metadata modes
+		metadataModes: {
+			mode: 'Modo de Metadatos',
+			playerData: 'Datos del Jugador',
+			messageError: 'Mensaje/Error',
+			rawMetadata: 'Metadatos Crudos',
+			selectPlayer: 'Seleccionar Jugador',
+			filterPlayers: 'Escribe para filtrar jugadores...',
+			playerSelected: '{name} seleccionado (dirección de retorno: {address})',
+			noPlayersFound: 'No se encontraron jugadores que coincidan con tu búsqueda.',
+			messageType: 'Tipo',
+			messageLabel: 'Mensaje',
+			errorLabel: 'Mensaje de Error',
+			messagePlaceholder: 'Ingresa un mensaje para mostrar...',
+			errorPlaceholder: 'Ingresa un mensaje de error para mostrar...',
+			preview: 'Vista Previa de Metadatos'
+		},
 		// Item purchase
 		unitPriceRequired:
 			'Por favor proporciona un precio unitario en el parámetro "unit_price" para enviar una compra.',
@@ -394,6 +411,9 @@ export default {
 		dateTime: 'Fecha y Hora',
 		relativeTime: 'Mostrar tiempo relativo en registros de transacciones y nombres',
 		relativeTimeAbove7d: 'Mostrar tiempo relativo para más de 7 días',
+		missingData: 'Datos Faltantes',
+		simplePlaceholders: 'Usar marcador minimalista para datos faltantes',
+		simplePlaceholdersHint: 'Muestra "—" en lugar de "[Sin mensaje]", "[Sin metadatos]", etc.',
 		syncNode: 'Nodo de Sincronización',
 		changeSyncNode: 'Cambiar nodo de sincronización',
 		walletDisplay: 'Visualización de Billeteras',

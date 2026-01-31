@@ -7,7 +7,8 @@
 		faList,
 		faTags,
 		faWallet,
-		faEye
+		faEye,
+		faMinus
 	} from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
@@ -17,6 +18,7 @@
 	import Transactions from '$lib/components/widgets/transactions/Transactions.svelte';
 	import Names from '$lib/components/widgets/names/Names.svelte';
 	import WalletCardCompact from '$lib/components/widgets/wallets/WalletCardCompact.svelte';
+	import Placeholder from '$lib/components/ui/Placeholder.svelte';
 
 	// Example address for previews - uses Twijn's address to demonstrate player name feature
 	const EXAMPLE_ADDRESS = 'ks0d5iqb6p';
@@ -138,6 +140,24 @@
 					<div class="preview-label"><FontAwesomeIcon icon={faEye} /> Preview</div>
 					<div class="preview-content component-preview">
 						<Names limit={3} queryPrefix="settings_names_" />
+					</div>
+				</div>
+			</div>
+		</fieldset>
+
+		<fieldset class="settings-group">
+			<legend><FontAwesomeIcon icon={faMinus} /> {$t$('settings.missingData')}</legend>
+			<div class="settings-columns">
+				<div class="setting-content">
+					<ToggleCheckbox bind:checked={$settings.simplePlaceholders}>
+						{$t$('settings.simplePlaceholders')}
+					</ToggleCheckbox>
+					<small>{$t$('settings.simplePlaceholdersHint')}</small>
+				</div>
+				<div class="setting-preview">
+					<div class="preview-label"><FontAwesomeIcon icon={faEye} /> Preview</div>
+					<div class="preview-content placeholder-preview">
+						<Placeholder text="[No message]" />
 					</div>
 				</div>
 			</div>
@@ -309,6 +329,14 @@
 		color: rgba(255, 255, 255, 0.5);
 		text-align: center;
 		font-style: italic;
+	}
+
+	.placeholder-preview {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem;
+		font-size: 0.9rem;
 	}
 
 	@media (max-width: 900px) {

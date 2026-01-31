@@ -13,6 +13,7 @@
 	import { paramState } from '$lib/paramState.svelte.js';
 	import { SEVEN_DAYS } from '$lib/consts';
 	import settings from '$lib/stores/settings';
+	import Placeholder from '$lib/components/ui/Placeholder.svelte';
 	import { t$ } from '$lib/i18n';
 	import { contextMenu } from '$lib/stores/contextMenu';
 	import { notifications } from '$lib/stores/notifications';
@@ -170,7 +171,7 @@
 									{#if name.a}
 										{name.a}
 									{:else}
-										<small>{$t$('name.noData')}</small>
+											<small><Placeholder text={$t$('name.noData')} /></small>
 									{/if}
 								</td>
 								{#if $settings.showTransferredDate}
@@ -188,7 +189,7 @@
 												{name.transferred.toLocaleString()}
 											{/if}
 										{:else}
-											<small>{$t$('name.neverTransferred')}</small>
+												<small><Placeholder text={$t$('name.neverTransferred')} /></small>
 										{/if}
 									</td>
 								{/if}

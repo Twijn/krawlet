@@ -4,7 +4,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import AddressSelector from '../addresses/AddressSelector.svelte';
 	import { paramState } from '$lib/paramState.svelte';
-	import MetaInput from './MetaInput.svelte';
+	import MetadataMode from './MetadataMode.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
@@ -165,7 +165,7 @@
 				{$t$('transaction.setMaxAmount')}
 			</button>
 		</label>
-		<MetaInput bind:metadata={metadata.value} />
+		<MetadataMode bind:metadata={metadata.value} fromAddress={fromAddress} />
 		<div class="buttons">
 			<Button type="button" variant="secondary" full={true} onClick={copyPayCommand}>
 				<FontAwesomeIcon icon={faCopy} />

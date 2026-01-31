@@ -277,6 +277,23 @@ export default {
 		metadataPlaceholder: 'Enter an optional message for the transaction',
 		metadataHelp: 'This will be displayed on the transaction',
 		lockMetadata: 'Lock metadata (prevent editing)',
+		// Metadata modes
+		metadataModes: {
+			mode: 'Metadata Mode',
+			playerData: 'Player Data',
+			messageError: 'Message/Error',
+			rawMetadata: 'Raw Metadata',
+			selectPlayer: 'Select Player',
+			filterPlayers: 'Type to filter players...',
+			playerSelected: '{name} selected (return address: {address})',
+			noPlayersFound: 'No players found matching your search.',
+			messageType: 'Type',
+			messageLabel: 'Message',
+			errorLabel: 'Error Message',
+			messagePlaceholder: 'Enter a message to display...',
+			errorPlaceholder: 'Enter an error message to display...',
+			preview: 'Metadata Preview'
+		},
 		// Item purchase
 		unitPriceRequired:
 			'Please provide a unit price in the "unit_price" query parameter to send a purchase.',
@@ -409,6 +426,9 @@ export default {
 		dateTime: 'Date & Time',
 		relativeTime: 'Show relative time in transaction and names logs',
 		relativeTimeAbove7d: 'Show relative time above 7 days old',
+		missingData: 'Missing Data',
+		simplePlaceholders: 'Use minimal placeholder for missing data',
+		simplePlaceholdersHint: 'Shows "—" instead of "[No message]", "[No metadata]", etc.',
 		syncNode: 'Sync Node',
 		changeSyncNode: 'Change sync node',
 		walletDisplay: 'Wallet Display',

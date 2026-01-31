@@ -25,6 +25,8 @@ export type SettingsData = {
 	// date and time
 	relativeTimeEnabled: boolean;
 	relativeTimeAbove7d: boolean;
+	// placeholders
+	simplePlaceholders: boolean;
 	// wallets
 	wallets: Wallet[];
 	// sync node
@@ -153,6 +155,7 @@ class Settings {
 		parsePurchaseItemQuantity: false,
 		relativeTimeEnabled: true,
 		relativeTimeAbove7d: false,
+		simplePlaceholders: true,
 		wallets: [],
 		syncNode: SYNC_NODE_OFFICIAL.id,
 		showAllWalletsOption: false,

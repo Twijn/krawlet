@@ -17,6 +17,7 @@
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import Skeleton from '$lib/components/ui/Skeleton.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
+	import Placeholder from '$lib/components/ui/Placeholder.svelte';
 	import kromer from '$lib/api/kromer';
 	import { goto } from '$app/navigation';
 
@@ -202,7 +203,7 @@
 			{displayMeta.value ? displayMeta.value : displayMeta.name}
 		</span>
 	{:else}
-		<small>[No message]</small>
+		<small><Placeholder text="[No message]" /></small>
 	{/if}
 </div>
 
