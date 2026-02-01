@@ -839,6 +839,22 @@ export default {
 		noValidationFailures: 'No validation failures found.',
 		noSuccessfulPosts: 'No successful posts found.'
 	},
+	parsedMeta: {
+		// Shop actions
+		setShopInfo: 'Set Shop Info',
+		deleteShopInfo: 'Delete Shop Info',
+		shopName: 'Name',
+		shopDescription: 'Description',
+		// Player data
+		playerData: 'Player Data',
+		username: 'Player',
+		returnAddress: 'Return Address',
+		// Messages
+		message: 'Message',
+		error: 'Error',
+		// Item purchase
+		itemPurchase: 'Item Purchase'
+	},
 	contextMenu: {
 		// Address actions
 		viewAddress: 'View Address',

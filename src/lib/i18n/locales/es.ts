@@ -829,6 +829,22 @@ export default {
 		noValidationFailures: 'No se encontraron fallos de validación.',
 		noSuccessfulPosts: 'No se encontraron envíos exitosos.'
 	},
+	parsedMeta: {
+		// Acciones de tienda
+		setShopInfo: 'Establecer Info de Tienda',
+		deleteShopInfo: 'Eliminar Info de Tienda',
+		shopName: 'Nombre',
+		shopDescription: 'Descripción',
+		// Datos del jugador
+		playerData: 'Datos del Jugador',
+		username: 'Jugador',
+		returnAddress: 'Dirección de Retorno',
+		// Mensajes
+		message: 'Mensaje',
+		error: 'Error',
+		// Compra de artículos
+		itemPurchase: 'Compra de Artículo'
+	},
 	contextMenu: {
 		// Acciones de dirección
 		viewAddress: 'Ver Dirección',

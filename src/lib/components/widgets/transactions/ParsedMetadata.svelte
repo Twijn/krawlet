@@ -32,6 +32,22 @@
 
 	const meta = transaction.meta ?? { entries: [] };
 
+	// Check for shop actions (set or delete shop info)
+	const shopNameMeta = findMeta(meta, 'shop_name');
+	const shopDescriptionMeta = findMeta(meta, 'shop_description');
+	const shopDeleteMeta = meta.entries.find(
+		(e) => e.name.toLowerCase() === 'shop_delete' && !e.value
+	);
+	const isShopAction = shopNameMeta || shopDescriptionMeta || shopDeleteMeta;
+	const isSetShopInfo = shopNameMeta || shopDescriptionMeta;
+	const isDeleteShopInfo = shopDeleteMeta && !isSetShopInfo;
+
+	// Check for player data
+	const userUuidMeta = findMeta(meta, 'useruuid');
+	const usernameMeta = findMeta(meta, 'username');
+	const returnMeta = findMeta(meta, 'return');
+	const hasPlayerData = userUuidMeta || usernameMeta;
+
 	function findMeta(meta: TransactionMetadata, name: string): TransactionMetadataEntry | undefined {
 		return meta.entries.find((entry) => entry.name.toLowerCase() === name);
 	}
@@ -152,6 +168,45 @@
 				{:else if plainText}
 					<span class="refund-meta">{plainText.name}</span>
 				{/if}
+			{/if}
+		</div>
+	{:else if isShopAction}
+		<!-- Shop Actions: Set or Delete Shop Info -->
+		<div class="action-container">
+			{#if isDeleteShopInfo}
+				<span class="action-badge action-delete">
+					{$t$('parsedMeta.deleteShopInfo')}
+				</span>
+			{:else if isSetShopInfo}
+				<span class="action-badge action-set">
+					{$t$('parsedMeta.setShopInfo')}
+				</span>
+				{#if shopNameMeta?.value}
+					<span class="action-detail">{shopNameMeta.value}</span>
+				{/if}
+			{/if}
+		</div>
+	{:else if hasPlayerData}
+		<!-- Player Data Display -->
+		<div class="player-container">
+			{#if userUuidMeta?.value}
+				<img
+					class="player-avatar"
+					src="https://api.mineatar.io/face/{userUuidMeta.value}"
+					alt="Player avatar"
+				/>
+			{/if}
+			<span class="player-badge">
+				{#if usernameMeta?.value}
+					{usernameMeta.value}
+				{:else}
+					{$t$('parsedMeta.playerData')}
+				{/if}
+			</span>
+			{#if returnMeta?.value}
+				<span class="player-return">
+					→ <Address address={returnMeta.value} />
+				</span>
 			{/if}
 		</div>
 	{:else if meta.entries.find((x) => SPECIAL_META.includes(x.name.toLowerCase()))}
@@ -349,6 +404,82 @@
 		display: block;
 		max-width: 100%;
 		overflow: hidden;
+	}
+
+	/* Shop Action Styles */
+	.action-container {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+		min-width: 0;
+	}
+
+	.action-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35em;
+		padding: 0.2em 0.5em;
+		border-radius: 0.3em;
+		font-size: 0.85em;
+		font-weight: 600;
+		flex-shrink: 0;
+	}
+
+	.action-badge.action-set {
+		background-color: rgba(var(--blue), 0.15);
+		border: 1px solid rgba(var(--blue), 0.3);
+		color: rgb(var(--blue));
+	}
+
+	.action-badge.action-delete {
+		background-color: rgba(var(--red), 0.15);
+		border: 1px solid rgba(var(--red), 0.3);
+		color: rgb(var(--red));
+	}
+
+	.action-detail {
+		color: var(--text-color-2);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		min-width: 0;
+	}
+
+	/* Player Data Styles */
+	.player-container {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+		min-width: 0;
+	}
+
+	.player-avatar {
+		width: 1.2em;
+		height: 1.2em;
+		border-radius: 0.15em;
+		flex-shrink: 0;
+	}
+
+	.player-badge {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.2em 0.5em;
+		background-color: rgba(var(--green), 0.15);
+		border: 1px solid rgba(var(--green), 0.3);
+		border-radius: 0.3em;
+		color: rgb(var(--green));
+		font-size: 0.85em;
+		font-weight: 600;
+		flex-shrink: 0;
+	}
+
+	.player-return {
+		color: var(--text-color-2);
+		font-size: 0.85em;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		min-width: 0;
 	}
 
 	.refund-container {
