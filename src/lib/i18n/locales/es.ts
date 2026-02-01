@@ -257,6 +257,7 @@ export default {
 		payCommandCopied: "¡'{command}' copiado al portapapeles!",
 		copyFailed: 'Error al copiar al portapapeles.',
 		setMaxAmount: 'Establecer cantidad máxima',
+		advanced: 'Opciones Avanzadas',
 		metadataPlaceholder: 'Ingresa un mensaje opcional para la transacción',
 		metadataHelp: 'Esto se mostrará en la transacción',
 		lockMetadata: 'Bloquear metadatos (prevenir edición)',
@@ -265,6 +266,8 @@ export default {
 			mode: 'Modo de Metadatos',
 			playerData: 'Datos del Jugador',
 			messageError: 'Mensaje/Error',
+			actions: 'Acciones',
+			refund: 'Reembolso',
 			rawMetadata: 'Metadatos Crudos',
 			selectPlayer: 'Seleccionar Jugador',
 			filterPlayers: 'Escribe para filtrar jugadores...',
@@ -275,7 +278,29 @@ export default {
 			errorLabel: 'Mensaje de Error',
 			messagePlaceholder: 'Ingresa un mensaje para mostrar...',
 			errorPlaceholder: 'Ingresa un mensaje de error para mostrar...',
-			preview: 'Vista Previa de Metadatos'
+			preview: 'Vista Previa de Metadatos',
+			// Actions mode
+			setShopInfo: 'Establecer Info de Tienda',
+			deleteShopInfo: 'Eliminar Info de Tienda',
+			shopName: 'Nombre de la Tienda',
+			shopNamePlaceholder: 'Mi Nombre de Tienda',
+			shopDescription: 'Descripción de la Tienda',
+			shopDescriptionPlaceholder: 'Una descripción de lo que vende tu tienda...',
+			shopInfoHelp: 'Esto establecerá/actualizará la información de tu dirección conocida en la API de Krawlet.',
+			deleteShopWarning: 'Esto eliminará la información de tu dirección conocida de la API de Krawlet. Esta acción no se puede deshacer.',
+			actionNotice: 'Las acciones enviarán {amount} KRO a {address}',
+			prefillNotice: 'Campos pre-llenados con tu información de tienda existente.',
+			currentShopInfo: 'Info Actual de la Tienda',
+			shopType: 'Tipo',
+			noShopInfo: 'No se encontró información de tienda existente para esta dirección.',
+			// Refund mode
+			transactionId: 'ID de Transacción',
+			transactionIdPlaceholder: 'Ingresa el ID de transacción a reembolsar',
+			originalAmount: 'Cantidad Original',
+			refundMessage: 'Mensaje de Reembolso',
+			refundMessagePlaceholder: 'Motivo del reembolso...',
+			refundHelp: 'Esto marca la transacción como un reembolso y la vincula a la transacción original.',
+			optional: 'opcional'
 		},
 		// Item purchase
 		unitPriceRequired:

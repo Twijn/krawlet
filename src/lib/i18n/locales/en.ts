@@ -274,6 +274,7 @@ export default {
 		payCommandCopied: "Copied '{command}' to clipboard!",
 		copyFailed: 'Failed to copy to clipboard.',
 		setMaxAmount: 'Set to max amount',
+		advanced: 'Advanced Options',
 		metadataPlaceholder: 'Enter an optional message for the transaction',
 		metadataHelp: 'This will be displayed on the transaction',
 		lockMetadata: 'Lock metadata (prevent editing)',
@@ -282,6 +283,8 @@ export default {
 			mode: 'Metadata Mode',
 			playerData: 'Player Data',
 			messageError: 'Message/Error',
+			actions: 'Actions',
+			refund: 'Refund',
 			rawMetadata: 'Raw Metadata',
 			selectPlayer: 'Select Player',
 			filterPlayers: 'Type to filter players...',
@@ -292,7 +295,29 @@ export default {
 			errorLabel: 'Error Message',
 			messagePlaceholder: 'Enter a message to display...',
 			errorPlaceholder: 'Enter an error message to display...',
-			preview: 'Metadata Preview'
+			preview: 'Metadata Preview',
+			// Actions mode
+			setShopInfo: 'Set Shop Info',
+			deleteShopInfo: 'Delete Shop Info',
+			shopName: 'Shop Name',
+			shopNamePlaceholder: 'My Shop Name',
+			shopDescription: 'Shop Description',
+			shopDescriptionPlaceholder: 'A description of what your shop sells...',
+			shopInfoHelp: 'This will set/update your known address info in the Krawlet API.',
+			deleteShopWarning: 'This will delete your known address information from the Krawlet API. This action cannot be undone.',
+			actionNotice: 'Actions will send {amount} KRO to {address}',
+			prefillNotice: 'Fields pre-filled from your existing shop info.',
+			currentShopInfo: 'Current Shop Info',
+			shopType: 'Type',
+			noShopInfo: 'No existing shop info found for this address.',
+			// Refund mode
+			transactionId: 'Transaction ID',
+			transactionIdPlaceholder: 'Enter the transaction ID to refund',
+			originalAmount: 'Original Amount',
+			refundMessage: 'Refund Message',
+			refundMessagePlaceholder: 'Reason for refund...',
+			refundHelp: 'This marks the transaction as a refund and links it to the original transaction.',
+			optional: 'optional'
 		},
 		// Item purchase
 		unitPriceRequired:

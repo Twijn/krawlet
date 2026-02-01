@@ -34,7 +34,9 @@
 		query = $bindable(''),
 		privatekey = $bindable(),
 		address = $bindable(''),
-		balances = $bindable({})
+		balances = $bindable({}),
+		disabled = false,
+		lockedValue = ''
 	}: {
 		label: string;
 		mode?: 'address' | 'privatekey';
@@ -42,7 +44,12 @@
 		privatekey?: string;
 		address?: string;
 		balances?: Record<string, number>;
+		disabled?: boolean;
+		lockedValue?: string;
 	} = $props();
+
+	// Display value - show locked value when disabled, otherwise show query
+	let displayValue = $derived(disabled && lockedValue ? lockedValue : query);
 
 	type Addr = Wallet | Player | KnownAddress;
 
@@ -209,6 +216,23 @@
 		updateExact();
 	});
 
+	// Automatically select address when locked value is provided
+	$effect(() => {
+		if (disabled && lockedValue && lockedValue !== address) {
+			// Check if locked value is a valid address
+			if (ADDRESS_REGEX.test(lockedValue)) {
+				kromer.addresses.get(lockedValue).then(
+					(addr) => {
+						setAddress(addr, false);
+					},
+					(e) => {
+						console.error(`Failed to fetch locked address ${lockedValue}:`, e);
+					}
+				);
+			}
+		}
+	});
+
 	$effect(() => {
 		if (loading) return;
 		const addresses = [
@@ -279,9 +303,11 @@
 				: 'text'}
 			name="query-{label.toLowerCase()}"
 			placeholder="Search for addresses..."
-			bind:value={query}
-			onkeyup={handleKeyUp}
-			onkeydown={handleKeyDown}
+			value={displayValue}
+			oninput={(e) => !disabled && (query = e.currentTarget.value)}
+			onkeyup={disabled ? undefined : handleKeyUp}
+			onkeydown={disabled ? undefined : handleKeyDown}
+			{disabled}
 		/>
 	</label>
 	{#if selected}

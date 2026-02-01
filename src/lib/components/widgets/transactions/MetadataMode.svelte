@@ -1,28 +1,40 @@
 <script lang="ts">
 	import playerWalletStore, { type Player } from '$lib/stores/playerWallets';
+	import knownAddressStore, { type KnownAddress } from '$lib/stores/knownAddresses';
 	import { onDestroy, onMount } from 'svelte';
 	import { slide, fade } from 'svelte/transition';
 	import { cubicOut, cubicInOut } from 'svelte/easing';
 	import { t$ } from '$lib/i18n';
-	import { faUser, faMessage, faCode, faCheck } from '@fortawesome/free-solid-svg-icons';
+	import { faUser, faMessage, faCode, faCheck, faBolt, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 
-	type MetadataMode = 'player' | 'message' | 'raw';
+	type MetadataMode = 'player' | 'message' | 'actions' | 'refund' | 'raw';
 	type MessageType = 'message' | 'error';
 
 	let {
 		metadata = $bindable(''),
 		lock = $bindable(false),
-		fromAddress = ''
+		fromAddress = '',
+		overrideAddress = $bindable(''),
+		overrideAmount = $bindable(0),
+		fieldsLocked = $bindable(false)
 	}: {
 		metadata: string;
 		lock?: boolean;
 		fromAddress?: string;
+		overrideAddress?: string;
+		overrideAmount?: number;
+		fieldsLocked?: boolean;
 	} = $props();
 
 	// Find if the from address has an associated player
 	let fromPlayer: Player | null = $derived(
 		$playerWalletStore.data.find((p) => p.kromerAddress === fromAddress) ?? null
+	);
+
+	// Find if the from address has known address info (for shop deletion)
+	let fromKnownAddress: KnownAddress | null = $derived(
+		$knownAddressStore.data.find((a) => a.address === fromAddress) ?? null
 	);
 
 	// Check if there are any players available
@@ -70,6 +82,33 @@
 	// Raw mode state
 	let rawMetadata: string = $state('');
 
+	// Refund mode state
+	let refundTxId: string = $state('');
+	let refundOriginalAmount: string = $state('');
+	let refundMessage: string = $state('');
+
+	// Actions mode state
+	type ActionType = 'set_shop_info' | 'delete_shop_info';
+	let selectedAction: ActionType = $state('set_shop_info');
+	let shopName: string = $state('');
+	let shopDescription: string = $state('');
+	let shopInfoInitialized: boolean = $state(false);
+
+	// Auto-fill shop info from known address when entering actions mode or when fromKnownAddress changes
+	$effect(() => {
+		if (mode === 'actions' && selectedAction === 'set_shop_info' && fromKnownAddress && !shopInfoInitialized) {
+			shopName = fromKnownAddress.name || '';
+			shopDescription = fromKnownAddress.description || '';
+			shopInfoInitialized = true;
+		}
+	});
+
+	// Reset shopInfoInitialized when fromAddress changes
+	$effect(() => {
+		if (fromAddress) {
+			shopInfoInitialized = false;
+		}
+	});
 	// Update metadata based on current mode
 	$effect(() => {
 		if (lock) return;
@@ -81,12 +120,53 @@
 			} else {
 				metadata = base;
 			}
+			overrideAddress = '';
+			overrideAmount = 0;
+			fieldsLocked = false;
 		} else if (mode === 'message' && messageContent) {
 			metadata = `${messageType}=${messageContent}`;
+			overrideAddress = '';
+			overrideAmount = 0;
+			fieldsLocked = false;
+		} else if (mode === 'actions') {
+			// Actions mode always sends to Krawlet API address with fixed amount
+			overrideAddress = 'kkrawletii';
+			overrideAmount = 0.01;
+			fieldsLocked = true;
+			if (selectedAction === 'set_shop_info') {
+				const parts: string[] = [];
+				if (shopName.trim()) {
+					parts.push(`shop_name=${shopName.trim()}`);
+				}
+				if (shopDescription.trim()) {
+					parts.push(`shop_description=${shopDescription.trim()}`);
+				}
+				metadata = parts.join(';');
+			} else if (selectedAction === 'delete_shop_info') {
+				metadata = 'shop_delete';
+			}
+		} else if (mode === 'refund' && refundTxId.trim()) {
+			const parts: string[] = [`ref=${refundTxId.trim()}`, 'type=refund'];
+			if (refundOriginalAmount.trim()) {
+				parts.push(`original=${refundOriginalAmount.trim()}`);
+			}
+			if (refundMessage.trim()) {
+				parts.push(`message=${refundMessage.trim()}`);
+			}
+			metadata = parts.join(';');
+			overrideAddress = '';
+			overrideAmount = 0;
+			fieldsLocked = false;
 		} else if (mode === 'raw') {
 			metadata = rawMetadata;
+			overrideAddress = '';
+			overrideAmount = 0;
+			fieldsLocked = false;
 		} else {
 			metadata = '';
+			overrideAddress = '';
+			overrideAmount = 0;
+			fieldsLocked = false;
 		}
 	});
 
@@ -127,7 +207,25 @@
 				onclick={() => (mode = 'message')}
 			>
 				<FontAwesomeIcon icon={faMessage} />
-				<span>Message</span>
+				<span>{$t$('transaction.metadataModes.messageError')}</span>
+			</button>
+			<button
+				type="button"
+				class="mode-tab"
+				class:active={mode === 'actions'}
+				onclick={() => (mode = 'actions')}
+			>
+				<FontAwesomeIcon icon={faBolt} />
+				<span>{$t$('transaction.metadataModes.actions')}</span>
+			</button>
+			<button
+				type="button"
+				class="mode-tab"
+				class:active={mode === 'refund'}
+				onclick={() => (mode = 'refund')}
+			>
+				<FontAwesomeIcon icon={faRotateLeft} />
+				<span>{$t$('transaction.metadataModes.refund')}</span>
 			</button>
 			<button
 				type="button"
@@ -136,7 +234,7 @@
 				onclick={() => (mode = 'raw')}
 			>
 				<FontAwesomeIcon icon={faCode} />
-				<span>Raw</span>
+				<span>{$t$('transaction.metadataModes.rawMetadata')}</span>
 			</button>
 		</div>
 	{/if}
@@ -237,6 +335,121 @@
 						: $t$('transaction.metadataModes.errorPlaceholder')}
 					disabled={lock}
 				/>
+			</div>
+		{:else if mode === 'actions'}
+			<div class="actions-mode" in:fade={{ duration: 150, easing: cubicOut }} out:fade={{ duration: 100 }}>
+				<div class="action-notice">
+					<small>{$t$('transaction.metadataModes.actionNotice', { address: 'kkrawletii', amount: '0.01' })}</small>
+				</div>
+				<div class="action-type-toggle">
+					<button
+						type="button"
+						class="type-btn"
+						class:active={selectedAction === 'set_shop_info'}
+						onclick={() => (selectedAction = 'set_shop_info')}
+					>
+						{$t$('transaction.metadataModes.setShopInfo')}
+					</button>
+					<button
+						type="button"
+						class="type-btn danger"
+						class:active={selectedAction === 'delete_shop_info'}
+						onclick={() => (selectedAction = 'delete_shop_info')}
+					>
+						{$t$('transaction.metadataModes.deleteShopInfo')}
+					</button>
+				</div>
+
+				{#if selectedAction === 'set_shop_info'}
+					<div class="shop-info-fields" in:slide={{ duration: 200, easing: cubicOut }} out:slide={{ duration: 150 }}>
+						{#if fromKnownAddress}
+							<div class="prefill-notice">
+								<small>{$t$('transaction.metadataModes.prefillNotice')}</small>
+							</div>
+						{/if}
+						<label>
+							{$t$('transaction.metadataModes.shopName')}
+							<input
+								type="text"
+								bind:value={shopName}
+								placeholder={$t$('transaction.metadataModes.shopNamePlaceholder')}
+								disabled={lock}
+							/>
+						</label>
+						<label>
+							{$t$('transaction.metadataModes.shopDescription')}
+							<textarea
+								bind:value={shopDescription}
+								placeholder={$t$('transaction.metadataModes.shopDescriptionPlaceholder')}
+								disabled={lock}
+								rows="2"
+							></textarea>
+						</label>
+						<small class="help-text">{$t$('transaction.metadataModes.shopInfoHelp')}</small>
+					</div>
+				{:else if selectedAction === 'delete_shop_info'}
+					<div class="delete-section" in:slide={{ duration: 200, easing: cubicOut }} out:slide={{ duration: 150 }}>
+						{#if fromKnownAddress}
+							<div class="current-shop-info">
+								<h4>{$t$('transaction.metadataModes.currentShopInfo')}</h4>
+								<div class="info-row">
+									<strong>{$t$('transaction.metadataModes.shopName')}:</strong>
+									<span>{fromKnownAddress.name}</span>
+								</div>
+								{#if fromKnownAddress.description}
+									<div class="info-row">
+										<strong>{$t$('transaction.metadataModes.shopDescription')}:</strong>
+										<span>{fromKnownAddress.description}</span>
+									</div>
+								{/if}
+								<div class="info-row">
+									<strong>{$t$('transaction.metadataModes.shopType')}:</strong>
+									<span class="caps">{fromKnownAddress.type}</span>
+								</div>
+							</div>
+							<div class="delete-warning">
+								<p>{$t$('transaction.metadataModes.deleteShopWarning')}</p>
+							</div>
+						{:else}
+							<div class="no-shop-info">
+								<p>{$t$('transaction.metadataModes.noShopInfo')}</p>
+							</div>
+						{/if}
+					</div>
+				{/if}
+			</div>
+		{:else if mode === 'refund'}
+			<div class="refund-mode" in:fade={{ duration: 150, easing: cubicOut }} out:fade={{ duration: 100 }}>
+				<label>
+					{$t$('transaction.metadataModes.transactionId')}
+					<input
+						type="text"
+						bind:value={refundTxId}
+						placeholder={$t$('transaction.metadataModes.transactionIdPlaceholder')}
+						disabled={lock}
+					/>
+				</label>
+				<label>
+					{$t$('transaction.metadataModes.originalAmount')} ({$t$('transaction.metadataModes.optional')})
+					<input
+						type="number"
+						bind:value={refundOriginalAmount}
+						placeholder="0.00"
+						step="0.01"
+						min="0"
+						disabled={lock}
+					/>
+				</label>
+				<label>
+					{$t$('transaction.metadataModes.refundMessage')} ({$t$('transaction.metadataModes.optional')})
+					<input
+						type="text"
+						bind:value={refundMessage}
+						placeholder={$t$('transaction.metadataModes.refundMessagePlaceholder')}
+						disabled={lock}
+					/>
+				</label>
+				<small class="help-text">{$t$('transaction.metadataModes.refundHelp')}</small>
 			</div>
 		{:else if mode === 'raw'}
 			<div class="raw-mode" in:fade={{ duration: 150, easing: cubicOut }} out:fade={{ duration: 100 }}>
@@ -513,6 +726,111 @@
 		box-shadow: 0 0 10px rgba(var(--red), 0.2);
 	}
 
+	.type-btn.danger.active {
+		background: rgba(var(--red), 0.15);
+		border-color: rgba(var(--red), 0.3);
+		color: rgb(var(--red));
+		box-shadow: 0 0 10px rgba(var(--red), 0.2);
+	}
+
+	/* Actions mode */
+	.actions-mode {
+		overflow: hidden;
+	}
+
+	.action-type-toggle {
+		display: flex;
+		gap: 0.25rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.action-notice {
+		padding: 0.5rem 0.75rem;
+		background: rgba(var(--theme-color-rgb), 0.1);
+		border: 1px solid rgba(var(--theme-color-rgb), 0.2);
+		border-radius: 0.375rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.action-notice small {
+		color: rgb(var(--theme-color-rgb));
+		font-size: 0.75rem;
+	}
+
+	.prefill-notice {
+		padding: 0.5rem 0.75rem;
+		background: rgba(var(--green), 0.1);
+		border: 1px solid rgba(var(--green), 0.2);
+		border-radius: 0.375rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.prefill-notice small {
+		color: rgb(var(--green));
+		font-size: 0.75rem;
+	}
+
+	.shop-info-fields {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.shop-info-fields label {
+		display: block;
+		font-size: 0.8125rem;
+		color: var(--text-color-2);
+		margin-bottom: 0.25rem;
+	}
+
+	.shop-info-fields input,
+	.shop-info-fields textarea {
+		font-size: 0.875rem;
+	}
+
+	.shop-info-fields textarea {
+		min-height: 60px;
+		resize: vertical;
+	}
+
+	.help-text {
+		color: var(--text-color-2);
+		font-size: 0.75rem;
+		margin-top: 0.25rem;
+	}
+
+	.delete-warning {
+		padding: 0.75rem;
+		background: rgba(var(--red), 0.1);
+		border: 1px solid rgba(var(--red), 0.2);
+		border-radius: 0.5rem;
+		margin-top: 0.5rem;
+	}
+
+	.delete-warning p {
+		color: rgb(var(--red));
+		font-size: 0.875rem;
+		margin: 0;
+	}
+
+	/* Refund mode */
+	.refund-mode {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.refund-mode label {
+		display: block;
+		font-size: 0.8125rem;
+		color: var(--text-color-2);
+		margin-bottom: 0.25rem;
+	}
+
+	.refund-mode input {
+		font-size: 0.875rem;
+	}
+
 	/* Raw mode */
 	.raw-mode textarea {
 		min-height: 60px;
@@ -545,5 +863,59 @@
 		font-size: 0.75rem;
 		word-break: break-all;
 		color: var(--text-color-2);
+	}
+
+	/* Current shop info display */
+	.current-shop-info {
+		padding: 1rem;
+		background: rgba(var(--blue), 0.08);
+		border: 1px solid rgba(var(--blue), 0.2);
+		border-radius: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.current-shop-info h4 {
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin: 0 0 0.75rem 0;
+		color: rgb(var(--blue));
+		opacity: 0.9;
+	}
+
+	.info-row {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 0.75rem;
+		font-size: 0.875rem;
+		padding: 0.4rem 0;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.info-row:last-child {
+		border-bottom: none;
+		padding-bottom: 0;
+	}
+
+	.info-row strong {
+		color: var(--text-color-2);
+		font-weight: 500;
+		font-size: 0.8125rem;
+	}
+
+	.info-row span {
+		color: var(--text-color-1);
+		word-break: break-word;
+	}
+
+	.no-shop-info {
+		padding: 0.75rem;
+		background: rgba(var(--yellow), 0.1);
+		border: 1px solid rgba(var(--yellow), 0.2);
+		border-radius: 0.5rem;
+		margin-top: 0.5rem;
+		font-size: 0.875rem;
+		color: rgb(var(--yellow));
 	}
 </style>
