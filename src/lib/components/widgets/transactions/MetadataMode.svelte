@@ -213,8 +213,9 @@
 			beforeSend = null;
 		} else if (mode === 'actions') {
 			// Actions mode uses the selected action's configuration
+			// Note: Even free actions that refund still need to send at least 0.01 KRO (the minimum transaction amount)
 			overrideAddress = selectedAction.targetAddress;
-			overrideAmount = selectedAction.refundsAmount ? 0 : selectedAction.fee;
+			overrideAmount = selectedAction.fee;
 			fieldsLocked = true;
 			beforeSend = selectedAction.beforeSend ?? null;
 			if (selectedAction.id === 'set_shop_info') {
