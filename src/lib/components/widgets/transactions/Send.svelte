@@ -58,6 +58,9 @@
 	let metadataOverrideAddress = $state('');
 	let metadataOverrideAmount = $state(0);
 	let fieldsLocked = $state(false);
+	
+	// beforeSend callback from MetadataMode (for pre-send validation like API health checks)
+	let beforeSend: (() => Promise<{ success: boolean; error?: string }>) | null = $state(null);
 
 	// Effective values (use override if set)
 	let effectiveTo = $derived(metadataOverrideAddress || to.value);
@@ -111,6 +114,16 @@
 				confirm: async () => {
 					loading = true;
 					try {
+						// Run beforeSend hook if provided (e.g., API health check)
+						if (beforeSend) {
+							const result = await beforeSend();
+							if (!result.success) {
+								notifications.error(result.error ?? $t$('transaction.beforeSendFailed'));
+								loading = false;
+								return;
+							}
+						}
+
 						const data: MakeTransactionBody = {
 							privatekey,
 							to: effectiveTo,
@@ -218,6 +231,7 @@
 						bind:overrideAddress={metadataOverrideAddress}
 						bind:overrideAmount={metadataOverrideAmount}
 						bind:fieldsLocked={fieldsLocked}
+						bind:beforeSend={beforeSend}
 					/>
 				</div>
 			{/if}

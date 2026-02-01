@@ -7,9 +7,64 @@
 	import { t$ } from '$lib/i18n';
 	import { faUser, faMessage, faCode, faCheck, faBolt, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+	import krawlet from '$lib/api/krawlet';
 
 	type MetadataMode = 'player' | 'message' | 'actions' | 'refund' | 'raw';
 	type MessageType = 'message' | 'error';
+
+	// Action configuration with fee information
+	// fee: number - the cost to perform this action (same as overrideAmount)
+	// refundsAmount: boolean - if true, the action refunds the full transaction amount (fee = 0)
+	export type ActionConfig = {
+		id: string;
+		labelKey: string;
+		fee: number;
+		refundsAmount: boolean;
+		targetAddress: string;
+		danger?: boolean;
+		beforeSend?: () => Promise<{ success: boolean; error?: string }>;
+	};
+
+	// Define available actions with their fees
+	const ACTIONS: ActionConfig[] = [
+		{
+			id: 'set_shop_info',
+			labelKey: 'transaction.metadataModes.setShopInfo',
+			fee: 0.01,
+			refundsAmount: false,
+			targetAddress: 'kkrawletii',
+			beforeSend: async () => {
+				try {
+					const isHealthy = await krawlet.healthCheck();
+					if (!isHealthy) {
+						return { success: false, error: 'Krawlet API is currently unavailable. Please try again later.' };
+					}
+					return { success: true };
+				} catch {
+					return { success: false, error: 'Failed to reach Krawlet API. Please check your connection.' };
+				}
+			}
+		},
+		{
+			id: 'delete_shop_info',
+			labelKey: 'transaction.metadataModes.deleteShopInfo',
+			fee: 0.01,
+			refundsAmount: false,
+			targetAddress: 'kkrawletii',
+			danger: true,
+			beforeSend: async () => {
+				try {
+					const isHealthy = await krawlet.healthCheck();
+					if (!isHealthy) {
+						return { success: false, error: 'Krawlet API is currently unavailable. Please try again later.' };
+					}
+					return { success: true };
+				} catch {
+					return { success: false, error: 'Failed to reach Krawlet API. Please check your connection.' };
+				}
+			}
+		}
+	];
 
 	let {
 		metadata = $bindable(''),
@@ -17,7 +72,8 @@
 		fromAddress = '',
 		overrideAddress = $bindable(''),
 		overrideAmount = $bindable(0),
-		fieldsLocked = $bindable(false)
+		fieldsLocked = $bindable(false),
+		beforeSend = $bindable<(() => Promise<{ success: boolean; error?: string }>) | null>(null)
 	}: {
 		metadata: string;
 		lock?: boolean;
@@ -25,6 +81,7 @@
 		overrideAddress?: string;
 		overrideAmount?: number;
 		fieldsLocked?: boolean;
+		beforeSend?: (() => Promise<{ success: boolean; error?: string }>) | null;
 	} = $props();
 
 	// Find if the from address has an associated player
@@ -88,15 +145,15 @@
 	let refundMessage: string = $state('');
 
 	// Actions mode state
-	type ActionType = 'set_shop_info' | 'delete_shop_info';
-	let selectedAction: ActionType = $state('set_shop_info');
+	let selectedActionId: string = $state('set_shop_info');
+	let selectedAction = $derived(ACTIONS.find(a => a.id === selectedActionId) ?? ACTIONS[0]);
 	let shopName: string = $state('');
 	let shopDescription: string = $state('');
 	let shopInfoInitialized: boolean = $state(false);
 
 	// Auto-fill shop info from known address when entering actions mode or when fromKnownAddress changes
 	$effect(() => {
-		if (mode === 'actions' && selectedAction === 'set_shop_info' && fromKnownAddress && !shopInfoInitialized) {
+		if (mode === 'actions' && selectedAction.id === 'set_shop_info' && fromKnownAddress && !shopInfoInitialized) {
 			shopName = fromKnownAddress.name || '';
 			shopDescription = fromKnownAddress.description || '';
 			shopInfoInitialized = true;
@@ -123,17 +180,20 @@
 			overrideAddress = '';
 			overrideAmount = 0;
 			fieldsLocked = false;
+			beforeSend = null;
 		} else if (mode === 'message' && messageContent) {
 			metadata = `${messageType}=${messageContent}`;
 			overrideAddress = '';
 			overrideAmount = 0;
 			fieldsLocked = false;
+			beforeSend = null;
 		} else if (mode === 'actions') {
-			// Actions mode always sends to Krawlet API address with fixed amount
-			overrideAddress = 'kkrawletii';
-			overrideAmount = 0.01;
+			// Actions mode uses the selected action's configuration
+			overrideAddress = selectedAction.targetAddress;
+			overrideAmount = selectedAction.refundsAmount ? 0 : selectedAction.fee;
 			fieldsLocked = true;
-			if (selectedAction === 'set_shop_info') {
+			beforeSend = selectedAction.beforeSend ?? null;
+			if (selectedAction.id === 'set_shop_info') {
 				const parts: string[] = [];
 				if (shopName.trim()) {
 					parts.push(`shop_name=${shopName.trim()}`);
@@ -142,7 +202,7 @@
 					parts.push(`shop_description=${shopDescription.trim()}`);
 				}
 				metadata = parts.join(';');
-			} else if (selectedAction === 'delete_shop_info') {
+			} else if (selectedAction.id === 'delete_shop_info') {
 				metadata = 'shop_delete';
 			}
 		} else if (mode === 'refund' && refundTxId.trim()) {
@@ -157,16 +217,19 @@
 			overrideAddress = '';
 			overrideAmount = 0;
 			fieldsLocked = false;
+			beforeSend = null;
 		} else if (mode === 'raw') {
 			metadata = rawMetadata;
 			overrideAddress = '';
 			overrideAmount = 0;
 			fieldsLocked = false;
+			beforeSend = null;
 		} else {
 			metadata = '';
 			overrideAddress = '';
 			overrideAmount = 0;
 			fieldsLocked = false;
+			beforeSend = null;
 		}
 	});
 
@@ -339,28 +402,37 @@
 		{:else if mode === 'actions'}
 			<div class="actions-mode" in:fade={{ duration: 150, easing: cubicOut }} out:fade={{ duration: 100 }}>
 				<div class="action-notice">
-					<small>{$t$('transaction.metadataModes.actionNotice', { address: 'kkrawletii', amount: '0.01' })}</small>
+					<small>
+						{#if selectedAction.refundsAmount}
+							{$t$('transaction.metadataModes.actionRefundsAmount', { address: selectedAction.targetAddress })}
+						{:else}
+							{$t$('transaction.metadataModes.actionNotice', { address: selectedAction.targetAddress, amount: selectedAction.fee.toFixed(2) })}
+						{/if}
+					</small>
+				</div>
+				<div class="action-fee-badge" class:refund={selectedAction.refundsAmount}>
+					{#if selectedAction.refundsAmount}
+						<span class="fee-label">{$t$('transaction.metadataModes.fullRefund')}</span>
+					{:else}
+						<span class="fee-label">{$t$('transaction.metadataModes.fee')}:</span>
+						<span class="fee-amount">{selectedAction.fee.toFixed(2)} KRO</span>
+					{/if}
 				</div>
 				<div class="action-type-toggle">
-					<button
-						type="button"
-						class="type-btn"
-						class:active={selectedAction === 'set_shop_info'}
-						onclick={() => (selectedAction = 'set_shop_info')}
-					>
-						{$t$('transaction.metadataModes.setShopInfo')}
-					</button>
-					<button
-						type="button"
-						class="type-btn danger"
-						class:active={selectedAction === 'delete_shop_info'}
-						onclick={() => (selectedAction = 'delete_shop_info')}
-					>
-						{$t$('transaction.metadataModes.deleteShopInfo')}
-					</button>
+					{#each ACTIONS as action (action.id)}
+						<button
+							type="button"
+							class="type-btn"
+							class:active={selectedActionId === action.id}
+							class:danger={action.danger}
+							onclick={() => (selectedActionId = action.id)}
+						>
+							{$t$(action.labelKey)}
+						</button>
+					{/each}
 				</div>
 
-				{#if selectedAction === 'set_shop_info'}
+				{#if selectedAction.id === 'set_shop_info'}
 					<div class="shop-info-fields" in:slide={{ duration: 200, easing: cubicOut }} out:slide={{ duration: 150 }}>
 						{#if fromKnownAddress}
 							<div class="prefill-notice">
@@ -387,7 +459,7 @@
 						</label>
 						<small class="help-text">{$t$('transaction.metadataModes.shopInfoHelp')}</small>
 					</div>
-				{:else if selectedAction === 'delete_shop_info'}
+				{:else if selectedAction.id === 'delete_shop_info'}
 					<div class="delete-section" in:slide={{ duration: 200, easing: cubicOut }} out:slide={{ duration: 150 }}>
 						{#if fromKnownAddress}
 							<div class="current-shop-info">
@@ -755,6 +827,37 @@
 	.action-notice small {
 		color: rgb(var(--theme-color-rgb));
 		font-size: 0.75rem;
+	}
+
+	.action-fee-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.4rem 0.75rem;
+		background: rgba(var(--yellow), 0.15);
+		border: 1px solid rgba(var(--yellow), 0.25);
+		border-radius: 0.375rem;
+		margin-bottom: 0.75rem;
+		font-size: 0.8125rem;
+	}
+
+	.action-fee-badge .fee-label {
+		color: rgba(var(--yellow), 0.9);
+		font-weight: 500;
+	}
+
+	.action-fee-badge .fee-amount {
+		color: rgb(var(--yellow));
+		font-weight: 600;
+	}
+
+	.action-fee-badge.refund {
+		background: rgba(var(--green), 0.15);
+		border-color: rgba(var(--green), 0.25);
+	}
+
+	.action-fee-badge.refund .fee-label {
+		color: rgb(var(--green));
 	}
 
 	.prefill-notice {

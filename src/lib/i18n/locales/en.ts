@@ -305,7 +305,10 @@ export default {
 			shopDescriptionPlaceholder: 'A description of what your shop sells...',
 			shopInfoHelp: 'This will set/update your known address info in the Krawlet API.',
 			deleteShopWarning: 'This will delete your known address information from the Krawlet API. This action cannot be undone.',
-			actionNotice: 'Actions will send {amount} KRO to {address}',
+			actionNotice: 'This action will send {amount} KRO to {address}',
+			actionRefundsAmount: 'This action will refund the full amount to {address}',
+			fee: 'Fee',
+			fullRefund: 'Full Refund',
 			prefillNotice: 'Fields pre-filled from your existing shop info.',
 			currentShopInfo: 'Current Shop Info',
 			shopType: 'Type',
@@ -319,6 +322,7 @@ export default {
 			refundHelp: 'This marks the transaction as a refund and links it to the original transaction.',
 			optional: 'optional'
 		},
+		beforeSendFailed: 'Pre-send validation failed',
 		// Item purchase
 		unitPriceRequired:
 			'Please provide a unit price in the "unit_price" query parameter to send a purchase.',

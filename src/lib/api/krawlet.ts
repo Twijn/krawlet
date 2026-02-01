@@ -33,6 +33,19 @@ export function getKrawletClient(): KrawletClient {
 	return _client;
 }
 
+/**
+ * Performs a health check on the Krawlet API
+ * @returns true if the API is healthy, false otherwise
+ */
+export async function healthCheck(): Promise<boolean> {
+	try {
+		const response = await _client.health.check();
+		return response.status === 'healthy';
+	} catch {
+		return false;
+	}
+}
+
 // Initialize with API key from settings (only in browser)
 if (browser) {
 	// Use setTimeout to avoid SSR issues with dynamic imports
@@ -53,9 +66,12 @@ if (browser) {
 	}, 0);
 }
 
-// Export a proxy that always uses the current client
-const clientProxy = new Proxy({} as KrawletClient, {
+// Export a proxy that always uses the current client with the healthCheck function
+const clientProxy = new Proxy({} as KrawletClient & { healthCheck: typeof healthCheck }, {
 	get(_target, prop) {
+		if (prop === 'healthCheck') {
+			return healthCheck;
+		}
 		return (_client as unknown as Record<string | symbol, unknown>)[prop];
 	}
 });

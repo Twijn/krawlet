@@ -288,7 +288,10 @@ export default {
 			shopDescriptionPlaceholder: 'Una descripción de lo que vende tu tienda...',
 			shopInfoHelp: 'Esto establecerá/actualizará la información de tu dirección conocida en la API de Krawlet.',
 			deleteShopWarning: 'Esto eliminará la información de tu dirección conocida de la API de Krawlet. Esta acción no se puede deshacer.',
-			actionNotice: 'Las acciones enviarán {amount} KRO a {address}',
+			actionNotice: 'Esta acción enviará {amount} KRO a {address}',
+			actionRefundsAmount: 'Esta acción reembolsará la cantidad completa a {address}',
+			fee: 'Tarifa',
+			fullRefund: 'Reembolso Completo',
 			prefillNotice: 'Campos pre-llenados con tu información de tienda existente.',
 			currentShopInfo: 'Info Actual de la Tienda',
 			shopType: 'Tipo',
@@ -302,6 +305,7 @@ export default {
 			refundHelp: 'Esto marca la transacción como un reembolso y la vincula a la transacción original.',
 			optional: 'opcional'
 		},
+		beforeSendFailed: 'La validación previa al envío falló',
 		// Item purchase
 		unitPriceRequired:
 			'Por favor proporciona un precio unitario en el parámetro "unit_price" para enviar una compra.',
