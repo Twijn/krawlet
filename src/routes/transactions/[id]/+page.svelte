@@ -214,7 +214,7 @@
 									{/if}
 								</td>
 							{:else}
-							<th><small><Placeholder text="[no name]" /></small></th>
+								<th><small><Placeholder text="[no name]" /></small></th>
 								<td>{metadata.name}</td>
 							{/if}
 						</tr>

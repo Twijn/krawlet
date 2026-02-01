@@ -1,6 +1,11 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
-	import { faCopy, faPaperPlane, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faCopy,
+		faPaperPlane,
+		faChevronDown,
+		faChevronUp
+	} from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import AddressSelector from '../addresses/AddressSelector.svelte';
 	import { paramState } from '$lib/paramState.svelte';
@@ -58,13 +63,15 @@
 	let metadataOverrideAddress = $state('');
 	let metadataOverrideAmount = $state(0);
 	let fieldsLocked = $state(false);
-	
+
 	// beforeSend callback from MetadataMode (for pre-send validation like API health checks)
 	let beforeSend: (() => Promise<{ success: boolean; error?: string }>) | null = $state(null);
 
 	// Effective values (use override if set)
 	let effectiveTo = $derived(metadataOverrideAddress || to.value);
-	let effectiveAmount = $derived(metadataOverrideAmount > 0 ? metadataOverrideAmount : amount.value);
+	let effectiveAmount = $derived(
+		metadataOverrideAmount > 0 ? metadataOverrideAmount : amount.value
+	);
 
 	// Auto-expand advanced when metadata is present or fields are locked
 	$effect(() => {
@@ -215,11 +222,7 @@
 
 		<!-- Advanced Options (Metadata) -->
 		<div class="form-section advanced-section">
-			<button
-				type="button"
-				class="advanced-toggle"
-				onclick={() => (showAdvanced = !showAdvanced)}
-			>
+			<button type="button" class="advanced-toggle" onclick={() => (showAdvanced = !showAdvanced)}>
 				<span>{$t$('transaction.advanced')}</span>
 				<FontAwesomeIcon icon={showAdvanced ? faChevronUp : faChevronDown} />
 			</button>
@@ -227,11 +230,11 @@
 				<div transition:slide={{ duration: 200, easing: cubicOut }}>
 					<MetadataMode
 						bind:metadata={metadata.value}
-						fromAddress={fromAddress}
+						{fromAddress}
 						bind:overrideAddress={metadataOverrideAddress}
 						bind:overrideAmount={metadataOverrideAmount}
-						bind:fieldsLocked={fieldsLocked}
-						bind:beforeSend={beforeSend}
+						bind:fieldsLocked
+						bind:beforeSend
 					/>
 				</div>
 			{/if}

@@ -304,7 +304,8 @@ export default {
 			shopDescription: 'Shop Description',
 			shopDescriptionPlaceholder: 'A description of what your shop sells...',
 			shopInfoHelp: 'This will set/update your known address info in the Krawlet API.',
-			deleteShopWarning: 'This will delete your known address information from the Krawlet API. This action cannot be undone.',
+			deleteShopWarning:
+				'This will delete your known address information from the Krawlet API. This action cannot be undone.',
 			actionNotice: 'This action will send {amount} KRO to {address}',
 			actionFreeNotice: 'This action is free and any transaction amount will be refunded.',
 			free: 'Free',
@@ -319,7 +320,8 @@ export default {
 			originalAmount: 'Original Amount',
 			refundMessage: 'Refund Message',
 			refundMessagePlaceholder: 'Reason for refund...',
-			refundHelp: 'This marks the transaction as a refund and links it to the original transaction.',
+			refundHelp:
+				'This marks the transaction as a refund and links it to the original transaction.',
 			optional: 'optional'
 		},
 		beforeSendFailed: 'Pre-send validation failed',
@@ -500,7 +502,7 @@ export default {
 		developerResourcesDescription:
 			'Build your own applications and integrations with the Krawlet API using these libraries. The Krawlet API provides player lookups (by address, name, or UUID), shop & item listing from Shop Sync, known address registry, shop change logs & statistics, and public ender storage data (scanned weekly).',
 		krawletJsDescription:
-			'Official JavaScript/TypeScript library for Node.js and browser applications (you\'re using it currently to view this site!)',
+			"Official JavaScript/TypeScript library for Node.js and browser applications (you're using it currently to view this site!)",
 		krawletLuaDescription: 'Official Lua library for ComputerCraft and CC:Tweaked integration.'
 	},
 	notifications: {

@@ -171,7 +171,7 @@
 									{#if name.a}
 										{name.a}
 									{:else}
-											<small><Placeholder text={$t$('name.noData')} /></small>
+										<small><Placeholder text={$t$('name.noData')} /></small>
 									{/if}
 								</td>
 								{#if $settings.showTransferredDate}
@@ -189,7 +189,7 @@
 												{name.transferred.toLocaleString()}
 											{/if}
 										{:else}
-												<small><Placeholder text={$t$('name.neverTransferred')} /></small>
+											<small><Placeholder text={$t$('name.neverTransferred')} /></small>
 										{/if}
 									</td>
 								{/if}

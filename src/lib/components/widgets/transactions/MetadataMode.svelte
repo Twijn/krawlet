@@ -1,11 +1,18 @@
 <script lang="ts">
 	import playerWalletStore, { type Player } from '$lib/stores/playerWallets';
 	import knownAddressStore, { type KnownAddress } from '$lib/stores/knownAddresses';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import { slide, fade } from 'svelte/transition';
-	import { cubicOut, cubicInOut } from 'svelte/easing';
+	import { cubicOut } from 'svelte/easing';
 	import { t$ } from '$lib/i18n';
-	import { faUser, faMessage, faCode, faCheck, faBolt, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faUser,
+		faMessage,
+		faCode,
+		faCheck,
+		faBolt,
+		faRotateLeft
+	} from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import krawlet from '$lib/api/krawlet';
 
@@ -37,11 +44,17 @@
 				try {
 					const isHealthy = await krawlet.healthCheck();
 					if (!isHealthy) {
-						return { success: false, error: 'Krawlet API is currently unavailable. Please try again later.' };
+						return {
+							success: false,
+							error: 'Krawlet API is currently unavailable. Please try again later.'
+						};
 					}
 					return { success: true };
 				} catch {
-					return { success: false, error: 'Failed to reach Krawlet API. Please check your connection.' };
+					return {
+						success: false,
+						error: 'Failed to reach Krawlet API. Please check your connection.'
+					};
 				}
 			}
 		},
@@ -56,11 +69,17 @@
 				try {
 					const isHealthy = await krawlet.healthCheck();
 					if (!isHealthy) {
-						return { success: false, error: 'Krawlet API is currently unavailable. Please try again later.' };
+						return {
+							success: false,
+							error: 'Krawlet API is currently unavailable. Please try again later.'
+						};
 					}
 					return { success: true };
 				} catch {
-					return { success: false, error: 'Failed to reach Krawlet API. Please check your connection.' };
+					return {
+						success: false,
+						error: 'Failed to reach Krawlet API. Please check your connection.'
+					};
 				}
 			}
 		}
@@ -146,14 +165,19 @@
 
 	// Actions mode state
 	let selectedActionId: string = $state('set_shop_info');
-	let selectedAction = $derived(ACTIONS.find(a => a.id === selectedActionId) ?? ACTIONS[0]);
+	let selectedAction = $derived(ACTIONS.find((a) => a.id === selectedActionId) ?? ACTIONS[0]);
 	let shopName: string = $state('');
 	let shopDescription: string = $state('');
 	let shopInfoInitialized: boolean = $state(false);
 
 	// Auto-fill shop info from known address when entering actions mode or when fromKnownAddress changes
 	$effect(() => {
-		if (mode === 'actions' && selectedAction.id === 'set_shop_info' && fromKnownAddress && !shopInfoInitialized) {
+		if (
+			mode === 'actions' &&
+			selectedAction.id === 'set_shop_info' &&
+			fromKnownAddress &&
+			!shopInfoInitialized
+		) {
 			shopName = fromKnownAddress.name || '';
 			shopDescription = fromKnownAddress.description || '';
 			shopInfoInitialized = true;
@@ -304,9 +328,17 @@
 
 	<div class="mode-content">
 		{#if mode === 'player'}
-			<div class="player-mode" in:fade={{ duration: 150, easing: cubicOut }} out:fade={{ duration: 100 }}>
+			<div
+				class="player-mode"
+				in:fade={{ duration: 150, easing: cubicOut }}
+				out:fade={{ duration: 100 }}
+			>
 				{#if selectedPlayer && !showPlayerPicker}
-					<div class="selected-player" in:slide={{ duration: 200, easing: cubicOut }} out:slide={{ duration: 150 }}>
+					<div
+						class="selected-player"
+						in:slide={{ duration: 200, easing: cubicOut }}
+						out:slide={{ duration: 150 }}
+					>
 						<div class="player-info">
 							<span class="player-name">{selectedPlayer.minecraftName}</span>
 							{#if selectedPlayer.online}
@@ -320,7 +352,11 @@
 						{/if}
 					</div>
 				{:else}
-					<div class="player-picker" in:slide={{ duration: 200, easing: cubicOut }} out:slide={{ duration: 150 }}>
+					<div
+						class="player-picker"
+						in:slide={{ duration: 200, easing: cubicOut }}
+						out:slide={{ duration: 150 }}
+					>
 						<input
 							type="text"
 							bind:value={playerFilter}
@@ -346,11 +382,18 @@
 								</button>
 							{/each}
 							{#if filteredPlayers.length === 0}
-								<div class="no-results" in:fade={{ duration: 150 }}>{$t$('transaction.metadataModes.noPlayersFound')}</div>
+								<div class="no-results" in:fade={{ duration: 150 }}>
+									{$t$('transaction.metadataModes.noPlayersFound')}
+								</div>
 							{/if}
 						</div>
 						{#if selectedPlayer}
-							<button type="button" class="done-btn" onclick={() => (showPlayerPicker = false)} in:slide={{ duration: 150, easing: cubicOut }}>
+							<button
+								type="button"
+								class="done-btn"
+								onclick={() => (showPlayerPicker = false)}
+								in:slide={{ duration: 150, easing: cubicOut }}
+							>
 								Done
 							</button>
 						{/if}
@@ -358,7 +401,11 @@
 				{/if}
 
 				{#if selectedPlayer && !showPlayerPicker}
-					<div class="extra-data" in:slide={{ duration: 200, delay: 100, easing: cubicOut }} out:slide={{ duration: 150 }}>
+					<div
+						class="extra-data"
+						in:slide={{ duration: 200, delay: 100, easing: cubicOut }}
+						out:slide={{ duration: 150 }}
+					>
 						<label for="player-extra-data">Additional data (optional)</label>
 						<input
 							type="text"
@@ -371,7 +418,11 @@
 				{/if}
 			</div>
 		{:else if mode === 'message'}
-			<div class="message-mode" in:fade={{ duration: 150, easing: cubicOut }} out:fade={{ duration: 100 }}>
+			<div
+				class="message-mode"
+				in:fade={{ duration: 150, easing: cubicOut }}
+				out:fade={{ duration: 100 }}
+			>
 				<div class="message-type-toggle">
 					<button
 						type="button"
@@ -400,7 +451,11 @@
 				/>
 			</div>
 		{:else if mode === 'actions'}
-			<div class="actions-mode" in:fade={{ duration: 150, easing: cubicOut }} out:fade={{ duration: 100 }}>
+			<div
+				class="actions-mode"
+				in:fade={{ duration: 150, easing: cubicOut }}
+				out:fade={{ duration: 100 }}
+			>
 				{#if selectedAction.refundsAmount}
 					<div class="action-free-notice">
 						<span class="free-badge">{$t$('transaction.metadataModes.free')}</span>
@@ -412,7 +467,12 @@
 							<span class="fee-label">{$t$('transaction.metadataModes.fee')}</span>
 							<span class="fee-amount">{selectedAction.fee.toFixed(2)} KRO</span>
 						</div>
-						<small>{$t$('transaction.metadataModes.actionNotice', { address: selectedAction.targetAddress, amount: selectedAction.fee.toFixed(2) })}</small>
+						<small
+							>{$t$('transaction.metadataModes.actionNotice', {
+								address: selectedAction.targetAddress,
+								amount: selectedAction.fee.toFixed(2)
+							})}</small
+						>
 					</div>
 				{/if}
 				<div class="action-type-toggle">
@@ -430,7 +490,11 @@
 				</div>
 
 				{#if selectedAction.id === 'set_shop_info'}
-					<div class="shop-info-fields" in:slide={{ duration: 200, easing: cubicOut }} out:slide={{ duration: 150 }}>
+					<div
+						class="shop-info-fields"
+						in:slide={{ duration: 200, easing: cubicOut }}
+						out:slide={{ duration: 150 }}
+					>
 						{#if fromKnownAddress}
 							<div class="prefill-notice">
 								<small>{$t$('transaction.metadataModes.prefillNotice')}</small>
@@ -457,7 +521,11 @@
 						<small class="help-text">{$t$('transaction.metadataModes.shopInfoHelp')}</small>
 					</div>
 				{:else if selectedAction.id === 'delete_shop_info'}
-					<div class="delete-section" in:slide={{ duration: 200, easing: cubicOut }} out:slide={{ duration: 150 }}>
+					<div
+						class="delete-section"
+						in:slide={{ duration: 200, easing: cubicOut }}
+						out:slide={{ duration: 150 }}
+					>
 						{#if fromKnownAddress}
 							<div class="current-shop-info">
 								<h4>{$t$('transaction.metadataModes.currentShopInfo')}</h4>
@@ -488,7 +556,11 @@
 				{/if}
 			</div>
 		{:else if mode === 'refund'}
-			<div class="refund-mode" in:fade={{ duration: 150, easing: cubicOut }} out:fade={{ duration: 100 }}>
+			<div
+				class="refund-mode"
+				in:fade={{ duration: 150, easing: cubicOut }}
+				out:fade={{ duration: 100 }}
+			>
 				<label>
 					{$t$('transaction.metadataModes.transactionId')}
 					<input
@@ -499,7 +571,9 @@
 					/>
 				</label>
 				<label>
-					{$t$('transaction.metadataModes.originalAmount')} ({$t$('transaction.metadataModes.optional')})
+					{$t$('transaction.metadataModes.originalAmount')} ({$t$(
+						'transaction.metadataModes.optional'
+					)})
 					<input
 						type="number"
 						bind:value={refundOriginalAmount}
@@ -510,7 +584,9 @@
 					/>
 				</label>
 				<label>
-					{$t$('transaction.metadataModes.refundMessage')} ({$t$('transaction.metadataModes.optional')})
+					{$t$('transaction.metadataModes.refundMessage')} ({$t$(
+						'transaction.metadataModes.optional'
+					)})
 					<input
 						type="text"
 						bind:value={refundMessage}
@@ -521,7 +597,11 @@
 				<small class="help-text">{$t$('transaction.metadataModes.refundHelp')}</small>
 			</div>
 		{:else if mode === 'raw'}
-			<div class="raw-mode" in:fade={{ duration: 150, easing: cubicOut }} out:fade={{ duration: 100 }}>
+			<div
+				class="raw-mode"
+				in:fade={{ duration: 150, easing: cubicOut }}
+				out:fade={{ duration: 100 }}
+			>
 				<textarea
 					bind:value={rawMetadata}
 					placeholder="key=value;anotherkey=anothervalue"

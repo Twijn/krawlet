@@ -286,10 +286,13 @@ export default {
 			shopNamePlaceholder: 'Mi Nombre de Tienda',
 			shopDescription: 'Descripción de la Tienda',
 			shopDescriptionPlaceholder: 'Una descripción de lo que vende tu tienda...',
-			shopInfoHelp: 'Esto establecerá/actualizará la información de tu dirección conocida en la API de Krawlet.',
-			deleteShopWarning: 'Esto eliminará la información de tu dirección conocida de la API de Krawlet. Esta acción no se puede deshacer.',
+			shopInfoHelp:
+				'Esto establecerá/actualizará la información de tu dirección conocida en la API de Krawlet.',
+			deleteShopWarning:
+				'Esto eliminará la información de tu dirección conocida de la API de Krawlet. Esta acción no se puede deshacer.',
 			actionNotice: 'Esta acción enviará {amount} KRO a {address}',
-			actionFreeNotice: 'Esta acción es gratuita y cualquier cantidad de transacción será reembolsada.',
+			actionFreeNotice:
+				'Esta acción es gratuita y cualquier cantidad de transacción será reembolsada.',
 			free: 'Gratis',
 			fee: 'Tarifa',
 			prefillNotice: 'Campos pre-llenados con tu información de tienda existente.',
@@ -302,7 +305,8 @@ export default {
 			originalAmount: 'Cantidad Original',
 			refundMessage: 'Mensaje de Reembolso',
 			refundMessagePlaceholder: 'Motivo del reembolso...',
-			refundHelp: 'Esto marca la transacción como un reembolso y la vincula a la transacción original.',
+			refundHelp:
+				'Esto marca la transacción como un reembolso y la vincula a la transacción original.',
 			optional: 'opcional'
 		},
 		beforeSendFailed: 'La validación previa al envío falló',
