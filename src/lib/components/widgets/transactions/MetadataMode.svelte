@@ -31,7 +31,7 @@
 			id: 'set_shop_info',
 			labelKey: 'transaction.metadataModes.setShopInfo',
 			fee: 0.01,
-			refundsAmount: false,
+			refundsAmount: true,
 			targetAddress: 'kkrawletii',
 			beforeSend: async () => {
 				try {
@@ -49,7 +49,7 @@
 			id: 'delete_shop_info',
 			labelKey: 'transaction.metadataModes.deleteShopInfo',
 			fee: 0.01,
-			refundsAmount: false,
+			refundsAmount: true,
 			targetAddress: 'kkrawletii',
 			danger: true,
 			beforeSend: async () => {
@@ -401,23 +401,20 @@
 			</div>
 		{:else if mode === 'actions'}
 			<div class="actions-mode" in:fade={{ duration: 150, easing: cubicOut }} out:fade={{ duration: 100 }}>
-				<div class="action-notice">
-					<small>
-						{#if selectedAction.refundsAmount}
-							{$t$('transaction.metadataModes.actionRefundsAmount', { address: selectedAction.targetAddress })}
-						{:else}
-							{$t$('transaction.metadataModes.actionNotice', { address: selectedAction.targetAddress, amount: selectedAction.fee.toFixed(2) })}
-						{/if}
-					</small>
-				</div>
-				<div class="action-fee-badge" class:refund={selectedAction.refundsAmount}>
-					{#if selectedAction.refundsAmount}
-						<span class="fee-label">{$t$('transaction.metadataModes.fullRefund')}</span>
-					{:else}
-						<span class="fee-label">{$t$('transaction.metadataModes.fee')}:</span>
-						<span class="fee-amount">{selectedAction.fee.toFixed(2)} KRO</span>
-					{/if}
-				</div>
+				{#if selectedAction.refundsAmount}
+					<div class="action-free-notice">
+						<span class="free-badge">{$t$('transaction.metadataModes.free')}</span>
+						<small>{$t$('transaction.metadataModes.actionFreeNotice')}</small>
+					</div>
+				{:else}
+					<div class="action-fee-notice">
+						<div class="fee-info">
+							<span class="fee-label">{$t$('transaction.metadataModes.fee')}</span>
+							<span class="fee-amount">{selectedAction.fee.toFixed(2)} KRO</span>
+						</div>
+						<small>{$t$('transaction.metadataModes.actionNotice', { address: selectedAction.targetAddress, amount: selectedAction.fee.toFixed(2) })}</small>
+					</div>
+				{/if}
 				<div class="action-type-toggle">
 					{#each ACTIONS as action (action.id)}
 						<button
@@ -816,48 +813,72 @@
 		margin-bottom: 0.5rem;
 	}
 
-	.action-notice {
-		padding: 0.5rem 0.75rem;
-		background: rgba(var(--theme-color-rgb), 0.1);
-		border: 1px solid rgba(var(--theme-color-rgb), 0.2);
-		border-radius: 0.375rem;
-		margin-bottom: 0.5rem;
+	.action-free-notice {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.6rem 0.875rem;
+		background: rgba(var(--green), 0.08);
+		border: 1px solid rgba(var(--green), 0.2);
+		border-radius: 0.5rem;
+		margin-bottom: 0.75rem;
 	}
 
-	.action-notice small {
-		color: rgb(var(--theme-color-rgb));
-		font-size: 0.75rem;
-	}
-
-	.action-fee-badge {
+	.action-free-notice .free-badge {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.4rem;
-		padding: 0.4rem 0.75rem;
-		background: rgba(var(--yellow), 0.15);
-		border: 1px solid rgba(var(--yellow), 0.25);
+		padding: 0.25rem 0.6rem;
+		background: rgba(var(--green), 0.2);
 		border-radius: 0.375rem;
-		margin-bottom: 0.75rem;
-		font-size: 0.8125rem;
-	}
-
-	.action-fee-badge .fee-label {
-		color: rgba(var(--yellow), 0.9);
-		font-weight: 500;
-	}
-
-	.action-fee-badge .fee-amount {
-		color: rgb(var(--yellow));
-		font-weight: 600;
-	}
-
-	.action-fee-badge.refund {
-		background: rgba(var(--green), 0.15);
-		border-color: rgba(var(--green), 0.25);
-	}
-
-	.action-fee-badge.refund .fee-label {
 		color: rgb(var(--green));
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+	}
+
+	.action-free-notice small {
+		color: var(--text-color-2);
+		font-size: 0.8rem;
+	}
+
+	.action-fee-notice {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.6rem 0.875rem;
+		background: rgba(var(--yellow), 0.08);
+		border: 1px solid rgba(var(--yellow), 0.2);
+		border-radius: 0.5rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.action-fee-notice .fee-info {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.25rem 0.6rem;
+		background: rgba(var(--yellow), 0.2);
+		border-radius: 0.375rem;
+	}
+
+	.action-fee-notice .fee-label {
+		color: rgb(var(--yellow));
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+	}
+
+	.action-fee-notice .fee-amount {
+		color: rgb(var(--yellow));
+		font-size: 0.875rem;
+		font-weight: 700;
+	}
+
+	.action-fee-notice small {
+		color: var(--text-color-2);
+		font-size: 0.8rem;
 	}
 
 	.prefill-notice {
