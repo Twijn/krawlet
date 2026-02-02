@@ -156,12 +156,12 @@
 			{/if}
 
 			<ul class="services-list">
-				{#each serviceOrder as service}
+				{#each serviceOrder as service (service)}
 					{@const status = servicesStatus[service]}
 					{@const color = stateColors[status]}
 					{@const icon = stateIcons[status]}
 					<li class="service-item" role="menuitem">
-						<span class="service-icon" class:spin={status === 'connecting'} style:color={color}>
+						<span class="service-icon" class:spin={status === 'connecting'} style:color>
 							<FontAwesomeIcon {icon} size="sm" />
 						</span>
 						<span class="service-name">{$t$(serviceNames[service])}</span>
