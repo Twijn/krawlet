@@ -865,5 +865,26 @@ export default {
 		viewName: 'Ver Nombre',
 		copyName: 'Copiar Nombre',
 		viewNameOwner: 'Ver Propietario'
+	},
+	apiStatus: {
+		title: 'Estado del Servidor',
+		allConnected: 'Todos los servicios del servidor conectados',
+		connecting: 'Servidor conectando a servicios...',
+		someDisconnected: 'Algunos servicios del servidor desconectados',
+		error: 'Error de servicio del servidor',
+		unknown: 'Estado desconocido',
+		fetchError: 'No se pudo obtener el estado del servidor',
+		kromerApiWarning: 'La API de Kromer puede estar caída',
+		status: {
+			connected: 'Conectado',
+			connecting: 'Conectando',
+			disconnected: 'Desconectado',
+			error: 'Error'
+		},
+		services: {
+			kromerWs: 'WebSocket de Kromer',
+			chatbox: 'Chatbox',
+			discord: 'Discord'
+		}
 	}
 } as const;

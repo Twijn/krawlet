@@ -27,6 +27,7 @@
 	import InstallPrompt from '$lib/components/widgets/InstallPrompt.svelte';
 	import UpdatePrompt from '$lib/components/widgets/UpdatePrompt.svelte';
 	import ConnectionStatus from '$lib/components/widgets/ConnectionStatus.svelte';
+	import ApiStatus from '$lib/components/widgets/ApiStatus.svelte';
 	import ContextMenu from '$lib/components/ui/ContextMenu.svelte';
 	import { initPWA, isOnline } from '$lib/stores/pwa';
 	import { websocket } from '$lib/stores/websocket';
@@ -121,23 +122,28 @@
 			{@render children?.()}
 		</main>
 		<footer aria-label={$t$('accessibility.footer')}>
-			<p>
-				{$t$('footer.version', { version: VERSION })}
-				<small>&bullet;</small>
-				<a href="/whats-new">{$t$('footer.whatsNew')}</a>
-			</p>
-			<p>
-				Made for the <a href="https://reconnected.cc/" target="_blank" rel="noopener noreferrer"
-					>Reconnected</a
-				>
-				community by
-				<a href="https://www.twijn.dev" target="_blank" rel="noopener noreferrer">Twijn</a>
-			</p>
-			<p>
-				<a href="https://github.com/Twijn/krawlet" target="_blank" rel="noopener noreferrer"
-					>{$t$('footer.viewOnGithub')}</a
-				>
-			</p>
+			<div class="footer-content">
+				<p>
+					{$t$('footer.version', { version: VERSION })}
+					<small>&bullet;</small>
+					<a href="/whats-new">{$t$('footer.whatsNew')}</a>
+				</p>
+				<p>
+					Made for the <a href="https://reconnected.cc/" target="_blank" rel="noopener noreferrer"
+						>Reconnected</a
+					>
+					community by
+					<a href="https://www.twijn.dev" target="_blank" rel="noopener noreferrer">Twijn</a>
+				</p>
+				<p>
+					<a href="https://github.com/Twijn/krawlet" target="_blank" rel="noopener noreferrer"
+						>{$t$('footer.viewOnGithub')}</a
+					>
+				</p>
+			</div>
+			<div class="footer-status">
+				<ApiStatus />
+			</div>
 		</footer>
 	</div>
 </div>
@@ -275,10 +281,34 @@
 	}
 
 	footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		flex-wrap: wrap;
+		gap: 0.5rem;
 		font-size: 0.8rem;
-		text-align: center;
 		margin-top: 1rem;
-		opacity: 0.6;
+		color: var(--text-color-2);
+	}
+
+	.footer-content {
+		text-align: left;
+	}
+
+	.footer-status {
+		display: flex;
+		align-items: center;
+	}
+
+	@media only screen and (max-width: 600px) {
+		footer {
+			flex-direction: column;
+			align-items: center;
+		}
+
+		.footer-content {
+			text-align: center;
+		}
 	}
 
 	footer p {

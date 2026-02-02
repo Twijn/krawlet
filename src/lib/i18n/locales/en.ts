@@ -875,5 +875,26 @@ export default {
 		viewName: 'View Name',
 		copyName: 'Copy Name',
 		viewNameOwner: 'View Owner'
+	},
+	apiStatus: {
+		title: 'Server Status',
+		allConnected: 'All server services connected',
+		connecting: 'Server connecting to services...',
+		someDisconnected: 'Some server services disconnected',
+		error: 'Server service error',
+		unknown: 'Unknown status',
+		fetchError: 'Unable to fetch server status',
+		kromerApiWarning: 'The Kromer API may be down',
+		status: {
+			connected: 'Connected',
+			connecting: 'Connecting',
+			disconnected: 'Disconnected',
+			error: 'Error'
+		},
+		services: {
+			kromerWs: 'Kromer WS',
+			chatbox: 'Chatbox',
+			discord: 'Discord'
+		}
 	}
 } as const;
