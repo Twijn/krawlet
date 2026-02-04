@@ -184,7 +184,7 @@ export default class FetchedStore<T> {
 		return this.store.subscribe;
 	}
 
-	public destroy() {
+	public destroy = () => {
 		if (this?.interval) {
 			clearInterval(this.interval);
 		}
@@ -192,5 +192,5 @@ export default class FetchedStore<T> {
 			document.removeEventListener('visibilitychange', this.visibilityHandler);
 			this.visibilityHandler = null;
 		}
-	}
+	};
 }
