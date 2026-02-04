@@ -54,6 +54,13 @@
 	let showDropup = $state(false);
 	let fetchError = $state(false);
 	let pollInterval: ReturnType<typeof setInterval> | null = null;
+	let lastFetchTime = 0;
+	const POLL_INTERVAL = 120000; // 2 minutes
+
+	// Check if page is visible
+	function isPageVisible(): boolean {
+		return document.visibilityState === 'visible';
+	}
 
 	// Calculate overall status
 	let overallStatus = $derived.by(() => {
@@ -91,6 +98,7 @@
 			const status = await krawlet.health.getServicesStatus();
 			servicesStatus = status;
 			fetchError = false;
+			lastFetchTime = Date.now();
 		} catch {
 			fetchError = true;
 			// Set all to error state on fetch failure
@@ -102,17 +110,33 @@
 		}
 	}
 
+	// Handle visibility change - fetch if data is stale when page becomes visible
+	function handleVisibilityChange() {
+		if (isPageVisible() && Date.now() - lastFetchTime >= POLL_INTERVAL) {
+			fetchServiceStatus();
+		}
+	}
+
 	onMount(() => {
 		if (browser) {
 			fetchServiceStatus();
-			// Poll every 2 minutes
-			pollInterval = setInterval(fetchServiceStatus, 120000);
+			// Poll every 2 minutes, but only if page is visible
+			pollInterval = setInterval(() => {
+				if (isPageVisible()) {
+					fetchServiceStatus();
+				}
+			}, POLL_INTERVAL);
+
+			document.addEventListener('visibilitychange', handleVisibilityChange);
 		}
 	});
 
 	onDestroy(() => {
 		if (pollInterval) {
 			clearInterval(pollInterval);
+		}
+		if (browser) {
+			document.removeEventListener('visibilitychange', handleVisibilityChange);
 		}
 	});
 </script>

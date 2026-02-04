@@ -17,6 +17,14 @@ export type FetchFunction<T> = () => Promise<T[]>;
 const MIN_RETRY_DELAY = 10_000; // 10 seconds
 const MAX_RETRY_DELAY = 60_000; // 60 seconds
 
+/**
+ * Check if the browser tab/window is currently visible/focused
+ */
+function isPageVisible(): boolean {
+	if (!browser) return false;
+	return document.visibilityState === 'visible';
+}
+
 export default class FetchedStore<T> {
 	protected initialData: FetchedStoreData<T> = {
 		updated: Date.now(),
@@ -29,6 +37,9 @@ export default class FetchedStore<T> {
 	private pendingRequest: Promise<FetchedStoreData<T>> | null = null;
 	private lastFailure: number = 0;
 	private failureCount: number = 0;
+
+	// Visibility change handler for cleanup
+	private visibilityHandler: (() => void) | null = null;
 
 	constructor(
 		protected itemName: string,
@@ -49,18 +60,35 @@ export default class FetchedStore<T> {
 					console.warn(`Failed to parse ${itemName} from localStorage.`);
 				}
 			} else {
-				// Initial fetch
-				this.updateItems().catch(console.error);
+				// Initial fetch (only if page is visible)
+				if (isPageVisible()) {
+					this.updateItems().catch(console.error);
+				}
 			}
 
 			// Set up interval for periodic fetching
 			this.interval = setInterval(async () => {
+				// Skip fetching if page is not visible
+				if (!isPageVisible()) return;
+
 				const now = Date.now();
 				const store = get(this.store);
 				if (now - store.updated >= frequency) {
 					this.updateItems().catch(console.error);
 				}
 			}, 1000);
+
+			// When page becomes visible again, check if data needs updating
+			this.visibilityHandler = () => {
+				if (isPageVisible()) {
+					const now = Date.now();
+					const store = get(this.store);
+					if (now - store.updated >= frequency) {
+						this.updateItems().catch(console.error);
+					}
+				}
+			};
+			document.addEventListener('visibilitychange', this.visibilityHandler);
 
 			this.store.subscribe(($store) => {
 				localStorage.setItem(
@@ -159,6 +187,10 @@ export default class FetchedStore<T> {
 	public destroy() {
 		if (this?.interval) {
 			clearInterval(this.interval);
+		}
+		if (this.visibilityHandler) {
+			document.removeEventListener('visibilitychange', this.visibilityHandler);
+			this.visibilityHandler = null;
 		}
 	}
 }
