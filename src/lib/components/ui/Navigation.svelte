@@ -23,15 +23,12 @@
 		nameKey: string;
 		href: string;
 		startsWith?: boolean;
-		hideOnInternal?: boolean;
-		hideOnExternal?: boolean;
 	};
 
 	type NavigationGroup = {
 		nameKey: string;
 		links: NavigationLink[];
-		hideOnInternal?: boolean;
-		hideOnExternal?: boolean;
+		shouldShow?: () => boolean;
 	};
 
 	const navigationGroups: NavigationGroup[] = [
@@ -110,7 +107,7 @@
 		},
 		{
 			nameKey: 'nav.reconnectedCC',
-			hideOnExternal: true,
+			shouldShow: () => getSyncNode().id === "kromer",
 			links: [
 				{
 					icon: faShop,
@@ -132,7 +129,7 @@
 		},
 		{
 			nameKey: 'nav.internalEndpoints',
-			hideOnInternal: true,
+			shouldShow: () => (getSyncNode().internalKey ? true : false),
 			links: [
 				{
 					icon: faWallet,
@@ -165,36 +162,24 @@
 		}
 		return false;
 	}
-
-	const isInternal = SYNC_NODE_OFFICIAL.url === getSyncNode().url;
-	function shouldShow(hideInternal?: boolean, hideExternal?: boolean) {
-		if (isInternal && hideInternal) {
-			return false;
-		} else if (!isInternal && hideExternal) {
-			return false;
-		}
-		return true;
-	}
 </script>
 
 <nav>
 	<ul>
 		{#each navigationGroups as group (group.nameKey)}
-			{#if shouldShow(group.hideOnInternal, group.hideOnExternal)}
+			{#if group.shouldShow ? group.shouldShow() : true}
 				<li>
 					<h2>{$t$(group.nameKey)}</h2>
 					<ul>
 						{#each group.links as link (link.nameKey)}
-							{#if shouldShow(link.hideOnInternal, link.hideOnExternal)}
-								<li>
-									<a href={link.href} aria-current={isCurrent(link) ? 'page' : undefined}>
-										<div class="icon">
-											<FontAwesomeIcon icon={link.icon} />
-										</div>
-										{$t$(link.nameKey)}
-									</a>
-								</li>
-							{/if}
+							<li>
+								<a href={link.href} aria-current={isCurrent(link) ? 'page' : undefined}>
+									<div class="icon">
+										<FontAwesomeIcon icon={link.icon} />
+									</div>
+									{$t$(link.nameKey)}
+								</a>
+							</li>
 						{/each}
 					</ul>
 				</li>
