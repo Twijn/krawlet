@@ -22,6 +22,12 @@ export const SYNC_NODES: SyncNode[] = [
 		url: 'https://kromer.reconnected.cc/api/krist/'
 	},
 	{
+		id: 'beta',
+		official: true,
+		name: 'ReconnectedCC Beta',
+		url: 'https://kromerbeta.reconnected.cc/api/krist/'
+	},
+	{
 		id: 'herrkatze',
 		official: false,
 		name: 'HerrKatze.com',
@@ -30,7 +36,7 @@ export const SYNC_NODES: SyncNode[] = [
 	}
 ];
 
-export const SYNC_NODE_OFFICIAL: SyncNode = SYNC_NODES.find((x) => x.official)!;
+export const SYNC_NODE_OFFICIAL: SyncNode = SYNC_NODES[0];
 
 export function updateActiveNode(id: string) {
 	activeNode = id;
