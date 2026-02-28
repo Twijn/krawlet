@@ -18,12 +18,6 @@ export const SYNC_NODES: SyncNode[] = [
 	{
 		id: 'kromer',
 		official: true,
-		name: 'ReconnectedCC Kromer',
-		url: 'https://kromer.reconnected.cc/api/krist/'
-	},
-	{
-		id: 'beta',
-		official: true,
 		name: 'ReconnectedCC Beta',
 		url: 'https://kromerbeta.reconnected.cc/api/krist/'
 	},
