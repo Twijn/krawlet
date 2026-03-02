@@ -351,9 +351,6 @@ export default {
 		purchaseFailed: 'Error al comprar nombre: {message}',
 		purchaseCancelled: 'Compra de nombre cancelada.',
 		// Transfer name
-		transferWarning: '¡PELIGRO! ¡Lee esto!',
-		transferBugWarning:
-			'En este momento, esto transfiere <em>todos</em> los nombres que posees, en lugar de solo uno. <strong>Probablemente no deberías usar esta función hasta que se solucione.</strong>',
 		selectNameToTransfer: 'Debes seleccionar un nombre para transferir.',
 		invalidRecipientAddress: 'Debes ingresar una dirección válida.',
 		confirmTransfer: '¿Estás seguro de que quieres transferir el nombre {name} a {address}?',
@@ -363,8 +360,6 @@ export default {
 		noOwnedNames: '¡Esta dirección no posee ningún nombre!',
 		selectPrivateKeyHint: 'Selecciona una clave privada arriba para ver los nombres disponibles.',
 		// Update name
-		updateWarning:
-			'Los datos del registro "A" no son devueltos actualmente por la API de Kromer. Este endpoint es inútil.',
 		selectNameToUpdate: 'Debes seleccionar un nombre para actualizar.',
 		confirmUpdate: '¿Estás seguro de que quieres actualizar los datos de {name} a {data}?',
 		updateButton: 'Actualizar Nombre',

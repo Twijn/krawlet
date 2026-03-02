@@ -366,9 +366,6 @@ export default {
 		purchaseFailed: 'Failed to purchase name: {message}',
 		purchaseCancelled: 'Name purchase cancelled.',
 		// Transfer name
-		transferWarning: 'DANGER! Read me!',
-		transferBugWarning:
-			'At this time, this transfers <em>all</em> of the names you own, rather than just the single one. <strong>You should probably not use this feature until this is patched.</strong>',
 		selectNameToTransfer: 'You must select a name to transfer.',
 		invalidRecipientAddress: 'You must enter a valid address.',
 		confirmTransfer: 'Are you sure you want to transfer the name {name} to {address}?',
@@ -378,8 +375,6 @@ export default {
 		noOwnedNames: "This address doesn't own any names!",
 		selectPrivateKeyHint: 'Select a private key above to see available names.',
 		// Update name
-		updateWarning:
-			'"A" record data is not currently returned by the Kromer API. This endpoint is useless.',
 		selectNameToUpdate: 'You must select a name to update.',
 		confirmUpdate: 'Are you sure you want to update the data for {name} to {data}?',
 		updateButton: 'Update Name',

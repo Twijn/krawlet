@@ -1048,12 +1048,6 @@
 		color: var(--text-color-1);
 	}
 
-	.summary-value small {
-		font-size: 0.7rem;
-		color: var(--text-color-2);
-		font-weight: 400;
-	}
-
 	.summary-value .unit-inline {
 		font-size: 0.7rem;
 		color: var(--text-color-2);

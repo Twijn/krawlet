@@ -105,9 +105,6 @@
 <Section {lgCols} {mdCols} {smCols}>
 	<h2><FontAwesomeIcon icon={faPenToSquare} /> {$t$('name.updateName')}</h2>
 	<form method="POST">
-		<Alert variant="danger">
-			{$t$('name.updateWarning')}
-		</Alert>
 		<ModuleLoading {loading} absolute />
 		<AddressSelector
 			mode="privatekey"

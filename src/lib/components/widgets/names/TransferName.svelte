@@ -106,13 +106,6 @@
 	<h2><FontAwesomeIcon icon={faUpDownLeftRight} /> {$t$('name.transferName')}</h2>
 	<form method="POST">
 		<ModuleLoading {loading} absolute />
-		<Alert variant="danger">
-			<strong>{$t$('name.transferWarning')}</strong>
-			<p>
-				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-				{@html $t$('name.transferBugWarning')}
-			</p>
-		</Alert>
 		<AddressSelector
 			mode="privatekey"
 			label={$t$('address.address')}
