@@ -21,6 +21,7 @@
 	import { addWalletModal } from '$lib/stores/addWalletModal';
 	import { editWalletModal } from '$lib/stores/editWalletModal';
 	import { goto } from '$app/navigation';
+	import { formatCurrency } from '$lib/util';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -41,15 +42,6 @@
 		compact?: boolean;
 		limit?: number;
 	} = $props();
-
-	function formatBalance(balance: number) {
-		if (!browser) return '0.00';
-
-		return balance.toLocaleString(navigator.language, {
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 2
-		});
-	}
 
 	let balances: Record<string, number> = $state({});
 	let loading: boolean = $state(false);
@@ -276,7 +268,7 @@
 			<div class="total-section" transition:fade>
 				<p class="total">
 					<strong>{$t$('wallet.totalBalance')}: </strong>
-					<span class="total-amount">{formatBalance(totalBalance)}</span>
+					<span class="total-amount">{formatCurrency(totalBalance)}</span>
 					<small>KRO</small>
 				</p>
 			</div>

@@ -15,7 +15,7 @@
 		faSign,
 		faWallet
 	} from '@fortawesome/free-solid-svg-icons';
-	import { getSyncNode, SYNC_NODE_OFFICIAL } from '$lib/consts';
+	import { getSyncNode } from '$lib/consts';
 	import { t$ } from '$lib/i18n';
 
 	type NavigationLink = {
@@ -107,7 +107,7 @@
 		},
 		{
 			nameKey: 'nav.reconnectedCC',
-			shouldShow: () => getSyncNode().id === "kromer",
+			shouldShow: () => getSyncNode().id === 'kromer',
 			links: [
 				{
 					icon: faShop,

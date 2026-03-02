@@ -9,6 +9,7 @@
 	import type { APIError } from 'kromer';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import AddressSelector from '$lib/components/widgets/addresses/AddressSelector.svelte';
+	import { formatCurrency } from '$lib/util';
 
 	let refundFromAddress: string = $state('');
 	let privateKey = $state('');
@@ -131,7 +132,7 @@
 					</div>
 					<div class="detail-row">
 						<span class="detail-label">{$t$('refund.originalAmount')}</span>
-						<span class="detail-value amount">{transaction.value.toFixed(2)} KRO</span>
+						<span class="detail-value amount">{formatCurrency(transaction.value)} KRO</span>
 					</div>
 					{#if transaction.from}
 						<div class="detail-row">
@@ -190,17 +191,17 @@
 						type="number"
 						min="0"
 						max={transaction.value}
-						step="0.01"
+						step="0.00001"
 						bind:value={refundAmount}
 						required
 					/>
-					<small>{$t$('common.maximum')}: {transaction.value.toFixed(2)} KRO</small>
+					<small>{$t$('common.maximum')}: {formatCurrency(transaction.value)} KRO</small>
 				</label>
 			{/if}
 
 			<div class="calculated-refund">
 				<strong>{$t$('refund.refundAmount')}:</strong>
-				<span class="amount">{calculatedRefund.toFixed(2)} KRO</span>
+				<span class="amount">{formatCurrency(calculatedRefund)} KRO</span>
 			</div>
 
 			<label>
@@ -293,27 +294,6 @@
 		gap: 1rem;
 	}
 
-	.text-button {
-		background: none;
-		border: none;
-		color: rgb(var(--theme-color-rgb));
-		font-size: 0.9375rem;
-		font-weight: 500;
-		padding: 0.5rem;
-		cursor: pointer;
-		text-align: center;
-		text-decoration: underline;
-		transition: opacity 0.2s ease;
-	}
-
-	.text-button:hover {
-		opacity: 0.8;
-	}
-
-	.text-button:active {
-		opacity: 0.6;
-	}
-
 	label {
 		display: flex;
 		flex-direction: column;
@@ -337,24 +317,10 @@
 		border-color: var(--theme-color);
 	}
 
-	input.error {
-		border-color: #ff4444;
-		background: rgba(255, 68, 68, 0.1);
-	}
-
-	input.error:focus {
-		border-color: #ff6666;
-	}
-
 	small {
 		font-size: 0.875rem;
 		color: var(--text-color-2);
 		font-weight: normal;
-	}
-
-	small.error-message {
-		color: #ff6666;
-		font-weight: 500;
 	}
 
 	.mode-selector {

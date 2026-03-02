@@ -15,6 +15,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import krawlet from '$lib/api/krawlet';
+	import { formatCurrency } from '$lib/util';
 
 	type MetadataMode = 'player' | 'message' | 'actions' | 'refund' | 'raw';
 	type MessageType = 'message' | 'error';
@@ -466,12 +467,12 @@
 					<div class="action-fee-notice">
 						<div class="fee-info">
 							<span class="fee-label">{$t$('transaction.metadataModes.fee')}</span>
-							<span class="fee-amount">{selectedAction.fee.toFixed(2)} KRO</span>
+							<span class="fee-amount">{formatCurrency(selectedAction.fee)} KRO</span>
 						</div>
 						<small
 							>{$t$('transaction.metadataModes.actionNotice', {
 								address: selectedAction.targetAddress,
-								amount: selectedAction.fee.toFixed(2)
+								amount: formatCurrency(selectedAction.fee)
 							})}</small
 						>
 					</div>
@@ -579,7 +580,7 @@
 						type="number"
 						bind:value={refundOriginalAmount}
 						placeholder="0.00"
-						step="0.01"
+						step="0.00001"
 						min="0"
 						disabled={lock}
 					/>

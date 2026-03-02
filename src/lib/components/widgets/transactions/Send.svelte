@@ -19,6 +19,7 @@
 	import { t$ } from '$lib/i18n';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import { formatCurrency } from '$lib/util';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -114,7 +115,7 @@
 			const targetAddress = metadataOverrideAddress || toAddress;
 			confirm.confirm({
 				message: $t$('transaction.confirmSend', {
-					amount: effectiveAmount.toFixed(2),
+					amount: formatCurrency(effectiveAmount),
 					address: targetAddress
 				}),
 				confirmButtonLabel: $t$('transaction.sendButton'),
@@ -203,7 +204,7 @@
 					name="amount"
 					min="0.01"
 					max={fieldsLocked ? undefined : (balances[fromAddress] ?? undefined)}
-					step="0.01"
+					step="0.00001"
 					value={fieldsLocked ? effectiveAmount : amount.value}
 					oninput={(e) => !fieldsLocked && (amount.value = Number(e.currentTarget.value))}
 					disabled={fieldsLocked}

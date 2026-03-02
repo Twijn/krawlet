@@ -22,6 +22,7 @@
 	import kromer from '$lib/api/kromer';
 	import type { Transaction } from 'kromer';
 	import { withRateLimitRetry, batchDelay } from '$lib/utils/rateLimit';
+	import { formatCurrency } from '$lib/util';
 
 	type WalletStats = {
 		totalSent: number;
@@ -294,17 +295,14 @@
 
 	function formatBalance(bal: number) {
 		if (!browser) return '0.00';
-		return bal.toLocaleString(navigator.language, {
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 2
-		});
+		return formatCurrency(bal);
 	}
 
 	function formatCompact(num: number) {
 		if (!browser) return '0.00';
-		if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
-		if (num >= 1000) return (num / 1000).toFixed(2) + 'K';
-		return num.toFixed(2);
+		if (num >= 1000000) return formatCurrency(num / 1000000, 2) + 'M';
+		if (num >= 1000) return formatCurrency(num / 1000, 2) + 'K';
+		return formatCurrency(num, 3);
 	}
 
 	function copyAddress() {

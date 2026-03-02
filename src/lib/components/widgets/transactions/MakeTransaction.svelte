@@ -11,6 +11,7 @@
 	import { confirm } from '$lib/stores/confirm';
 	import PrivateKeyInputMethod from '$lib/components/form/privatekey/PrivateKeyInputMethod.svelte';
 	import AddressInputMethod from '$lib/components/form/address/AddressInputMethod.svelte';
+	import { formatCurrency } from '$lib/util';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -79,7 +80,7 @@
 		e.preventDefault();
 
 		confirm.confirm({
-			message: `Are you sure you want to send ${amount.value.toFixed(2)} KRO to ${toAddress?.address}?`,
+			message: `Are you sure you want to send ${formatCurrency(amount.value)} KRO to ${toAddress?.address}?`,
 			confirmButtonLabel: 'Send',
 			confirm: async () => {
 				if (!fromAddress) {
@@ -126,7 +127,7 @@
 	};
 
 	const copyPayCommand = () => {
-		let command = `/pay ${toAddress?.address ?? ''} ${Math.round(amount.value * 100) / 100}`;
+		let command = `/pay ${toAddress?.address ?? ''} ${formatCurrency(amount.value)}`;
 		if (metadata.value && metadata.value.length > 0) {
 			command += ` ${metadata.value}`;
 		}
@@ -179,7 +180,7 @@
 					type="number"
 					min="0"
 					max={fromAddress?.balance ?? 0}
-					step="0.01"
+					step="0.00001"
 					disabled={amountEa.value > 0}
 					bind:value={amount.value}
 				/>
@@ -212,7 +213,7 @@
 			>
 				Send
 				{#if amount.value > 0}
-					{amount.value.toFixed(2)} KRO
+					{formatCurrency(amount.value)} KRO
 				{/if}
 			</Button>
 		</div>

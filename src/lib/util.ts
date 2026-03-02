@@ -58,8 +58,9 @@ export const relativeTime = (date: Date): string => {
  * @example
  * formatCurrency(1000000); // "1,000,000.00" (in en-US locale)
  */
-export const formatCurrency = (balance: number): string => {
+export const formatCurrency = (balance: number, maxPrecision?: number): string => {
 	return Number(balance).toLocaleString(undefined, {
-		minimumFractionDigits: 2
+		minimumFractionDigits: 2,
+		maximumFractionDigits: maxPrecision ?? 5
 	});
 };

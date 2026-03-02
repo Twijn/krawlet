@@ -4,6 +4,7 @@
 	import type { Address } from 'kromer';
 	import RawPrivateKeyInput from '$lib/components/form/privatekey/RawPrivateKeyInput.svelte';
 	import SavedWalletSelector from '$lib/components/form/privatekey/SavedWalletSelector.svelte';
+	import { formatCurrency } from '$lib/util';
 
 	let {
 		loading = $bindable(),
@@ -57,7 +58,9 @@
 {#if address}
 	{#if address.balance >= minimumBalance}
 		<small class="success"
-			>Authentication successful! Logged in as {address.address} with {address.balance.toFixed(2)}
+			>Authentication successful! Logged in as {address.address} with {formatCurrency(
+				address.balance
+			)}
 			KRO</small
 		>
 	{:else}

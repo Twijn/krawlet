@@ -215,7 +215,7 @@
 			{@const payout = Number(entry.value)}
 			{#if name === 'payout' && !isNaN(payout) && payout > 0}
 				<span class="comp comp-payout">
-					{payout.toFixed(2)} <small>KRO</small>
+					{formatCurrency(payout)} <small>KRO</small>
 				</span>
 			{:else}
 				<span
