@@ -24,6 +24,7 @@
 	import { contextMenu } from '$lib/stores/contextMenu';
 	import { t$ } from '$lib/i18n';
 	import type { ContextMenuItem } from '$lib/components/ui/ContextMenu.svelte';
+	import { getMinecraftAvatar } from '$lib/util';
 
 	let {
 		address = $bindable(),
@@ -146,7 +147,7 @@
 		{verifiedEntry.name}
 	{:else if player && $settings.replaceAddressesWithPlayer}
 		<img
-			src="https://api.mineatar.io/face/{player.minecraftUUID}"
+			src={getMinecraftAvatar(player.minecraftUUID)}
 			alt="Avatar for {player.minecraftName}"
 		/>
 		{player.minecraftName}

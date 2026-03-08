@@ -16,7 +16,7 @@
 		faExternalLinkAlt,
 		faMapMarkerAlt
 	} from '@fortawesome/free-solid-svg-icons';
-	import { relativeTime, formatCurrency } from '$lib/util';
+	import { relativeTime, formatCurrency, getMinecraftAvatar } from '$lib/util';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import kromer from '$lib/api/kromer.js';
 	import type { Transaction, TransactionMetadataEntry } from 'kromer';
@@ -327,7 +327,7 @@
 					{#if userUuidMeta?.value}
 						<img
 							class="player-avatar-large"
-							src="https://api.mineatar.io/face/{userUuidMeta.value}"
+							src={getMinecraftAvatar(userUuidMeta.value, 128)}
 							alt="Player avatar"
 						/>
 					{/if}

@@ -9,7 +9,7 @@
 	import type { Listing } from '$lib/types/shops';
 	import settings from '$lib/stores/settings';
 	import { onMount } from 'svelte';
-	import { formatCurrency, relativeTime } from '$lib/util';
+	import { formatCurrency, getMinecraftAvatar, relativeTime } from '$lib/util';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faRotateLeft, faArrowRight, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 	import { t$ } from '$lib/i18n';
@@ -192,7 +192,7 @@
 			{#if userUuidMeta?.value}
 				<img
 					class="player-avatar"
-					src="https://api.mineatar.io/face/{userUuidMeta.value}"
+					src={getMinecraftAvatar(userUuidMeta.value)}
 					alt="Player avatar"
 				/>
 			{/if}

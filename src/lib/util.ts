@@ -49,14 +49,10 @@ export const relativeTime = (date: Date): string => {
  * Uses the user's locale for number formatting (thousands separators, etc.)
  * and ensures a minimum of 2 decimal places.
  *
- * @param {number} balance - The number to format as currency
- * @returns {string} The formatted currency string (without currency symbol)
- *
- * @example
  * formatCurrency(1234.5); // "1,234.50" (in en-US locale)
  *
- * @example
- * formatCurrency(1000000); // "1,000,000.00" (in en-US locale)
+ * @param {number} balance - The number to format as currency
+ * @returns {string} The formatted currency string (without currency symbol)
  */
 export const formatCurrency = (balance: number, maxPrecision?: number): string => {
 	return Number(balance).toLocaleString(undefined, {
@@ -64,3 +60,14 @@ export const formatCurrency = (balance: number, maxPrecision?: number): string =
 		maximumFractionDigits: maxPrecision ?? 5
 	});
 };
+
+/**
+ * Generates a URL for a Minecraft avatar image based on the username and size.
+ *
+ * @param {string} user - The Minecraft username
+ * @param {number} [size=64] - The size of the avatar image (default is 64)
+ * @returns {string} The URL of the Minecraft avatar image
+ */
+export const getMinecraftAvatar = (user: string, size: number = 64): string => {
+	return `https://mc-heads.net/avatar/${encodeURIComponent(user.replace("-", ""))}/${encodeURIComponent(size)}.png`;
+}

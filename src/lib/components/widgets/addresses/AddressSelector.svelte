@@ -4,7 +4,7 @@
 	import type { Wallet } from '$lib/stores/settings';
 	import settings from '$lib/stores/settings';
 	import AddressComp from './Address.svelte';
-	import { formatCurrency } from '$lib/util';
+	import { formatCurrency, getMinecraftAvatar } from '$lib/util';
 	import kromer from '$lib/api/kromer';
 	import ModuleLoading from '../other/ModuleLoading.svelte';
 	import {
@@ -365,7 +365,7 @@
 							ontouchend={() => setAddress(addr)}
 						>
 							<img
-								src="https://api.mineatar.io/face/{addr.minecraftUUID}"
+								src={getMinecraftAvatar(addr.minecraftUUID)}
 								alt="Avatar for {addr.minecraftName}"
 							/>
 							<span class="bold-500">{addr.minecraftName}</span>
