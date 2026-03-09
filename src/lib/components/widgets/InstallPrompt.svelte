@@ -1,12 +1,3 @@
-<!--
-  @component InstallPrompt
-
-  A banner component that prompts users to install the PWA.
-  Appears when the browser fires beforeinstallprompt event.
-
-  @example
-  <InstallPrompt />
--->
 <script lang="ts">
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faDownload, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -52,6 +43,7 @@
 		</div>
 		<div class="install-actions">
 			<Button
+				variant="primary"
 				onClick={() => {
 					handleInstall();
 				}}

@@ -1,37 +1,24 @@
-<!--
-  @component Button
-
-  A versatile button component supporting multiple variants and states.
-
-  @prop {'primary' | 'secondary' | 'success' | 'error'} variant - Visual style
-  @prop {boolean} disabled - Disables the button
-  @prop {boolean} full - Makes button full width
-  @prop {string} href - If provided, renders as an anchor tag
-  @prop {boolean} newTab - Opens link in new tab (when href is set)
-  @prop {boolean} external - Marks link as external
-  @prop {string} type - Button type ('button' | 'submit' | 'reset')
-  @prop {string} title - Tooltip text
-  @prop {boolean} loading - Shows loading state
-  @prop {(e: Event) => void} onClick - Click handler
-
-  @example
-  <Button variant="primary" onClick={handleClick}>Submit</Button>
-  <Button href="/settings" variant="secondary">Settings</Button>
--->
 <script lang="ts">
-	export let href: string | undefined = undefined;
-	export let newTab: boolean = false;
-	export let variant: 'primary' | 'secondary' | 'success' | 'error' = 'primary';
-	export let size: 'small' | 'medium' | 'large' = 'medium';
-	export let onClick: ((e: Event) => void | boolean | Promise<boolean>) | undefined = undefined;
-	export let full: boolean = false;
-	export let type: 'button' | 'submit' | 'reset' = 'button';
-	export let disabled: boolean = false;
-	export let external: boolean = false;
-	export let title: string | undefined = undefined;
-	export let loading: boolean = false;
+	import type { ButtonProps } from "./Button";
+	import { t$ } from '$lib/i18n';
 
-	$: isDisabled = disabled || loading;
+	const {
+		href,
+		newTab = false,
+		variant = 'primary',
+		size = 'medium',
+		onClick,
+		full = false,
+		type = 'button',
+		external = false,
+		tk,
+		title,
+		disabled = $bindable(false),
+		loading = $bindable(false),
+		children,
+	}: ButtonProps = $props();
+
+	const isDisabled = $derived(disabled || loading);
 
 	function handleClick(e: Event) {
 		if (isDisabled) {
@@ -49,8 +36,8 @@
 		{href}
 		class="button {variant} {size}"
 		class:disabled={isDisabled}
-		class:full
-		class:loading
+		class:full={full}
+		class:loading={loading}
 		target={newTab ? '_blank' : undefined}
 		rel={external || newTab ? 'noopener noreferrer' : undefined}
 		{title}
@@ -58,21 +45,29 @@
 		aria-disabled={isDisabled}
 		aria-busy={loading}
 	>
-		<slot />
+		{#if tk}
+			{$t$(tk)}
+		{:else if children}
+			{@render children()}
+		{/if}
 	</a>
 {:else}
 	<button
 		onclick={handleClick}
 		{type}
 		class="button {variant} {size}"
-		class:loading
+		class:loading={loading}
 		disabled={isDisabled}
-		class:full
+		class:full={full}
 		aria-disabled={isDisabled}
 		aria-busy={loading}
 		{title}
 	>
-		<slot />
+		{#if tk}
+			{$t$(tk)}
+		{:else if children}
+			{@render children()}
+		{/if}
 	</button>
 {/if}
 

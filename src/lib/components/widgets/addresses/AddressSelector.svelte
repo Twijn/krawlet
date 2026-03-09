@@ -19,9 +19,9 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import type { Address } from 'kromer';
 	import { notifications } from '$lib/stores/notifications';
-	import { prompt } from '$lib/stores/prompt';
-	import { onMount } from 'svelte';
 	import { getSyncNode } from '$lib/consts';
+	import { masterPasswordStore } from '$lib/stores/masterPassword';
+	import { onMount } from 'svelte';
 
 	const NAME_REGEX = /^(\w+@)?(\w+)\.kro$/;
 	const ADDRESS_REGEX = /k[a-z0-9]{9}/;
@@ -103,38 +103,24 @@
 
 	function setAddress(addr: Addr | Address, setQuery: boolean = true) {
 		if (mode === 'privatekey' && 'private' in addr) {
-			prompt
-				.prompt({
-					type: 'password',
-					message: 'Enter your master password to decrypt your private keys.',
-					inputLabel: 'Master Password',
-					confirmButtonLabel: 'Authorize',
-					cancelButtonLabel: 'Cancel',
-					validate: async (value) => {
-						try {
-							if (await settings.decryptWallet(addr, value)) {
-								return [];
-							}
-							return ['Invalid master password!'];
-						} catch (e) {
-							console.error(e);
-							return ['An unknown error occurred!'];
-						}
+			masterPasswordStore.get().then(async (password) => {
+				const decrypted = await settings.decryptWallet(addr, password);
+				if (decrypted) {
+					privatekey = decrypted;
+					selected = addr;
+					address = getAddress(addr);
+					if (setQuery) {
+						query = address;
 					}
-				})
-				.then(async (result) => {
-					if (result) {
-						const decrypted = await settings.decryptWallet(addr, result);
-						if (decrypted) {
-							privatekey = decrypted;
-							selected = addr;
-							address = getAddress(addr);
-							if (setQuery) {
-								query = address;
-							}
-						}
-					}
-				});
+				}
+			}, (err) => {
+				console.error(err);
+				if (err?.message) {
+					notifications.error(err.message);
+				} else {
+					notifications.error('Failed to retrieve master password!');
+				}
+			});
 		} else {
 			selected = addr;
 			address = getAddress(addr);

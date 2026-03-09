@@ -57,7 +57,7 @@ export const relativeTime = (date: Date): string => {
 export const formatCurrency = (balance: number, maxPrecision?: number): string => {
 	return Number(balance).toLocaleString(undefined, {
 		minimumFractionDigits: 2,
-		maximumFractionDigits: maxPrecision ?? 5
+		maximumFractionDigits: maxPrecision ?? 2
 	});
 };
 

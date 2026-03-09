@@ -33,6 +33,7 @@
 	import { websocket } from '$lib/stores/websocket';
 	import { contextMenu } from '$lib/stores/contextMenu';
 	import { initLocale, t$ } from '$lib/i18n';
+	import MasterPasswordModal from '$lib/components/dialogs/MasterPasswordModal.svelte';
 
 	config.autoAddCss = false;
 
@@ -163,6 +164,7 @@
 	visible={$contextMenu.visible}
 	onClose={contextMenu.hide}
 />
+<MasterPasswordModal />
 
 {#if !$isOnline}
 	<div class="offline-banner" role="alert" aria-live="assertive">

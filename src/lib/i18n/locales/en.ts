@@ -107,6 +107,8 @@ export default {
 		walletDeleted: 'Wallet deleted successfully',
 		selectWallet: 'Select Wallet',
 		masterPassword: 'Master Password',
+		masterPasswordDescription: 'Enter your master password to unlock your wallets.',
+		rememberPassword: 'Remember password for this session',
 		confirmPassword: 'Confirm Password',
 		passwordMismatch: 'Passwords do not match',
 		invalidPassword: 'Invalid password',

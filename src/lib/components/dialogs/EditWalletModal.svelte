@@ -7,11 +7,10 @@
 	import { faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
-	import { prompt } from '$lib/stores/prompt';
 	import settings from '$lib/stores/settings';
+	import { masterPasswordStore } from '$lib/stores/masterPassword';
 
 	let name = $state('');
-	let submitting = $state(false);
 	let originalWallet = $state($editWalletModal.wallet);
 
 	// Watch for modal open and initialize values
@@ -22,15 +21,11 @@
 		}
 	});
 
-	async function handleSubmit(e: Event) {
-		e.preventDefault();
-
+	async function onSubmit() {
 		if (!originalWallet) {
 			notifications.error($t$('common.error'));
-			return false;
+			return;
 		}
-
-		submitting = true;
 
 		try {
 			// Update wallet name
@@ -51,14 +46,10 @@
 		} catch (e) {
 			const err = e as Error;
 			notifications.error(err.message ?? 'Unknown Error!');
-		} finally {
-			submitting = false;
 		}
-
-		return false;
 	}
 
-	function handleClose() {
+	function onClose() {
 		if (originalWallet && name !== originalWallet.name) {
 			confirm.confirm({
 				message: $t$('wallet.confirmCloseWithData'),
@@ -78,40 +69,32 @@
 	async function handleCopyPrivateKey() {
 		if (!originalWallet) return;
 
-		prompt.prompt({
-			type: 'password',
-			message: $t$('wallet.confirmCopyPrivateKey'),
-			inputLabel: $t$('wallet.masterPassword'),
-			danger: true,
-			confirmButtonLabel: $t$('wallet.copyPrivateKey'),
-			validate: async (password: string) => {
-				if (password.length < 8) {
-					return [$t$('wallet.masterPasswordMinLength')];
-				}
-				const isValid = await settings.validateMasterPassword(password);
-				if (!isValid) {
-					return [$t$('wallet.invalidPassword')];
-				}
-				return [];
-			},
-			confirm: async (password: string) => {
-				try {
-					const privateKey = await settings.decryptWallet(originalWallet, password);
-					if (!privateKey) {
-						notifications.error($t$('wallet.privateKeyCopyError'));
-						return;
-					}
-					await navigator.clipboard.writeText(privateKey);
-					notifications.success($t$('wallet.privateKeyCopied'));
-				} catch {
-					notifications.error($t$('wallet.privateKeyCopyError'));
-				}
+		masterPasswordStore.get().then(async (password) => {
+			if (!originalWallet) {
+				notifications.error($t$('common.error'));
+				return;
 			}
+			try {
+				const privateKey = await settings.decryptWallet(originalWallet, password);
+				if (!privateKey) {
+					notifications.error($t$('wallet.privateKeyCopyError'));
+					return;
+				}
+				await navigator.clipboard.writeText(privateKey);
+				notifications.success($t$('wallet.privateKeyCopied'));
+			} catch {
+				notifications.error($t$('wallet.privateKeyCopyError'));
+			}
+		}).catch(() => {
+			notifications.error($t$('wallet.invalidPassword'));
 		});
 	}
 
 	function handleDeleteWallet() {
-		if (!originalWallet) return;
+		if (!originalWallet) {
+			notifications.error($t$('common.error'));
+			return;
+		}
 
 		confirm.confirm({
 			message: t('wallet.confirmDelete', {
@@ -121,6 +104,11 @@
 			danger: true,
 			confirmButtonLabel: t('common.delete'),
 			confirm: () => {
+				if (!originalWallet) {
+					notifications.error($t$('common.error'));
+					return;
+				}
+
 				settings.removeWallet(originalWallet.address);
 				notifications.success(
 					t('wallet.deleteSuccess', { name: originalWallet.name, address: originalWallet.address })
@@ -131,58 +119,37 @@
 	}
 </script>
 
-<Modal open={$editWalletModal.open} title={$t$('wallet.editWallet')} onClose={handleClose}>
-	<form method="POST" onsubmit={handleSubmit}>
-		<label>
-			{$t$('name.name')}
-			<input type="text" name="name" bind:value={name} required autocomplete="off" />
-			<small>{$t$('wallet.nameHint')}</small>
-		</label>
+<Modal
+	open={$editWalletModal.open}
+	tt="wallet.editWallet"
+	confirmButtonOverrides={{ tk: 'common.save' }}
+	{onSubmit} {onClose}>
+	<label>
+		{$t$('name.name')}
+		<input type="text" name="name" bind:value={name} required autocomplete="off" />
+		<small>{$t$('wallet.nameHint')}</small>
+	</label>
 
-		{#if originalWallet}
-			<div class="wallet-info">
-				<strong>{$t$('wallet.address')}:</strong>
-				<code>{originalWallet.address}</code>
-			</div>
-		{/if}
-
-		<div class="button-group">
-			<Button type="button" onClick={handleCopyPrivateKey} variant="secondary">
-				<FontAwesomeIcon icon={faCopy} />
-				{$t$('wallet.copyPrivateKey')}
-			</Button>
-			<Button type="button" onClick={handleDeleteWallet} variant="error">
-				<FontAwesomeIcon icon={faTrash} />
-				{$t$('wallet.deleteWallet')}
-			</Button>
+	{#if originalWallet}
+		<div class="wallet-info">
+			<strong>{$t$('wallet.address')}:</strong>
+			<code>{originalWallet.address}</code>
 		</div>
+	{/if}
 
-		<div class="modal-buttons">
-			<Button type="button" variant="secondary" onClick={handleClose}>
-				{$t$('common.cancel')}
-			</Button>
-			<Button type="submit" variant="primary" disabled={submitting}>
-				{submitting ? $t$('common.loading') : $t$('common.save')}
-			</Button>
-		</div>
-	</form>
+	<div class="button-group">
+		<Button type="button" onClick={handleCopyPrivateKey} variant="secondary">
+			<FontAwesomeIcon icon={faCopy} />
+			{$t$('wallet.copyPrivateKey')}
+		</Button>
+		<Button type="button" onClick={handleDeleteWallet} variant="error">
+			<FontAwesomeIcon icon={faTrash} />
+			{$t$('wallet.deleteWallet')}
+		</Button>
+	</div>
 </Modal>
 
 <style>
-	form {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	label {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		color: var(--text-color-1);
-		font-weight: 500;
-	}
-
 	input {
 		padding: 0.75rem;
 		border: 1px solid rgba(255, 255, 255, 0.2);
@@ -228,12 +195,5 @@
 		grid-template-columns: 1fr 1fr;
 		gap: 0.75rem;
 		margin-bottom: 0.5rem;
-	}
-
-	.modal-buttons {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 0.75rem;
-		margin-top: 0.5rem;
 	}
 </style>

@@ -105,6 +105,8 @@ export default {
 		walletDeleted: 'Billetera eliminada exitosamente',
 		selectWallet: 'Seleccionar Billetera',
 		masterPassword: 'Contraseña Maestra',
+		masterPasswordDescription: 'Ingresa tu contraseña maestra para desbloquear tus billeteras.',
+		rememberPassword: 'Recordar contraseña para esta sesión',
 		confirmPassword: 'Confirmar Contraseña',
 		passwordMismatch: 'Las contraseñas no coinciden',
 		invalidPassword: 'Contraseña inválida',

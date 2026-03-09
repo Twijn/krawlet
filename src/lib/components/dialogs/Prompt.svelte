@@ -148,10 +148,6 @@
 		gap: 0.5rem;
 	}
 
-	label {
-		margin: 0.75em 0;
-	}
-
 	p {
 		margin-top: 0;
 	}

@@ -206,6 +206,7 @@
 				Copy /pay Command
 			</Button>
 			<Button
+				variant="primary"
 				type="submit"
 				full={true}
 				disabled={!fromAddress || !toAddress || amount.value === 0}

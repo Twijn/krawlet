@@ -14,7 +14,6 @@
 	let masterPassword = $state('');
 	let name = $state('');
 	let pkey = $state('');
-	let submitting = $state(false);
 
 	let decodedAddress = $derived(
 		pkey.length === 0 ? '' : kromer.addresses.decodeAddressFromPrivateKey(pkey)
@@ -59,15 +58,11 @@
 		}
 	}
 
-	async function handleSubmit(e: Event) {
-		e.preventDefault();
-
+	async function onSubmit() {
 		if (masterPassword.length < 8) {
 			notifications.error($t$('wallet.masterPasswordMinLength'));
-			return false;
+			return;
 		}
-
-		submitting = true;
 
 		try {
 			const address = kromer.addresses.decodeAddressFromPrivateKey(pkey);
@@ -98,14 +93,10 @@
 		} catch (e) {
 			const err = e as APIError;
 			notifications.error(err.message ?? 'Unknown Error!');
-		} finally {
-			submitting = false;
 		}
-
-		return false;
 	}
 
-	function handleClose() {
+	function onClose() {
 		if (pkey.length > 0 || name.length > 0) {
 			confirm.confirm({
 				message: $t$('wallet.confirmCloseWithData'),
@@ -125,82 +116,61 @@
 	}
 </script>
 
-<Modal open={$addWalletModal.open} title={$t$('wallet.newWallet')} onClose={handleClose}>
-	<form method="POST" onsubmit={handleSubmit}>
-		<label>
-			{$t$('wallet.masterPassword')}
-			<input
-				id="masterPassword"
-				type="password"
-				name="masterPassword"
-				bind:value={masterPassword}
-				required
-				autocomplete="new-password"
-			/>
-			<small>
-				{#if $settings.wallets.length > 0}
-					{$t$('wallet.masterPasswordSameHint')}
-				{/if}
-				{$t$('wallet.masterPasswordHint')}
-			</small>
-		</label>
+<Modal
+	open={$addWalletModal.open}
+	tt="wallet.newWallet"
+	confirmButtonOverrides={{ tk: 'wallet.addWallet' }}
+	{onSubmit} {onClose}>
+	<label>
+		{$t$('wallet.masterPassword')}
+		<input
+			id="masterPassword"
+			type="password"
+			name="masterPassword"
+			bind:value={masterPassword}
+			required
+			autocomplete="new-password"
+		/>
+		<small>
+			{#if $settings.wallets.length > 0}
+				{$t$('wallet.masterPasswordSameHint')}
+			{/if}
+			{$t$('wallet.masterPasswordHint')}
+		</small>
+	</label>
 
-		<label>
-			{$t$('name.name')}
-			<input type="text" name="name" bind:value={name} required autocomplete="off" />
-			<small>{$t$('wallet.nameHint')}</small>
-		</label>
+	<label>
+		{$t$('name.name')}
+		<input type="text" name="name" bind:value={name} required autocomplete="off" />
+		<small>{$t$('wallet.nameHint')}</small>
+	</label>
 
-		<label>
-			{$t$('wallet.privateKey')}
-			<input type="password" name="pkey" bind:value={pkey} required autocomplete="off" />
-			<small>{$t$('wallet.privateKeyHint')}</small>
-		</label>
+	<label>
+		{$t$('wallet.privateKey')}
+		<input type="password" name="pkey" bind:value={pkey} required autocomplete="off" />
+		<small>{$t$('wallet.privateKeyHint')}</small>
+	</label>
 
-		<div class="button-group">
-			<Button type="button" full={true} onClick={handlePrivateKeyButton} variant="secondary">
-				<FontAwesomeIcon icon={faDice} />
-				{#if pkey.length > 0}
-					{$t$('wallet.clearPrivateKey')}
-				{:else}
-					{$t$('wallet.generatePrivateKey')}
-				{/if}
-			</Button>
+	<div class="button-group">
+		<Button type="button" full={true} onClick={handlePrivateKeyButton} variant="secondary">
+			<FontAwesomeIcon icon={faDice} />
+			{#if pkey.length > 0}
+				{$t$('wallet.clearPrivateKey')}
+			{:else}
+				{$t$('wallet.generatePrivateKey')}
+			{/if}
+		</Button>
+	</div>
+
+	{#if decodedAddress.length === 10}
+		<div class="decoded-address">
+			<strong>{$t$('wallet.decodedAddress')}:</strong>
+			{decodedAddress}
 		</div>
-
-		{#if decodedAddress.length === 10}
-			<div class="decoded-address">
-				<strong>{$t$('wallet.decodedAddress')}:</strong>
-				{decodedAddress}
-			</div>
-		{/if}
-
-		<div class="modal-buttons">
-			<Button type="button" variant="secondary" onClick={handleClose}>
-				{$t$('common.cancel')}
-			</Button>
-			<Button type="submit" variant="primary" disabled={submitting}>
-				{submitting ? $t$('common.loading') : $t$('wallet.addWallet')}
-			</Button>
-		</div>
-	</form>
+	{/if}
 </Modal>
 
 <style>
-	form {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	label {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		color: var(--text-color-1);
-		font-weight: 500;
-	}
-
 	input {
 		padding: 0.75rem;
 		border: 1px solid rgba(255, 255, 255, 0.2);
@@ -239,12 +209,5 @@
 		display: block;
 		margin-bottom: 0.25rem;
 		color: var(--text-color-2);
-	}
-
-	.modal-buttons {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 0.75rem;
-		margin-top: 0.5rem;
 	}
 </style>

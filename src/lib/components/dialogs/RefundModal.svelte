@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Modal from '$lib/components/ui/Modal.svelte';
-	import Button from '$lib/components/ui/Button.svelte';
 	import { t$ } from '$lib/i18n';
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
@@ -18,8 +17,6 @@
 	let refundAmount = $state(0);
 	let refundPercentage = $state(100);
 	let message = $state('');
-	let submitting = $state(false);
-	let loading = $state(false);
 	let balances: Record<string, number> = $state({});
 
 	// Reset form when modal opens
@@ -32,7 +29,6 @@
 			refundAmount = $refundModal.transaction.value;
 			refundPercentage = 100;
 			message = $t$('refund.defaultMessage', { id: $refundModal.transaction.id });
-			loading = false;
 			balances = {};
 		}
 	});
@@ -45,9 +41,7 @@
 		return Math.floor(refundAmount * 100) / 100;
 	});
 
-	async function handleSubmit(e: Event) {
-		e.preventDefault();
-
+	async function onSubmit() {
 		const transaction = $refundModal.transaction;
 		if (!transaction || !transaction.from) {
 			notifications.error($t$('refund.error'));
@@ -74,8 +68,6 @@
 			return;
 		}
 
-		submitting = true;
-
 		try {
 			// Build metadata with reference
 			const metadata = `ref=${transaction.id};type=refund;original=${transaction.value};message=${message}`;
@@ -92,12 +84,10 @@
 		} catch (e) {
 			const err = e as APIError;
 			notifications.error(err.message ?? $t$('refund.error'));
-		} finally {
-			submitting = false;
 		}
 	}
 
-	function handleClose() {
+	function onClose() {
 		const transaction = $refundModal.transaction;
 		if (
 			privateKey ||
@@ -117,121 +107,100 @@
 	}
 </script>
 
-<Modal open={$refundModal.open} title={$t$('refund.refundTransaction')} onClose={handleClose}>
-	<form method="POST" onsubmit={handleSubmit}>
-		{#if $refundModal.transaction}
-			{@const transaction = $refundModal.transaction}
-			<div class="transaction-info">
-				<div class="info-header">{$t$('refund.transactionToRefund')}</div>
-				<div class="transaction-details">
+<Modal open={$refundModal.open} title={$t$('refund.refundTransaction')} {onSubmit} {onClose}>
+	{#if $refundModal.transaction}
+		{@const transaction = $refundModal.transaction}
+		<div class="transaction-info">
+			<div class="info-header">{$t$('refund.transactionToRefund')}</div>
+			<div class="transaction-details">
+				<div class="detail-row">
+					<span class="detail-label">{$t$('transaction.id')}</span>
+					<span class="detail-value">
+						<code>#{transaction.id}</code>
+					</span>
+				</div>
+				<div class="detail-row">
+					<span class="detail-label">{$t$('refund.originalAmount')}</span>
+					<span class="detail-value amount">{formatCurrency(transaction.value)} KRO</span>
+				</div>
+				{#if transaction.from}
 					<div class="detail-row">
-						<span class="detail-label">{$t$('transaction.id')}</span>
+						<span class="detail-label">{$t$('transaction.sender')}</span>
 						<span class="detail-value">
-							<code>#{transaction.id}</code>
+							<Address address={transaction.from} />
 						</span>
 					</div>
-					<div class="detail-row">
-						<span class="detail-label">{$t$('refund.originalAmount')}</span>
-						<span class="detail-value amount">{formatCurrency(transaction.value)} KRO</span>
-					</div>
-					{#if transaction.from}
-						<div class="detail-row">
-							<span class="detail-label">{$t$('transaction.sender')}</span>
-							<span class="detail-value">
-								<Address address={transaction.from} />
-							</span>
-						</div>
-					{/if}
-				</div>
+				{/if}
 			</div>
+		</div>
 
-			<div class="wallet-selector">
-				<AddressSelector
-					label={$t$('refund.refundFrom')}
-					mode="privatekey"
-					bind:query={fromQuery}
-					bind:balances
-					bind:privatekey={privateKey}
-					bind:address={refundFromAddress}
-				/>
-			</div>
+		<div class="wallet-selector">
+			<AddressSelector
+				label={$t$('refund.refundFrom')}
+				mode="privatekey"
+				bind:query={fromQuery}
+				bind:balances
+				bind:privatekey={privateKey}
+				bind:address={refundFromAddress}
+			/>
+		</div>
 
-			<label>
-				{$t$('refund.refundMode')}
-				<div class="mode-selector">
-					<button
-						type="button"
-						class="mode-btn"
-						class:active={refundMode === 'percentage'}
-						onclick={() => (refundMode = 'percentage')}
-					>
-						{$t$('refund.percentage')}
-					</button>
-					<button
-						type="button"
-						class="mode-btn"
-						class:active={refundMode === 'amount'}
-						onclick={() => (refundMode = 'amount')}
-					>
-						{$t$('refund.amount')}
-					</button>
-				</div>
-			</label>
-
-			{#if refundMode === 'percentage'}
-				<label>
-					{$t$('refund.refundPercentage')}
-					<input type="number" min="0" max="100" step="1" bind:value={refundPercentage} required />
-					<small>0% - 100%</small>
-				</label>
-			{:else}
-				<label>
-					{$t$('refund.refundAmount')}
-					<input
-						type="number"
-						min="0"
-						max={transaction.value}
-						step="0.00001"
-						bind:value={refundAmount}
-						required
-					/>
-					<small>{$t$('common.maximum')}: {formatCurrency(transaction.value)} KRO</small>
-				</label>
-			{/if}
-
-			<div class="calculated-refund">
-				<strong>{$t$('refund.refundAmount')}:</strong>
-				<span class="amount">{formatCurrency(calculatedRefund)} KRO</span>
-			</div>
-
-			<label>
-				{$t$('refund.message')}
-				<input type="text" bind:value={message} maxlength="255" />
-			</label>
-
-			<div class="modal-buttons">
-				<Button type="button" variant="secondary" onClick={handleClose}>
-					{$t$('common.cancel')}
-				</Button>
-				<Button
-					type="submit"
-					variant="primary"
-					disabled={submitting || !refundFromAddress || loading}
+		<label>
+			{$t$('refund.refundMode')}
+			<div class="mode-selector">
+				<button
+					type="button"
+					class="mode-btn"
+					class:active={refundMode === 'percentage'}
+					onclick={() => (refundMode = 'percentage')}
 				>
-					{submitting ? $t$('refund.processing') : $t$('common.confirm')}
-				</Button>
+					{$t$('refund.percentage')}
+				</button>
+				<button
+					type="button"
+					class="mode-btn"
+					class:active={refundMode === 'amount'}
+					onclick={() => (refundMode = 'amount')}
+				>
+					{$t$('refund.amount')}
+				</button>
 			</div>
+		</label>
+
+		{#if refundMode === 'percentage'}
+			<label>
+				{$t$('refund.refundPercentage')}
+				<input type="number" min="0" max="100" step="1" bind:value={refundPercentage} required />
+				<small>0% - 100%</small>
+			</label>
+		{:else}
+			<label>
+				{$t$('refund.refundAmount')}
+				<input
+					type="number"
+					min="0"
+					max={transaction.value}
+					step="0.00001"
+					bind:value={refundAmount}
+					required
+				/>
+				<small>{$t$('common.maximum')}: {formatCurrency(transaction.value)} KRO</small>
+			</label>
 		{/if}
-	</form>
+
+		<div class="calculated-refund">
+			<strong>{$t$('refund.refundAmount')}:</strong>
+			<span class="amount">{formatCurrency(calculatedRefund)} KRO</span>
+		</div>
+
+		<label>
+			{$t$('refund.message')}
+			<input type="text" bind:value={message} maxlength="255" />
+		</label>
+	{/if}
 </Modal>
 
 <style>
-	form {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
 	.transaction-info {
 		padding: 1.25rem;
 		background: rgba(0, 0, 0, 0.3);
@@ -292,14 +261,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-	}
-
-	label {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		color: var(--text-color-1);
-		font-weight: 500;
 	}
 
 	input {
@@ -375,12 +336,5 @@
 		font-size: 1.25rem;
 		font-weight: 700;
 		color: rgb(var(--theme-color-rgb));
-	}
-
-	.modal-buttons {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 0.75rem;
-		margin-top: 0.5rem;
 	}
 </style>

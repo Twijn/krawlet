@@ -4,7 +4,6 @@
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import { notifications } from '$lib/stores/notifications';
-	import { prompt } from '$lib/stores/prompt';
 	import { confirm } from '$lib/stores/confirm';
 	import { faWallet } from '@fortawesome/free-solid-svg-icons';
 	import kromer from '$lib/api/kromer';
@@ -13,6 +12,7 @@
 	import { paramState } from '$lib/paramState.svelte';
 	import { getSyncNode } from '$lib/consts';
 	import type { APIError } from 'kromer';
+	import { masterPasswordStore } from '$lib/stores/masterPassword';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -103,19 +103,13 @@
 		}
 
 		if (saveAsWallet) {
-			prompt.prompt({
-				type: 'password',
-				message: "Enter your master password to save the wallet you're creating",
-				inputLabel: 'Master Password',
-				confirmButtonLabel: 'Save',
-				confirm: (value) => {
-					confirmCreate(value);
-				},
-				validate: async (value) => {
-					if (!(await settings.validateMasterPassword(value))) {
-						return ['Invalid master password'];
-					}
-					return [];
+			masterPasswordStore.get().then((masterPassword) => {
+				confirmCreate(masterPassword);
+			}, (err) => {
+				if ('message' in err) {
+					notifications.error(err.message);
+				} else {
+					notifications.error('An unknown error occurred while retrieving the master password.');
 				}
 			});
 		} else {
