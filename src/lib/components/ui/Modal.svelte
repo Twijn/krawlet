@@ -12,7 +12,7 @@
 		open?: boolean;
 		title?: string;
 		tt?: string;
-		onSubmit?: () => void|Promise<void>;
+		onSubmit?: () => void | Promise<void>;
 		onClose: () => void;
 		cancelButtonOverrides?: Partial<ButtonProps>;
 		confirmButtonOverrides?: Partial<ButtonProps>;
@@ -35,6 +35,14 @@
 	let submitting = $state(false);
 	const dialogId = `modal-${Math.random().toString(36).substring(7)}`;
 	const titleId = `${dialogId}-title`;
+
+	const focusFirst = (node: HTMLElement) => {
+		const content = node.querySelector('.modal-content');
+		const focusable = content?.querySelector<HTMLElement>(
+			'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+		);
+		focusable?.focus();
+	};
 
 	const handleClickOutside = (node: HTMLElement) => {
 		const handleClick = (event: MouseEvent) => {
@@ -105,18 +113,29 @@
 			transition:scale={{ duration: 120, start: 0.95 }}
 			use:handleClickOutside
 			use:trapFocus
+			use:focusFirst
 		>
 			<form method="POST" onsubmit={handleSubmit}>
 				{#if tt || title}
 					{@const titleText = tt ? $t$(tt) : title}
 					<div class="modal-header">
 						<h2 id={titleId}>{titleText}</h2>
-						<button type="button" class="close-btn" onclick={onClose} aria-label={$t$('common.close')}>
+						<button
+							type="button"
+							class="close-btn"
+							onclick={onClose}
+							aria-label={$t$('common.close')}
+						>
 							<FontAwesomeIcon icon={faTimes} />
 						</button>
 					</div>
 				{:else}
-					<button type="button" class="close-btn absolute" onclick={onClose} aria-label={$t$('common.close')}>
+					<button
+						type="button"
+						class="close-btn absolute"
+						onclick={onClose}
+						aria-label={$t$('common.close')}
+					>
 						<FontAwesomeIcon icon={faTimes} />
 					</button>
 				{/if}
@@ -126,8 +145,20 @@
 				</div>
 				{#if onSubmit}
 					<div class="modal-footer">
-						<Button type="button" variant="secondary" tk="common.cancel" onClick={onClose} {...cancelButtonOverrides} />
-						<Button type="submit" variant="primary" tk="common.confirm" {...confirmButtonOverrides} bind:loading={submitting} />
+						<Button
+							type="button"
+							variant="secondary"
+							tk="common.cancel"
+							onClick={onClose}
+							{...cancelButtonOverrides}
+						/>
+						<Button
+							type="submit"
+							variant="primary"
+							tk="common.confirm"
+							{...confirmButtonOverrides}
+							bind:loading={submitting}
+						/>
 					</div>
 				{/if}
 			</form>

@@ -103,15 +103,18 @@
 		}
 
 		if (saveAsWallet) {
-			masterPasswordStore.get().then((masterPassword) => {
-				confirmCreate(masterPassword);
-			}, (err) => {
-				if ('message' in err) {
-					notifications.error(err.message);
-				} else {
-					notifications.error('An unknown error occurred while retrieving the master password.');
+			masterPasswordStore.get().then(
+				(masterPassword) => {
+					confirmCreate(masterPassword);
+				},
+				(err) => {
+					if ('message' in err) {
+						notifications.error(err.message);
+					} else {
+						notifications.error('An unknown error occurred while retrieving the master password.');
+					}
 				}
-			});
+			);
 		} else {
 			confirmCreate();
 		}

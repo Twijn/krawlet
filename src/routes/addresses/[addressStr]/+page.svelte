@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { formatCurrency, relativeTime } from '$lib/util';
-	import Transactions from '$lib/components/widgets/transactions/Transactions.svelte';
 	import { onDestroy } from 'svelte';
 	import playerWalletStore, { type Player } from '$lib/stores/playerWallets';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
-	import Names from '$lib/components/widgets/names/Names.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import AddressStats from '$lib/components/widgets/addresses/AddressStats.svelte';
 	import { getAddress, type KnownAddress } from '$lib/stores/knownAddresses';
+	import AdvancedTransactions from '$lib/components/widgets/transactions/AdvancedTransactions.svelte';
+	import AdvancedNames from '$lib/components/widgets/names/AdvancedNames.svelte';
 
 	const { data } = $props();
 	const address = $derived(data.address);
@@ -34,7 +34,7 @@
 <div class="col-12 statistics">
 	<div class="statistic">
 		<div>
-			<Button href="/transactions/new?to={address.address}">Send Kromer</Button>
+			<Button variant="primary" href="/transactions/new?to={address.address}">Send Kromer</Button>
 		</div>
 	</div>
 	<div class="statistic">
@@ -73,9 +73,12 @@
 	</div>
 </div>
 
-<Transactions limit={4} address={address.address} lgCols={7} mdCols={12} queryPrefix="trans_" />
-
-<Names lgCols={5} mdCols={12} limit={4} address={address.address} queryPrefix="name_" />
+<div class="col-7 col-md-12">
+	<AdvancedTransactions limit={10} query={{}} addresses={[address.address]} />
+</div>
+<div class="col-5 col-md-12">
+	<AdvancedNames limit={10} query={{}} addresses={[address.address]} />
+</div>
 
 <AddressStats address={address.address} />
 

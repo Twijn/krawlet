@@ -1,4 +1,5 @@
-import type { Snippet } from "svelte";
+import type { IconDefinition, SizeProp } from '@fortawesome/fontawesome-svg-core';
+import type { Snippet } from 'svelte';
 
 export type ButtonType = 'button' | 'submit' | 'reset';
 export type ButtonVariant = 'primary' | 'secondary' | 'success' | 'error';
@@ -8,7 +9,7 @@ export type ButtonClickHandler = (e: Event) => void | boolean | Promise<void> | 
 export type ButtonProps = {
 	type?: ButtonType;
 	variant: ButtonVariant;
-    href?: string;
+	href?: string;
 	newTab?: boolean;
 	size?: ButtonSize;
 	onClick?: ButtonClickHandler;
@@ -17,6 +18,8 @@ export type ButtonProps = {
 	external?: boolean;
 	tk?: string;
 	title?: string;
+	icon?: IconDefinition;
+	iconSize?: SizeProp;
 	loading?: boolean;
 	children?: Snippet;
-}
+};

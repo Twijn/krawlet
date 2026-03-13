@@ -120,7 +120,9 @@
 	open={$addWalletModal.open}
 	tt="wallet.newWallet"
 	confirmButtonOverrides={{ tk: 'wallet.addWallet' }}
-	{onSubmit} {onClose}>
+	{onSubmit}
+	{onClose}
+>
 	<label>
 		{$t$('wallet.masterPassword')}
 		<input

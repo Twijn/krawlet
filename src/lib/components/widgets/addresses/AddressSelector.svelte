@@ -103,24 +103,27 @@
 
 	function setAddress(addr: Addr | Address, setQuery: boolean = true) {
 		if (mode === 'privatekey' && 'private' in addr) {
-			masterPasswordStore.get().then(async (password) => {
-				const decrypted = await settings.decryptWallet(addr, password);
-				if (decrypted) {
-					privatekey = decrypted;
-					selected = addr;
-					address = getAddress(addr);
-					if (setQuery) {
-						query = address;
+			masterPasswordStore.get().then(
+				async (password) => {
+					const decrypted = await settings.decryptWallet(addr, password);
+					if (decrypted) {
+						privatekey = decrypted;
+						selected = addr;
+						address = getAddress(addr);
+						if (setQuery) {
+							query = address;
+						}
+					}
+				},
+				(err) => {
+					console.error(err);
+					if (err?.message) {
+						notifications.error(err.message);
+					} else {
+						notifications.error('Failed to retrieve master password!');
 					}
 				}
-			}, (err) => {
-				console.error(err);
-				if (err?.message) {
-					notifications.error(err.message);
-				} else {
-					notifications.error('Failed to retrieve master password!');
-				}
-			});
+			);
 		} else {
 			selected = addr;
 			address = getAddress(addr);

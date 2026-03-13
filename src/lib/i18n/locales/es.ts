@@ -850,7 +850,6 @@ export default {
 		sendKromer: 'Enviar Kromer',
 		copyAddress: 'Copiar Dirección',
 		monitorAddress: 'Monitorear Dirección',
-		viewOnKrist: 'Ver en Krist',
 		// Acciones de transacción
 		viewTransaction: 'Ver Transacción',
 		copyTransactionId: 'Copiar ID de Transacción',

@@ -237,6 +237,7 @@ export default {
 	transaction: {
 		newTransaction: 'New Transaction',
 		thisTransaction: 'This Transaction',
+		addAddressFilter: 'Add Address Filter',
 		amount: 'Amount',
 		recipient: 'Recipient',
 		sender: 'Sender',
@@ -859,8 +860,6 @@ export default {
 		viewNames: 'View Names',
 		sendKromer: 'Send Kromer',
 		copyAddress: 'Copy Address',
-		monitorAddress: 'Monitor Address',
-		viewOnKrist: 'View on Krist',
 		// Transaction actions
 		viewTransaction: 'View Transaction',
 		copyTransactionId: 'Copy Transaction ID',

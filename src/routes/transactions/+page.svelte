@@ -1,6 +1,5 @@
 <script lang="ts">
-	import Transactions from '$lib/components/widgets/transactions/Transactions.svelte';
-	import TransactionStats from '$lib/components/widgets/transactions/TransactionStats.svelte';
+	import AdvancedTransactions from '$lib/components/widgets/transactions/AdvancedTransactions.svelte';
 </script>
 
 <svelte:head>
@@ -9,6 +8,6 @@
 
 <h1><a href="/">Krawlet</a> <span>&raquo;</span> Transactions</h1>
 
-<TransactionStats lgCols={12} />
-
-<Transactions lgCols={12} limit={30} />
+<div class="col col-12">
+	<AdvancedTransactions limit={30} query={{}} showDetails={true} />
+</div>

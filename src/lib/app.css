@@ -105,10 +105,12 @@ body {
 }
 
 [title]:hover::after {
+	font-family: var(--font-family), sans-serif;
 	content: attr(title);
 	position: absolute;
 	left: 50%;
 	bottom: calc(100% + 8px);
+	translate: -50% 0;
 	padding: 0.5rem 0.75rem;
 	background: linear-gradient(135deg, rgba(20, 20, 20, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
 	color: var(--text-color-1);
@@ -121,9 +123,19 @@ body {
 		0 0 0 1px rgba(255, 255, 255, 0.1);
 	white-space: nowrap;
 	pointer-events: none;
-	transform: translateX(-50%);
-	animation: tooltipFadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+	animation: tooltipFadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 	backdrop-filter: blur(8px);
+}
+
+.title-left[title]:hover::after {
+	left: 0;
+	translate: 0 0;
+}
+
+.title-right[title]:hover::after {
+	left: unset;
+	right: 0;
+	translate: 0 0;
 }
 
 [title]:hover::before {
@@ -131,25 +143,36 @@ body {
 	position: absolute;
 	left: 50%;
 	bottom: calc(100% + 2px);
+	translate: -50% 0;
 	width: 0;
 	height: 0;
 	border-left: 6px solid transparent;
 	border-right: 6px solid transparent;
 	border-top: 6px solid rgba(20, 20, 20, 0.98);
-	transform: translateX(-50%);
 	z-index: 10000;
 	pointer-events: none;
-	animation: tooltipFadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+	animation: tooltipFadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.title-left[title]:hover::before {
+	left: 12px;
+	translate: 0 0;
+}
+
+.title-right[title]:hover::before {
+	left: unset;
+	right: 12px;
+	translate: 0 0;
 }
 
 @keyframes tooltipFadeIn {
 	from {
 		opacity: 0;
-		transform: translateX(-50%) translateY(-4px);
+		scale: 0.95;
 	}
 	to {
 		opacity: 1;
-		transform: translateX(-50%) translateY(0);
+		scale: 1;
 	}
 }
 
@@ -463,10 +486,51 @@ button.link:focus-visible {
 	min-height: 15em;
 }
 
+.table-wrapper {
+	position: relative;
+	border-radius: 0.75rem;
+	background: rgba(255, 255, 255, 0.03);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	overflow: hidden;
+}
+
 .table-container {
 	width: 100%;
 	overflow-x: auto;
 	position: relative;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+	
+	/* Scroll shadow indicators */
+	background:
+		/* Left shadow */
+		linear-gradient(to right, var(--background-color-1) 20%, transparent) left center,
+		/* Right shadow */
+		linear-gradient(to left, var(--background-color-1) 20%, transparent) right center,
+		/* Left shadow cover */
+		linear-gradient(to right, rgba(0, 0, 0, 0.12), transparent) left center,
+		/* Right shadow cover */
+		linear-gradient(to left, rgba(0, 0, 0, 0.12), transparent) right center;
+	background-repeat: no-repeat;
+	background-size: 30px 100%, 30px 100%, 15px 100%, 15px 100%;
+	background-attachment: local, local, scroll, scroll;
+}
+
+.table-container::-webkit-scrollbar {
+	height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.15);
+	border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+	background: rgba(255, 255, 255, 0.25);
 }
 
 table {
@@ -476,17 +540,17 @@ table {
 }
 
 thead tr {
-	background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.15) 100%);
-	border-bottom: 2px solid rgba(var(--theme-color-rgb), 0.5);
+	background: rgba(0, 0, 0, 0.15);
+	border-bottom: 1px solid rgba(var(--theme-color-rgb), 0.3);
 }
 
 tbody tr {
-	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 	transition: background-color 0.15s ease;
 }
 
 tbody tr:hover {
-	background-color: rgba(255, 255, 255, 0.03);
+	background-color: rgba(255, 255, 255, 0.05);
 }
 
 tbody tr:last-child {
@@ -495,16 +559,31 @@ tbody tr:last-child {
 
 th,
 td {
-	padding: 0.9rem 0.75rem;
+	padding: 0.85rem 1rem;
 	text-align: left;
 }
 
 th {
 	font-weight: 600;
 	color: var(--text-color-1);
-	font-size: 0.875rem;
+	font-size: 0.8rem;
 	text-transform: uppercase;
-	letter-spacing: 0.05em;
+	letter-spacing: 0.06em;
+}
+
+th.clickable {
+	cursor: pointer;
+	user-select: none;
+}
+
+th.clickable:hover {
+	color: var(--theme-color-2);
+}
+
+.empty-state {
+	text-align: center;
+	padding: 2em 1em !important;
+	color: var(--text-color-2);
 }
 
 .center {

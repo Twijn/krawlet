@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Names from '$lib/components/widgets/names/Names.svelte';
+	import AdvancedNames from '$lib/components/widgets/names/AdvancedNames.svelte';
 	import NameStats from '$lib/components/widgets/names/NameStats.svelte';
 </script>
 
@@ -14,4 +14,6 @@
 
 <NameStats lgCols={12} />
 
-<Names lgCols={12} limit={30} />
+<div class="col-12">
+	<AdvancedNames query={{}} limit={30} showDetails={true} />
+</div>

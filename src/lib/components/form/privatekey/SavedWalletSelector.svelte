@@ -38,11 +38,11 @@
 
 	let errorMessage: string | null = $state(null);
 	async function checkWallet() {
-		let masterPassword = "";
+		let masterPassword = '';
 
 		try {
-			masterPassword = await masterPasswordStore.get()
-		} catch(e) {
+			masterPassword = await masterPasswordStore.get();
+		} catch (e) {
 			console.error(e);
 		}
 

@@ -32,11 +32,7 @@
 
 	<label>
 		{$t$('wallet.masterPassword')}
-		<input
-			type="password"
-			bind:value={masterPassword}
-			oninput={clearError}
-		/>
+		<input type="password" bind:value={masterPassword} oninput={clearError} />
 	</label>
 	{#if $error}
 		<p class="error">{$error}</p>
@@ -54,7 +50,7 @@
 	}
 
 	.error {
-		color: var(--red);
+		color: rgb(var(--red));
 		margin: 0;
 	}
 </style>

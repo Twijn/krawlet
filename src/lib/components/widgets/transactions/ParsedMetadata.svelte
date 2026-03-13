@@ -8,7 +8,6 @@
 	import shopsync, { getItemImageUrl, getRelativeItemUrl } from '$lib/stores/shopsync';
 	import type { Listing } from '$lib/types/shops';
 	import settings from '$lib/stores/settings';
-	import { onMount } from 'svelte';
 	import { formatCurrency, getMinecraftAvatar, relativeTime } from '$lib/util';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faRotateLeft, faArrowRight, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
@@ -25,51 +24,51 @@
 	const REFUND_INTERNAL_META: string[] = ['ref', 'type', 'original'];
 
 	const {
-		transaction
+		transaction = $bindable()
 	}: {
 		transaction: TransactionWithMeta;
 	} = $props();
 
-	const meta = transaction.meta ?? { entries: [] };
-
-	// Check for shop actions (set or delete shop info)
-	const shopNameMeta = findMeta(meta, 'shop_name');
-	const shopDescriptionMeta = findMeta(meta, 'shop_description');
-	const shopDeleteMeta = meta.entries.find(
-		(e) => e.name.toLowerCase() === 'shop_delete' && !e.value
-	);
-	const isShopAction = shopNameMeta || shopDescriptionMeta || shopDeleteMeta;
-	const isSetShopInfo = shopNameMeta || shopDescriptionMeta;
-	const isDeleteShopInfo = shopDeleteMeta && !isSetShopInfo;
-
-	// Check for player data
-	const userUuidMeta = findMeta(meta, 'useruuid');
-	const usernameMeta = findMeta(meta, 'username');
-	const returnMeta = findMeta(meta, 'return');
-	const hasPlayerData = userUuidMeta || usernameMeta;
-
-	function findMeta(meta: TransactionMetadata, name: string): TransactionMetadataEntry | undefined {
+	function findMetaIn(meta: TransactionMetadata, name: string): TransactionMetadataEntry | undefined {
 		return meta.entries.find((entry) => entry.name.toLowerCase() === name);
 	}
 
-	function findDisplayMeta(meta: TransactionMetadata): TransactionMetadataEntry | undefined {
+	function findDisplayMetaIn(meta: TransactionMetadata): TransactionMetadataEntry | undefined {
 		return (
-			findMeta(meta, 'error') ??
-			findMeta(meta, 'message') ??
-			findMeta(meta, 'msg') ??
+			findMetaIn(meta, 'error') ??
+			findMetaIn(meta, 'message') ??
+			findMetaIn(meta, 'msg') ??
 			meta.entries.find((e) => !e.value)
 		);
 	}
 
-	const displayMeta = findDisplayMeta(meta);
+	const meta = $derived(transaction.meta ?? { entries: [] });
+
+	// Check for shop actions (set or delete shop info)
+	const shopNameMeta = $derived(findMetaIn(meta, 'shop_name'));
+	const shopDescriptionMeta = $derived(findMetaIn(meta, 'shop_description'));
+	const shopDeleteMeta = $derived(meta.entries.find(
+		(e) => e.name.toLowerCase() === 'shop_delete' && !e.value
+	));
+	const isShopAction = $derived(shopNameMeta || shopDescriptionMeta || shopDeleteMeta);
+	const isSetShopInfo = $derived(shopNameMeta || shopDescriptionMeta);
+	const isDeleteShopInfo = $derived(shopDeleteMeta && !isSetShopInfo);
+
+	// Check for player data
+	const userUuidMeta = $derived(findMetaIn(meta, 'useruuid'));
+	const usernameMeta = $derived(findMetaIn(meta, 'username'));
+	const returnMeta = $derived(findMetaIn(meta, 'return'));
+	const hasPlayerData = $derived(userUuidMeta || usernameMeta);
+
+	const displayMeta = $derived(findDisplayMetaIn(meta));
 
 	// Check if this is a refund transaction
-	const refundType = findMeta(meta, 'type');
-	const isRefund = refundType?.value?.toLowerCase() === 'refund';
-	const refundRef = findMeta(meta, 'ref');
-	const refundOriginal = findMeta(meta, 'original');
-	const refundMessage = findMeta(meta, 'message') ?? findMeta(meta, 'msg');
-	const refundError = findMeta(meta, 'error');
+	const refundType = $derived(findMetaIn(meta, 'type'));
+	const isRefund = $derived(refundType?.value?.toLowerCase() === 'refund');
+	const refundRef = $derived(findMetaIn(meta, 'ref'));
+	const refundOriginal = $derived(findMetaIn(meta, 'original'));
+	const refundMessage = $derived(findMetaIn(meta, 'message') ?? findMetaIn(meta, 'msg'));
+	const refundError = $derived(findMetaIn(meta, 'error'));
 
 	// Refund modal state
 	let showRefundModal = $state(false);
@@ -101,47 +100,40 @@
 		goto(`/transactions/${id}`);
 	}
 
-	let relatedListing: Listing | null = $state(null);
-	let quantity: number = $state(0);
-
-	onMount(() => {
-		if ($settings.parsePurchaseItem) {
-			const valueOnlyMeta = meta.entries.filter((e) => !e.value).map((e) => e.name.toLowerCase());
-			if (valueOnlyMeta.length > 0) {
-				const shops = $shopsync.data.filter((s) => s.addresses?.includes(transaction.to));
-				const listings = shops.reduce((listings, s) => {
-					if (s.items) {
-						listings = [
-							...listings,
-							...s.items.filter((i) =>
-								i.prices?.find(
-									(p) =>
-										p.currency.toLowerCase() === 'kro' &&
-										valueOnlyMeta.includes(p.requiredMeta?.toLowerCase() ?? '')
-								)
-							)
-						];
-					}
-					return listings;
-				}, [] as Listing[]);
-				if (listings.length > 0) {
-					relatedListing = listings[0];
-					if ($settings.parsePurchaseItemQuantity) {
-						quantity = Math.floor(
-							transaction.value /
-								(relatedListing.prices?.find((p) => p.currency.toLowerCase() === 'kro')?.value ?? 1)
-						);
-					}
-					if (listings.length > 1) {
-						console.warn(
-							'Multiple listings found for transaction metadata:',
-							transaction,
-							listings
-						);
-					}
-				}
+	const relatedListing: Listing | null = $derived.by(() => {
+		if (!$settings.parsePurchaseItem) return null;
+		
+		const valueOnlyMeta = meta.entries.filter((e) => !e.value).map((e) => e.name.toLowerCase());
+		if (valueOnlyMeta.length === 0) return null;
+		
+		const shops = $shopsync.data.filter((s) => s.addresses?.includes(transaction.to));
+		const listings = shops.reduce((listings, s) => {
+			if (s.items) {
+				listings = [
+					...listings,
+					...s.items.filter((i) =>
+						i.prices?.find(
+							(p) =>
+								p.currency.toLowerCase() === 'kro' &&
+								valueOnlyMeta.includes(p.requiredMeta?.toLowerCase() ?? '')
+						)
+					)
+				];
 			}
+			return listings;
+		}, [] as Listing[]);
+		
+		if (listings.length > 1) {
+			console.warn('Multiple listings found for transaction metadata:', transaction, listings);
 		}
+		
+		return listings[0] ?? null;
+	});
+
+	const quantity: number = $derived.by(() => {
+		if (!relatedListing || !$settings.parsePurchaseItemQuantity) return 0;
+		const price = relatedListing.prices?.find((p) => p.currency.toLowerCase() === 'kro')?.value ?? 1;
+		return Math.floor(transaction.value / price);
 	});
 </script>
 
@@ -159,7 +151,7 @@
 				<span class="refund-meta">{refundMessage.value}</span>
 			{:else}
 				<!-- Check for success= or plain text after filtering refund internal fields -->
-				{@const successMeta = findMeta(meta, 'success')}
+				{@const successMeta = findMetaIn(meta, 'success')}
 				{@const plainText = meta.entries.find(
 					(e) => !e.value && !REFUND_INTERNAL_META.includes(e.name.toLowerCase())
 				)}
@@ -359,7 +351,7 @@
 						<div class="tx-time">{relativeTime(referencedTransaction.time)}</div>
 						{#if referencedTransaction.metadata}
 							{@const refMeta = kromer.transactions.parseMetadata(referencedTransaction)}
-							{@const refDisplayMeta = findDisplayMeta(refMeta)}
+							{@const refDisplayMeta = findDisplayMetaIn(refMeta)}
 							{@const refPlainText = refMeta.entries.find(
 								(e) => !e.value && !REFUND_INTERNAL_META.includes(e.name.toLowerCase())
 							)}
@@ -403,7 +395,7 @@
 	.metadata span {
 		display: block;
 		max-width: 100%;
-		overflow: hidden;
+		overflow-x: hidden;
 	}
 
 	/* Shop Action Styles */

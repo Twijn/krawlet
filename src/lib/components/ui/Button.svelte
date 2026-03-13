@@ -1,6 +1,7 @@
 <script lang="ts">
-	import type { ButtonProps } from "./Button";
+	import type { ButtonProps } from './Button';
 	import { t$ } from '$lib/i18n';
+	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 
 	const {
 		href,
@@ -13,9 +14,11 @@
 		external = false,
 		tk,
 		title,
+		icon,
+		iconSize = "1x",
 		disabled = $bindable(false),
 		loading = $bindable(false),
-		children,
+		children
 	}: ButtonProps = $props();
 
 	const isDisabled = $derived(disabled || loading);
@@ -36,8 +39,8 @@
 		{href}
 		class="button {variant} {size}"
 		class:disabled={isDisabled}
-		class:full={full}
-		class:loading={loading}
+		class:full
+		class:loading
 		target={newTab ? '_blank' : undefined}
 		rel={external || newTab ? 'noopener noreferrer' : undefined}
 		{title}
@@ -45,6 +48,9 @@
 		aria-disabled={isDisabled}
 		aria-busy={loading}
 	>
+		{#if icon}
+			<FontAwesomeIcon {icon} size={iconSize} />
+		{/if}
 		{#if tk}
 			{$t$(tk)}
 		{:else if children}
@@ -56,13 +62,16 @@
 		onclick={handleClick}
 		{type}
 		class="button {variant} {size}"
-		class:loading={loading}
+		class:loading
 		disabled={isDisabled}
-		class:full={full}
+		class:full
 		aria-disabled={isDisabled}
 		aria-busy={loading}
 		{title}
 	>
+		{#if icon}
+			<FontAwesomeIcon {icon} size={iconSize} />
+		{/if}
 		{#if tk}
 			{$t$(tk)}
 		{:else if children}

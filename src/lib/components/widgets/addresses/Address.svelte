@@ -4,13 +4,11 @@
 	import playerWalletStore, { type Player } from '$lib/stores/playerWallets';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import {
-		faBell,
 		faBuilding,
 		faCheck,
 		faCopy,
 		faDice,
 		faExchange,
-		faExternalLinkAlt,
 		faEye,
 		faPaperPlane,
 		faStore,
@@ -68,6 +66,12 @@
 				href: `/addresses/${address}`
 			},
 			{
+				label: $t$('contextMenu.copyAddress'),
+				icon: faCopy,
+				action: copyAddress
+			},
+			{ separator: true, label: '' },
+			{
 				label: $t$('contextMenu.viewTransactions'),
 				icon: faExchange,
 				href: `/addresses/${address}/transactions`
@@ -82,29 +86,6 @@
 				label: $t$('contextMenu.sendKromer'),
 				icon: faPaperPlane,
 				href: `/transactions/new?to=${address}`
-			},
-			{ separator: true, label: '' },
-			{
-				label: $t$('contextMenu.copyAddress'),
-				icon: faCopy,
-				action: copyAddress
-			},
-			{
-				label: $t$('contextMenu.monitorAddress'),
-				icon: faBell,
-				href: `/settings?monitor=${address}`
-			},
-			{ separator: true, label: '' },
-			{
-				label: $t$('contextMenu.viewOnKrist'),
-				icon: faExternalLinkAlt,
-				href: `${getSyncNode().url.replace('/api/krist/', '')}/#/addresses/${address}`,
-				action: () => {
-					window.open(
-						`${getSyncNode().url.replace('/api/krist/', '')}/#/addresses/${address}`,
-						'_blank'
-					);
-				}
 			}
 		];
 
@@ -146,10 +127,7 @@
 		{/if}
 		{verifiedEntry.name}
 	{:else if player && $settings.replaceAddressesWithPlayer}
-		<img
-			src={getMinecraftAvatar(player.minecraftUUID)}
-			alt="Avatar for {player.minecraftName}"
-		/>
+		<img src={getMinecraftAvatar(player.minecraftUUID)} alt="Avatar for {player.minecraftName}" />
 		{player.minecraftName}
 	{:else if wallet}
 		<FontAwesomeIcon icon={faWallet} />

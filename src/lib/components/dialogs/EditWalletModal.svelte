@@ -69,25 +69,28 @@
 	async function handleCopyPrivateKey() {
 		if (!originalWallet) return;
 
-		masterPasswordStore.get().then(async (password) => {
-			if (!originalWallet) {
-				notifications.error($t$('common.error'));
-				return;
-			}
-			try {
-				const privateKey = await settings.decryptWallet(originalWallet, password);
-				if (!privateKey) {
-					notifications.error($t$('wallet.privateKeyCopyError'));
+		masterPasswordStore
+			.get()
+			.then(async (password) => {
+				if (!originalWallet) {
+					notifications.error($t$('common.error'));
 					return;
 				}
-				await navigator.clipboard.writeText(privateKey);
-				notifications.success($t$('wallet.privateKeyCopied'));
-			} catch {
-				notifications.error($t$('wallet.privateKeyCopyError'));
-			}
-		}).catch(() => {
-			notifications.error($t$('wallet.invalidPassword'));
-		});
+				try {
+					const privateKey = await settings.decryptWallet(originalWallet, password);
+					if (!privateKey) {
+						notifications.error($t$('wallet.privateKeyCopyError'));
+						return;
+					}
+					await navigator.clipboard.writeText(privateKey);
+					notifications.success($t$('wallet.privateKeyCopied'));
+				} catch {
+					notifications.error($t$('wallet.privateKeyCopyError'));
+				}
+			})
+			.catch(() => {
+				notifications.error($t$('wallet.invalidPassword'));
+			});
 	}
 
 	function handleDeleteWallet() {
@@ -123,7 +126,9 @@
 	open={$editWalletModal.open}
 	tt="wallet.editWallet"
 	confirmButtonOverrides={{ tk: 'common.save' }}
-	{onSubmit} {onClose}>
+	{onSubmit}
+	{onClose}
+>
 	<label>
 		{$t$('name.name')}
 		<input type="text" name="name" bind:value={name} required autocomplete="off" />

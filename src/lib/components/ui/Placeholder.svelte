@@ -3,10 +3,10 @@
 
 	interface Props {
 		/** The verbose placeholder text to show when simplePlaceholders is disabled */
-		text: string;
+		text?: string;
 	}
 
-	let { text }: Props = $props();
+	let { text = "[No Data]" }: Props = $props();
 </script>
 
 {#if $settings.simplePlaceholders}
