@@ -432,6 +432,7 @@ export default {
 			general: 'General',
 			display: 'Display',
 			notifications: 'Notifications',
+			cache: 'Cache',
 			advanced: 'Advanced'
 		},
 		language: 'Language',

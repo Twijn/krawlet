@@ -16,6 +16,7 @@
 			labelKey: 'settings.tabs.notifications',
 			exact: false
 		},
+		{ href: '/settings/cache', icon: faServer, labelKey: 'settings.tabs.cache', exact: false },
 		{ href: '/settings/advanced', icon: faServer, labelKey: 'settings.tabs.advanced', exact: false }
 	];
 
