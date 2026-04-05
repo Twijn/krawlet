@@ -1,15 +1,18 @@
 <script lang="ts">
-	import WhatsNew from '$lib/components/widgets/WhatsNew.svelte';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
+import WhatsNew from '$lib/components/widgets/WhatsNew.svelte';
 </script>
 
 <svelte:head>
 	<title>What's New | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/whats-new">What's New</a>
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ label: "Home", href: "/" },
+		{ label: "What's New", href: "/whats-new" },
+	]}
+/>
 
 <h2 class="col-12">
 	<img src="/favicon-96x96.png" alt="Krawlet Logo" />
@@ -31,10 +34,10 @@
 
 <h2 class="col-12">
 	<img src="/images/verified/serverwelf.png" alt="ReconnectedCC Logo" />
-	ReconnectedCC / Kromer
+	ReconnectedCC / KromerSharp
 </h2>
 
-<WhatsNew repository="ReconnectedCC/kromer2" description="" lgCols={12} />
+<WhatsNew repository="ReconnectedCC/KromerSharp" description="" lgCols={12} />
 
 <style>
 	h2 {

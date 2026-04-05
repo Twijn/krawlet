@@ -7,6 +7,7 @@
 	import { cleanShopData } from '$lib/stores/shopsync';
 	import { relativeTime } from '$lib/util.js';
 	import { t$ } from '$lib/i18n';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 
 	const { data } = $props();
 	const { shop } = data;
@@ -18,11 +19,12 @@
 	<title>{cleanShopData(shop?.name ?? '')} | Shops | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/shops">{$t$('nav.shops')}</a> <span>&raquo;</span>
-	<a href="/shops/{shop?.id ?? ''}">{cleanShopData(shop?.name ?? '')}</a>
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ label: $t$('nav.shops'), href: '/shops' },
+		{ label: cleanShopData(shop?.name ?? ''), href: `/shops/${shop?.id ?? ''}` },
+	]}
+/>
 
 {#if shop}
 	<div class="col-12 statistics">

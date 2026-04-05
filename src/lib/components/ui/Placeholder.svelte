@@ -28,6 +28,6 @@
 
 	.placeholder.verbose {
 		color: rgba(255, 255, 255, 0.4);
-		font-size: 0.9em;
+		font-size: 0.75em;
 	}
 </style>

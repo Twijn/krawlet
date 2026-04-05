@@ -42,19 +42,22 @@
 
 <style>
 	section {
-		background-color: var(--background-color-2);
+		position: relative;
+		background-color: rgba(12, 29, 39, 0.96);
 		padding: 1rem;
 		border-radius: 0.75rem;
-		box-shadow:
-			0 2px 8px rgba(0, 0, 0, 0.3),
-			0 0 0 1px rgba(255, 255, 255, 0.05);
-		transition: box-shadow 0.2s ease;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+		transition:
+			box-shadow 0.2s ease,
+			border-color 0.2s ease,
+			background-color 0.2s ease;
 	}
 
 	section:hover {
-		box-shadow:
-			0 4px 12px rgba(0, 0, 0, 0.4),
-			0 0 0 1px rgba(255, 255, 255, 0.08);
+		border-color: rgba(255, 255, 255, 0.12);
+		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+		background-color: rgba(13, 31, 42, 0.98);
 	}
 
 	header {
@@ -62,19 +65,17 @@
 		justify-content: space-between;
 		align-items: center;
 		gap: 1rem;
-		padding: 1rem 1.25rem;
-		margin: -1rem -1rem 1.25rem -1rem;
-		background: linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.1) 100%);
-		border-radius: 0.75rem 0.75rem 0 0;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		padding: 0 0 0.75rem 0;
+		margin: 0 0 1rem 0;
+		border-bottom: 1px solid rgba(var(--theme-color-rgb), 0.8);
 	}
 
 	header h2 {
-		font-size: 0.875rem;
+		font-size: 1.15rem;
 		font-weight: 600;
-		text-transform: uppercase;
+		line-height: 1.2;
 		margin: 0;
-		letter-spacing: 0.05em;
+		letter-spacing: 0;
 	}
 
 	.header-actions {
@@ -84,15 +85,17 @@
 		flex-shrink: 0;
 	}
 
-	:global(section > h2, section > h3, section > h4, section > h5, section > h6) {
-		font-size: 0.95rem;
-		font-weight: 500;
-		text-transform: uppercase;
-		padding: 0.8rem 1rem;
-		margin: -1rem -1rem 1rem -1rem;
-		background-color: rgba(0, 0, 0, 0.1);
-		border-radius: 0.5rem 0.5rem 0 0;
-		box-shadow: 0 0 1em rgba(0, 0, 0, 0.2) inset;
+	section > :global(h2),
+	section > :global(h3),
+	section > :global(h4),
+	section > :global(h5),
+	section > :global(h6) {
+		font-size: 1.15rem;
+		font-weight: 600;
+		line-height: 1.2;
+		padding: 0 0 0.75rem 0;
+		margin: 0 0 1rem 0;
+		border-bottom: 1px solid rgba(var(--theme-color-rgb), 0.8);
 	}
 
 	@media only screen and (max-width: 768px) {
@@ -101,14 +104,19 @@
 		}
 
 		header {
-			padding: 0.75rem;
-			margin: -0.75rem -0.75rem 0.75rem -0.75rem;
+			padding: 0 0 0.625rem 0;
+			margin: 0 0 0.75rem 0;
 			flex-wrap: wrap;
+			gap: 0.75rem;
 		}
 
-		:global(section > h2, section > h3, section > h4, section > h5, section > h6) {
-			padding: 0.75rem 0.75rem;
-			margin: -0.75rem -0.75rem 0.75rem -0.75rem;
+		section > :global(h2),
+		section > :global(h3),
+		section > :global(h4),
+		section > :global(h5),
+		section > :global(h6) {
+			padding: 0 0 0.625rem 0;
+			margin: 0 0 0.75rem 0;
 		}
 	}
 </style>

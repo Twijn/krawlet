@@ -32,8 +32,39 @@ export class NameCache extends KromerCache<NameCacheLookup, NameCacheResult> {
         };
     }
 
+    private normalizeName(name: Name): Name {
+        return {
+            ...name,
+            registered: name.registered instanceof Date ? name.registered : new Date(name.registered),
+            updated: name.updated instanceof Date ? name.updated : new Date(name.updated),
+            transferred: name.transferred
+                ? (name.transferred instanceof Date ? name.transferred : new Date(name.transferred))
+                : undefined
+        };
+    }
+
+    private toComparableValue(value: unknown): string | number {
+        if (value instanceof Date) {
+            return value.getTime();
+        }
+
+        if (typeof value === 'number') {
+            return value;
+        }
+
+        if (typeof value === 'string') {
+            const parsedDate = Date.parse(value);
+            if (!Number.isNaN(parsedDate)) {
+                return parsedDate;
+            }
+            return value;
+        }
+
+        return String(value ?? '');
+    }
+
     private filterAndSort(names: Name[], params: NameCacheLookup): NameCacheResult {
-        let result = names;
+        const result = [...names];
 
         // Get total before pagination
         const total = result.length;
@@ -49,11 +80,14 @@ export class NameCache extends KromerCache<NameCacheLookup, NameCacheResult> {
             if (aVal === null || aVal === undefined) return order === 'ASC' ? 1 : -1;
             if (bVal === null || bVal === undefined) return order === 'ASC' ? -1 : 1;
 
+            const aComparable = this.toComparableValue(aVal);
+            const bComparable = this.toComparableValue(bVal);
+
             let comparison = 0;
-            if (typeof aVal === 'string' && typeof bVal === 'string') {
-                comparison = aVal.localeCompare(bVal);
+            if (typeof aComparable === 'string' && typeof bComparable === 'string') {
+                comparison = aComparable.localeCompare(bComparable);
             } else {
-                comparison = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+                comparison = aComparable < bComparable ? -1 : aComparable > bComparable ? 1 : 0;
             }
             
             return order === 'ASC' ? comparison : -comparison;
@@ -62,9 +96,11 @@ export class NameCache extends KromerCache<NameCacheLookup, NameCacheResult> {
         // Apply offset and limit
         const offset = params.offset ?? 0;
         const limit = params.limit ?? result.length;
-        result = result.slice(offset, offset + limit);
 
-        return { names: result, total };
+        return {
+            names: result.slice(offset, offset + limit),
+            total
+        };
     }
 
     protected async getFromCache(params: NameCacheLookup): Promise<NameCacheResult | null> {
@@ -98,14 +134,14 @@ export class NameCache extends KromerCache<NameCacheLookup, NameCacheResult> {
         }
         
         await tx.done;
-        const result = Array.from(resultMap.values());
+        const result = Array.from(resultMap.values()).map((item) => this.normalizeName(item));
         if (result.length === 0) return null;
         
-        // Fitler, sort, then parse metadata
+        // Filter and sort the normalized cached names
         const filtered = this.filterAndSort(result, params);
         return {
             names: filtered.names,
-            total: resultMap.size
+            total: filtered.total
         };
     }
 

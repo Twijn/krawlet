@@ -223,14 +223,6 @@ Displays user's wallets with balances.
 
 ---
 
-### Motd
-
-**Location**: `src/lib/components/widgets/Motd.svelte`
-
-Message of the day component.
-
----
-
 ### WhatsNew
 
 **Location**: `src/lib/components/widgets/WhatsNew.svelte`

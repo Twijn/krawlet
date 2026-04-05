@@ -250,7 +250,7 @@
 			{displayMeta.value ? displayMeta.value : displayMeta.name}
 		</span>
 	{:else}
-		<small><Placeholder text="[No message]" /></small>
+		<Placeholder text="[No message]" />
 	{/if}
 </div>
 

@@ -6,18 +6,20 @@
 	import ModuleLoading from "$lib/components/widgets/other/ModuleLoading.svelte";
 
     type Props = SortableTableProps & {
+        title?: string;
         headerCell?: Snippet<[key: T, label: string]>;
         cell: Snippet<[item: D, column: SortableColumnData<T>]>;
         columns: SortableColumnData<T>[];
         data: D[];
         hydrated?: boolean;
         loading?: boolean;
-        sortedColumn: T | null;
-        sortDirection: "ASC" | "DESC";
+        sortedColumn?: T | null;
+        sortDirection?: "ASC" | "DESC";
         refresh: () => void;
     };
 
     let {
+        title,
         headerCell,
         cell,
         columns,
@@ -46,6 +48,10 @@
     }
 </script>
 
+{#if title}
+    <h2>{title}</h2>
+{/if}
+
 <div class="table-wrapper" class:loading>
     <div class="table-container">
         <table class="sortable-table">
@@ -59,7 +65,7 @@
                                 {column.label}
                             {/if}
                             {#if column.sortable}
-                                <span class="sort-icon" class:active={sortedColumn === column.key}>
+                                <span class="sort-icon title-bottom" class:active={sortedColumn === column.key} title={sortedColumn === column.key ? (sortDirection === "ASC" ? "Sorted ascending" : "Sorted descending") : "Not sorted"}>
                                     {#if sortedColumn === column.key}
                                         <span class="sort-arrow" class:desc={sortDirection === "DESC"}>
                                             <FontAwesomeIcon icon={faArrowUp} size="sm" />
@@ -99,6 +105,14 @@
 <style>
     .table-wrapper {
         position: relative;
+    }
+
+    h2 {
+        margin: 0 0 0.5em 0;
+        padding: 0 0 0.25em 0;
+        font-size: 1.3rem;
+        font-weight: 500;
+        border-bottom: .1em solid var(--theme-color-2);
     }
 
     .table-wrapper.loading .table-container {

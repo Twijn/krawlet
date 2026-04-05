@@ -1,5 +1,6 @@
 <script lang="ts">
-	import Transactions from '$lib/components/widgets/transactions/Transactions.svelte';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
+	import AdvancedTransactions from '$lib/components/widgets/transactions/AdvancedTransactions.svelte';
 
 	const { data } = $props();
 	const { address } = data;
@@ -9,11 +10,14 @@
 	<title>Transactions | {address.address} | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/addresses">Addresses</a> <span>&raquo;</span>
-	<a href="/addresses/{address.address}">{address.address}</a> <span>&raquo;</span>
-	<a href="/addresses/{address.address}/transactions">Transactions</a>
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ label: 'Addresses', href: '/addresses' },
+		{ label: address.address, href: `/addresses/${address.address}` },
+		{ label: 'Transactions', href: `/addresses/${address.address}/transactions` },
+	]}
+/>
 
-<Transactions address={address.address} limit={30} />
+<div class="col-12">
+	<AdvancedTransactions addresses={[address.address]} limit={30} showDetails={true} />
+</div>

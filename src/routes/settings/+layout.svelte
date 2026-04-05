@@ -3,6 +3,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faGlobe, faDesktop, faBell, faServer } from '@fortawesome/free-solid-svg-icons';
 	import { t$ } from '$lib/i18n';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 
 	const { children } = $props();
 
@@ -30,11 +31,13 @@
 	<title>{$t$('settings.title')} | Krawlet</title>
 </svelte:head>
 
-<div class="col-12">
-	<h1>
-		<a href="/">Krawlet</a> <span>&raquo;</span> <a href="/settings">{$t$('settings.title')}</a>
-	</h1>
+<Breadcrumbs
+	navItems={[
+		{ href: '/settings', label: $t$('settings.title') }
+	]}
+/>
 
+<div class="col-12">
 	<div class="tabs-nav" role="tablist" aria-label="Settings navigation">
 		{#each tabs as tab (tab.href)}
 			<a

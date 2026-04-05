@@ -1,20 +1,47 @@
 <script lang="ts">
-	import Wallets from '$lib/components/widgets/Wallets.svelte';
-	import Import from '$lib/components/widgets/importexport/Import.svelte';
-	import Export from '$lib/components/widgets/importexport/Export.svelte';
+	import Wallets from '$lib/components/widgets/wallets/Wallets.svelte';
 	import { t$ } from '$lib/i18n';
+	import ImportModal from '$lib/components/dialogs/ImportModal.svelte';
+	import { faFileExport, faFileImport, faPlus } from '@fortawesome/free-solid-svg-icons';
+	import ExportModal from '$lib/components/dialogs/ExportModal.svelte';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
+	import { addWalletModal } from '$lib/stores/addWalletModal';
+
+	let importModalOpen = $state(false);
+	let exportModalOpen = $state(false);
 </script>
 
 <svelte:head>
 	<title>Wallets | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/wallets">{$t$('nav.wallets')}</a>
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ tl: $t$('nav.wallets'), href: '/wallets' },
+	]}
+	buttons={[
+		{
+			onClick: () => (importModalOpen = true),
+			icon: faFileImport,
+			tk: "wallet.importButton"
+		},
+		{
+			onClick: () => (exportModalOpen = true),
+			icon: faFileExport,
+			tk: "wallet.exportButton"
+		},
+		{
+			variant: "primary",
+			onClick: () => (addWalletModal.open()),
+			icon: faPlus,
+			tk: "wallet.addWallet"
+		}
+	]}
+/>
 
-<Wallets lgCols={12} mdCols={12} showDelete={true} showAddButton={true} />
+<div class="col-12">
+	<Wallets />
+</div>
 
-<Import lgCols={6} mdCols={12} />
-<Export lgCols={6} mdCols={12} />
+<ImportModal bind:open={importModalOpen} />
+<ExportModal bind:open={exportModalOpen} />

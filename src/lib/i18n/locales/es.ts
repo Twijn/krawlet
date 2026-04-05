@@ -171,11 +171,8 @@ export default {
 		exportWallets: 'Exportar Billeteras',
 		importWallets: 'Importar Billeteras',
 		exportedPassword: 'Contraseña de Exportación',
-		exportedPasswordOptional: 'Contraseña de Exportación (Opcional)',
 		exportedPasswordPlaceholder:
 			'Ingresa la contraseña que quieres usar para exportar tus billeteras',
-		exportedPasswordHint:
-			'Esta es usualmente diferente de tu contraseña maestra. ¡No olvides esta contraseña ya que la necesitarás para importar tus billeteras!',
 		importPasswordPlaceholder: 'Ingresa la contraseña que usaste para exportar tus billeteras',
 		exportButton: 'Exportar',
 		importButton: 'Importar',

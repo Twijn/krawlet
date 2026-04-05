@@ -1,19 +1,17 @@
 <script lang="ts">
-	import TransferName from '$lib/components/widgets/names/TransferName.svelte';
-	import PurchaseName from '$lib/components/widgets/names/PurchaseName.svelte';
-	import UpdateName from '$lib/components/widgets/names/UpdateName.svelte';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
+	import ManageName from '$lib/components/widgets/names/ManageName.svelte';
 </script>
 
 <svelte:head>
 	<title>Manage Names | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/names">Names</a> <span>&raquo;</span>
-	<a href="/names/manage">Manage</a>
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ label: 'Names', href: '/names' },
+		{ label: 'Manage', href: '/names/manage' },
+	]}
+/>
 
-<PurchaseName lgCols={6} mdCols={12} />
-<TransferName lgCols={6} mdCols={12} />
-<UpdateName lgCols={6} mdCols={12} />
+<ManageName />

@@ -92,4 +92,21 @@
             transform: rotate(360deg);
         }
     }
+
+    @media (max-width: 600px) {
+        .controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .controls .majority {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.5em;
+        }
+
+        .controls button {
+            align-self: flex-end;
+        }
+    }
 </style>

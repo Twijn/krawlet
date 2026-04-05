@@ -17,15 +17,17 @@
 	import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
     let {
-        query,
+        query = {},
         showDetails = false,
         addresses = $bindable([]),
-        limit = $bindable(30)
+        limit = $bindable(30),
+        title
     }: {
-        query: TransactionLookupQuery;
+        query?: TransactionLookupQuery;
         showDetails?: boolean;
         addresses?: string[];
         limit: number;
+        title?: string;
     } = $props();
 
     const cache = new TransactionCache();
@@ -127,42 +129,45 @@
     selectedAddresses={allAddresses}
 />
 
-<TableControls
-    {loading}
-    bind:page
-    {limit}
-    {total}
-    onRefresh={refresh}
->
-    {#if showDetails}
-        <QueryBar
-            {sortedColumn}
-            {sortDirection}
-            defaultSortColumn="time"
-            defaultSortDirection="DESC"
-            {columns}
-            onSortReset={resetSort}
-            {filters}
-            onFilterRemove={handleRemoveFilter}
-            filterButtons={[
-                {
-                    tk: "transaction.addAddressFilter",
-                    type: "button",
-                    variant: "primary",
-                    icon: faPlus,
-                    size: "small",
-                    onClick: () => showAddressModal = true
-                }
-            ]}
-        />
-    {/if}
-</TableControls>
+{#if !title}
+    <TableControls
+        {loading}
+        bind:page
+        {limit}
+        {total}
+        onRefresh={refresh}
+    >
+        {#if showDetails}
+            <QueryBar
+                {sortedColumn}
+                {sortDirection}
+                defaultSortColumn="time"
+                defaultSortDirection="DESC"
+                {columns}
+                onSortReset={resetSort}
+                {filters}
+                onFilterRemove={handleRemoveFilter}
+                filterButtons={[
+                    {
+                        tk: "transaction.addAddressFilter",
+                        type: "button",
+                        variant: "primary",
+                        icon: faPlus,
+                        size: "small",
+                        onClick: () => showAddressModal = true
+                    }
+                ]}
+            />
+        {/if}
+    </TableControls>
+{/if}
 
 <SortableTable 
     {refresh} 
     {columns} 
     data={transactions}
     {loading}
+    {title}
     bind:sortedColumn
     bind:sortDirection
 >
@@ -172,7 +177,7 @@
             {#if address}
                 <Address address={address} />
             {:else}
-                <small><Placeholder text={$t$('transaction.noMetadata')} /></small>
+                <Placeholder text={$t$('transaction.noMetadata')} />
             {/if}
         {:else if column.key === "type"}
             <span class="type"
@@ -194,7 +199,7 @@
                     <ParsedMetadata transaction={item} />
                 </div>
             {:else}
-                <small><Placeholder text={$t$('transaction.noMetadata')} /></small>
+                <Placeholder text={$t$('transaction.noMetadata')} />
             {/if}
         {:else if column.key === "id"}
             <a class="monospace title-left" href="/transactions/{item.id}" title="View transaction #{item.id}">{item.id}</a>
@@ -222,7 +227,6 @@
     .metadata {
         max-width: 26em;
         white-space: nowrap;
-        overflow-x: hidden;
         text-overflow: ellipsis;
     }
 

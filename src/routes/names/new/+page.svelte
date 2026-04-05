@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 	import PurchaseName from '$lib/components/widgets/names/PurchaseName.svelte';
 </script>
 
@@ -6,11 +7,14 @@
 	<title>Purchase Name | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/names">Names</a> <span>&raquo;</span>
-	<a href="/names/new">Purchase New Name</a>
-</h1>
+<Breadcrumbs
+	navItems={
+		[
+			{ label: 'Names', href: '/names' },
+			{ label: 'Purchase New Name', href: '/names/new' },
+		]
+	}
+/>
 
 <div class="col-12">
 	<PurchaseName />

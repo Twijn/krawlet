@@ -2,9 +2,6 @@ import { browser } from "$app/environment";
 import type { TransactionWithMeta } from "kromer";
 import { openDB, type IDBPDatabase } from "idb";
 
-import { TransactionCache } from "./TransactionCache";
-import { NameCache } from "./NameCache";
-
 export * from "./TransactionCache";
 export * from "./NameCache";
 interface KrawletDB {
@@ -20,10 +17,26 @@ export const getDB = async (): Promise<KrawletDatabase> => {
             throw new Error("Database can only be accessed in the browser");
         }
         
-        db = await openDB<KrawletDB>('krawlet', 3, {
+        db = await openDB<KrawletDB>('krawlet', 4, {
             upgrade(db) {
-                NameCache.upgrade(db);
-                TransactionCache.upgrade(db);
+                if (!db.objectStoreNames.contains('addresses')) {
+                    const store = db.createObjectStore('addresses', { keyPath: 'address' });
+                    store.createIndex("addressIndex", "address");
+                }
+
+                if (!db.objectStoreNames.contains('names')) {
+                    const store = db.createObjectStore('names', { keyPath: 'name' });
+                    store.createIndex("nameIndex", "name");
+                    store.createIndex("ownerIndex", "owner");
+                    store.createIndex("originalOwnerIndex", "originalOwner");
+                }
+
+                if (!db.objectStoreNames.contains('transactions')) {
+                    const store = db.createObjectStore('transactions', { keyPath: 'id' });
+                    store.createIndex("idIndex", "id");
+                    store.createIndex("fromIndex", "from");
+                    store.createIndex("toIndex", "to");
+                }
             }
         });
     }

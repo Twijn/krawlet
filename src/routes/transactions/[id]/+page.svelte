@@ -25,6 +25,7 @@
 	import { t$ } from '$lib/i18n';
 	import shopsync, { getItemImageUrl, getRelativeItemUrl } from '$lib/stores/shopsync';
 	import type { Listing, Shop } from '$lib/types/shops';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 
 	// Shop modal state
 	let showShopModal = $state(false);
@@ -162,11 +163,12 @@
 	<title>Transaction #{transaction.id} | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span> <a href="/transactions">Transactions</a>
-	<span>&raquo;</span>
-	<a href="/transactions/{transaction.id}">#{transaction.id}</a>
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ label: 'Transactions', href: '/transactions' },
+		{ label: `#${transaction.id}`, href: `/transactions/${transaction.id}` }
+	]}
+/>
 
 <div class="col-12 statistics">
 	<div class="statistic">
@@ -221,70 +223,66 @@
 	</div>
 {/if}
 
-<Section lgCols={4} mdCols={12}>
-	<h2><FontAwesomeIcon icon={faInfoCircle} /> Raw Information</h2>
-	<div class="table-container">
-		<table>
-			<tbody>
+<div class="table-container col-4 col-md-12">
+	<table>
+		<tbody>
+			<tr>
+				<th>Type</th>
+				<td class="capitalize right">
+					{transaction.type}
+				</td>
+			</tr>
+			<tr>
+				<th>From</th>
+				<td class="right">
+					{#if transaction.from}
+						<Address address={transaction.from} />
+					{:else}
+						<small>Unknown Sender</small>
+					{/if}
+				</td>
+			</tr>
+			<tr>
+				<th>To</th>
+				<td class="right">
+					<Address address={transaction.to} />
+				</td>
+			</tr>
+			{#if transaction.sent_name}
 				<tr>
-					<th>Type</th>
-					<td class="capitalize right">
-						{transaction.type}
-					</td>
-				</tr>
-				<tr>
-					<th>From</th>
+					<th>Sent to Name</th>
 					<td class="right">
-						{#if transaction.from}
-							<Address address={transaction.from} />
-						{:else}
-							<small>Unknown Sender</small>
-						{/if}
+						<code
+							>{transaction.sent_metaname
+								? `${transaction.sent_metaname}@`
+								: ''}{transaction.sent_name}<small>.kro</small></code
+						>
 					</td>
 				</tr>
-				<tr>
-					<th>To</th>
-					<td class="right">
-						<Address address={transaction.to} />
-					</td>
-				</tr>
-				{#if transaction.sent_name}
-					<tr>
-						<th>Sent to Name</th>
-						<td class="right">
-							<code
-								>{transaction.sent_metaname
-									? `${transaction.sent_metaname}@`
-									: ''}{transaction.sent_name}<small>.kro</small></code
-							>
-						</td>
-					</tr>
-				{/if}
-				<tr>
-					<th>Amount</th>
-					<td class="right">
-						{transaction.value.toFixed(2)} <small>KRO</small>
-					</td>
-				</tr>
-				<tr>
-					<th>Time</th>
-					<td class="right">
-						{transaction.time.toLocaleString()}
-					</td>
-				</tr>
-				<tr>
-					<th>Relative Time</th>
-					<td class="right">
-						{relativeTime(transaction.time)}
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-</Section>
+			{/if}
+			<tr>
+				<th>Amount</th>
+				<td class="right">
+					{transaction.value.toFixed(2)} <small>KRO</small>
+				</td>
+			</tr>
+			<tr>
+				<th>Time</th>
+				<td class="right">
+					{transaction.time.toLocaleString()}
+				</td>
+			</tr>
+			<tr>
+				<th>Relative Time</th>
+				<td class="right">
+					{relativeTime(transaction.time)}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
 
-<Section lgCols={8} mdCols={12}>
-	<h2><FontAwesomeIcon icon={faDatabase} /> Metadata</h2>
+<div class="col-8 col-md-12">
 	{#if transaction.metadata && transaction.metadata.length > 0}
 		<!-- Shop Action Section -->
 		{#if isShopAction}
@@ -503,7 +501,7 @@
 		<!-- Other Metadata -->
 		{#if otherMetaEntries.length > 0}
 			<div class="meta-section meta-other">
-				<h3>Other Metadata</h3>
+				<h3>Metadata Table</h3>
 				<div class="table-container">
 					<table>
 						<thead>
@@ -516,7 +514,7 @@
 							{#each otherMetaEntries as metadata (metadata.name)}
 								<tr>
 									{#if metadata?.value}
-										<th class="caps">{metadata.name}</th>
+										<th class="caps">{metadata.name.replace("_", " ")}</th>
 										<td>
 											{#if metadata.name === 'return' && metadata.value.length === 10}
 												<a href="/addresses/{metadata.value}">
@@ -527,7 +525,7 @@
 											{/if}
 										</td>
 									{:else}
-										<th><small><Placeholder text="[no name]" /></small></th>
+										<th><Placeholder text="[no name]" /></th>
 										<td>{metadata.name}</td>
 									{/if}
 								</tr>
@@ -546,7 +544,7 @@
 	{:else}
 		<small>There is no metadata on this transaction!</small>
 	{/if}
-</Section>
+</div>
 
 <style>
 	code.block {

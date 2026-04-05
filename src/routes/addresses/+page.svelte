@@ -1,14 +1,16 @@
 <script lang="ts">
-	import Addresses from '$lib/components/widgets/addresses/Addresses.svelte';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
+	import AdvancedAddresses from '$lib/components/widgets/addresses/AdvancedAddresses.svelte';
 </script>
 
 <svelte:head>
 	<title>Addresses | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/addresses">Addresses</a>
-</h1>
+<Breadcrumbs navItems={[
+	{ label: 'Addresses', href: '/addresses' }
+]} />
 
-<Addresses lgCols={12} limit={30} />
+<div class="col-12">
+	<AdvancedAddresses limit={30} showDetails={true} />
+</div>

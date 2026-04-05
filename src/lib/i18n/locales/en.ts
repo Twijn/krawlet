@@ -189,10 +189,7 @@ export default {
 		exportWallets: 'Export Wallets',
 		importWallets: 'Import Wallets',
 		exportedPassword: 'Exported Password',
-		exportedPasswordOptional: 'Exported Password (Optional)',
 		exportedPasswordPlaceholder: 'Enter the password you want to use to export your wallets',
-		exportedPasswordHint:
-			"This is usually different from your master password. Don't forget this password as you will need it to import your wallets.",
 		importPasswordPlaceholder: 'Enter the password you used to export your wallets',
 		exportButton: 'Export',
 		importButton: 'Import',

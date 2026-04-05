@@ -62,7 +62,7 @@
 		}
 	}
 
-	let hasErrors = $derived($prompt?.errors && $prompt.errors.length > 0);
+	let hasErrors = $derived(Boolean($prompt?.errors?.length));
 </script>
 
 {#if $prompt}
@@ -81,7 +81,7 @@
 				<h2 id={titleId} class="sr-only">{$prompt.inputLabel}</h2>
 				{#if hasErrors}
 					<div id={errorId} role="alert" aria-live="assertive">
-						{#each $prompt.errors as error (error)}
+						{#each ($prompt.errors ?? []) as error (error)}
 							<Alert variant="danger">
 								{error}
 							</Alert>

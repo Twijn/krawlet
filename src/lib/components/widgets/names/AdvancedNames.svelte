@@ -17,17 +17,19 @@
 	import settings from "$lib/stores/settings";
 
     let {
-        query,
+        query = {},
         showDetails = false,
         addresses = $bindable([]),
         limit = $bindable(30),
-        storePrefix = ""
+        storePrefix = "",
+        title,
     }: {
-        query: NameLookupQuery;
+        query?: NameLookupQuery;
         showDetails?: boolean;
         addresses?: string[];
         limit: number;
         storePrefix?: string;
+        title?: string;
     } = $props();
 
     const cache = new NameCache();
@@ -165,42 +167,45 @@
     selectedAddresses={allAddresses}
 />
 
-<TableControls
-    {loading}
-    bind:page={page.value}
-    {limit}
-    {total}
-    onRefresh={refresh}
->
-    {#if showDetails}
-        <QueryBar
-            {sortedColumn}
-            {sortDirection}
-            defaultSortColumn="registered"
-            defaultSortDirection="DESC"
-            {columns}
-            onSortReset={resetSort}
-            {filters}
-            onFilterRemove={handleRemoveFilter}
-            filterButtons={[
-                {
-                    tk: "transaction.addAddressFilter",
-                    type: "button",
-                    variant: "primary",
-                    icon: faPlus,
-                    size: "small",
-                    onClick: () => showAddressModal = true
-                }
-            ]}
-        />
-    {/if}
-</TableControls>
+{#if !title}
+    <TableControls
+        {loading}
+        bind:page={page.value}
+        {limit}
+        {total}
+        onRefresh={refresh}
+    >
+        {#if showDetails}
+            <QueryBar
+                {sortedColumn}
+                {sortDirection}
+                defaultSortColumn="registered"
+                defaultSortDirection="DESC"
+                {columns}
+                onSortReset={resetSort}
+                {filters}
+                onFilterRemove={handleRemoveFilter}
+                filterButtons={[
+                    {
+                        tk: "transaction.addAddressFilter",
+                        type: "button",
+                        variant: "primary",
+                        icon: faPlus,
+                        size: "small",
+                        onClick: () => showAddressModal = true
+                    }
+                ]}
+            />
+        {/if}
+    </TableControls>
+{/if}
 
 <SortableTable 
     {refresh} 
     {columns} 
     data={names}
     {loading}
+    {title}
     bind:sortedColumn
     bind:sortDirection
 >

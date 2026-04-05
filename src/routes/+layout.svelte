@@ -208,7 +208,7 @@
 		height: 3.8rem;
 		border-bottom: 0.1em solid var(--theme-color-2);
 		box-shadow: 0 0 1em rgba(0, 0, 0, 0.15);
-		z-index: 10;
+		z-index: 10000;
 	}
 
 	header button {
@@ -254,7 +254,7 @@
 		color: var(--text-color-1);
 		overflow-y: auto;
 		box-shadow: 0 0 1em rgba(0, 0, 0, 0.15);
-		z-index: 5;
+		z-index: 999;
 		transition: 0.3s ease-in-out;
 	}
 
@@ -343,7 +343,7 @@
 		top: 3.8rem;
 		left: 0;
 		right: 0;
-		z-index: 100;
+		z-index: 10000;
 		text-align: center;
 		background-color: rgba(var(--red), 0.8);
 		padding: 0.5em 1em;
@@ -362,7 +362,7 @@
 		bottom: 1em;
 		left: 50%;
 		transform: translateX(-50%);
-		z-index: 100;
+		z-index: 10000;
 		text-align: center;
 		background-color: rgba(var(--red), 0.6);
 		border: 0.1em solid rgba(var(--red), 0.8);

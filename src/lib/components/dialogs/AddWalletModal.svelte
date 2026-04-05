@@ -10,6 +10,7 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { confirm } from '$lib/stores/confirm';
 	import settings from '$lib/stores/settings';
+	import { masterPasswordStore } from '$lib/stores/masterPassword';
 
 	let masterPassword = $state('');
 	let name = $state('');
@@ -59,6 +60,18 @@
 	}
 
 	async function onSubmit() {
+		let masterPassword: string | null = null;
+
+		try {
+			masterPassword = await masterPasswordStore.get();
+			if (!masterPassword) {
+				throw new Error('Master password is required');
+			}
+		} catch (e) {
+			notifications.error($t$('wallet.masterPasswordRequired'));
+			return;
+		}
+
 		if (masterPassword.length < 8) {
 			notifications.error($t$('wallet.masterPasswordMinLength'));
 			return;
@@ -123,24 +136,6 @@
 	{onSubmit}
 	{onClose}
 >
-	<label>
-		{$t$('wallet.masterPassword')}
-		<input
-			id="masterPassword"
-			type="password"
-			name="masterPassword"
-			bind:value={masterPassword}
-			required
-			autocomplete="new-password"
-		/>
-		<small>
-			{#if $settings.wallets.length > 0}
-				{$t$('wallet.masterPasswordSameHint')}
-			{/if}
-			{$t$('wallet.masterPasswordHint')}
-		</small>
-	</label>
-
 	<label>
 		{$t$('name.name')}
 		<input type="text" name="name" bind:value={name} required autocomplete="off" />

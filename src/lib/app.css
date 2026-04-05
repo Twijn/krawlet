@@ -117,7 +117,8 @@ body {
 	border-radius: 0.5rem;
 	font-size: 0.8125rem;
 	font-weight: 500;
-	z-index: 10000;
+	text-transform: none;
+	z-index: 1000;
 	box-shadow:
 		0 4px 12px rgba(0, 0, 0, 0.5),
 		0 0 0 1px rgba(255, 255, 255, 0.1);
@@ -138,6 +139,12 @@ body {
 	translate: 0 0;
 }
 
+.title-bottom[title]:hover::after {
+	top: calc(100% + 8px);
+	bottom: unset;
+	translate: -50% 0;
+}
+
 [title]:hover::before {
 	content: '';
 	position: absolute;
@@ -149,7 +156,7 @@ body {
 	border-left: 6px solid transparent;
 	border-right: 6px solid transparent;
 	border-top: 6px solid rgba(20, 20, 20, 0.98);
-	z-index: 10000;
+	z-index: 1000;
 	pointer-events: none;
 	animation: tooltipFadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
@@ -163,6 +170,13 @@ body {
 	left: unset;
 	right: 12px;
 	translate: 0 0;
+}
+
+.title-bottom[title]:hover::before {
+	top: unset;
+	bottom: -8px;
+	translate: -50% 0;
+	rotate: 180deg;
 }
 
 @keyframes tooltipFadeIn {
@@ -180,13 +194,6 @@ svg {
 	display: block;
 }
 
-h1 {
-	font-size: 1.5em;
-	font-weight: 400;
-	grid-column: span 12;
-	margin: 0;
-}
-
 a {
 	color: var(--theme-color-2);
 	transition: all 0.2s ease;
@@ -198,15 +205,6 @@ a:hover,
 a:focus-visible {
 	color: rgb(var(--theme-color-rgb));
 	text-decoration: none;
-}
-
-h1 a {
-	color: var(--text-color-1);
-	text-decoration: none;
-}
-
-h1 span {
-	opacity: 0.5;
 }
 
 small {

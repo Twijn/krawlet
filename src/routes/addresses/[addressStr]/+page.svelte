@@ -4,10 +4,10 @@
 	import playerWalletStore, { type Player } from '$lib/stores/playerWallets';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
-	import AddressStats from '$lib/components/widgets/addresses/AddressStats.svelte';
 	import { getAddress, type KnownAddress } from '$lib/stores/knownAddresses';
 	import AdvancedTransactions from '$lib/components/widgets/transactions/AdvancedTransactions.svelte';
 	import AdvancedNames from '$lib/components/widgets/names/AdvancedNames.svelte';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 
 	const { data } = $props();
 	const address = $derived(data.address);
@@ -25,11 +25,11 @@
 	<title>{address.address} | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/addresses">Addresses</a> <span>&raquo;</span>
-	<a href="/addresses/{address.address}">{address.address}</a>
-</h1>
+<Breadcrumbs navItems={[
+		{ label: 'Addresses', href: '/addresses' },
+		{ label: address.address, href: `/addresses/${address.address}` }
+	]}
+/>
 
 <div class="col-12 statistics">
 	<div class="statistic">
@@ -73,14 +73,10 @@
 	</div>
 </div>
 
-<div class="col-7 col-md-12">
-	<AdvancedTransactions limit={10} query={{}} addresses={[address.address]} />
+<div class="col-12">
+	<AdvancedNames title="Names" limit={15} query={{}} addresses={[address.address]} showDetails={true} />
+	<AdvancedTransactions title="Transactions" limit={15} query={{}} addresses={[address.address]} showDetails={true} />
 </div>
-<div class="col-5 col-md-12">
-	<AdvancedNames limit={10} query={{}} addresses={[address.address]} />
-</div>
-
-<AddressStats address={address.address} />
 
 <style>
 	.statistic .inout {

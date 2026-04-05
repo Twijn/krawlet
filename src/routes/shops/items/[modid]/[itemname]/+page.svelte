@@ -6,6 +6,7 @@
 	import { faShop } from '@fortawesome/free-solid-svg-icons';
 	import ShopCard from '$lib/components/widgets/shops/cards/ShopCard.svelte';
 	import ItemBadges from '$lib/components/widgets/shops/ItemBadges.svelte';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 
 	const { data } = $props();
 	const { item } = data;
@@ -54,14 +55,13 @@
 	<title>{cleanShopData(item?.itemDisplayName ?? '')} | Shop Items | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/shops">Shops</a> <span>&raquo;</span>
-	<a href="/shops/items">Items</a> <span>&raquo;</span>
-	<a href="/shops/items/{item?.itemName.replace(/:/g, '/')}"
-		>{cleanShopData(item?.itemDisplayName ?? '')}</a
-	>
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ tl: 'nav.shops', href: '/shops' },
+		{ label: 'Items', href: '/shops/items' },
+		{ label: cleanShopData(item?.itemDisplayName ?? ''), href: `/shops/items/${item?.itemName.replace(/:/g, '/')}` },
+	]}
+/>
 
 <div class="col-12 statistics">
 	<div class="statistic">

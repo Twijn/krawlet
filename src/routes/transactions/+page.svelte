@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 	import AdvancedTransactions from '$lib/components/widgets/transactions/AdvancedTransactions.svelte';
 </script>
 
@@ -6,8 +7,13 @@
 	<title>Transactions | Krawlet</title>
 </svelte:head>
 
-<h1><a href="/">Krawlet</a> <span>&raquo;</span> Transactions</h1>
+<Breadcrumbs
+	navItems={[
+		{ label: 'Home', href: '/' },
+		{ label: 'Transactions', href: '/transactions' },
+	]}
+/>
 
 <div class="col col-12">
-	<AdvancedTransactions limit={30} query={{}} showDetails={true} />
+	<AdvancedTransactions limit={30} showDetails={true} />
 </div>

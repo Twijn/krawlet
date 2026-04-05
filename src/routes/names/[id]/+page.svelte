@@ -1,16 +1,18 @@
 <script lang="ts">
 	import Alert from '$lib/components/dialogs/Alert.svelte';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 </script>
 
 <svelte:head>
 	<title>Not Yet Implemented | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/names">Names</a> <span>&raquo;</span>
-	Not Yet Implemented
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ label: 'Names', href: '/names' },
+		{ label: 'Not Yet Implemented', href: '/names/' },
+	]}
+/>
 
 <Alert variant="danger">
 	<strong>This isn't implemented yet!</strong>

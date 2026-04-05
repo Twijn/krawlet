@@ -1,5 +1,6 @@
 <script lang="ts">
-	import Addresses from '$lib/components/widgets/addresses/Addresses.svelte';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
+	import AdvancedAddresses from '$lib/components/widgets/addresses/AdvancedAddresses.svelte';
 	import RichAddressStats from '$lib/components/widgets/addresses/RichAddressStats.svelte';
 </script>
 
@@ -7,12 +8,13 @@
 	<title>Richest Addresses | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/addresses">Addresses</a> <span>&raquo;</span>
-	<a href="/addresses/rich">Richest</a>
-</h1>
+<Breadcrumbs navItems={[
+	{ label: 'Addresses', href: '/addresses' },
+	{ label: 'Richest', href: '/addresses/rich' }
+]} />
 
 <RichAddressStats lgCols={12} />
 
-<Addresses lgCols={12} limit={30} rich={true} />
+<div class="col-12">
+	<AdvancedAddresses limit={30} richest={true} showDetails={true} />
+</div>

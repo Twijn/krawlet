@@ -16,6 +16,7 @@
 	import FilterSortControls from '$lib/components/widgets/shops/filtersort/ItemFilterSort.svelte';
 	import { DEFAULT_ITEM_SORT, ITEM_SORT_OPTIONS, type ItemSortOption } from '$lib/types/sort';
 	import { t$ } from '$lib/i18n';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 
 	let listings: ItemListing[] = $state([]);
 
@@ -74,11 +75,12 @@
 	<title>Shop Items | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/shops">{$t$('nav.shops')}</a> <span>&raquo;</span>
-	<a href="/shops/items">{$t$('nav.items')}</a>
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ label: $t$('nav.shops'), href: '/shops' },
+		{ label: $t$('nav.items'), href: '/shops/items' },
+	]}
+/>
 
 <FilterSortControls bind:searchQuery={searchQuery.value} bind:sortOption={sortOption.value} />
 

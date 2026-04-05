@@ -6,6 +6,7 @@
 	import { faSearch } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { t$ } from '$lib/i18n';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 
 	let address = $state('');
 
@@ -31,11 +32,12 @@
 	<title>Address Search | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/addresses">{$t$('nav.addresses')}</a> <span>&raquo;</span>
-	<a href="/addresses/search">{$t$('common.search')}</a>
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ href: '/addresses', label: $t$('nav.addresses') },
+		{ href: '/addresses/search', label: $t$('common.search') },
+	]}
+/>
 
 <div class="col-12">
 	<Section>

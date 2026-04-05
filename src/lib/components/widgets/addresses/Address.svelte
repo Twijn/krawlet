@@ -109,6 +109,7 @@
 	class:official={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'official'}
 	class:shop={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'shop'}
 	class:gamble={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'gamble'}
+	class:service={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'service'}
 	class:company={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'company'}
 	title={special ? 'Go to ' + address : undefined}
 	oncontextmenu={handleContextMenu}
@@ -148,6 +149,8 @@
 		font-size: 1rem;
 		flex-grow: 1;
 		text-align: center;
+		/* Override global `a { transition: all ... }` to avoid load-in size/color morphing. */
+		transition: none;
 	}
 
 	a:not(.special) {
@@ -177,6 +180,10 @@
 
 	.gamble {
 		--color: var(--red);
+	}
+
+	.service {
+		--color: var(--theme-color-rgb);
 	}
 
 	.special {

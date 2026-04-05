@@ -97,22 +97,7 @@
 		cursor: pointer;
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-		position: relative;
-		overflow: hidden;
 		backdrop-filter: blur(8px);
-	}
-
-	.button::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background: rgba(255, 255, 255, 0.1);
-		opacity: 0;
-		transition: opacity 0.2s ease;
-	}
-
-	.button:hover::before {
-		opacity: 1;
 	}
 
 	.button :global(svg) {

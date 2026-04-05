@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import Alert from '$lib/components/dialogs/Alert.svelte';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 	import Shops from '$lib/components/widgets/shops/Shops.svelte';
 	import ShopStats from '$lib/components/widgets/shops/ShopStats.svelte';
 	import { t$ } from '$lib/i18n';
@@ -14,6 +15,12 @@
 	<title>Shops | Krawlet</title>
 </svelte:head>
 
+<Breadcrumbs
+	navItems={[
+		{ label: $t$('nav.shops'), href: '/shops' }
+	]}
+/>
+
 {#if urlParams && urlParams.get('error') === 'not-found'}
 	<Alert variant="danger">
 		<strong>{$t$('shop.notFoundTitle')}</strong>
@@ -22,8 +29,6 @@
 		</p>
 	</Alert>
 {/if}
-
-<h1><a href="/">Krawlet</a> <span>&raquo;</span> <a href="/shops">{$t$('nav.shops')}</a></h1>
 
 <ShopStats lgCols={12} />
 

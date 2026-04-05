@@ -241,7 +241,7 @@
 										{:else if transaction.metadata && transaction.metadata.length > 0}
 											<small>{transaction.metadata.substring(0, 75)}</small>
 										{:else}
-											<small><Placeholder text={$t$('transaction.noMetadata')} /></small>
+											<Placeholder text={$t$('transaction.noMetadata')} />
 										{/if}
 									</td>
 								{/if}

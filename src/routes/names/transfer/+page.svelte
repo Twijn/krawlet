@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 	import TransferName from '$lib/components/widgets/names/TransferName.svelte';
 </script>
 
@@ -6,11 +7,12 @@
 	<title>Transfer Name | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/names">Names</a> <span>&raquo;</span>
-	<a href="/names/transfer">Transfer</a>
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ label: 'Names', href: '/names' },
+		{ label: 'Transfer', href: '/names/transfer' },
+	]}
+/>
 
 <div class="col-12">
 	<TransferName />

@@ -7,12 +7,12 @@
 	const { promptForPassword, error } = masterPasswordStore;
 
 	let masterPassword = $state('');
-	let persistPassword = $state(false);
+	let persistPassword = $state(true);
 
 	const onSubmit = async () => {
 		await masterPasswordStore.set(masterPassword, persistPassword);
 		masterPassword = '';
-		persistPassword = false;
+		persistPassword = true;
 	};
 
 	const handleClose = () => {

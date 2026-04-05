@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 	import CreateWallet from '$lib/components/widgets/internal/CreateWallet.svelte';
 </script>
 
@@ -6,11 +7,13 @@
 	<title>Create Wallet | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	Internal <span>&raquo;</span>
-	<a href="/internal/create-wallet">Create Wallet</a>
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ label: 'Home', href: '/' },
+		{ label: 'Internal', href: '/internal' },
+		{ label: 'Create Wallet', href: '/internal/create-wallet' },
+	]}
+/>
 
 <div class="col-12">
 	<CreateWallet />

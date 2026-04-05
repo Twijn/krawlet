@@ -1,14 +1,22 @@
-import type { Address, PaginatedQuery } from "kromer";
+import type { Address, AddressesResponse, PaginatedQuery } from "kromer";
 import { KromerCache } from "./KromerCache";
 import kromer from "../api/kromer";
 import { getDB, type KrawletDatabase } from ".";
 
 export type AddressCacheLookup = PaginatedQuery | {
     addresses: string[];
+    richest?: boolean;
+};
+
+export type AddressWithNames = Address & {
+    names?: number;
 };
 
 export type AddressCacheResult = {
-    addresses: Record<string, Address>;
+    addressList: Record<string, AddressWithNames>;
+    addresses: AddressWithNames[];
+    loading: boolean;
+    error: Error | null;
     total: number;
 };
 
@@ -25,21 +33,38 @@ export class AddressCache extends KromerCache<AddressCacheLookup, AddressCacheRe
         if ('addresses' in params && params.addresses.length > 0) {
             const response = await kromer.addresses.lookupAddresses(params.addresses, true);
             return {
-                addresses: response.addresses,
-                total: response.found
+                addressList: response.addresses,
+                addresses: Object.values(response.addresses),
+                total: response.found,
+                loading: false,
+                error: null
             };
         } else if ('offset' in params && 'limit' in params) {
-            const response = await kromer.addresses.getAll({
-                offset: params.offset,
-                limit: params.limit
-            });
+            let response: AddressesResponse | null = null;
+
+            if ('richest' in params && params.richest) {
+                response = await kromer.addresses.getRich({
+                    offset: params.offset,
+                    limit: params.limit
+                });
+            } else {
+                response = await kromer.addresses.getAll({
+                    offset: params.offset,
+                    limit: params.limit
+                });
+            }
+
             const result = response.addresses.reduce((acc, address) => {
                 acc[address.address] = address;
                 return acc;
             }, {} as Record<string, Address>);
+            
             return {
-                addresses: result,
-                total: response.total
+                addressList: result,
+                addresses: Object.values(result),
+                total: response.total,
+                loading: false,
+                error: null
             };
         }
         return null;
@@ -68,15 +93,42 @@ export class AddressCache extends KromerCache<AddressCacheLookup, AddressCacheRe
         }
         
         await tx.done;
-        const result = Array.from(resultMap.values());
+        let result = Array.from(resultMap.values());
         if (result.length === 0) return null;
+
+        if ('richest' in params && params.richest) {
+            result.sort((a, b) => b.balance - a.balance);
+        } else {
+            result.sort((a, b) => {
+                let firstSeenA = a.firstseen ? new Date(a.firstseen).getTime() : 0;
+                let firstSeenB = b.firstseen ? new Date(b.firstseen).getTime() : 0;
+                return firstSeenA - firstSeenB;
+            });
+        }
+
+        if ('offset' in params && 'limit' in params) {
+            const offset = params.offset || 0;
+            const limit = params.limit || result.length;
+            result = result.slice(offset, offset + limit);
+        }
+
+        return {
+            addressList: result.reduce((acc, address) => {
+                acc[address.address] = address;
+                return acc;
+            }, {} as Record<string, Address>),
+            addresses: result,
+            total: resultMap.size,
+            loading: false,
+            error: null
+        };
     }
 
     protected async saveToCache(data: AddressCacheResult): Promise<void> {
         const db = await getDB();
         const tx = db.transaction("addresses", "readwrite");
         const store = tx.objectStore("addresses");
-        for (const item of Object.values(data.addresses)) {
+        for (const item of Object.values(data.addressList)) {
             await store.put(item);
         }
         await tx.done;

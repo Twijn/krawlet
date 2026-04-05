@@ -41,7 +41,7 @@
 				notifications.success($t$('wallet.importSuccess', { count: walletCount }));
 			} catch (e) {
 				const err = e as APIError;
-				notifications.error($t$('wallet.importError', { message: err.message }));
+				notifications.error($t$('wallet.importError', { message: err.message ?? "Unknown" }));
 			}
 			return false;
 		}
