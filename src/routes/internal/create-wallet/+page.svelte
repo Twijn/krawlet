@@ -9,7 +9,6 @@
 
 <Breadcrumbs
 	navItems={[
-		{ label: 'Home', href: '/' },
 		{ label: 'Internal', href: '/internal' },
 		{ label: 'Create Wallet', href: '/internal/create-wallet' },
 	]}

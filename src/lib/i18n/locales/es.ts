@@ -177,12 +177,46 @@ export default {
 		exportButton: 'Exportar',
 		importButton: 'Importar',
 		exportData: 'Datos de Exportación',
+		importFile: 'Archivo de Importación',
+		importFileHelp: 'Selecciona un archivo .krawlet o .json exportado desde tu dispositivo.',
 		importData: 'Datos de Importación',
 		importDataPlaceholder: 'Ingresa tu exportación JSON de billetera',
+		importReencryptToggle:
+			'Recifrar billeteras importadas con mi contraseña maestra actual',
+		importSourceMasterPassword: 'Contraseña Maestra de Origen',
+		importSourceMasterPasswordPlaceholder:
+			'Ingresa la contraseña maestra usada por las billeteras en esta exportación (por defecto la contraseña de exportación)',
+		importReencryptHelp:
+			'Primero intentaremos usar la contraseña de exportación para migrar billeteras. Si falla, podrás ingresar la contraseña maestra de origen.',
+		importSourceMasterPasswordHelp:
+			'La contraseña de exportación no pudo descifrar las claves privadas. Ingresa la contraseña maestra de origen de las billeteras exportadas.',
+		importMasterPasswordRequired:
+			'La contraseña maestra actual es obligatoria para completar la importación.',
+		importSourceMasterPasswordNeeded:
+			'Esta exportación parece usar una contraseña maestra diferente. Ingresa la contraseña maestra de origen para continuar.',
+		importSourceMasterPasswordRequired:
+			'La contraseña maestra de origen es obligatoria para continuar la importación.',
+		importPreviewTitle: 'Vista Previa de Importación',
+		importPreviewWaiting: 'Ingresa la contraseña de exportación para previsualizar esta importación.',
+		importPreviewLoading: 'Verificando datos de importación...',
+		importPreviewInvalid: 'No se pudo descifrar o validar esta exportación con la contraseña actual.',
+		importPreviewEmpty: 'Esta exportación no contiene billeteras para importar.',
+		importPreviewReady: '{count} billetera(s) lista(s) para importar.',
+		importPreviewSummary: '{add} nuevas, {rename} con cambio de nombre.',
+		importPreviewReencryptEnabled:
+			'Las claves privadas se migrarán a tu contraseña maestra actual.',
+		importPreviewReencryptDisabled:
+			'Las claves privadas conservarán su contraseña maestra original (no recomendado).',
+		importPreviewActionAdd: 'Agregar',
+		importPreviewActionRename: 'Renombrar',
+		importPreviewRenameFrom: 'Nombre actual: {name}',
+		importPreviewMore: '{count} billetera(s) más no se muestran.',
 		copyToClipboard: 'Copiar al Portapapeles',
 		exportCopied:
 			'Datos de exportación copiados al portapapeles. Pégalos en la aplicación Krawlet para importar tus billeteras.',
 		importSuccess: '¡{count} billetera(s) importada(s) exitosamente!',
+		importSuccessReencrypted:
+			'¡{count} billetera(s) importada(s) exitosamente! Se migraron {reencrypted} clave(s) privada(s) a tu contraseña maestra actual.',
 		importError: 'Error al importar billeteras: {message}',
 		importInvalid: '¡Contraseña de exportación o datos inválidos!'
 	},

@@ -4,6 +4,7 @@
 	import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 	import {
 		faAddressBook,
+		faBoxesPacking,
 		faChartLine,
 		faFont,
 		faHome,
@@ -109,6 +110,11 @@
 			nameKey: 'nav.reconnectedCC',
 			shouldShow: () => getSyncNode().id === 'kromer',
 			links: [
+				{
+					icon: faBoxesPacking,
+					nameKey: 'nav.estorages',
+					href: '/estorage'
+				},
 				{
 					icon: faShop,
 					nameKey: 'nav.shops',

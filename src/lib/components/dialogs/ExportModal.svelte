@@ -187,7 +187,7 @@
 		{:else}
 			<p>We will use your master password to encrypt your wallets.</p>
 		{/if}
-		<p>After import, your current master password will continue to be required to decrypt your wallets.</p>
+		<p>Your current master password will be required to import your wallets and decrypt (use) them after import.</p>
 		<div class="padding">
 			<ButtonSelect bind:selected={selectedExportOption} options={exportOptions} vertical={false} />
 		</div>

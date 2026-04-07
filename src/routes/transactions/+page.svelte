@@ -9,7 +9,6 @@
 
 <Breadcrumbs
 	navItems={[
-		{ label: 'Home', href: '/' },
 		{ label: 'Transactions', href: '/transactions' },
 	]}
 />

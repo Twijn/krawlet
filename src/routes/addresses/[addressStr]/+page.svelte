@@ -3,11 +3,12 @@
 	import { onDestroy } from 'svelte';
 	import playerWalletStore, { type Player } from '$lib/stores/playerWallets';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
-	import Button from '$lib/components/ui/Button.svelte';
 	import { getAddress, type KnownAddress } from '$lib/stores/knownAddresses';
 	import AdvancedTransactions from '$lib/components/widgets/transactions/AdvancedTransactions.svelte';
 	import AdvancedNames from '$lib/components/widgets/names/AdvancedNames.svelte';
 	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
+	import { faAddressBook, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+	import Alert from '$lib/components/dialogs/Alert.svelte';
 
 	const { data } = $props();
 	const address = $derived(data.address);
@@ -25,18 +26,37 @@
 	<title>{address.address} | Krawlet</title>
 </svelte:head>
 
-<Breadcrumbs navItems={[
+<Breadcrumbs
+	navItems={[
 		{ label: 'Addresses', href: '/addresses' },
 		{ label: address.address, href: `/addresses/${address.address}` }
 	]}
+	buttons={[
+		{
+			tk: 'address.actions.viewTransactions',
+			href: `/addresses/${address.address}/transactions`,
+			icon: faAddressBook,
+			variant: 'secondary'
+		},
+		{
+			tk: 'address.actions.sendKromer',
+			href: `/transactions/new?to=${address.address}`,
+			icon: faPaperPlane,
+			variant: 'primary'
+		}
+	]}
 />
 
+{#if knownEntry}
+	<Alert variant={knownEntry.type === 'official' ? 'success' : 'info'}>
+		This address is known as <strong>{knownEntry.name}</strong>.
+		{#if knownEntry.description}
+			<p><strong>Description:</strong> {knownEntry.description}</p>
+		{/if}
+	</Alert>
+{/if}
+
 <div class="col-12 statistics">
-	<div class="statistic">
-		<div>
-			<Button variant="primary" href="/transactions/new?to={address.address}">Send Kromer</Button>
-		</div>
-	</div>
 	<div class="statistic">
 		<h2>Address</h2>
 		<div>

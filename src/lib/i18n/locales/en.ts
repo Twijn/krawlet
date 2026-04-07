@@ -50,6 +50,7 @@ export default {
 		names: 'Names',
 		allNames: 'All Names',
 		manageNames: 'Manage Names',
+		estorages: 'Ender Storages',
 		shops: 'Shops',
 		items: 'Items',
 		reports: 'Reports',
@@ -69,6 +70,10 @@ export default {
 		firstSeen: 'First Seen',
 		rank: 'Rank',
 		viewAll: 'View all addresses',
+		actions: {
+			viewTransactions: 'View transactions',
+			sendKromer: 'Send Kromer'
+		},
 		viewAllRich: 'View all of the richest addresses',
 		noAddresses: 'No addresses found',
 		// Address search
@@ -194,12 +199,42 @@ export default {
 		exportButton: 'Export',
 		importButton: 'Import',
 		exportData: 'Export Data',
+		importFile: 'Import File',
+		importFileHelp: 'Select an exported .krawlet or .json file from your device.',
 		importData: 'Import Data',
 		importDataPlaceholder: 'Enter your JSON wallet export',
+		importReencryptToggle: 'Re-encrypt imported wallets to my current master password',
+		importSourceMasterPassword: 'Source Master Password',
+		importSourceMasterPasswordPlaceholder:
+			'Enter the master password used by wallets inside this export (defaults to export password)',
+		importReencryptHelp:
+			'We will first try the export password for wallet migration. If that fails, you can enter the source master password.',
+		importSourceMasterPasswordHelp:
+			'Export password could not decrypt wallet private keys. Enter the source master password used by the exported wallets.',
+		importMasterPasswordRequired: 'Current master password is required to complete import.',
+		importSourceMasterPasswordNeeded:
+			'This export appears to use a different master password. Enter the source master password to continue.',
+		importSourceMasterPasswordRequired: 'Source master password is required to continue import.',
+		importPreviewTitle: 'Import Preview',
+		importPreviewWaiting: 'Enter the export password to preview this import.',
+		importPreviewLoading: 'Checking import data...',
+		importPreviewInvalid: 'Could not decrypt or validate this export with the current password.',
+		importPreviewEmpty: 'This export does not contain any wallets to import.',
+		importPreviewReady: '{count} wallet(s) ready to import.',
+		importPreviewSummary: '{add} new, {rename} rename updates.',
+		importPreviewReencryptEnabled: 'Private keys will be migrated to your current master password.',
+		importPreviewReencryptDisabled:
+			'Private keys will keep their original master password (not recommended).',
+		importPreviewActionAdd: 'Add',
+		importPreviewActionRename: 'Rename',
+		importPreviewRenameFrom: 'Current name: {name}',
+		importPreviewMore: '{count} more wallet(s) not shown.',
 		copyToClipboard: 'Copy to Clipboard',
 		exportCopied:
 			'Copied export data to clipboard. Paste it into the Krawlet app to import your wallets.',
 		importSuccess: 'Successfully imported {count} wallet(s)!',
+		importSuccessReencrypted:
+			'Successfully imported {count} wallet(s)! Migrated {reencrypted} wallet private key(s) to your current master password.',
 		importError: 'Error importing wallets: {message}',
 		importInvalid: 'Exported password or data is invalid!'
 	},

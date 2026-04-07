@@ -39,12 +39,169 @@ export type SettingsData = {
 	krawletApiKey: string;
 };
 
+export type ImportedWalletPreview = Pick<Wallet, 'name' | 'address' | 'syncNode'>;
+
+export type WalletImportAction = 'add' | 'rename';
+
+export type WalletImportPlanEntry = ImportedWalletPreview & {
+	action: WalletImportAction;
+	previousName?: string;
+};
+
+export type WalletImportPlan = {
+	wallets: Wallet[];
+	entries: WalletImportPlanEntry[];
+	added: number;
+	renamed: number;
+	total: number;
+};
+
+export type WalletImportOptions = {
+	reencryptToTarget?: boolean;
+	sourceMasterPassword?: string;
+	targetMasterPassword?: string;
+};
+
+export type WalletImportResult = {
+	added: number;
+	renamed: number;
+	total: number;
+	reencrypted: number;
+};
+
 const NAME = 'settings';
 
 const PBKDF2_ITERATIONS = 100_000;
 const SALT_BYTES = 16;
 const IV_BYTES = 12;
 const KEY_LENGTH_BITS = 256; // AES-256-GCM
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === 'object' && value !== null;
+}
+
+function createImportError(message: string, error = 'invalid_import_data'): APIError {
+	return {
+		ok: false,
+		error,
+		message
+	} as APIError;
+}
+
+function normalizeImportedWallet(wallet: unknown, fallbackSyncNode: string): Wallet {
+	if (!isRecord(wallet)) {
+		throw createImportError('Wallet import data is malformed.');
+	}
+
+	const name = typeof wallet.name === 'string' ? wallet.name.trim() : '';
+	const address = typeof wallet.address === 'string' ? wallet.address.trim() : '';
+	const privateKey = typeof wallet.private === 'string' ? wallet.private : '';
+	const syncNode = typeof wallet.syncNode === 'string' && wallet.syncNode.trim()
+		? wallet.syncNode.trim()
+		: fallbackSyncNode;
+
+	if (!name || !address || !privateKey) {
+		throw createImportError('Wallet import data is missing required fields.');
+	}
+
+	return {
+		name,
+		address,
+		private: privateKey,
+		syncNode
+	};
+}
+
+export function validateImportedSettingsData(data: unknown): { wallets: Wallet[] } {
+	if (!isRecord(data)) {
+		throw createImportError('Import data is not a valid wallet export.');
+	}
+
+	const fallbackSyncNode = getSyncNode().id ?? SYNC_NODE_OFFICIAL.id;
+	const rawWallets = data.wallets;
+	if (rawWallets == null) {
+		return { wallets: [] };
+	}
+
+	if (!Array.isArray(rawWallets)) {
+		throw createImportError('Wallet import data is malformed.');
+	}
+
+	const seenAddresses = new Set<string>();
+	const wallets: Wallet[] = [];
+
+	for (const rawWallet of rawWallets) {
+		const wallet = normalizeImportedWallet(rawWallet, fallbackSyncNode);
+		if (seenAddresses.has(wallet.address)) {
+			continue;
+		}
+		seenAddresses.add(wallet.address);
+		wallets.push(wallet);
+	}
+
+	return { wallets };
+}
+
+export function getImportedWalletPreview(data: unknown): ImportedWalletPreview[] {
+	return validateImportedSettingsData(data).wallets.map(({ name, address, syncNode }) => ({
+		name,
+		address,
+		syncNode
+	}));
+}
+
+export function createWalletImportPlan(currentWallets: Wallet[], data: unknown): WalletImportPlan {
+	const { wallets: importedWallets } = validateImportedSettingsData(data);
+	const mergedWallets = currentWallets.map((wallet) => ({ ...wallet }));
+	const walletIndexByAddress = new Map<string, number>();
+	const entries: WalletImportPlanEntry[] = [];
+
+	for (let i = 0; i < mergedWallets.length; i++) {
+		walletIndexByAddress.set(mergedWallets[i].address, i);
+	}
+
+	let added = 0;
+	let renamed = 0;
+
+	for (const importedWallet of importedWallets) {
+		const existingIndex = walletIndexByAddress.get(importedWallet.address);
+		if (existingIndex == null) {
+			mergedWallets.push(importedWallet);
+			walletIndexByAddress.set(importedWallet.address, mergedWallets.length - 1);
+			entries.push({
+				action: 'add',
+				name: importedWallet.name,
+				address: importedWallet.address,
+				syncNode: importedWallet.syncNode
+			});
+			added += 1;
+			continue;
+		}
+
+		const existingWallet = mergedWallets[existingIndex];
+		mergedWallets[existingIndex] = {
+			...existingWallet,
+			name: importedWallet.name
+		};
+
+		entries.push({
+			action: 'rename',
+			name: importedWallet.name,
+			address: importedWallet.address,
+			syncNode: existingWallet.syncNode,
+			previousName: existingWallet.name
+		});
+		renamed += 1;
+	}
+
+	return {
+		wallets: mergedWallets,
+		entries,
+		added,
+		renamed,
+		total: entries.length
+	};
+}
 
 // --- helpers: base64 <-> ArrayBuffer ---
 function bufToBase64(buffer: ArrayBufferLike): string {
@@ -67,7 +224,7 @@ function base64ToBuf(base64: string): ArrayBuffer {
 
 // --- crypto helpers (browser Web Crypto) ---
 async function genRandomBytes(n: number): Promise<Uint8Array> {
-	const b = new Uint8Array(n);
+	const b = new Uint8Array(new ArrayBuffer(n));
 	crypto.getRandomValues(b);
 	return b;
 }
@@ -84,7 +241,7 @@ async function deriveKeyFromPassword(password: string, salt: Uint8Array): Promis
 	return crypto.subtle.deriveKey(
 		{
 			name: 'PBKDF2',
-			salt,
+			salt: salt as BufferSource,
 			iterations: PBKDF2_ITERATIONS,
 			hash: 'SHA-256'
 		},
@@ -105,7 +262,7 @@ export async function encryptWithPassword(password: string, plaintext: string): 
 	const key = await deriveKeyFromPassword(password, salt);
 	const enc = new TextEncoder();
 	const ciphertextBuf = await crypto.subtle.encrypt(
-		{ name: 'AES-GCM', iv },
+		{ name: 'AES-GCM', iv: iv as BufferSource },
 		key,
 		enc.encode(plaintext)
 	);
@@ -133,7 +290,11 @@ export async function decryptWithPassword(
 		const iv = new Uint8Array(base64ToBuf(payload.iv));
 		const ctBuf = base64ToBuf(payload.ct);
 		const key = await deriveKeyFromPassword(password, salt);
-		const plainBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ctBuf);
+		const plainBuf = await crypto.subtle.decrypt(
+			{ name: 'AES-GCM', iv: iv as BufferSource },
+			key,
+			ctBuf
+		);
 		const dec = new TextDecoder();
 		return dec.decode(plainBuf);
 	} catch (err) {
@@ -338,33 +499,55 @@ class Settings {
 		return this.data.set;
 	}
 
-	public import(data: unknown) {
+	public async import(data: unknown, options: WalletImportOptions = {}): Promise<WalletImportResult> {
 		const currentStore = get(this.data);
+		const plan = createWalletImportPlan(currentStore.wallets, data);
+		const nextWallets = plan.wallets.map((wallet) => ({ ...wallet }));
+		let reencrypted = 0;
 
-		if (currentStore.wallets.length > 0) {
-			throw {
-				ok: false,
-				error: 'wallet_exists',
-				message: "You can't have any wallets saved when importing!"
-			} as APIError;
-		}
+		if (options.reencryptToTarget) {
+			const sourceMasterPassword = options.sourceMasterPassword?.trim() ?? '';
+			const targetMasterPassword = options.targetMasterPassword?.trim() ?? '';
 
-		const importStore = data as SettingsData;
+			if (!sourceMasterPassword || !targetMasterPassword) {
+				throw createImportError('Master password is required to re-encrypt imported wallets.');
+			}
 
-		const newData = currentStore;
+			const existingAddresses = new Set(currentStore.wallets.map((wallet) => wallet.address));
 
-		if (importStore.wallets && importStore.wallets.length > 0) {
-			importStore.wallets.forEach((w) => {
-				if (!currentStore.wallets.find((x) => x.address === w.address)) {
-					if (!w.syncNode) {
-						w.syncNode = getSyncNode().id ?? SYNC_NODE_OFFICIAL.id;
-					}
-					newData.wallets.push(w);
+			for (let i = 0; i < nextWallets.length; i++) {
+				const wallet = nextWallets[i];
+				if (existingAddresses.has(wallet.address)) {
+					continue;
 				}
-			});
+
+				const privateKey = await decryptWithPassword(sourceMasterPassword, wallet.private);
+				if (!privateKey) {
+					throw createImportError(
+						'Unable to decrypt imported wallet private keys with the provided source master password.',
+						'source_master_password_invalid'
+					);
+				}
+
+				nextWallets[i] = {
+					...wallet,
+					private: await encryptWithPassword(targetMasterPassword, privateKey)
+				};
+				reencrypted += 1;
+			}
 		}
 
-		this.data.set(newData);
+		this.data.set({
+			...currentStore,
+			wallets: nextWallets
+		});
+
+		return {
+			added: plan.added,
+			renamed: plan.renamed,
+			total: plan.total,
+			reencrypted
+		};
 	}
 
 	public export() {

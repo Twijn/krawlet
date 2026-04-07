@@ -9,7 +9,6 @@ import WhatsNew from '$lib/components/widgets/WhatsNew.svelte';
 
 <Breadcrumbs
 	navItems={[
-		{ label: "Home", href: "/" },
 		{ label: "What's New", href: "/whats-new" },
 	]}
 />
