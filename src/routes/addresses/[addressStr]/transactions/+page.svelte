@@ -14,7 +14,7 @@
 	navItems={[
 		{ label: 'Addresses', href: '/addresses' },
 		{ label: address.address, href: `/addresses/${address.address}` },
-		{ label: 'Transactions', href: `/addresses/${address.address}/transactions` },
+		{ label: 'Transactions', href: `/addresses/${address.address}/transactions` }
 	]}
 />
 

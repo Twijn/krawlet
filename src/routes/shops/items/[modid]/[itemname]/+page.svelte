@@ -59,7 +59,10 @@
 	navItems={[
 		{ tl: 'nav.shops', href: '/shops' },
 		{ label: 'Items', href: '/shops/items' },
-		{ label: cleanShopData(item?.itemDisplayName ?? ''), href: `/shops/items/${item?.itemName.replace(/:/g, '/')}` },
+		{
+			label: cleanShopData(item?.itemDisplayName ?? ''),
+			href: `/shops/items/${item?.itemName.replace(/:/g, '/')}`
+		}
 	]}
 />
 

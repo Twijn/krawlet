@@ -16,25 +16,23 @@
 </svelte:head>
 
 <Breadcrumbs
-	navItems={[
-		{ tl: $t$('nav.wallets'), href: '/wallets' },
-	]}
+	navItems={[{ tl: $t$('nav.wallets'), href: '/wallets' }]}
 	buttons={[
 		{
 			onClick: () => (importModalOpen = true),
 			icon: faFileImport,
-			tk: "wallet.importButton"
+			tk: 'wallet.importButton'
 		},
 		{
 			onClick: () => (exportModalOpen = true),
 			icon: faFileExport,
-			tk: "wallet.exportButton"
+			tk: 'wallet.exportButton'
 		},
 		{
-			variant: "primary",
-			onClick: () => (addWalletModal.open()),
+			variant: 'primary',
+			onClick: () => addWalletModal.open(),
 			icon: faPlus,
-			tk: "wallet.addWallet"
+			tk: 'wallet.addWallet'
 		}
 	]}
 />

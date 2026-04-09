@@ -8,11 +8,7 @@
 	<title>Names | Krawlet</title>
 </svelte:head>
 
-<Breadcrumbs
-	navItems={[
-		{ label: "Names", href: "/names" }
-	]}
-/>
+<Breadcrumbs navItems={[{ label: 'Names', href: '/names' }]} />
 
 <NameStats lgCols={12} />
 

@@ -12,7 +12,6 @@
 	import settings from '$lib/stores/settings';
 	import { masterPasswordStore } from '$lib/stores/masterPassword';
 
-	let masterPassword = $state('');
 	let name = $state('');
 	let pkey = $state('');
 
@@ -67,7 +66,7 @@
 			if (!masterPassword) {
 				throw new Error('Master password is required');
 			}
-		} catch (e) {
+		} catch {
 			notifications.error($t$('wallet.masterPasswordRequired'));
 			return;
 		}
@@ -120,7 +119,6 @@
 					// Reset form
 					name = '';
 					pkey = '';
-					masterPassword = '';
 				}
 			});
 		} else {

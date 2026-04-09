@@ -74,9 +74,7 @@
 
 	const cacheHealth = $derived(getCacheHealth(totalBytes, totalEntries));
 
-	function bySummary(
-		entries: Array<{ entries: number; bytes: number }>
-	): CacheSummary {
+	function bySummary(entries: Array<{ entries: number; bytes: number }>): CacheSummary {
 		return {
 			entries: entries.reduce((sum, item) => sum + item.entries, 0),
 			bytes: entries.reduce((sum, item) => sum + item.bytes, 0),
@@ -336,7 +334,10 @@
 				<div class="summary-stats">
 					<span>{totalEntries.toLocaleString()} {$t$('settings.cacheEntries')}</span>
 					<span>{bytesToHuman(totalBytes)}</span>
-					<span>{indexedDbSummary.stores + localStorageSummary.stores + serviceWorkerSummary.stores} {$t$('settings.cacheBuckets')}</span>
+					<span
+						>{indexedDbSummary.stores + localStorageSummary.stores + serviceWorkerSummary.stores}
+						{$t$('settings.cacheBuckets')}</span
+					>
 				</div>
 				<Button
 					variant="secondary"
@@ -344,7 +345,8 @@
 					onClick={() => loadCacheStats()}
 					disabled={loading || actionId !== null}
 				>
-					<FontAwesomeIcon icon={faArrowsRotate} /> {$t$('settings.cacheRefresh')}
+					<FontAwesomeIcon icon={faArrowsRotate} />
+					{$t$('settings.cacheRefresh')}
 				</Button>
 			</div>
 		</div>
@@ -366,7 +368,8 @@
 						disabled={loading || actionId !== null}
 						loading={actionId === 'clear-idb-all'}
 					>
-						<FontAwesomeIcon icon={faTrashCan} /> {$t$('settings.cacheClearAll')}
+						<FontAwesomeIcon icon={faTrashCan} />
+						{$t$('settings.cacheClearAll')}
 					</Button>
 				</div>
 
@@ -390,7 +393,8 @@
 									disabled={loading || actionId !== null}
 									loading={actionId === `clear-idb-${store.name}`}
 								>
-									<FontAwesomeIcon icon={faTrash} /> {$t$('settings.cacheClear')}
+									<FontAwesomeIcon icon={faTrash} />
+									{$t$('settings.cacheClear')}
 								</Button>
 							</div>
 						{/each}
@@ -410,7 +414,8 @@
 						disabled={loading || actionId !== null}
 						loading={actionId === 'clear-local-all'}
 					>
-						<FontAwesomeIcon icon={faTrashCan} /> {$t$('settings.cacheClearAll')}
+						<FontAwesomeIcon icon={faTrashCan} />
+						{$t$('settings.cacheClearAll')}
 					</Button>
 				</div>
 
@@ -435,7 +440,8 @@
 									disabled={loading || actionId !== null}
 									loading={actionId === `clear-local-${cache.key}`}
 								>
-									<FontAwesomeIcon icon={faTrash} /> {$t$('settings.cacheClear')}
+									<FontAwesomeIcon icon={faTrash} />
+									{$t$('settings.cacheClear')}
 								</Button>
 							</div>
 						{/each}
@@ -455,7 +461,8 @@
 						disabled={loading || actionId !== null}
 						loading={actionId === 'clear-sw-all'}
 					>
-						<FontAwesomeIcon icon={faTrashCan} /> {$t$('settings.cacheClearAll')}
+						<FontAwesomeIcon icon={faTrashCan} />
+						{$t$('settings.cacheClearAll')}
 					</Button>
 				</div>
 
@@ -478,7 +485,8 @@
 									disabled={loading || actionId !== null}
 									loading={actionId === `clear-sw-${cache.name}`}
 								>
-									<FontAwesomeIcon icon={faTrash} /> {$t$('settings.cacheClear')}
+									<FontAwesomeIcon icon={faTrash} />
+									{$t$('settings.cacheClear')}
 								</Button>
 							</div>
 						{/each}
@@ -498,7 +506,8 @@
 				disabled={loading || actionId !== null}
 				loading={actionId === 'clear-everything'}
 			>
-				<FontAwesomeIcon icon={faTrashCan} /> {$t$('settings.cacheClearEverything')}
+				<FontAwesomeIcon icon={faTrashCan} />
+				{$t$('settings.cacheClearEverything')}
 			</Button>
 		</div>
 	</div>

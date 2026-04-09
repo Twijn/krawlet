@@ -8,10 +8,12 @@
 	<title>Richest Addresses | Krawlet</title>
 </svelte:head>
 
-<Breadcrumbs navItems={[
-	{ label: 'Addresses', href: '/addresses' },
-	{ label: 'Richest', href: '/addresses/rich' }
-]} />
+<Breadcrumbs
+	navItems={[
+		{ label: 'Addresses', href: '/addresses' },
+		{ label: 'Richest', href: '/addresses/rich' }
+	]}
+/>
 
 <RichAddressStats lgCols={12} />
 

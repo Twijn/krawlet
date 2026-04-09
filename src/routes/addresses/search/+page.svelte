@@ -35,7 +35,7 @@
 <Breadcrumbs
 	navItems={[
 		{ href: '/addresses', label: $t$('nav.addresses') },
-		{ href: '/addresses/search', label: $t$('common.search') },
+		{ href: '/addresses/search', label: $t$('common.search') }
 	]}
 />
 

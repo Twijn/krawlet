@@ -1,31 +1,33 @@
 <script lang="ts">
-	import { faFileImport } from "@fortawesome/free-solid-svg-icons";
-	import Button from "../ui/Button.svelte";
-	import Modal from "../ui/Modal.svelte";
+	import { faFileImport } from '@fortawesome/free-solid-svg-icons';
+	import Button from '../ui/Button.svelte';
+	import Modal from '../ui/Modal.svelte';
 	import settings, {
 		createWalletImportPlan,
 		decryptWithPassword,
 		type WalletImportPlanEntry
-	} from "$lib/stores/settings";
-	import { t$ } from "$lib/i18n";
-	import { get } from "svelte/store";
-	import { notifications } from "$lib/stores/notifications";
-	import type { APIError } from "kromer";
-	import ButtonSelect from "../ui/ButtonSelect.svelte";
-	import { masterPasswordStore } from "$lib/stores/masterPassword";
+	} from '$lib/stores/settings';
+	import { t$ } from '$lib/i18n';
+	import { get } from 'svelte/store';
+	import { notifications } from '$lib/stores/notifications';
+	import type { APIError } from 'kromer';
+	import ButtonSelect from '../ui/ButtonSelect.svelte';
+	import { masterPasswordStore } from '$lib/stores/masterPassword';
 
-    let {
-        open = $bindable(false),
-    }: {
-        open: boolean;
-    } = $props();
+	let {
+		open = $bindable(false)
+	}: {
+		open: boolean;
+	} = $props();
 
-	let importType = $state<"file"|"text">("file");
+	let importType = $state<'file' | 'text'>('file');
 	let exportedPassword = $state('');
 	let sourceMasterPassword = $state('');
 	let showSourceMasterPassword = $state(false);
 	let importData = $state('');
-	let previewStatus = $state<"idle" | "awaiting-password" | "validating" | "ready" | "invalid" | "empty">("idle");
+	let previewStatus = $state<
+		'idle' | 'awaiting-password' | 'validating' | 'ready' | 'invalid' | 'empty'
+	>('idle');
 	let previewItems = $state<WalletImportPlanEntry[]>([]);
 	let previewWalletCount = $state(0);
 	let previewAddCount = $state(0);
@@ -47,23 +49,23 @@
 		previewRequiresMigration = false;
 
 		if (!payload) {
-			previewStatus = "idle";
+			previewStatus = 'idle';
 			return;
 		}
 
 		if (!password.trim()) {
-			previewStatus = "awaiting-password";
+			previewStatus = 'awaiting-password';
 			return;
 		}
 
-		previewStatus = "validating";
+		previewStatus = 'validating';
 
 		const timeout = setTimeout(async () => {
 			const decrypted = await decryptWithPassword(password, payload);
 			if (token !== previewToken) return;
 
 			if (!decrypted) {
-				previewStatus = "invalid";
+				previewStatus = 'invalid';
 				return;
 			}
 
@@ -77,10 +79,10 @@
 				previewRenameCount = plan.renamed;
 				previewRequiresMigration = currentWallets.length > 0 && plan.added > 0;
 				previewItems = plan.entries.slice(0, MAX_PREVIEW_WALLETS);
-				previewStatus = plan.total > 0 ? "ready" : "empty";
+				previewStatus = plan.total > 0 ? 'ready' : 'empty';
 			} catch {
 				if (token !== previewToken) return;
-				previewStatus = "invalid";
+				previewStatus = 'invalid';
 			}
 		}, 300);
 
@@ -145,28 +147,22 @@
 				}
 			} catch (e) {
 				const err = e as APIError;
-				if (
-					err.error === "source_master_password_invalid" &&
-					!showSourceMasterPassword
-				) {
+				if (err.error === 'source_master_password_invalid' && !showSourceMasterPassword) {
 					showSourceMasterPassword = true;
 					notifications.info($t$('wallet.importSourceMasterPasswordNeeded'));
 					return false;
 				}
-				if (
-					err.error === "source_master_password_invalid" &&
-					showSourceMasterPassword
-				) {
+				if (err.error === 'source_master_password_invalid' && showSourceMasterPassword) {
 					notifications.error($t$('wallet.importSourceMasterPasswordRequired'));
 					return false;
 				}
-				notifications.error($t$('wallet.importError', { message: err.message ?? "Unknown" }));
+				notifications.error($t$('wallet.importError', { message: err.message ?? 'Unknown' }));
 			}
 			return false;
 		}
 		notifications.error($t$('wallet.importInvalid'));
 		return false;
- 	}
+	}
 
 	async function handleClose() {
 		open = false;
@@ -174,7 +170,7 @@
 		sourceMasterPassword = '';
 		showSourceMasterPassword = false;
 		importData = '';
-		previewStatus = "idle";
+		previewStatus = 'idle';
 		previewItems = [];
 		previewWalletCount = 0;
 		previewAddCount = 0;
@@ -183,16 +179,16 @@
 	}
 </script>
 
-<Modal
-    bind:open={open}
-    tt="wallet.importWallets"
-    onClose={handleClose}
->
-    <form method="post">
-		<ButtonSelect vertical={false} options={[
-			{ id: 'file', name: ".krawlet File" },
-			{ id: 'text', name: "JSON Text (legacy)" }
-		]} bind:selected={importType} />
+<Modal bind:open tt="wallet.importWallets" onClose={handleClose}>
+	<form method="post">
+		<ButtonSelect
+			vertical={false}
+			options={[
+				{ id: 'file', name: '.krawlet File' },
+				{ id: 'text', name: 'JSON Text (legacy)' }
+			]}
+			bind:selected={importType}
+		/>
 		<label>
 			{$t$('wallet.exportedPassword')}
 			<input
@@ -215,7 +211,7 @@
 				<small>{$t$('wallet.importSourceMasterPasswordHelp')}</small>
 			</label>
 		{/if}
-		{#if importType === "file"}
+		{#if importType === 'file'}
 			<label>
 				{$t$('wallet.importFile')}
 				<input
@@ -241,22 +237,27 @@
 				></textarea>
 			</label>
 		{/if}
-		{#if previewStatus !== "idle"}
+		{#if previewStatus !== 'idle'}
 			<section class="import-preview" aria-live="polite">
 				<div class="preview-header">
 					<strong>{$t$('wallet.importPreviewTitle')}</strong>
 				</div>
-				{#if previewStatus === "awaiting-password"}
+				{#if previewStatus === 'awaiting-password'}
 					<small>{$t$('wallet.importPreviewWaiting')}</small>
-				{:else if previewStatus === "validating"}
+				{:else if previewStatus === 'validating'}
 					<small>{$t$('wallet.importPreviewLoading')}</small>
-				{:else if previewStatus === "invalid"}
+				{:else if previewStatus === 'invalid'}
 					<p class="fail">{$t$('wallet.importPreviewInvalid')}</p>
-				{:else if previewStatus === "empty"}
+				{:else if previewStatus === 'empty'}
 					<small>{$t$('wallet.importPreviewEmpty')}</small>
 				{:else}
 					<p class="success">{$t$('wallet.importPreviewReady', { count: previewWalletCount })}</p>
-					<small>{$t$('wallet.importPreviewSummary', { add: previewAddCount, rename: previewRenameCount })}</small>
+					<small
+						>{$t$('wallet.importPreviewSummary', {
+							add: previewAddCount,
+							rename: previewRenameCount
+						})}</small
+					>
 					{#if previewRequiresMigration}
 						<small class="success">{$t$('wallet.importPreviewReencryptEnabled')}</small>
 					{/if}
@@ -265,13 +266,19 @@
 							<li>
 								<div class="item-row">
 									<div>{item.name}</div>
-									<span class:item-add={item.action === "add"} class:item-rename={item.action === "rename"}>
-										{item.action === "add" ? $t$('wallet.importPreviewActionAdd') : $t$('wallet.importPreviewActionRename')}
+									<span
+										class:item-add={item.action === 'add'}
+										class:item-rename={item.action === 'rename'}
+									>
+										{item.action === 'add'
+											? $t$('wallet.importPreviewActionAdd')
+											: $t$('wallet.importPreviewActionRename')}
 									</span>
 								</div>
 								<small>{item.address}</small>
-								{#if item.action === "rename" && item.previousName && item.previousName !== item.name}
-									<small>{$t$('wallet.importPreviewRenameFrom', { name: item.previousName })}</small>
+								{#if item.action === 'rename' && item.previousName && item.previousName !== item.name}
+									<small>{$t$('wallet.importPreviewRenameFrom', { name: item.previousName })}</small
+									>
 								{/if}
 							</li>
 						{/each}
@@ -284,16 +291,16 @@
 				{/if}
 			</section>
 		{/if}
-        <Button
-            variant="primary"
-            type="submit"
-            full={true}
-            onClick={importWallets}
-            icon={faFileImport}
-            tk="wallet.importButton"
-			disabled={previewStatus !== "ready"}
-        />
-    </form>
+		<Button
+			variant="primary"
+			type="submit"
+			full={true}
+			onClick={importWallets}
+			icon={faFileImport}
+			tk="wallet.importButton"
+			disabled={previewStatus !== 'ready'}
+		/>
+	</form>
 </Modal>
 
 <style>

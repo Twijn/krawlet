@@ -78,7 +78,7 @@
 <Breadcrumbs
 	navItems={[
 		{ label: $t$('nav.shops'), href: '/shops' },
-		{ label: $t$('nav.items'), href: '/shops/items' },
+		{ label: $t$('nav.items'), href: '/shops/items' }
 	]}
 />
 

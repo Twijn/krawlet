@@ -10,7 +10,7 @@
 <Breadcrumbs
 	navItems={[
 		{ label: 'Names', href: '/names' },
-		{ label: 'Not Yet Implemented', href: '/names/' },
+		{ label: 'Not Yet Implemented', href: '/names/' }
 	]}
 />
 

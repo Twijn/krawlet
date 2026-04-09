@@ -15,11 +15,7 @@
 	<title>Shops | Krawlet</title>
 </svelte:head>
 
-<Breadcrumbs
-	navItems={[
-		{ label: $t$('nav.shops'), href: '/shops' }
-	]}
-/>
+<Breadcrumbs navItems={[{ label: $t$('nav.shops'), href: '/shops' }]} />
 
 {#if urlParams && urlParams.get('error') === 'not-found'}
 	<Alert variant="danger">

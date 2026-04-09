@@ -6,6 +6,4 @@
 	<title>Ender Storages | Krawlet</title>
 </svelte:head>
 
-<Breadcrumbs navItems={[
-    { label: 'Ender Storages', href: '/estorage' }
-]} />
+<Breadcrumbs navItems={[{ label: 'Ender Storages', href: '/estorage' }]} />

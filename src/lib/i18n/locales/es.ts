@@ -181,8 +181,7 @@ export default {
 		importFileHelp: 'Selecciona un archivo .krawlet o .json exportado desde tu dispositivo.',
 		importData: 'Datos de Importación',
 		importDataPlaceholder: 'Ingresa tu exportación JSON de billetera',
-		importReencryptToggle:
-			'Recifrar billeteras importadas con mi contraseña maestra actual',
+		importReencryptToggle: 'Recifrar billeteras importadas con mi contraseña maestra actual',
 		importSourceMasterPassword: 'Contraseña Maestra de Origen',
 		importSourceMasterPasswordPlaceholder:
 			'Ingresa la contraseña maestra usada por las billeteras en esta exportación (por defecto la contraseña de exportación)',
@@ -197,9 +196,11 @@ export default {
 		importSourceMasterPasswordRequired:
 			'La contraseña maestra de origen es obligatoria para continuar la importación.',
 		importPreviewTitle: 'Vista Previa de Importación',
-		importPreviewWaiting: 'Ingresa la contraseña de exportación para previsualizar esta importación.',
+		importPreviewWaiting:
+			'Ingresa la contraseña de exportación para previsualizar esta importación.',
 		importPreviewLoading: 'Verificando datos de importación...',
-		importPreviewInvalid: 'No se pudo descifrar o validar esta exportación con la contraseña actual.',
+		importPreviewInvalid:
+			'No se pudo descifrar o validar esta exportación con la contraseña actual.',
 		importPreviewEmpty: 'Esta exportación no contiene billeteras para importar.',
 		importPreviewReady: '{count} billetera(s) lista(s) para importar.',
 		importPreviewSummary: '{add} nuevas, {rename} con cambio de nombre.',

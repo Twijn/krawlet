@@ -169,7 +169,8 @@
 		</SettingsFieldset>
 
 		<SettingsFieldset>
-			{#snippet legend()}<FontAwesomeIcon icon={faWallet} /> {$t$('settings.walletDisplay')}{/snippet}
+			{#snippet legend()}<FontAwesomeIcon icon={faWallet} />
+				{$t$('settings.walletDisplay')}{/snippet}
 			<div class="settings-columns">
 				<div class="setting-content">
 					<ToggleCheckbox

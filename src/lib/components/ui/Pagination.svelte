@@ -8,11 +8,7 @@
 		total: number;
 	};
 
-	let {
-		page = $bindable(1),
-		limit = $bindable(10),
-		total = $bindable()
-	}: Props = $props();
+	let { page = $bindable(1), limit = $bindable(10), total = $bindable() }: Props = $props();
 
 	let maxPage: number = $derived(Math.ceil(total / limit));
 

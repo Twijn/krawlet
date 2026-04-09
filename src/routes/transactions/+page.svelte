@@ -7,11 +7,7 @@
 	<title>Transactions | Krawlet</title>
 </svelte:head>
 
-<Breadcrumbs
-	navItems={[
-		{ label: 'Transactions', href: '/transactions' },
-	]}
-/>
+<Breadcrumbs navItems={[{ label: 'Transactions', href: '/transactions' }]} />
 
 <div class="col col-12">
 	<AdvancedTransactions limit={30} showDetails={true} />

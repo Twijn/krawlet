@@ -73,7 +73,14 @@
 />
 
 {#if knownEntry}
-	<div class="known-entry-card col-12" class:official={knownEntry.type === 'official'} class:shop={knownEntry.type === 'shop'} class:gamble={knownEntry.type === 'gamble'} class:service={knownEntry.type === 'service'} class:company={knownEntry.type === 'company'}>
+	<div
+		class="known-entry-card col-12"
+		class:official={knownEntry.type === 'official'}
+		class:shop={knownEntry.type === 'shop'}
+		class:gamble={knownEntry.type === 'gamble'}
+		class:service={knownEntry.type === 'service'}
+		class:company={knownEntry.type === 'company'}
+	>
 		<div class="known-entry-card__header">
 			<div class="known-entry-card__avatar" aria-hidden="true">
 				{#if knownEntry.imageSrc}
@@ -98,7 +105,10 @@
 					<div class="known-entry-card__title-row">
 						<span class="known-entry-card__badge">{knownAddressTypeLabels[knownEntry.type]}</span>
 						{#if knownEntry.updatedDate}
-							<span class="identity-card__updated-badge" title={new Date(knownEntry.updatedDate).toLocaleString()}>
+							<span
+								class="identity-card__updated-badge"
+								title={new Date(knownEntry.updatedDate).toLocaleString()}
+							>
 								Updated {relativeTime(new Date(knownEntry.updatedDate))}
 							</span>
 						{/if}
@@ -127,15 +137,22 @@
 					<h2>{player.minecraftName}</h2>
 					<div class="known-entry-card__title-row">
 						<span class="known-entry-card__badge">Player</span>
-						<span class:online={player.online} class="identity-card__status-badge">{playerStatusLabel}</span>
+						<span class:online={player.online} class="identity-card__status-badge"
+							>{playerStatusLabel}</span
+						>
 						{#if player.updatedDate}
-							<span class="identity-card__updated-badge" title={new Date(player.updatedDate).toLocaleString()}>
+							<span
+								class="identity-card__updated-badge"
+								title={new Date(player.updatedDate).toLocaleString()}
+							>
 								Updated {relativeTime(new Date(player.updatedDate))}
 							</span>
 						{/if}
 					</div>
 				</div>
-				<p class="known-entry-card__summary">This address is linked to a Minecraft player profile tracked by Krawlet.</p>
+				<p class="known-entry-card__summary">
+					This address is linked to a Minecraft player profile tracked by Krawlet.
+				</p>
 			</div>
 		</div>
 	</div>
@@ -179,8 +196,22 @@
 </div>
 
 <div class="col-12">
-	<AdvancedNames storePrefix="nm" title="Names" limit={15} query={{}} addresses={[address.address]} showDetails={true} />
-	<AdvancedTransactions storePrefix="tx" title="Transactions" limit={15} query={{}} addresses={[address.address]} showDetails={true} />
+	<AdvancedNames
+		storePrefix="nm"
+		title="Names"
+		limit={15}
+		query={{}}
+		addresses={[address.address]}
+		showDetails={true}
+	/>
+	<AdvancedTransactions
+		storePrefix="tx"
+		title="Transactions"
+		limit={15}
+		query={{}}
+		addresses={[address.address]}
+		showDetails={true}
+	/>
 </div>
 
 <style>
@@ -308,7 +339,7 @@
 	}
 
 	.known-entry-card__summary {
-		font-size: .85rem;
+		font-size: 0.85rem;
 		opacity: 0.85;
 		margin-top: 0.45rem;
 	}

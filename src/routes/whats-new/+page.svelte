@@ -1,17 +1,13 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
-import WhatsNew from '$lib/components/widgets/WhatsNew.svelte';
+	import WhatsNew from '$lib/components/widgets/WhatsNew.svelte';
 </script>
 
 <svelte:head>
 	<title>What's New | Krawlet</title>
 </svelte:head>
 
-<Breadcrumbs
-	navItems={[
-		{ label: "What's New", href: "/whats-new" },
-	]}
-/>
+<Breadcrumbs navItems={[{ label: "What's New", href: '/whats-new' }]} />
 
 <h2 class="col-12">
 	<img src="/favicon-96x96.png" alt="Krawlet Logo" />

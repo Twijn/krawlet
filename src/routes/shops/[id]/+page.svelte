@@ -22,7 +22,7 @@
 <Breadcrumbs
 	navItems={[
 		{ label: $t$('nav.shops'), href: '/shops' },
-		{ label: cleanShopData(shop?.name ?? ''), href: `/shops/${shop?.id ?? ''}` },
+		{ label: cleanShopData(shop?.name ?? ''), href: `/shops/${shop?.id ?? ''}` }
 	]}
 />
 

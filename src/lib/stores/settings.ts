@@ -96,9 +96,10 @@ function normalizeImportedWallet(wallet: unknown, fallbackSyncNode: string): Wal
 	const name = typeof wallet.name === 'string' ? wallet.name.trim() : '';
 	const address = typeof wallet.address === 'string' ? wallet.address.trim() : '';
 	const privateKey = typeof wallet.private === 'string' ? wallet.private : '';
-	const syncNode = typeof wallet.syncNode === 'string' && wallet.syncNode.trim()
-		? wallet.syncNode.trim()
-		: fallbackSyncNode;
+	const syncNode =
+		typeof wallet.syncNode === 'string' && wallet.syncNode.trim()
+			? wallet.syncNode.trim()
+			: fallbackSyncNode;
 
 	if (!name || !address || !privateKey) {
 		throw createImportError('Wallet import data is missing required fields.');
@@ -499,7 +500,10 @@ class Settings {
 		return this.data.set;
 	}
 
-	public async import(data: unknown, options: WalletImportOptions = {}): Promise<WalletImportResult> {
+	public async import(
+		data: unknown,
+		options: WalletImportOptions = {}
+	): Promise<WalletImportResult> {
 		const currentStore = get(this.data);
 		const plan = createWalletImportPlan(currentStore.wallets, data);
 		const nextWallets = plan.wallets.map((wallet) => ({ ...wallet }));

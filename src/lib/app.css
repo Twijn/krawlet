@@ -428,7 +428,7 @@ input[type='file'] {
 	background:
 		linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)),
 		var(--background-color-1);
-	}
+}
 
 input[type='file']:hover {
 	border-color: rgba(var(--theme-color-rgb), 0.35);
@@ -440,7 +440,11 @@ input[type='file']::file-selector-button {
 	padding: 0.55rem 0.9rem;
 	border: 1px solid rgba(var(--theme-color-rgb), 0.25);
 	border-radius: 0.4rem;
-	background: linear-gradient(135deg, rgba(var(--theme-color-rgb), 0.22), rgba(var(--theme-color-rgb), 0.1));
+	background: linear-gradient(
+		135deg,
+		rgba(var(--theme-color-rgb), 0.22),
+		rgba(var(--theme-color-rgb), 0.1)
+	);
 	color: var(--text-color-1);
 	font: inherit;
 	font-weight: 500;
@@ -452,7 +456,11 @@ input[type='file']::file-selector-button {
 
 input[type='file']::file-selector-button:hover {
 	border-color: rgba(var(--theme-color-rgb), 0.45);
-	background: linear-gradient(135deg, rgba(var(--theme-color-rgb), 0.3), rgba(var(--theme-color-rgb), 0.14));
+	background: linear-gradient(
+		135deg,
+		rgba(var(--theme-color-rgb), 0.3),
+		rgba(var(--theme-color-rgb), 0.14)
+	);
 	transform: translateY(-1px);
 	box-shadow:
 		0 6px 14px rgba(0, 0, 0, 0.18),
@@ -542,19 +550,21 @@ button.link:focus-visible {
 	position: relative;
 	scrollbar-width: thin;
 	scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-	
+
 	/* Scroll shadow indicators */
 	background:
 		/* Left shadow */
 		linear-gradient(to right, var(--background-color-1) 20%, transparent) left center,
-		/* Right shadow */
-		linear-gradient(to left, var(--background-color-1) 20%, transparent) right center,
-		/* Left shadow cover */
-		linear-gradient(to right, rgba(0, 0, 0, 0.12), transparent) left center,
-		/* Right shadow cover */
-		linear-gradient(to left, rgba(0, 0, 0, 0.12), transparent) right center;
+		/* Right shadow */ linear-gradient(to left, var(--background-color-1) 20%, transparent) right
+			center,
+		/* Left shadow cover */ linear-gradient(to right, rgba(0, 0, 0, 0.12), transparent) left center,
+		/* Right shadow cover */ linear-gradient(to left, rgba(0, 0, 0, 0.12), transparent) right center;
 	background-repeat: no-repeat;
-	background-size: 30px 100%, 30px 100%, 15px 100%, 15px 100%;
+	background-size:
+		30px 100%,
+		30px 100%,
+		15px 100%,
+		15px 100%;
 	background-attachment: local, local, scroll, scroll;
 }
 

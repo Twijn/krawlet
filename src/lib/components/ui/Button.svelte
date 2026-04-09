@@ -15,7 +15,7 @@
 		tk,
 		title,
 		icon,
-		iconSize = "1x",
+		iconSize = '1x',
 		disabled = $bindable(false),
 		loading = $bindable(false),
 		children

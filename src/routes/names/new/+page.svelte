@@ -8,12 +8,10 @@
 </svelte:head>
 
 <Breadcrumbs
-	navItems={
-		[
-			{ label: 'Names', href: '/names' },
-			{ label: 'Purchase New Name', href: '/names/new' },
-		]
-	}
+	navItems={[
+		{ label: 'Names', href: '/names' },
+		{ label: 'Purchase New Name', href: '/names/new' }
+	]}
 />
 
 <div class="col-12">

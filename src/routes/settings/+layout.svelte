@@ -32,11 +32,7 @@
 	<title>{$t$('settings.title')} | Krawlet</title>
 </svelte:head>
 
-<Breadcrumbs
-	navItems={[
-		{ href: '/settings', label: $t$('settings.title') }
-	]}
-/>
+<Breadcrumbs navItems={[{ href: '/settings', label: $t$('settings.title') }]} />
 
 <div class="col-12">
 	<div class="tabs-nav" role="tablist" aria-label="Settings navigation">

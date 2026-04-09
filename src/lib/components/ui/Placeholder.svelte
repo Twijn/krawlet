@@ -6,7 +6,7 @@
 		text?: string;
 	}
 
-	let { text = "[No Data]" }: Props = $props();
+	let { text = '[No Data]' }: Props = $props();
 </script>
 
 {#if $settings.simplePlaceholders}

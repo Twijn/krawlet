@@ -569,7 +569,8 @@ export default {
 		cacheSwCleared: 'Cleared service worker cache "{cache}".',
 		cacheConfirmSwAll: 'Clear all service worker caches for Krawlet?',
 		cacheSwAllCleared: 'Cleared all service worker caches.',
-		cacheConfirmEverything: 'Clear every cache layer (IndexedDB, localStorage, and service worker)?',
+		cacheConfirmEverything:
+			'Clear every cache layer (IndexedDB, localStorage, and service worker)?',
 		cacheEverythingCleared: 'All cache layers were cleared.',
 		developerResources: 'Developer Resources',
 		developerResourcesDescription:

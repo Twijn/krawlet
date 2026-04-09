@@ -29,7 +29,10 @@
 		transaction: TransactionWithMeta;
 	} = $props();
 
-	function findMetaIn(meta: TransactionMetadata, name: string): TransactionMetadataEntry | undefined {
+	function findMetaIn(
+		meta: TransactionMetadata,
+		name: string
+	): TransactionMetadataEntry | undefined {
 		return meta.entries.find((entry) => entry.name.toLowerCase() === name);
 	}
 
@@ -47,9 +50,9 @@
 	// Check for shop actions (set or delete shop info)
 	const shopNameMeta = $derived(findMetaIn(meta, 'shop_name'));
 	const shopDescriptionMeta = $derived(findMetaIn(meta, 'shop_description'));
-	const shopDeleteMeta = $derived(meta.entries.find(
-		(e) => e.name.toLowerCase() === 'shop_delete' && !e.value
-	));
+	const shopDeleteMeta = $derived(
+		meta.entries.find((e) => e.name.toLowerCase() === 'shop_delete' && !e.value)
+	);
 	const isShopAction = $derived(shopNameMeta || shopDescriptionMeta || shopDeleteMeta);
 	const isSetShopInfo = $derived(shopNameMeta || shopDescriptionMeta);
 	const isDeleteShopInfo = $derived(shopDeleteMeta && !isSetShopInfo);
@@ -141,36 +144,42 @@
 
 	const relatedListing: Listing | null = $derived.by(() => {
 		if (!$settings.parsePurchaseItem) return null;
-		
+
 		const valueOnlyMeta = meta.entries.filter((e) => !e.value).map((e) => e.name.toLowerCase());
 		if (valueOnlyMeta.length === 0) return null;
 
-		const candidates = $shopsync.data.reduce((acc, shop) => {
-			if (!shop.items?.length) return acc;
+		const candidates = $shopsync.data.reduce(
+			(acc, shop) => {
+				if (!shop.items?.length) return acc;
 
-			shop.items.forEach((listing) => {
-				const matchesListingAddress = addressesMatchTransaction(transaction, listing.addresses ?? []);
-				const matchesShopAddress = transactionMatchesShop(transaction, shop);
+				shop.items.forEach((listing) => {
+					const matchesListingAddress = addressesMatchTransaction(
+						transaction,
+						listing.addresses ?? []
+					);
+					const matchesShopAddress = transactionMatchesShop(transaction, shop);
 
-				if (!matchesListingAddress && !matchesShopAddress) return;
+					if (!matchesListingAddress && !matchesShopAddress) return;
 
-				const matchingPrice = listing.prices?.find((price) => {
-					if (price.currency.toLowerCase() !== 'kro') return false;
-					const requiredMeta = price.requiredMeta?.toLowerCase();
-					if (!requiredMeta) return false;
-					return valueOnlyMeta.includes(requiredMeta);
+					const matchingPrice = listing.prices?.find((price) => {
+						if (price.currency.toLowerCase() !== 'kro') return false;
+						const requiredMeta = price.requiredMeta?.toLowerCase();
+						if (!requiredMeta) return false;
+						return valueOnlyMeta.includes(requiredMeta);
+					});
+
+					if (!matchingPrice) return;
+
+					acc.push({
+						listing,
+						score: (matchesListingAddress ? 2 : 0) + (matchesShopAddress ? 1 : 0)
+					});
 				});
 
-				if (!matchingPrice) return;
-
-				acc.push({
-					listing,
-					score: (matchesListingAddress ? 2 : 0) + (matchesShopAddress ? 1 : 0)
-				});
-			});
-
-			return acc;
-		}, [] as Array<{ listing: Listing; score: number }>);
+				return acc;
+			},
+			[] as Array<{ listing: Listing; score: number }>
+		);
 
 		if (candidates.length === 0) return null;
 
@@ -179,7 +188,11 @@
 		const topCandidates = candidates.filter((candidate) => candidate.score === topScore);
 
 		if (topCandidates.length > 1) {
-			console.warn('Ambiguous listings found for transaction metadata:', transaction, topCandidates);
+			console.warn(
+				'Ambiguous listings found for transaction metadata:',
+				transaction,
+				topCandidates
+			);
 			return null;
 		}
 
@@ -188,7 +201,8 @@
 
 	const quantity: number = $derived.by(() => {
 		if (!relatedListing || !$settings.parsePurchaseItemQuantity) return 0;
-		const price = relatedListing.prices?.find((p) => p.currency.toLowerCase() === 'kro')?.value ?? 1;
+		const price =
+			relatedListing.prices?.find((p) => p.currency.toLowerCase() === 'kro')?.value ?? 1;
 		return Math.floor(transaction.value / price);
 	});
 </script>
