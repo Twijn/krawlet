@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
+	import SettingsFieldset from '$lib/components/ui/SettingsFieldset.svelte';
 	import settings from '$lib/stores/settings';
 	import { faGlobe, faClock, faEye } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
@@ -35,8 +36,8 @@
 	<h2><FontAwesomeIcon icon={faGlobe} /> {$t$('settings.tabs.general')}</h2>
 
 	<div class="settings-grid">
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faGlobe} /> {$t$('settings.language')}</legend>
+		<SettingsFieldset>
+			{#snippet legend()}<FontAwesomeIcon icon={faGlobe} /> {$t$('settings.language')}{/snippet}
 			<div class="settings-columns">
 				<div class="setting-content">
 					<label for="language-select" class="setting-description"
@@ -50,10 +51,10 @@
 					/>
 				</div>
 			</div>
-		</fieldset>
+		</SettingsFieldset>
 
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faClock} /> {$t$('settings.dateTime')}</legend>
+		<SettingsFieldset>
+			{#snippet legend()}<FontAwesomeIcon icon={faClock} /> {$t$('settings.dateTime')}{/snippet}
 			<div class="settings-columns">
 				<div class="setting-content">
 					<ToggleCheckbox
@@ -95,7 +96,7 @@
 					</div>
 				</div>
 			</div>
-		</fieldset>
+		</SettingsFieldset>
 	</div>
 </Section>
 
@@ -104,27 +105,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-	}
-
-	.settings-group {
-		margin-bottom: 0;
-		padding: 1rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 0.5rem;
-	}
-
-	.settings-group legend {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-weight: 500;
-		padding: 0 0.5rem;
-	}
-
-	.settings-group legend :global(svg) {
-		width: 1rem;
-		height: 1rem;
-		opacity: 0.7;
 	}
 
 	.settings-columns {
@@ -211,9 +191,4 @@
 		}
 	}
 
-	@media (max-width: 768px) {
-		.settings-group {
-			padding: 0.75rem;
-		}
-	}
 </style>

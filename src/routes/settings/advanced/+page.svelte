@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
+	import SettingsFieldset from '$lib/components/ui/SettingsFieldset.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import settings from '$lib/stores/settings';
 	import {
@@ -213,8 +214,8 @@
 	<h2><FontAwesomeIcon icon={faServer} /> {$t$('settings.tabs.advanced')}</h2>
 
 	<div class="settings-grid">
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faServer} /> {$t$('settings.syncNode')}</legend>
+		<SettingsFieldset>
+			{#snippet legend()}<FontAwesomeIcon icon={faServer} /> {$t$('settings.syncNode')}{/snippet}
 			<div class="settings-columns">
 				<div class="setting-content">
 					<ToggleCheckbox bind:checked={allowSyncNodeChange} onChange={onSyncNodeAllowChange}>
@@ -233,10 +234,10 @@
 					{/if}
 				</div>
 			</div>
-		</fieldset>
+		</SettingsFieldset>
 
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faKey} /> {$t$('settings.apiKeys')}</legend>
+		<SettingsFieldset>
+			{#snippet legend()}<FontAwesomeIcon icon={faKey} /> {$t$('settings.apiKeys')}{/snippet}
 			<div class="settings-columns">
 				<div class="setting-content">
 					<label for="krawlet-api-key" class="setting-description">
@@ -447,10 +448,12 @@
 					</div>
 				{/if}
 			</div>
-		</fieldset>
+		</SettingsFieldset>
 
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faCode} /> {$t$('settings.developerResources')}</legend>
+		<SettingsFieldset>
+			{#snippet legend()}
+				<FontAwesomeIcon icon={faCode} /> {$t$('settings.developerResources')}
+			{/snippet}
 			<div class="developer-resources">
 				<p class="resources-description">{$t$('settings.developerResourcesDescription')}</p>
 				<div class="resource-cards">
@@ -492,7 +495,7 @@
 					</a>
 				</div>
 			</div>
-		</fieldset>
+		</SettingsFieldset>
 	</div>
 </Section>
 
@@ -501,27 +504,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-	}
-
-	.settings-group {
-		margin-bottom: 0;
-		padding: 1rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 0.5rem;
-	}
-
-	.settings-group legend {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-weight: 500;
-		padding: 0 0.5rem;
-	}
-
-	.settings-group legend :global(svg) {
-		width: 1rem;
-		height: 1rem;
-		opacity: 0.7;
 	}
 
 	.settings-columns {
@@ -1007,10 +989,6 @@
 	}
 
 	@media (max-width: 768px) {
-		.settings-group {
-			padding: 0.75rem;
-		}
-
 		.resource-cards {
 			grid-template-columns: 1fr;
 		}

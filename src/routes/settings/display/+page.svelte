@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
+	import SettingsFieldset from '$lib/components/ui/SettingsFieldset.svelte';
 	import settings from '$lib/stores/settings';
 	import {
 		faDesktop,
@@ -65,8 +66,10 @@
 	<h2><FontAwesomeIcon icon={faDesktop} /> {$t$('settings.tabs.display')}</h2>
 
 	<div class="settings-grid">
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faAddressCard} /> {$t$('settings.addressDisplay')}</legend>
+		<SettingsFieldset>
+			{#snippet legend()}
+				<FontAwesomeIcon icon={faAddressCard} /> {$t$('settings.addressDisplay')}
+			{/snippet}
 			<div class="settings-columns">
 				<div class="setting-content">
 					<ToggleCheckbox bind:checked={$settings.replaceAddressesWithPlayer}>
@@ -85,10 +88,12 @@
 					</div>
 				</div>
 			</div>
-		</fieldset>
+		</SettingsFieldset>
 
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faList} /> {$t$('settings.transactionList')}</legend>
+		<SettingsFieldset>
+			{#snippet legend()}
+				<FontAwesomeIcon icon={faList} /> {$t$('settings.transactionList')}
+			{/snippet}
 			<div class="settings-columns">
 				<div class="setting-content">
 					<ToggleCheckbox bind:checked={$settings.showMetadata} onChange={onShowMetadataChange}>
@@ -123,10 +128,10 @@
 					</div>
 				</div>
 			</div>
-		</fieldset>
+		</SettingsFieldset>
 
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faTags} /> {$t$('settings.nameList')}</legend>
+		<SettingsFieldset>
+			{#snippet legend()}<FontAwesomeIcon icon={faTags} /> {$t$('settings.nameList')}{/snippet}
 			<div class="settings-columns">
 				<div class="setting-content">
 					<ToggleCheckbox bind:checked={$settings.showOriginalOwner}>
@@ -143,10 +148,10 @@
 					</div>
 				</div>
 			</div>
-		</fieldset>
+		</SettingsFieldset>
 
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faMinus} /> {$t$('settings.missingData')}</legend>
+		<SettingsFieldset>
+			{#snippet legend()}<FontAwesomeIcon icon={faMinus} /> {$t$('settings.missingData')}{/snippet}
 			<div class="settings-columns">
 				<div class="setting-content">
 					<ToggleCheckbox bind:checked={$settings.simplePlaceholders}>
@@ -161,10 +166,10 @@
 					</div>
 				</div>
 			</div>
-		</fieldset>
+		</SettingsFieldset>
 
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faWallet} /> {$t$('settings.walletDisplay')}</legend>
+		<SettingsFieldset>
+			{#snippet legend()}<FontAwesomeIcon icon={faWallet} /> {$t$('settings.walletDisplay')}{/snippet}
 			<div class="settings-columns">
 				<div class="setting-content">
 					<ToggleCheckbox
@@ -196,7 +201,7 @@
 					</div>
 				</div>
 			</div>
-		</fieldset>
+		</SettingsFieldset>
 	</div>
 </Section>
 
@@ -205,27 +210,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-	}
-
-	.settings-group {
-		margin-bottom: 0;
-		padding: 1rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 0.5rem;
-	}
-
-	.settings-group legend {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-weight: 500;
-		padding: 0 0.5rem;
-	}
-
-	.settings-group legend :global(svg) {
-		width: 1rem;
-		height: 1rem;
-		opacity: 0.7;
 	}
 
 	.settings-columns {
@@ -354,8 +338,5 @@
 	}
 
 	@media (max-width: 768px) {
-		.settings-group {
-			padding: 0.75rem;
-		}
 	}
 </style>
