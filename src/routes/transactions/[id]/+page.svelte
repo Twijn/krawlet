@@ -1,9 +1,7 @@
 <script lang="ts">
-	import Section from '$lib/components/ui/Section.svelte';
 	import Modal from '$lib/components/ui/Modal.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import {
-		faDatabase,
 		faInfoCircle,
 		faRepeat,
 		faRotateLeft,
@@ -73,32 +71,85 @@
 		transactionMetadata.entries.filter((e) => !e.value).map((e) => e.name.toLowerCase())
 	);
 
+	function getTransactionDestinationAliases(tx: Transaction): string[] {
+		const aliases: string[] = [];
+
+		const addAlias = (alias: string) => {
+			if (!aliases.includes(alias)) {
+				aliases.push(alias);
+			}
+		};
+
+		if (tx.to) {
+			addAlias(tx.to.toLowerCase());
+		}
+
+		if (tx.sent_name) {
+			const sentName = tx.sent_name.toLowerCase();
+			addAlias(sentName);
+			addAlias(`${sentName}.kro`);
+
+			if (tx.sent_metaname) {
+				const sentMetaName = tx.sent_metaname.toLowerCase();
+				addAlias(`${sentMetaName}@${sentName}`);
+				addAlias(`${sentMetaName}@${sentName}.kro`);
+			}
+		}
+
+		return aliases;
+	}
+
+	function addressesMatchTransaction(tx: Transaction, addresses: string[]): boolean {
+		if (addresses.length === 0) return false;
+		const txDestinations = getTransactionDestinationAliases(tx);
+		return addresses.some((address) => txDestinations.includes(address.toLowerCase()));
+	}
+
 	// Find related listing for item purchases
 	const relatedListing = $derived.by(() => {
 		if (valueOnlyMeta.length === 0) return null;
 
-		const shops = $shopsync.data.filter((s) => s.addresses?.includes(transaction.to));
-		const listings = shops.reduce(
-			(acc, s) => {
-				if (s.items) {
-					const matchingItems = s.items.filter((i) =>
-						i.prices?.find(
-							(p) =>
-								p.currency.toLowerCase() === 'kro' &&
-								valueOnlyMeta.includes(p.requiredMeta?.toLowerCase() ?? '')
-						)
-					);
-					// Attach shop info to listing
-					matchingItems.forEach((item) => {
-						acc.push({ listing: item, shop: s });
-					});
-				}
-				return acc;
-			},
-			[] as { listing: Listing; shop: Shop }[]
-		);
+		const candidates = $shopsync.data.reduce((acc, shop) => {
+			if (!shop.items?.length) return acc;
 
-		return listings.length > 0 ? listings[0] : null;
+			shop.items.forEach((listing) => {
+				const matchesListingAddress = addressesMatchTransaction(transaction, listing.addresses ?? []);
+				const matchesShopAddress = addressesMatchTransaction(transaction, shop.addresses ?? []);
+
+				if (!matchesListingAddress && !matchesShopAddress) return;
+
+				const matchingPrice = listing.prices?.find((price) => {
+					if (price.currency.toLowerCase() !== 'kro') return false;
+					const requiredMeta = price.requiredMeta?.toLowerCase();
+					if (!requiredMeta) return false;
+					return valueOnlyMeta.includes(requiredMeta);
+				});
+
+				if (!matchingPrice) return;
+
+				acc.push({
+					listing,
+					shop,
+					score: (matchesListingAddress ? 2 : 0) + (matchesShopAddress ? 1 : 0)
+				});
+			});
+
+			return acc;
+		}, [] as Array<{ listing: Listing; shop: Shop; score: number }>);
+
+		if (candidates.length === 0) return null;
+
+		candidates.sort((a, b) => b.score - a.score);
+		const topScore = candidates[0].score;
+		const topCandidates = candidates.filter((candidate) => candidate.score === topScore);
+
+		if (topCandidates.length > 1) {
+			console.warn('Ambiguous listings found for transaction metadata:', transaction, topCandidates);
+			return null;
+		}
+
+		const [winner] = topCandidates;
+		return winner ? { listing: winner.listing, shop: winner.shop } : null;
 	});
 
 	// Calculate quantity based on transaction value and unit price

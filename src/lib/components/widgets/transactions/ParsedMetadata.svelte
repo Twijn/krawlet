@@ -6,7 +6,7 @@
 		TransactionWithMeta
 	} from 'kromer';
 	import shopsync, { getItemImageUrl, getRelativeItemUrl } from '$lib/stores/shopsync';
-	import type { Listing } from '$lib/types/shops';
+	import type { Listing, Shop } from '$lib/types/shops';
 	import settings from '$lib/stores/settings';
 	import { formatCurrency, getMinecraftAvatar, relativeTime } from '$lib/util';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
@@ -100,34 +100,90 @@
 		goto(`/transactions/${id}`);
 	}
 
+	function getTransactionDestinationAliases(tx: Transaction): string[] {
+		const aliases: string[] = [];
+
+		const addAlias = (alias: string) => {
+			if (!aliases.includes(alias)) {
+				aliases.push(alias);
+			}
+		};
+
+		if (tx.to) {
+			addAlias(tx.to.toLowerCase());
+		}
+
+		if (tx.sent_name) {
+			const sentName = tx.sent_name.toLowerCase();
+			addAlias(sentName);
+			addAlias(`${sentName}.kro`);
+
+			if (tx.sent_metaname) {
+				const sentMetaName = tx.sent_metaname.toLowerCase();
+				addAlias(`${sentMetaName}@${sentName}`);
+				addAlias(`${sentMetaName}@${sentName}.kro`);
+			}
+		}
+
+		return aliases;
+	}
+
+	function addressesMatchTransaction(tx: Transaction, addresses: string[]): boolean {
+		if (addresses.length === 0) return false;
+
+		const txDestinations = getTransactionDestinationAliases(tx);
+		return addresses.some((address) => txDestinations.includes(address.toLowerCase()));
+	}
+
+	function transactionMatchesShop(tx: Transaction, shop: Shop): boolean {
+		return addressesMatchTransaction(tx, shop.addresses ?? []);
+	}
+
 	const relatedListing: Listing | null = $derived.by(() => {
 		if (!$settings.parsePurchaseItem) return null;
 		
 		const valueOnlyMeta = meta.entries.filter((e) => !e.value).map((e) => e.name.toLowerCase());
 		if (valueOnlyMeta.length === 0) return null;
-		
-		const shops = $shopsync.data.filter((s) => s.addresses?.includes(transaction.to));
-		const listings = shops.reduce((listings, s) => {
-			if (s.items) {
-				listings = [
-					...listings,
-					...s.items.filter((i) =>
-						i.prices?.find(
-							(p) =>
-								p.currency.toLowerCase() === 'kro' &&
-								valueOnlyMeta.includes(p.requiredMeta?.toLowerCase() ?? '')
-						)
-					)
-				];
-			}
-			return listings;
-		}, [] as Listing[]);
-		
-		if (listings.length > 1) {
-			console.warn('Multiple listings found for transaction metadata:', transaction, listings);
+
+		const candidates = $shopsync.data.reduce((acc, shop) => {
+			if (!shop.items?.length) return acc;
+
+			shop.items.forEach((listing) => {
+				const matchesListingAddress = addressesMatchTransaction(transaction, listing.addresses ?? []);
+				const matchesShopAddress = transactionMatchesShop(transaction, shop);
+
+				if (!matchesListingAddress && !matchesShopAddress) return;
+
+				const matchingPrice = listing.prices?.find((price) => {
+					if (price.currency.toLowerCase() !== 'kro') return false;
+					const requiredMeta = price.requiredMeta?.toLowerCase();
+					if (!requiredMeta) return false;
+					return valueOnlyMeta.includes(requiredMeta);
+				});
+
+				if (!matchingPrice) return;
+
+				acc.push({
+					listing,
+					score: (matchesListingAddress ? 2 : 0) + (matchesShopAddress ? 1 : 0)
+				});
+			});
+
+			return acc;
+		}, [] as Array<{ listing: Listing; score: number }>);
+
+		if (candidates.length === 0) return null;
+
+		candidates.sort((a, b) => b.score - a.score);
+		const topScore = candidates[0].score;
+		const topCandidates = candidates.filter((candidate) => candidate.score === topScore);
+
+		if (topCandidates.length > 1) {
+			console.warn('Ambiguous listings found for transaction metadata:', transaction, topCandidates);
+			return null;
 		}
-		
-		return listings[0] ?? null;
+
+		return topCandidates[0]?.listing ?? null;
 	});
 
 	const quantity: number = $derived.by(() => {
