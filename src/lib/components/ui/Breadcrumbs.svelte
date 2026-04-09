@@ -17,7 +17,7 @@
 	<h1>
 		<a href="/">Krawlet</a
 		><!-- this provides a consistent "home" link and separator, even if no navItems are provided
-     -->{#each navItems as item (item.href)}
+     -->{#each navItems as item, i (item.href ?? item.tl ?? item.label ?? `crumb-${i}`)}
 			<span class="separator">&raquo;</span><a href={item.href}>
 				{#if item.tl}
 					{$t$(item.tl)}
@@ -31,7 +31,7 @@
 	</h1>
 	{#if buttons && defaultButtonProps}
 		<nav class="buttons">
-			{#each buttons as button (button.title)}
+			{#each buttons as button, i (button.title ?? button.tk ?? button.href ?? `${button.type ?? 'button'}-${button.variant ?? 'secondary'}-${i}`)}
 				<Button {...defaultButtonProps} {...button} />
 			{/each}
 		</nav>
