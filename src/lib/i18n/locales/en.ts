@@ -70,6 +70,7 @@ export default {
 		firstSeen: 'First Seen',
 		rank: 'Rank',
 		viewAll: 'View all addresses',
+		viewRichest: 'View richest addresses',
 		actions: {
 			viewTransactions: 'View transactions',
 			sendKromer: 'Send Kromer'

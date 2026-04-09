@@ -34,13 +34,37 @@
 
 	const cache = new NameCache();
 
+	const DEFAULT_SORT_COLUMN: keyof Name = 'registered';
+	const DEFAULT_SORT_DIRECTION: 'ASC' | 'DESC' = 'DESC';
+	const SORTABLE_COLUMNS: (keyof Name)[] = [
+		'name',
+		'owner',
+		'original_owner',
+		'a',
+		'transferred',
+		'updated',
+		'registered'
+	];
+
 	let page = paramState<number>(`${storePrefix.length > 0 ? storePrefix + '_' : ''}page`, 1, {
 		serialize: (v) => v.toString(),
 		deserialize: (s) => parseInt(s) || 1,
 		shouldSet: (v) => v > 1
 	});
-	let sortedColumn: keyof Name | null = $state('registered');
-	let sortDirection: 'ASC' | 'DESC' = $state('DESC');
+	let sortedColumn = paramState<keyof Name>(`${storePrefix.length > 0 ? storePrefix + '_' : ''}sc`, DEFAULT_SORT_COLUMN, {
+		serialize: (v) => v,
+		deserialize: (s) =>
+			SORTABLE_COLUMNS.includes(s as keyof Name)
+				? (s as keyof Name)
+				: DEFAULT_SORT_COLUMN,
+		shouldSet: (v) =>
+			SORTABLE_COLUMNS.includes(v) && v !== DEFAULT_SORT_COLUMN
+	});
+	let sortDirection = paramState<'ASC' | 'DESC'>(`${storePrefix.length > 0 ? storePrefix + '_' : ''}sd`, DEFAULT_SORT_DIRECTION, {
+		serialize: (v) => v,
+		deserialize: (s) => (['ASC', 'DESC'].includes(s) ? s as 'ASC' | 'DESC' : DEFAULT_SORT_DIRECTION),
+		shouldSet: (v) => ['ASC', 'DESC'].includes(v) && v !== DEFAULT_SORT_DIRECTION
+	});
 	let offset = $derived((page.value - 1) * limit);
 
 	// Address filter modal state
@@ -73,8 +97,8 @@
 	]);
 
 	let queryData: NameCacheLookup = $derived({
-		orderBy: sortedColumn ?? 'registered',
-		order: sortDirection,
+		orderBy: sortedColumn.value ?? DEFAULT_SORT_COLUMN,
+		order: sortDirection.value ?? DEFAULT_SORT_DIRECTION,
 		...query,
 		addresses: allAddresses,
 		limit,
@@ -140,8 +164,8 @@
 	});
 
 	const resetSort = () => {
-		sortedColumn = 'registered';
-		sortDirection = 'DESC';
+		sortedColumn.value = DEFAULT_SORT_COLUMN;
+		sortDirection.value = DEFAULT_SORT_DIRECTION;
 	};
 
 	const handleAddAddress = (address: string, label?: string) => {
@@ -171,8 +195,8 @@
 	<TableControls {loading} bind:page={page.value} {limit} {total} onRefresh={refresh}>
 		{#if showDetails}
 			<QueryBar
-				{sortedColumn}
-				{sortDirection}
+				sortedColumn={sortedColumn.value}
+				sortDirection={sortDirection.value}
 				defaultSortColumn="registered"
 				defaultSortDirection="DESC"
 				{columns}
@@ -200,8 +224,8 @@
 	data={names}
 	{loading}
 	{title}
-	bind:sortedColumn
-	bind:sortDirection
+	bind:sortedColumn={sortedColumn.value}
+	bind:sortDirection={sortDirection.value}
 >
 	{#snippet cell(item, column)}
 		{#if column.key === 'owner' || column.key === 'original_owner'}

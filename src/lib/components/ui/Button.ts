@@ -3,7 +3,7 @@ import type { Snippet } from 'svelte';
 
 export type ButtonType = 'button' | 'submit' | 'reset';
 export type ButtonVariant = 'primary' | 'secondary' | 'success' | 'error';
-export type ButtonSize = 'small' | 'medium' | 'large';
+export type ButtonSize = 'xsmall' | 'small' | 'medium' | 'large';
 export type ButtonClickHandler = (e: Event) => void | boolean | Promise<void> | Promise<boolean>;
 
 export type ButtonProps = {

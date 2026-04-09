@@ -9,11 +9,11 @@
 
 	type Props = {
 		/** Current sorted column key */
-		sortedColumn?: T | null;
+		sortedColumn: T;
 		/** Current sort direction */
 		sortDirection?: 'ASC' | 'DESC';
 		/** Default column to sort by */
-		defaultSortColumn?: T | null;
+		defaultSortColumn: T;
 		/** Default sort direction */
 		defaultSortDirection?: 'ASC' | 'DESC';
 		/** Column definitions for label lookup */
@@ -30,9 +30,9 @@
 	};
 
 	const {
-		sortedColumn = null as T | null,
+		sortedColumn = $bindable(),
 		sortDirection = 'DESC',
-		defaultSortColumn = null as T | null,
+		defaultSortColumn = $bindable(),
 		defaultSortDirection = 'DESC',
 		columns = [],
 		onSortReset,

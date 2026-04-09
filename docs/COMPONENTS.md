@@ -217,7 +217,7 @@ Toast notification system.
 
 ### Wallets
 
-**Location**: `src/lib/components/widgets/Wallets.svelte`
+**Location**: `src/lib/components/widgets/wallets/Wallets.svelte`
 
 Displays user's wallets with balances.
 

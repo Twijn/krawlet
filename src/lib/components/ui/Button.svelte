@@ -166,6 +166,11 @@
 		width: 100%;
 	}
 
+	.xsmall {
+		font-size: 0.8rem;
+		padding: 0.3em 0.6em;
+	}
+
 	.small {
 		font-size: 0.875rem;
 		padding: 0.375em 0.75em;

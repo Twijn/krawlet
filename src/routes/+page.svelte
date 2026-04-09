@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Wallets from '$lib/components/widgets/Wallets.svelte';
+	import CompactWallets from '$lib/components/widgets/wallets/CompactWallets.svelte';
 	import AdvancedNames from '$lib/components/widgets/names/AdvancedNames.svelte';
 	import AdvancedTransactions from '$lib/components/widgets/transactions/AdvancedTransactions.svelte';
 	import AdvancedAddresses from '$lib/components/widgets/addresses/AdvancedAddresses.svelte';
@@ -16,7 +16,7 @@
 
 <Breadcrumbs />
 
-<Wallets lgCols={5} mdCols={12} limit={8} showAddButton={true} compact={true} />
+<CompactWallets lgCols={5} mdCols={12} limit={8} showAddButton={true} compact={true} />
 <div class="col-7 col-md-12">
 	<AdvancedTransactions storePrefix="tx" title="Recent Transactions" limit={10} query={{}} />
 </div>
