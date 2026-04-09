@@ -179,8 +179,8 @@
 </div>
 
 <div class="col-12">
-	<AdvancedNames title="Names" limit={15} query={{}} addresses={[address.address]} showDetails={true} />
-	<AdvancedTransactions title="Transactions" limit={15} query={{}} addresses={[address.address]} showDetails={true} />
+	<AdvancedNames storePrefix="nm" title="Names" limit={15} query={{}} addresses={[address.address]} showDetails={true} />
+	<AdvancedTransactions storePrefix="tx" title="Transactions" limit={15} query={{}} addresses={[address.address]} showDetails={true} />
 </div>
 
 <style>

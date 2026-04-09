@@ -34,7 +34,7 @@
 
     const cache = new NameCache();
 
-    let page = paramState<number>(`${storePrefix}page`, 1, {
+    let page = paramState<number>(`${storePrefix.length > 0 ? storePrefix + "_" : ""}page`, 1, {
         serialize: (v) => v.toString(),
         deserialize: (s) => parseInt(s) || 1,
         shouldSet: (v) => v > 1

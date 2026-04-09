@@ -18,12 +18,12 @@
 
 <Wallets lgCols={5} mdCols={12} limit={8} showAddButton={true} compact={true} />
 <div class="col-7 col-md-12">
-	<AdvancedTransactions title="Recent Transactions" limit={10} query={{}} />
+	<AdvancedTransactions storePrefix="tx" title="Recent Transactions" limit={10} query={{}} />
 </div>
 
 <div class="col-6 col-md-12">
-	<AdvancedNames title="Recent Names" limit={5} query={{}} />
+	<AdvancedNames storePrefix="nm" title="Recent Names" limit={5} query={{}} />
 </div>
 <div class="col-6 col-md-12">
-	<AdvancedAddresses title="Top Addresses" limit={5} richest={true} />
+	<AdvancedAddresses storePrefix="ad" title="Top Addresses" limit={5} richest={true} />
 </div>

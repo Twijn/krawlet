@@ -15,27 +15,34 @@
 	import AddressFilterModal from "$lib/components/dialogs/AddressFilterModal.svelte";
 	import type { Filter } from "$lib/components/ui/QueryBar";
 	import { faPlus } from "@fortawesome/free-solid-svg-icons";
+	import { paramState } from "$lib/paramState.svelte";
 
     let {
         query = {},
         showDetails = false,
         addresses = $bindable([]),
         limit = $bindable(30),
-        title
+        title,
+        storePrefix = ""
     }: {
         query?: TransactionLookupQuery;
         showDetails?: boolean;
         addresses?: string[];
         limit: number;
         title?: string;
+        storePrefix?: string;
     } = $props();
 
     const cache = new TransactionCache();
 
-    let page: number = $state(1);
+    const page = paramState<number>(`${storePrefix.length > 0 ? storePrefix + "_" : ""}page`, 1, {
+        serialize: (v) => v.toString(),
+        deserialize: (s) => parseInt(s) || 1,
+        shouldSet: (v) => v > 1
+    });
     let sortedColumn: keyof TransactionWithMeta | null = $state("time");
     let sortDirection: "ASC" | "DESC" = $state("DESC");
-    let offset = $derived((page - 1) * limit);
+    let offset = $derived((page.value - 1) * limit);
 
     // Address filter modal state
     let showAddressModal = $state(false);
@@ -110,7 +117,7 @@
         // Don't add duplicates
         if (addressFilters.some(f => f.address === address)) return;
         addressFilters = [...addressFilters, { address, label }];
-        page = 1; // Reset to first page when filter changes
+        page.value = 1; // Reset to first page when filter changes
     };
 
     const handleRemoveFilter = (filter: Filter) => {
@@ -118,7 +125,7 @@
         if (!filter.id.startsWith("address-")) return;
         const index = parseInt(filter.id.replace("address-", ""));
         addressFilters = addressFilters.filter((_, i) => i !== index);
-        page = 1; // Reset to first page when filter changes
+        page.value = 1; // Reset to first page when filter changes
     };
 </script>
 
@@ -132,7 +139,7 @@
 {#if !title}
     <TableControls
         {loading}
-        bind:page
+        bind:page={page.value}
         {limit}
         {total}
         onRefresh={refresh}
@@ -212,7 +219,7 @@
 
 <TableControls
     {loading}
-    bind:page
+    bind:page={page.value}
     {limit}
     {total}
     onRefresh={refresh}
@@ -220,7 +227,7 @@
     {#if showDetails}
         <LimitSelector bind:limit />
     {/if}
-    <PaginationInfo {page} {limit} {total} itemName="transaction" itemNamePlural="transactions" />
+    <PaginationInfo page={page.value} {limit} {total} itemName="transaction" itemNamePlural="transactions" />
 </TableControls>
 
 <style>
