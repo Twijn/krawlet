@@ -432,6 +432,7 @@ export default {
 		// Shop details
 		shopName: 'Shop Name',
 		address: 'Address',
+		name: 'Name',
 		totalItems: 'Total Items',
 		totalStock: 'Total Stock',
 		lastUpdated: 'Last Updated',

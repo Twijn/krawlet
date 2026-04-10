@@ -13,6 +13,28 @@
 	const { shop } = data;
 
 	let items = $derived(shop?.items ?? []);
+
+	const addresses = $derived(shop?.addresses?.filter((a) => /^k[a-z0-9]{9}$/.test(a)) ?? []);
+	const names = $derived.by(() => {
+		const entries = shop?.addresses ?? [];
+		const uniqueNames: string[] = [];
+
+		entries
+			.filter((entry) => !/^k[a-z0-9]{9}$/i.test(entry))
+			.forEach((entry) => {
+				const lower = entry.toLowerCase();
+				const withoutMeta = lower.includes('@') ? lower.split('@').at(-1) ?? lower : lower;
+				const baseName = withoutMeta.endsWith('.kro')
+					? withoutMeta.slice(0, withoutMeta.length - 4)
+					: withoutMeta;
+
+				if (baseName && !uniqueNames.includes(baseName)) {
+					uniqueNames.push(baseName);
+				}
+			});
+
+		return uniqueNames;
+	});
 </script>
 
 <svelte:head>
@@ -32,11 +54,21 @@
 			<h2>{$t$('shop.shopName')}</h2>
 			<div>{cleanShopData(shop.name)}</div>
 		</div>
-		{#if shop.addresses}
-			{#each shop.addresses as address (shop.id + ':' + address)}
+		{#if addresses.length > 0}
+			{#each addresses as address (shop.id + ':' + address)}
 				<div class="statistic">
 					<h2>{$t$('shop.address')}</h2>
 					<div><Address {address} /></div>
+				</div>
+			{/each}
+		{/if}
+		{#if names.length > 0}
+			{#each names as name (shop.id + ':name:' + name)}
+				<div class="statistic">
+					<h2>{$t$('shop.name')}</h2>
+					<div class="name-display">
+						<code>{name}<small>.kro</small></code>
+					</div>
 				</div>
 			{/each}
 		{/if}
