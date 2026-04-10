@@ -405,9 +405,9 @@
 							<th>{$t$('reports.changeType')}</th>
 						{/if}
 						<th>{$t$('shop.item')}</th>
-						<th>{$t$('shop.shop')}</th>
+						<th class="mobile-hide">{$t$('shop.shop')}</th>
 						<th>{$t$('reports.changes')}</th>
-						<th class="right">{$t$('transaction.time')}</th>
+						<th class="right mobile-hide">{$t$('transaction.time')}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -432,7 +432,7 @@
 									<small class="item-id">{change.itemName}</small>
 								</div>
 							</td>
-							<td>
+							<td class="mobile-hide">
 								<a href="/shops/{change.shopId}">{change.shopName}</a>
 							</td>
 							<td class="changes-cell">
@@ -492,7 +492,7 @@
 									<span class="change-desc">{$t$('reports.propertyUpdated')}</span>
 								{/if}
 							</td>
-							<td class="right time" title={change.timestamp.toLocaleString()}>
+							<td class="right time mobile-hide" title={change.timestamp.toLocaleString()}>
 								{relativeTime(change.timestamp)}
 							</td>
 						</tr>
@@ -766,6 +766,12 @@
 		.field-change {
 			flex-wrap: wrap;
 			gap: 0.2em;
+		}
+	}
+
+	@media only screen and (max-width: 600px) {
+		:global(.mobile-hide) {
+			display: none;
 		}
 	}
 </style>

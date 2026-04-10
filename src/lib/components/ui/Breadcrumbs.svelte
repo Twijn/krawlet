@@ -66,4 +66,15 @@
 		margin: 0 0.3em;
 		opacity: 0.5;
 	}
+
+	@media only screen and (max-width: 600px) {
+		.breadcrumbs {
+			flex-direction: column;
+			gap: 0.75em;
+		}
+
+		.buttons {
+			width: 100%;
+		}
+	}
 </style>

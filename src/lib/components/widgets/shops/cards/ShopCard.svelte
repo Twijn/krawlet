@@ -134,4 +134,10 @@
 		gap: 0.5rem;
 		margin-top: auto;
 	}
+
+	@media only screen and (max-width: 480px) {
+		.buttons {
+			flex-direction: column;
+		}
+	}
 </style>

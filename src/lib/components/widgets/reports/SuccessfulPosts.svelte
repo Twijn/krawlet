@@ -85,7 +85,7 @@
 				<thead>
 					<tr>
 						<th>{$t$('shop.shop')}</th>
-						<th>{$t$('reports.shopId')}</th>
+						<th class="mobile-hide">{$t$('reports.shopId')}</th>
 						<th class="center">{$t$('reports.itemCount')}</th>
 						<th class="right">{$t$('transaction.time')}</th>
 					</tr>
@@ -97,7 +97,7 @@
 							<td>
 								<a href="/shops/{record.shopId}">{record.shopName}</a>
 							</td>
-							<td class="shop-id">{record.shopId}</td>
+							<td class="shop-id mobile-hide">{record.shopId}</td>
 							<td class="center">{record.itemCount.toLocaleString()}</td>
 							<td class="right time" title={timestamp.toLocaleString()}>
 								{relativeTime(timestamp)}
@@ -117,24 +117,38 @@
 <style>
 	.error-message {
 		text-align: center;
-		padding: 2em;
+		padding: 2.5em 2em;
+		background-color: rgba(var(--red), 0.08);
+		border-radius: 0.5rem;
+		border: 1px solid rgba(var(--red), 0.2);
+	}
+
+	.error-message p {
 		color: rgb(var(--red));
+		font-weight: 500;
+		margin-bottom: 1em;
 	}
 
 	.error-message button {
-		margin-top: 1em;
-		padding: 0.5em 1em;
+		padding: 0.5em 1.25em;
 		background-color: var(--theme-color-1);
 		color: white;
 		border: none;
-		border-radius: 0.25em;
+		border-radius: 0.35em;
+		font-weight: 500;
 		cursor: pointer;
+	}
+
+	.error-message button:hover {
+		opacity: 0.9;
 	}
 
 	.no-data {
 		text-align: center;
 		color: var(--text-color-2);
-		padding: 2em;
+		padding: 2.5em;
+		background-color: var(--background-color-2);
+		border-radius: 0.5rem;
 	}
 
 	.shop-id {
@@ -146,5 +160,11 @@
 	.time {
 		font-size: 0.9rem;
 		white-space: nowrap;
+	}
+
+	@media only screen and (max-width: 600px) {
+		:global(.mobile-hide) {
+			display: none;
+		}
 	}
 </style>
