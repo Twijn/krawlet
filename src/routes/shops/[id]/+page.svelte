@@ -3,7 +3,6 @@
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import Skeleton from '$lib/components/ui/Skeleton.svelte';
 	import ShopItems from '$lib/components/widgets/shops/ShopItems.svelte';
-	import ShopAddressStats from '$lib/components/widgets/shops/ShopAddressStats.svelte';
 	import { cleanShopData } from '$lib/stores/shopsync';
 	import { relativeTime } from '$lib/util.js';
 	import { t$ } from '$lib/i18n';
@@ -103,8 +102,6 @@
 	</div>
 
 	<ShopItems {shop} />
-
-	<ShopAddressStats {shop} />
 {:else}
 	<ModuleLoading>
 		<Skeleton variant="rectangular" width="100%" height="300px" />

@@ -38,12 +38,13 @@
 		<ItemBadges {item} />
 	{/if}
 
+	<hr />
 	<div class="item-body">
 		{#if typeof children === 'function'}
 			{@render children()}
 		{/if}
 	</div>
-
+	<hr />
 	<div class="buttons">
 		{#if showPurchaseLink && 'id' in item}
 			{@const href = getListingBuyLink(item)}
@@ -77,7 +78,7 @@
 		display: flex;
 		gap: 1rem;
 		flex-direction: column;
-		background-color: var(--background-color-2);
+		background-color: var(--background-color-1);
 		min-width: 0;
 		max-width: 100%;
 		padding: 1rem;
@@ -87,6 +88,7 @@
 			0 2px 8px rgba(0, 0, 0, 0.3),
 			0 0 1px rgba(255, 255, 255, 0.1) inset;
 		transition: all 0.2s ease;
+		gap: 0.5rem;
 	}
 
 	.item:hover {
@@ -129,6 +131,12 @@
 
 	.item-body {
 		flex-grow: 1;
+	}
+
+	hr {
+		border: none;
+		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		margin: 0;
 	}
 
 	.buttons {

@@ -4,7 +4,6 @@
 	import type { Shop } from '$lib/types/shops';
 	import { faShop } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import Address from '../addresses/Address.svelte';
 	import { onMount } from 'svelte';
 	import ModuleLoading from '../other/ModuleLoading.svelte';
 	import Skeleton from '$lib/components/ui/Skeleton.svelte';
@@ -96,38 +95,25 @@
 			{@const items = shop.items ?? []}
 			{@const totalStock = items.reduce((v, l) => v + l.stock, 0)}
 			<ShopCard {shop}>
-				<div class="table-container">
-					<table>
-						<tbody>
-							<tr>
-								<th>{$t$('shop.totalItems')}</th>
-								<td class="right"
-									>{items.length}
-									<small>{items.length === 1 ? $t$('shop.listing') : $t$('shop.listings')}</small
-									></td
-								>
-							</tr>
-							<tr>
-								<th>{$t$('shop.totalStock')}</th>
-								<td class="right"
-									>{totalStock.toLocaleString()}
-									<small>{totalStock === 1 ? $t$('shop.item') : $t$('shop.items')}</small></td
-								>
-							</tr>
-							{#if shop.addresses}
-								{#each shop.addresses as address (address)}
-									{#if address.length === 10 && address.startsWith('k')}
-										<tr>
-											<th>{$t$('shop.address')}</th>
-											<td class="right"><Address {address} /></td>
-										</tr>
-									{/if}
-								{/each}
-							{/if}
-						</tbody>
-					</table>
+				<div class="shop-stats">
+					<div class="stat">
+						{items.length.toLocaleString()}
+						<small>{$t$(items.length === 1 ? 'shop.listing' : 'shop.listings')}</small>
+					</div>
+					<div class="stat">
+						{totalStock.toLocaleString()}
+						<small>{$t$(totalStock === 1 ? 'shop.item' : 'shop.items')}</small>
+					</div>
 				</div>
 			</ShopCard>
 		{/each}
 	</div>
 </Section>
+
+<style>
+	.shop-stats {
+		display: flex;
+		justify-content: space-around;
+		gap: 1rem;
+	}
+</style>

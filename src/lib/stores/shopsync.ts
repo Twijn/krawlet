@@ -2,7 +2,7 @@ import FetchedStore, { type FetchedStoreData } from '$lib/stores/FetchedStore';
 import type { Listing, Shop } from '$lib/types/shops';
 import { get } from 'svelte/store';
 import krawletClient from '$lib/api/krawlet';
-import { KrawletError, type Shop as ShopApi, type Item as ItemApi } from 'krawlet-js';
+import { KrawletError, type Shop as ShopApi, type Item as ItemApi, type EnderStorageItem } from 'krawlet-js';
 
 const itemName = 'shopsync';
 const itemExpiry = 1000 * 60 * 30; // 30 minutes
@@ -123,8 +123,13 @@ export const getListingBuyLink = (item: Listing, lock: boolean = true): string =
 	}
 };
 
-export const getItemImageUrl = (item: Listing | ItemListing) => {
-	return `https://shops.alexdevs.me/assets/items/${item.itemName.replace(':', '/')}.png`;
+export const getItemImageUrl = (item: Listing | ItemListing | EnderStorageItem) => {
+	let itemName = item.itemName as string;
+	if ('name' in item) {
+		itemName = item.name;
+	}
+	itemName = itemName.replace(':', '/');
+	return `https://shops.alexdevs.me/assets/items/${itemName}.png`;
 };
 
 export const getRelativeItemUrl = (item: Listing | ItemListing) => {

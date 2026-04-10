@@ -40,11 +40,13 @@
 			{/if}
 		</div>
 	</div>
+	<hr />
 	<div class="shop-body">
 		{#if typeof children === 'function'}
 			{@render children()}
 		{/if}
 	</div>
+	<hr />
 	<div class="buttons">
 		{#if shop.locationCoordinates && shop.locationCoordinates.split(' ').length === 3}
 			{@const coordinates = shop.locationCoordinates.split(' ')}
@@ -66,7 +68,7 @@
 		position: relative;
 		display: flex;
 		flex-direction: column;
-		background-color: var(--background-color-2);
+		background-color: var(--background-color-1);
 		min-width: 0;
 		max-width: 100%;
 		padding: 1rem;
@@ -76,7 +78,7 @@
 			0 2px 8px rgba(0, 0, 0, 0.3),
 			0 0 1px rgba(255, 255, 255, 0.1) inset;
 		transition: all 0.2s ease;
-		gap: 1rem;
+		gap: 0.5rem;
 	}
 
 	.shop:hover {
@@ -123,6 +125,12 @@
 
 	.shop-body {
 		flex-grow: 1;
+	}
+
+	hr {
+		border: none;
+		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		margin: 0;
 	}
 
 	small[title] {
