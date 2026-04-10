@@ -1,8 +1,8 @@
 import { goto } from '$app/navigation';
 import { page } from '$app/state';
-import { SvelteURL } from 'svelte/reactivity';
+import { SvelteMap, SvelteURL } from 'svelte/reactivity';
 
-const pendingParamUpdates = new Map<string, string | null>();
+const pendingParamUpdates = new SvelteMap<string, string | null>();
 let flushScheduled = false;
 
 function scheduleUrlParamFlush() {
