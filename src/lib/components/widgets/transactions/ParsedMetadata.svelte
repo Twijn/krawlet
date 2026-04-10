@@ -6,9 +6,10 @@
 		TransactionWithMeta
 	} from 'kromer';
 	import shopsync, { getItemImageUrl, getRelativeItemUrl } from '$lib/stores/shopsync';
-	import type { Listing, Shop } from '$lib/types/shops';
+	import type { Listing } from '$lib/types/shops';
 	import settings from '$lib/stores/settings';
 	import { formatCurrency, getMinecraftAvatar, relativeTime } from '$lib/util';
+	import { findBestRelatedShopSyncListing } from '$lib/utils/shopsyncMatching';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faRotateLeft, faArrowRight, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 	import { t$ } from '$lib/i18n';
@@ -103,107 +104,20 @@
 		goto(`/transactions/${id}`);
 	}
 
-	function getTransactionDestinationAliases(tx: Transaction): string[] {
-		const aliases: string[] = [];
-
-		const addAlias = (alias: string) => {
-			if (!aliases.includes(alias)) {
-				aliases.push(alias);
-			}
-		};
-
-		if (tx.to) {
-			addAlias(tx.to.toLowerCase());
-		}
-
-		if (tx.sent_name) {
-			const sentName = tx.sent_name.toLowerCase();
-			addAlias(sentName);
-			addAlias(`${sentName}.kro`);
-
-			if (tx.sent_metaname) {
-				const sentMetaName = tx.sent_metaname.toLowerCase();
-				addAlias(`${sentMetaName}@${sentName}`);
-				addAlias(`${sentMetaName}@${sentName}.kro`);
-			}
-		}
-
-		return aliases;
-	}
-
-	function addressesMatchTransaction(tx: Transaction, addresses: string[]): boolean {
-		if (addresses.length === 0) return false;
-
-		const txDestinations = getTransactionDestinationAliases(tx);
-		return addresses.some((address) => txDestinations.includes(address.toLowerCase()));
-	}
-
-	function transactionMatchesShop(tx: Transaction, shop: Shop): boolean {
-		return addressesMatchTransaction(tx, shop.addresses ?? []);
-	}
-
-	const relatedListing: Listing | null = $derived.by(() => {
+	const relatedMatch: ReturnType<typeof findBestRelatedShopSyncListing> = $derived.by(() => {
 		if (!$settings.parsePurchaseItem) return null;
 
 		const valueOnlyMeta = meta.entries.filter((e) => !e.value).map((e) => e.name.toLowerCase());
-		if (valueOnlyMeta.length === 0) return null;
-
-		const candidates = $shopsync.data.reduce(
-			(acc, shop) => {
-				if (!shop.items?.length) return acc;
-
-				shop.items.forEach((listing) => {
-					const matchesListingAddress = addressesMatchTransaction(
-						transaction,
-						listing.addresses ?? []
-					);
-					const matchesShopAddress = transactionMatchesShop(transaction, shop);
-
-					if (!matchesListingAddress && !matchesShopAddress) return;
-
-					const matchingPrice = listing.prices?.find((price) => {
-						if (price.currency.toLowerCase() !== 'kro') return false;
-						const requiredMeta = price.requiredMeta?.toLowerCase();
-						if (!requiredMeta) return false;
-						return valueOnlyMeta.includes(requiredMeta);
-					});
-
-					if (!matchingPrice) return;
-
-					acc.push({
-						listing,
-						score: (matchesListingAddress ? 2 : 0) + (matchesShopAddress ? 1 : 0)
-					});
-				});
-
-				return acc;
-			},
-			[] as Array<{ listing: Listing; score: number }>
-		);
-
-		if (candidates.length === 0) return null;
-
-		candidates.sort((a, b) => b.score - a.score);
-		const topScore = candidates[0].score;
-		const topCandidates = candidates.filter((candidate) => candidate.score === topScore);
-
-		if (topCandidates.length > 1) {
-			console.warn(
-				'Ambiguous listings found for transaction metadata:',
-				transaction,
-				topCandidates
-			);
-			return null;
-		}
-
-		return topCandidates[0]?.listing ?? null;
+		return findBestRelatedShopSyncListing(transaction, $shopsync.data, valueOnlyMeta);
 	});
 
+	const relatedListing: Listing | null = $derived(relatedMatch?.listing ?? null);
+	const relatedPrice = $derived(relatedMatch?.price ?? null);
+
 	const quantity: number = $derived.by(() => {
-		if (!relatedListing || !$settings.parsePurchaseItemQuantity) return 0;
-		const price =
-			relatedListing.prices?.find((p) => p.currency.toLowerCase() === 'kro')?.value ?? 1;
-		return Math.floor(transaction.value / price);
+		if (!relatedPrice || !$settings.parsePurchaseItemQuantity) return 0;
+		if (relatedPrice.value <= 0) return 0;
+		return Math.floor(transaction.value / relatedPrice.value);
 	});
 </script>
 
@@ -300,11 +214,8 @@
 					>{relatedListing.itemDisplayName}
 					<small>{quantity > 0 ? `x${quantity.toLocaleString()}` : ''}</small></strong
 				>
-				{#if $settings.parsePurchaseItemQuantity && relatedListing?.prices}
-					{@const price = relatedListing.prices.find((p) => p.currency.toLowerCase() === 'kro')}
-					{#if price}
-						<div class="each">{formatCurrency(price.value)} KRO each</div>
-					{/if}
+				{#if $settings.parsePurchaseItemQuantity && relatedPrice}
+					<div class="each">{formatCurrency(relatedPrice.value)} KRO each</div>
 				{/if}
 			</div>
 		</a>
