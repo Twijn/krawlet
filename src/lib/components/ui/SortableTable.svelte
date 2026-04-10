@@ -34,6 +34,8 @@
 		refresh
 	}: Props = $props();
 
+	let blocking: boolean = $derived(loading && !hydrated);
+
 	function onHeaderClick(column: SortableColumnData<T>) {
 		if (!column.sortable) return;
 
@@ -52,7 +54,7 @@
 	<h2>{title}</h2>
 {/if}
 
-<div class="table-wrapper" class:loading>
+<div class="table-wrapper" class:loading={blocking}>
 	<div class="table-container">
 		<table class="sortable-table">
 			<thead>
@@ -108,7 +110,7 @@
 				{/if}
 			</tbody>
 		</table>
-		<ModuleLoading loading={loading && !hydrated} absolute />
+		<ModuleLoading loading={blocking} absolute />
 	</div>
 </div>
 

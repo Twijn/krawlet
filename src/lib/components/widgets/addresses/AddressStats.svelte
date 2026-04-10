@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import kromer from '$lib/api/kromer';
+	import { AddressCache } from '$lib/cache/AddressCache';
 	import type { Address, Transaction } from 'kromer';
 	import BalanceOverTime from '$lib/components/widgets/addresses/stats/BalanceOverTime.svelte';
 	import TransfersByAddress from '$lib/components/widgets/addresses/stats/TransfersByAddress.svelte';
@@ -19,6 +20,7 @@
 	let addressObj: Address | null = $state(null);
 	let loading: boolean = $state(false);
 	let transactions: Transaction[] = $state([]);
+	const addressCache = new AddressCache();
 
 	async function fetchTransactions(address: string, limit: number, timeLimit: number) {
 		const allTxs: Transaction[] = [];
@@ -42,9 +44,20 @@
 	}
 
 	$effect(() => {
-		kromer.addresses.get(address).then((a) => {
-			addressObj = a;
-		}, console.error);
+		if (!browser || !address) return;
+
+		const store = addressCache.get({ addresses: [address] });
+		if (!store) return;
+
+		addressCache.update({ addresses: [address] });
+
+		const unsubscribe = store.subscribe((state) => {
+			if (state.data?.addressList?.[address]) {
+				addressObj = state.data.addressList[address];
+			}
+		});
+
+		return unsubscribe;
 	});
 
 	$effect(() => {

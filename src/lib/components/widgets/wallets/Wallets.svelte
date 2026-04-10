@@ -15,63 +15,67 @@
 		actions?: never;
 	};
 
-	let wallets = $state<WalletWithAddress[]>([]);
-
 	const cache = new AddressCache();
+	const getWalletAddresses = () =>
+		$settings.wallets
+			.filter((wallet) => wallet.syncNode === getSyncNode().id)
+			.map((wallet) => wallet.address);
+
+	const compareWallets = (a: WalletWithAddress, b: WalletWithAddress) => {
+		if (!sortedColumn) return 0;
+
+		const aValue = a[sortedColumn as keyof WalletWithAddress];
+		const bValue = b[sortedColumn as keyof WalletWithAddress];
+
+		if (typeof aValue === 'string' && typeof bValue === 'string') {
+			return sortDirection === 'ASC'
+				? aValue.localeCompare(bValue)
+				: bValue.localeCompare(aValue);
+		}
+
+		if (typeof aValue === 'number' && typeof bValue === 'number') {
+			return sortDirection === 'ASC' ? aValue - bValue : bValue - aValue;
+		}
+
+		return 0;
+	};
+
+	let currentNodeWallets = $derived(
+		$settings.wallets.filter((wallet) => wallet.syncNode === getSyncNode().id)
+	);
+	let walletAddresses = $derived(currentNodeWallets.map((wallet) => wallet.address));
+	let walletAddressesKey = $derived(walletAddresses.join(','));
+	let lastRequestedWalletAddressesKey = $state<string | null>(null);
 
 	const addressCache = cache.get({
-		addresses: $settings.wallets
-			.filter((x) => x.syncNode === getSyncNode().id)
-			.map((x) => x.address)
+		addresses: getWalletAddresses()
 	});
-
-	const loading = $derived($addressCache?.loading ?? true);
 
 	let sortedColumn: keyof WalletWithAddress = $state('name');
 	let sortDirection: 'ASC' | 'DESC' = $state('ASC');
 
-	const refresh = () => {
-		wallets = wallets
-			.filter((x) => x.syncNode === getSyncNode().id)
-			.sort((a, b) => {
-				if (!sortedColumn) return 0;
+	let wallets: WalletWithAddress[] = $derived.by(() => {
+		const addressList = $addressCache?.data?.addressList ?? {};
 
-				const aValue = a[sortedColumn as keyof WalletWithAddress];
-				const bValue = b[sortedColumn as keyof WalletWithAddress];
-
-				if (typeof aValue === 'string' && typeof bValue === 'string') {
-					return sortDirection === 'ASC'
-						? aValue.localeCompare(bValue)
-						: bValue.localeCompare(aValue);
-				} else if (typeof aValue === 'number' && typeof bValue === 'number') {
-					return sortDirection === 'ASC' ? aValue - bValue : bValue - aValue;
-				} else {
-					return 0;
-				}
-			});
-	};
-
-	settings.subscribe((value) => {
-		wallets = value.wallets
-			.filter((x) => x.syncNode === getSyncNode().id)
-			.map((x) => ({ ...x, balance: 0, names: 0 }));
-
-		if (addressCache) {
-			cache.update({
-				addresses: wallets.filter((x) => x.syncNode === getSyncNode().id).map((x) => x.address)
-			});
-		}
-
-		refresh();
+		return currentNodeWallets
+			.map((wallet) => ({
+				...wallet,
+				balance: addressList[wallet.address]?.balance ?? 0,
+				names: addressList[wallet.address]?.names ?? 0
+			}))
+			.slice()
+			.sort(compareWallets);
 	});
 
-	addressCache?.subscribe((obj) => {
-		console.log('address cache updated', obj);
-		wallets = wallets.map((wallet) => ({
-			...wallet,
-			balance: obj.data?.addressList?.[wallet.address]?.balance ?? wallet.balance,
-			names: obj.data?.addressList?.[wallet.address]?.names ?? wallet.names
-		}));
+	const refresh = () => {
+		if (addressCache) {
+			cache.update({ addresses: [...walletAddresses] });
+		}
+	};
+
+	$effect(() => {
+		if (walletAddressesKey === lastRequestedWalletAddressesKey) return;
+		lastRequestedWalletAddressesKey = walletAddressesKey;
 		refresh();
 	});
 
@@ -84,7 +88,7 @@
 	];
 </script>
 
-<SortableTable bind:sortDirection bind:sortedColumn {columns} {refresh} {loading} data={wallets}>
+<SortableTable bind:sortDirection bind:sortedColumn {columns} {refresh} data={wallets}>
 	{#snippet cell(item, column)}
 		{#if column.key === 'address'}
 			<AddressComp address={item.address} />

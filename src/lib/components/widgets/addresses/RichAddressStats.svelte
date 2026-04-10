@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import kromer from '$lib/api/kromer';
+	import { AddressCache } from '$lib/cache/AddressCache';
 	import { formatCurrency } from '$lib/util';
-	import type { AddressesResponse } from 'kromer';
 	import { t$ } from '$lib/i18n';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
@@ -18,6 +18,8 @@
 	} = $props();
 
 	const SERVERWELF_ADDRESS = 'serverwelf';
+	const totalAddressCache = new AddressCache();
+	const richAddressCache = new AddressCache();
 
 	let loading: boolean = $state(true);
 	let totalAddresses: number = $state(0);
@@ -28,13 +30,15 @@
 		if (browser) {
 			loading = true;
 
-			// Get total addresses count
-			kromer.addresses
-				.getAll({ limit: 1 })
-				.then((result: AddressesResponse) => {
-					totalAddresses = result.total;
-				})
-				.catch(console.error);
+			const totalStore = totalAddressCache.get({ offset: 0, limit: 1 });
+			if (totalStore) {
+				totalAddressCache.update({ offset: 0, limit: 1 });
+				totalStore.subscribe((state) => {
+					if (typeof state.data?.total === 'number') {
+						totalAddresses = state.data.total;
+					}
+				});
+			}
 
 			// Get supply from API
 			kromer
@@ -44,15 +48,20 @@
 				})
 				.catch(console.error);
 
-			// Get top richest addresses (excluding serverwelf) for wealth distribution
-			kromer.addresses
-				.getRich({ limit: 15 })
-				.then((result: AddressesResponse) => {
-					const filtered = result.addresses.filter((addr) => addr.address !== SERVERWELF_ADDRESS);
-					top10Balance = filtered.slice(0, 10).reduce((sum, addr) => sum + addr.balance, 0);
-					loading = false;
-				})
-				.catch(console.error);
+			const richStore = richAddressCache.get({ offset: 0, limit: 15, richest: true });
+			if (richStore) {
+				richAddressCache.update({ offset: 0, limit: 15, richest: true });
+				richStore.subscribe((state) => {
+					if (state.data?.addresses) {
+						const filtered = state.data.addresses.filter(
+							(addr) => addr.address !== SERVERWELF_ADDRESS
+						);
+						top10Balance = filtered.slice(0, 10).reduce((sum, addr) => sum + addr.balance, 0);
+					}
+
+					loading = state.loading;
+				});
+			}
 		}
 	});
 

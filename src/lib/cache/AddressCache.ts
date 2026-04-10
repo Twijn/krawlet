@@ -22,7 +22,37 @@ export type AddressCacheResult = {
 	total: number;
 };
 
+type CachedAddress = AddressWithNames & {
+	cachedAt?: number;
+};
+
 export class AddressCache extends KromerCache<AddressCacheLookup, AddressCacheResult> {
+	private readonly rehydrateWindowMs = 60_000;
+
+	private toAddress(cacheItem: CachedAddress): AddressWithNames {
+		const address = { ...cacheItem };
+		delete address.cachedAt;
+		return address;
+	}
+
+	private buildResult(addresses: AddressWithNames[]): AddressCacheResult {
+		const addressList = addresses.reduce(
+			(acc, address) => {
+				acc[address.address] = address;
+				return acc;
+			},
+			{} as Record<string, AddressWithNames>
+		);
+
+		return {
+			addressList,
+			addresses,
+			total: addresses.length,
+			loading: false,
+			error: null
+		};
+	}
+
 	public static upgrade(db: KrawletDatabase): void {
 		if (!db.objectStoreNames.contains('addresses')) {
 			const store = db.createObjectStore('addresses', { keyPath: 'address' });
@@ -32,14 +62,44 @@ export class AddressCache extends KromerCache<AddressCacheLookup, AddressCacheRe
 
 	protected async fetch(params: AddressCacheLookup): Promise<AddressCacheResult | null> {
 		if ('addresses' in params && params.addresses.length > 0) {
-			const response = await kromer.addresses.lookupAddresses(params.addresses, true);
-			return {
-				addressList: response.addresses,
-				addresses: Object.values(response.addresses),
-				total: response.found,
-				loading: false,
-				error: null
-			};
+			const db = await getDB();
+			const tx = db.transaction('addresses', 'readonly');
+			const store = tx.objectStore('addresses');
+
+			const now = Date.now();
+			const cachedItems = await Promise.all(
+				params.addresses.map((address) => store.get(address) as Promise<CachedAddress | undefined>)
+			);
+			await tx.done;
+
+			const staleOrMissingAddresses: string[] = [];
+			const addressMap = new Map<string, AddressWithNames>();
+
+			for (const [index, address] of params.addresses.entries()) {
+				const cached = cachedItems[index];
+
+				if (!cached) {
+					staleOrMissingAddresses.push(address);
+					continue;
+				}
+
+				addressMap.set(address, this.toAddress(cached));
+
+				if (!cached.cachedAt || now - cached.cachedAt > this.rehydrateWindowMs) {
+					staleOrMissingAddresses.push(address);
+				}
+			}
+
+			if (staleOrMissingAddresses.length === 0) {
+				return this.buildResult(Array.from(addressMap.values()));
+			}
+
+			const response = await kromer.addresses.lookupAddresses(staleOrMissingAddresses, true);
+			for (const address of Object.values(response.addresses)) {
+				addressMap.set(address.address, address);
+			}
+
+			return this.buildResult(Array.from(addressMap.values()));
 		} else if ('offset' in params && 'limit' in params) {
 			let response: AddressesResponse | null = null;
 
@@ -78,21 +138,20 @@ export class AddressCache extends KromerCache<AddressCacheLookup, AddressCacheRe
 		const db = await getDB();
 		const tx = db.transaction('addresses', 'readonly');
 		const store = tx.objectStore('addresses');
-		const resultMap = new Map<string, Address>();
+		const resultMap = new Map<string, AddressWithNames>();
 
 		if ('addresses' in params && params.addresses.length > 0) {
 			for (const address of params.addresses) {
-				const addressIndex = store.index('addressIndex');
-
-				for (const item of await addressIndex.get(address)) {
-					resultMap.set(item.address, item);
+				const cached = (await store.get(address)) as CachedAddress | undefined;
+				if (cached) {
+					resultMap.set(cached.address, this.toAddress(cached));
 				}
 			}
 		} else {
 			// If no addresses specified, get all addresses
-			const allItems = await store.getAll();
+			const allItems = (await store.getAll()) as CachedAddress[];
 			for (const item of allItems) {
-				resultMap.set(item.address, item);
+				resultMap.set(item.address, this.toAddress(item));
 			}
 		}
 
@@ -100,7 +159,7 @@ export class AddressCache extends KromerCache<AddressCacheLookup, AddressCacheRe
 		let result = Array.from(resultMap.values());
 		if (result.length === 0) return null;
 
-		if ('richest' in params && params.richest) { 
+		if ('richest' in params && params.richest) {
 			result.sort((a, b) => b.balance - a.balance);
 		} else {
 			result.sort((a, b) => {
@@ -122,7 +181,7 @@ export class AddressCache extends KromerCache<AddressCacheLookup, AddressCacheRe
 					acc[address.address] = address;
 					return acc;
 				},
-				{} as Record<string, Address>
+				{} as Record<string, AddressWithNames>
 			),
 			addresses: result,
 			total: resultMap.size,
@@ -135,8 +194,12 @@ export class AddressCache extends KromerCache<AddressCacheLookup, AddressCacheRe
 		const db = await getDB();
 		const tx = db.transaction('addresses', 'readwrite');
 		const store = tx.objectStore('addresses');
+		const cachedAt = Date.now();
 		for (const item of Object.values(data.addressList)) {
-			await store.put(item);
+			await store.put({
+				...item,
+				cachedAt
+			});
 		}
 		await tx.done;
 	}

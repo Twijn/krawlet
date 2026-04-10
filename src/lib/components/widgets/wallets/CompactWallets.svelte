@@ -3,10 +3,6 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faWallet, faPlus, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import { fade } from 'svelte/transition';
-	import { browser } from '$app/environment';
-	import kromer from '$lib/api/kromer';
-	import type { Address } from 'kromer';
-	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import settings from '$lib/stores/settings';
 	import { getSyncNode } from '$lib/consts';
@@ -15,6 +11,7 @@
 	import { addWalletModal } from '$lib/stores/addWalletModal';
 	import { formatCurrency } from '$lib/util';
 	import AddressComp from '../addresses/Address.svelte';
+	import { AddressCache } from '$lib/cache/AddressCache';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -34,41 +31,36 @@
 		limit?: number;
 	} = $props();
 
-	let balances: Record<string, number> = $state({});
-	let loading: boolean = $state(false);
+	const addressCache = new AddressCache();
+	const getWalletAddresses = () =>
+		$settings.wallets
+			.filter((wallet) => wallet.syncNode === getSyncNode().id)
+			.map((wallet) => wallet.address);
 
 	let filteredWallets = $derived(
 		$settings.wallets.filter((x) => x.syncNode === getSyncNode().id)
 	);
+	let walletAddresses = $derived(filteredWallets.map((wallet) => wallet.address));
+	let walletAddressesKey = $derived(walletAddresses.join(','));
+	let lastRequestedWalletAddressesKey = $state<string | null>(null);
 
-	settings.subscribe(async ($store) => {
-		if (browser) {
-			const wallets = $store.wallets.filter(
-				(x) => x.syncNode === getSyncNode().id
-			);
+	const addressStore = addressCache.get({
+		addresses: getWalletAddresses()
+	});
 
-			let neededWallets: string[] = [];
-			let zeroedBalances: Record<string, number> = {};
-			for (const wallet of wallets) {
-				if (typeof balances[wallet.address] !== 'number') {
-					neededWallets.push(wallet.address);
-					zeroedBalances[wallet.address] = 0;
-				}
-			}
+	let balances: Record<string, number> = $derived(
+		Object.fromEntries(
+			filteredWallets.map((wallet) => [
+				wallet.address,
+				$addressStore?.data?.addressList?.[wallet.address]?.balance ?? 0
+			])
+		)
+	);
 
-			if (neededWallets.length > 0) {
-				loading = true;
-				const retrieved = await kromer.addresses.getMultiple(neededWallets);
-				balances = {
-					...zeroedBalances,
-					...balances,
-					...Object.fromEntries(
-						Object.values(retrieved).map((x: Address) => [x.address, x.balance])
-					)
-				};
-				loading = false;
-			}
-		}
+	$effect(() => {
+		if (walletAddressesKey === lastRequestedWalletAddressesKey) return;
+		lastRequestedWalletAddressesKey = walletAddressesKey;
+		addressCache.update({ addresses: [...walletAddresses] });
 	});
 
 	let totalBalance = $derived(
@@ -98,7 +90,6 @@
 	{/if}
 
 	<div class="wallets-container">
-		<ModuleLoading absolute={true} bind:loading />
 		{#if filteredWallets.length === 0}
 			<Alert variant="info">
 				<strong>{$t$('wallet.noWalletsSaved')}</strong>
