@@ -4,22 +4,22 @@
 	const { chest }: { chest: EnderStorageChest } = $props();
 
 	const COLOR_MAP: Record<string, { hex: string; label: string }> = {
-		white:     { hex: '#f9fefe', label: 'White' },
-		orange:    { hex: '#f9801d', label: 'Orange' },
-		magenta:   { hex: '#c74ebd', label: 'Magenta' },
+		white: { hex: '#f9fefe', label: 'White' },
+		orange: { hex: '#f9801d', label: 'Orange' },
+		magenta: { hex: '#c74ebd', label: 'Magenta' },
 		lightBlue: { hex: '#3ab3da', label: 'Light Blue' },
-		yellow:    { hex: '#fed83d', label: 'Yellow' },
-		lime:      { hex: '#80c71f', label: 'Lime' },
-		pink:      { hex: '#f38baa', label: 'Pink' },
-		gray:      { hex: '#474f52', label: 'Gray' },
+		yellow: { hex: '#fed83d', label: 'Yellow' },
+		lime: { hex: '#80c71f', label: 'Lime' },
+		pink: { hex: '#f38baa', label: 'Pink' },
+		gray: { hex: '#474f52', label: 'Gray' },
 		lightGray: { hex: '#9d9d97', label: 'Light Gray' },
-		cyan:      { hex: '#169c9c', label: 'Cyan' },
-		purple:    { hex: '#8932b8', label: 'Purple' },
-		blue:      { hex: '#3c44aa', label: 'Blue' },
-		brown:     { hex: '#835432', label: 'Brown' },
-		green:     { hex: '#5e7c16', label: 'Green' },
-		red:       { hex: '#b02e26', label: 'Red' },
-		black:     { hex: '#1d1d21', label: 'Black' },
+		cyan: { hex: '#169c9c', label: 'Cyan' },
+		purple: { hex: '#8932b8', label: 'Purple' },
+		blue: { hex: '#3c44aa', label: 'Blue' },
+		brown: { hex: '#835432', label: 'Brown' },
+		green: { hex: '#5e7c16', label: 'Green' },
+		red: { hex: '#b02e26', label: 'Red' },
+		black: { hex: '#1d1d21', label: 'Black' }
 	};
 
 	function colorHex(color: EnderStorageColor): string {
@@ -70,7 +70,8 @@
 	<div class="card-head">
 		<div class="card-head-icon" title={colorCombo(chest.colors)}>
 			{#each chest.colors as color, i (i)}
-				<span class="color-dot" style="background:{colorHex(color)}" aria-label={colorLabel(color)}></span>
+				<span class="color-dot" style="background:{colorHex(color)}" aria-label={colorLabel(color)}
+				></span>
 			{/each}
 		</div>
 		<div class="card-head-text">

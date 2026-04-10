@@ -28,9 +28,7 @@
 		const bValue = b[sortedColumn as keyof WalletWithAddress];
 
 		if (typeof aValue === 'string' && typeof bValue === 'string') {
-			return sortDirection === 'ASC'
-				? aValue.localeCompare(bValue)
-				: bValue.localeCompare(aValue);
+			return sortDirection === 'ASC' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
 		}
 
 		if (typeof aValue === 'number' && typeof bValue === 'number') {

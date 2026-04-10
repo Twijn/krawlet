@@ -2,7 +2,12 @@ import FetchedStore, { type FetchedStoreData } from '$lib/stores/FetchedStore';
 import type { Listing, Shop } from '$lib/types/shops';
 import { get } from 'svelte/store';
 import krawletClient from '$lib/api/krawlet';
-import { KrawletError, type Shop as ShopApi, type Item as ItemApi, type EnderStorageItem } from 'krawlet-js';
+import {
+	KrawletError,
+	type Shop as ShopApi,
+	type Item as ItemApi,
+	type EnderStorageItem
+} from 'krawlet-js';
 
 const itemName = 'shopsync';
 const itemExpiry = 1000 * 60 * 30; // 30 minutes

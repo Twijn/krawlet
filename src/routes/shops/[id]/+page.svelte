@@ -22,7 +22,7 @@
 			.filter((entry) => !/^k[a-z0-9]{9}$/i.test(entry))
 			.forEach((entry) => {
 				const lower = entry.toLowerCase();
-				const withoutMeta = lower.includes('@') ? lower.split('@').at(-1) ?? lower : lower;
+				const withoutMeta = lower.includes('@') ? (lower.split('@').at(-1) ?? lower) : lower;
 				const baseName = withoutMeta.endsWith('.kro')
 					? withoutMeta.slice(0, withoutMeta.length - 4)
 					: withoutMeta;

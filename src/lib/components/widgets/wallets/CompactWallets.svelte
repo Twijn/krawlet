@@ -37,9 +37,7 @@
 			.filter((wallet) => wallet.syncNode === getSyncNode().id)
 			.map((wallet) => wallet.address);
 
-	let filteredWallets = $derived(
-		$settings.wallets.filter((x) => x.syncNode === getSyncNode().id)
-	);
+	let filteredWallets = $derived($settings.wallets.filter((x) => x.syncNode === getSyncNode().id));
 	let walletAddresses = $derived(filteredWallets.map((wallet) => wallet.address));
 	let walletAddressesKey = $derived(walletAddresses.join(','));
 	let lastRequestedWalletAddressesKey = $state<string | null>(null);
@@ -116,7 +114,13 @@
 						<small>KRO</small>
 					</div>
 					<div class="wallet-cell actions">
-						<Button href={`/transactions/new?from=${wallet.address}`} variant="primary" size="xsmall" icon={faPaperPlane} tk="wallet.send" />
+						<Button
+							href={`/transactions/new?from=${wallet.address}`}
+							variant="primary"
+							size="xsmall"
+							icon={faPaperPlane}
+							tk="wallet.send"
+						/>
 					</div>
 				</div>
 			{/each}

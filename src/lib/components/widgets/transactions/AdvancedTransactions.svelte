@@ -43,21 +43,33 @@
 		deserialize: (s) => parseInt(s) || 1,
 		shouldSet: (v) => v > 1
 	});
-	
+
 	type SortableField = 'id' | 'from' | 'to' | 'value' | 'time';
 	const VALID_SORT_FIELDS: SortableField[] = ['id', 'from', 'to', 'value', 'time'];
 	const ALL_DISPLAY_FIELDS = ['id', 'type', 'from', 'to', 'value', 'metadata', 'time'] as const;
 
-	let sortedColumn = paramState<keyof TransactionWithMeta>(`${storePrefix.length > 0 ? storePrefix + '_' : ''}sc`, DEFAULT_SORT_COLUMN, {
-		serialize: (v) => v,
-		deserialize: (s) => (ALL_DISPLAY_FIELDS.includes(s as SortableField) ? (s as keyof TransactionWithMeta) : DEFAULT_SORT_COLUMN),
-		shouldSet: (v) => ALL_DISPLAY_FIELDS.includes(v as SortableField) && v !== DEFAULT_SORT_COLUMN
-	});
-	let sortDirection = paramState<'ASC' | 'DESC'>(`${storePrefix.length > 0 ? storePrefix + '_' : ''}sd`, DEFAULT_SORT_DIRECTION, {
-		serialize: (v) => v,
-		deserialize: (s) => (['ASC', 'DESC'].includes(s) ? (s as 'ASC' | 'DESC') : DEFAULT_SORT_DIRECTION),
-		shouldSet: (v) => ['ASC', 'DESC'].includes(v) && v !== DEFAULT_SORT_DIRECTION
-	});
+	let sortedColumn = paramState<keyof TransactionWithMeta>(
+		`${storePrefix.length > 0 ? storePrefix + '_' : ''}sc`,
+		DEFAULT_SORT_COLUMN,
+		{
+			serialize: (v) => v,
+			deserialize: (s) =>
+				ALL_DISPLAY_FIELDS.includes(s as SortableField)
+					? (s as keyof TransactionWithMeta)
+					: DEFAULT_SORT_COLUMN,
+			shouldSet: (v) => ALL_DISPLAY_FIELDS.includes(v as SortableField) && v !== DEFAULT_SORT_COLUMN
+		}
+	);
+	let sortDirection = paramState<'ASC' | 'DESC'>(
+		`${storePrefix.length > 0 ? storePrefix + '_' : ''}sd`,
+		DEFAULT_SORT_DIRECTION,
+		{
+			serialize: (v) => v,
+			deserialize: (s) =>
+				['ASC', 'DESC'].includes(s) ? (s as 'ASC' | 'DESC') : DEFAULT_SORT_DIRECTION,
+			shouldSet: (v) => ['ASC', 'DESC'].includes(v) && v !== DEFAULT_SORT_DIRECTION
+		}
+	);
 	let offset = $derived((page.value - 1) * limit);
 
 	// Address filter modal state
@@ -90,7 +102,9 @@
 	]);
 
 	let queryData: TransactionCacheLookup = $derived({
-		orderBy: VALID_SORT_FIELDS.includes(sortedColumn.value as SortableField) ? (sortedColumn.value as SortableField) : DEFAULT_SORT_COLUMN,
+		orderBy: VALID_SORT_FIELDS.includes(sortedColumn.value as SortableField)
+			? (sortedColumn.value as SortableField)
+			: DEFAULT_SORT_COLUMN,
 		order: sortDirection.value ?? DEFAULT_SORT_DIRECTION,
 		...query,
 		addresses: allAddresses,

@@ -51,20 +51,26 @@
 		deserialize: (s) => parseInt(s) || 1,
 		shouldSet: (v) => v > 1
 	});
-	let sortedColumn = paramState<keyof Name>(`${storePrefix.length > 0 ? storePrefix + '_' : ''}sc`, DEFAULT_SORT_COLUMN, {
-		serialize: (v) => v,
-		deserialize: (s) =>
-			SORTABLE_COLUMNS.includes(s as keyof Name)
-				? (s as keyof Name)
-				: DEFAULT_SORT_COLUMN,
-		shouldSet: (v) =>
-			SORTABLE_COLUMNS.includes(v) && v !== DEFAULT_SORT_COLUMN
-	});
-	let sortDirection = paramState<'ASC' | 'DESC'>(`${storePrefix.length > 0 ? storePrefix + '_' : ''}sd`, DEFAULT_SORT_DIRECTION, {
-		serialize: (v) => v,
-		deserialize: (s) => (['ASC', 'DESC'].includes(s) ? s as 'ASC' | 'DESC' : DEFAULT_SORT_DIRECTION),
-		shouldSet: (v) => ['ASC', 'DESC'].includes(v) && v !== DEFAULT_SORT_DIRECTION
-	});
+	let sortedColumn = paramState<keyof Name>(
+		`${storePrefix.length > 0 ? storePrefix + '_' : ''}sc`,
+		DEFAULT_SORT_COLUMN,
+		{
+			serialize: (v) => v,
+			deserialize: (s) =>
+				SORTABLE_COLUMNS.includes(s as keyof Name) ? (s as keyof Name) : DEFAULT_SORT_COLUMN,
+			shouldSet: (v) => SORTABLE_COLUMNS.includes(v) && v !== DEFAULT_SORT_COLUMN
+		}
+	);
+	let sortDirection = paramState<'ASC' | 'DESC'>(
+		`${storePrefix.length > 0 ? storePrefix + '_' : ''}sd`,
+		DEFAULT_SORT_DIRECTION,
+		{
+			serialize: (v) => v,
+			deserialize: (s) =>
+				['ASC', 'DESC'].includes(s) ? (s as 'ASC' | 'DESC') : DEFAULT_SORT_DIRECTION,
+			shouldSet: (v) => ['ASC', 'DESC'].includes(v) && v !== DEFAULT_SORT_DIRECTION
+		}
+	);
 	let offset = $derived((page.value - 1) * limit);
 
 	// Address filter modal state

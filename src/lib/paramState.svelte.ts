@@ -57,10 +57,7 @@ export function paramState<T>(
 	$effect(() => {
 		if (typeof window === 'undefined') return;
 
-		pendingParamUpdates.set(
-			paramName,
-			shouldSet(currentValue) ? serialize(currentValue) : null
-		);
+		pendingParamUpdates.set(paramName, shouldSet(currentValue) ? serialize(currentValue) : null);
 		scheduleUrlParamFlush();
 	});
 
