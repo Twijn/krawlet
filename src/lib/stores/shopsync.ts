@@ -134,7 +134,7 @@ export const getItemImageUrl = (item: Listing | ItemListing | EnderStorageItem) 
 		itemName = item.name;
 	}
 	itemName = itemName.replace(':', '/');
-	return `https://shops.alexdevs.me/assets/items/${itemName}.png`;
+	return `https://cdn.krawlet.cc/${itemName}.png`;
 };
 
 export const getRelativeItemUrl = (item: Listing | ItemListing) => {

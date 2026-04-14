@@ -28,7 +28,7 @@
 	type ChangeType = 'all' | 'added' | 'removed' | 'updated';
 
 	function getItemImageUrlFromName(itemName: string): string {
-		return `https://shops.alexdevs.me/assets/items/${itemName.replace(':', '/')}.png`;
+		return `https://cdn.krawlet.cc/${itemName.replace(':', '/')}.png`;
 	}
 
 	const {
