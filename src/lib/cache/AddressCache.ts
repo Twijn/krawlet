@@ -52,7 +52,9 @@ export class AddressCache extends KromerCache<AddressCacheLookup, AddressCacheRe
 		await tx.done;
 	}
 
-	public static async refreshFromTransaction(tx: Pick<TransactionWithMeta, 'from' | 'to'>): Promise<void> {
+	public static async refreshFromTransaction(
+		tx: Pick<TransactionWithMeta, 'from' | 'to'>
+	): Promise<void> {
 		await AddressCache.refreshCachedAddresses([tx.from ?? '', tx.to ?? '']);
 	}
 

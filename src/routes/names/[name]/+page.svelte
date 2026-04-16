@@ -18,6 +18,16 @@
 />
 
 <div class="col-12">
-	<NameTransactions title="Name History" query={{ name: name.name, type: 'history' }} limit={15} storePrefix="hs" />
-	<NameTransactions title="Name Transactions" query={{ name: name.name, type: 'transactions' }} limit={15} storePrefix="tx" />
+	<NameTransactions
+		title="Name History"
+		query={{ name: name.name, type: 'history' }}
+		limit={15}
+		storePrefix="hs"
+	/>
+	<NameTransactions
+		title="Name Transactions"
+		query={{ name: name.name, type: 'transactions' }}
+		limit={15}
+		storePrefix="tx"
+	/>
 </div>

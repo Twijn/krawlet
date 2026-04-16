@@ -114,7 +114,13 @@
 				{#each itemEntries as [itemKey, item] (itemKey)}
 					<li class="item-row">
 						<div class="item-img">
-							<img src={getItemImageUrl(item)} alt={item.displayName} width="32" height="32" loading="lazy" />
+							<img
+								src={getItemImageUrl(item)}
+								alt={item.displayName}
+								width="32"
+								height="32"
+								loading="lazy"
+							/>
 						</div>
 						<div class="item-detail">
 							<span class="item-name" title={item.name}>{item.displayName}</span>

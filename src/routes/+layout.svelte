@@ -76,7 +76,6 @@
 			showNavigation = false;
 		}
 	}
-
 </script>
 
 <svelte:window onclick={handleWindowClick} />
