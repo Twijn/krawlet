@@ -1,7 +1,7 @@
 import type { Name, NameLookupQuery } from 'kromer';
 import { KromerCache } from './KromerCache';
 import kromer from '../api/kromer';
-import { getDB, type KrawletDatabase } from '.';
+import { getDB } from '.';
 
 export type NameCacheLookup = NameLookupQuery & {
 	addresses: string[];
@@ -13,15 +13,6 @@ export type NameCacheResult = {
 };
 
 export class NameCache extends KromerCache<NameCacheLookup, NameCacheResult> {
-	public static upgrade(db: KrawletDatabase): void {
-		if (!db.objectStoreNames.contains('names')) {
-			const store = db.createObjectStore('names', { keyPath: 'name' });
-			store.createIndex('nameIndex', 'name');
-			store.createIndex('ownerIndex', 'owner');
-			store.createIndex('originalOwnerIndex', 'originalOwner');
-		}
-	}
-
 	protected async fetch(params: NameCacheLookup): Promise<NameCacheResult | null> {
 		const { addresses, ...query } = params;
 		const response = await kromer.names.lookupNames(addresses, query);

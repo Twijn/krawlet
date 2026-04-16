@@ -242,7 +242,7 @@
 				<Placeholder />
 			{/if}
 		{:else if column.key === 'name'}
-			{item.name}<small>.kro</small>
+			<a class="name-link" href={`/names/${item.name}`}>{item.name}<small>.kro</small></a>
 		{:else if column.key === 'registered' || column.key === 'updated' || column.key === 'transferred'}
 			{@const value = item[column.key]}
 			{#if value && new Date(value).getTime() > 1_000_000}
@@ -276,6 +276,11 @@
 </TableControls>
 
 <style>
+	.name-link {
+		color: var(--text-color-1);
+		text-decoration: none;
+	}
+
 	.error {
 		color: rgb(var(--red));
 		margin-top: 1em;

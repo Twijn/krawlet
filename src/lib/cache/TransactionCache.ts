@@ -1,7 +1,7 @@
 import type { TransactionWithMeta, TransactionLookupQuery, Transaction } from 'kromer';
 import { KromerCache } from './KromerCache';
 import kromer from '../api/kromer';
-import { getDB, type KrawletDatabase } from '.';
+import { getDB } from '.';
 
 export type TransactionCacheLookup = TransactionLookupQuery & {
 	addresses: string[];
@@ -13,15 +13,6 @@ export type TransactionCacheResult = {
 };
 
 export class TransactionCache extends KromerCache<TransactionCacheLookup, TransactionCacheResult> {
-	public static upgrade(db: KrawletDatabase): void {
-		if (!db.objectStoreNames.contains('transactions')) {
-			const store = db.createObjectStore('transactions', { keyPath: 'id' });
-			store.createIndex('idIndex', 'id');
-			store.createIndex('fromIndex', 'from');
-			store.createIndex('toIndex', 'to');
-		}
-	}
-
 	private parseMetadata(transactions: Transaction[]): TransactionWithMeta[] {
 		return transactions.map((tx) => ({
 			...tx,

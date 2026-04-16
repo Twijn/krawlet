@@ -1,7 +1,7 @@
 import type { Address, AddressesResponse, PaginatedQuery, TransactionWithMeta } from 'kromer';
 import { KromerCache } from './KromerCache';
 import kromer from '../api/kromer';
-import { getDB, type KrawletDatabase } from '.';
+import { getDB } from '.';
 
 export type AddressCacheLookup =
 	| PaginatedQuery
@@ -78,13 +78,6 @@ export class AddressCache extends KromerCache<AddressCacheLookup, AddressCacheRe
 			loading: false,
 			error: null
 		};
-	}
-
-	public static upgrade(db: KrawletDatabase): void {
-		if (!db.objectStoreNames.contains('addresses')) {
-			const store = db.createObjectStore('addresses', { keyPath: 'address' });
-			store.createIndex('addressIndex', 'address');
-		}
 	}
 
 	protected async fetch(params: AddressCacheLookup): Promise<AddressCacheResult | null> {

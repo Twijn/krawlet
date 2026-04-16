@@ -4,6 +4,9 @@ import { openDB, type IDBPDatabase } from 'idb';
 
 export * from './TransactionCache';
 export * from './NameCache';
+export * from './NameHistoryCache';
+export * from './AddressCache';
+
 interface KrawletDB {
 	transactions: TransactionWithMeta[];
 }
@@ -17,8 +20,8 @@ export const getDB = async (): Promise<KrawletDatabase> => {
 			throw new Error('Database can only be accessed in the browser');
 		}
 
-		db = await openDB<KrawletDB>('krawlet', 4, {
-			upgrade(db) {
+		db = await openDB<KrawletDB>('krawlet', 5, {
+			upgrade(db, _oldVersion, _newVersion, transaction) {
 				if (!db.objectStoreNames.contains('addresses')) {
 					const store = db.createObjectStore('addresses', { keyPath: 'address' });
 					store.createIndex('addressIndex', 'address');
@@ -36,6 +39,12 @@ export const getDB = async (): Promise<KrawletDatabase> => {
 					store.createIndex('idIndex', 'id');
 					store.createIndex('fromIndex', 'from');
 					store.createIndex('toIndex', 'to');
+					store.createIndex('nameIndex', 'name');
+				} else {
+					const store = transaction.objectStore('transactions');
+					if (!store.indexNames.contains('nameIndex')) {
+						store.createIndex('nameIndex', 'name');
+					}
 				}
 			}
 		});

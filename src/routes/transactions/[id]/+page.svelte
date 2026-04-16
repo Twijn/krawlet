@@ -146,7 +146,7 @@
 		<div>
 			<Button
 				variant="primary"
-				href="/transactions/new?to={transaction.to}&amount={transaction.value}&metadata={transaction.metadata}"
+				href="/transactions/new?to={encodeURIComponent(transaction.to)}&amount={encodeURIComponent(transaction.value.toFixed(5))}{transaction.metadata ? `&metadata=${encodeURIComponent(transaction.metadata)}` : ''}"
 			>
 				<FontAwesomeIcon icon={faRepeat} />
 				Repeat

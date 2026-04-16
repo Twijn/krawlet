@@ -208,8 +208,6 @@ export const getListings = async (
 	modId?: string,
 	itemNbt?: string
 ): Promise<ItemListing[]> => {
-	console.log('getListings', { itemName, modId, itemNbt });
-
 	// Prepend modid if given
 	if (modId) {
 		itemName = modId + ':' + itemName;
