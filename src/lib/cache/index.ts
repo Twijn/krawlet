@@ -20,7 +20,7 @@ export const getDB = async (): Promise<KrawletDatabase> => {
 			throw new Error('Database can only be accessed in the browser');
 		}
 
-		db = await openDB<KrawletDB>('krawlet', 5, {
+		db = await openDB<KrawletDB>('krawlet', 6, {
 			upgrade(db, _oldVersion, _newVersion, transaction) {
 				if (!db.objectStoreNames.contains('addresses')) {
 					const store = db.createObjectStore('addresses', { keyPath: 'address' });
@@ -44,6 +44,9 @@ export const getDB = async (): Promise<KrawletDatabase> => {
 					const store = transaction.objectStore('transactions');
 					if (!store.indexNames.contains('nameIndex')) {
 						store.createIndex('nameIndex', 'name');
+					}
+					if (!store.indexNames.contains('sentNameIndex')) {
+						store.createIndex('sentNameIndex', 'sent_name');
 					}
 				}
 			}

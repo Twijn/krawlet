@@ -88,7 +88,7 @@ export class NameHistoryCache extends KromerCache<NameHistoryLookupQuery, NameHi
         const store = tx.objectStore('transactions');
         const resultMap = new Map<number, TransactionWithMeta>();
 
-        const nameIndex = store.index('nameIndex');
+        const nameIndex = store.index(params.type === 'history' ? 'nameIndex' : 'sentNameIndex');
         const items = await nameIndex.getAll(params.name);
         for (const item of items) {
             resultMap.set(item.id, item);
