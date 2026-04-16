@@ -82,7 +82,7 @@
 		<h2>Lowest Price</h2>
 		<div>
 			{#if lowestPrice}
-				{formatCurrency(lowestPrice)}
+				{formatCurrency(lowestPrice, 5)}
 				<small>KRO</small>
 			{:else}
 				N/A
@@ -93,7 +93,7 @@
 		<h2>Highest Price</h2>
 		<div>
 			{#if highestPrice}
-				{formatCurrency(highestPrice)}
+				{formatCurrency(highestPrice, 5)}
 				<small>KRO</small>
 			{:else}
 				N/A
@@ -104,7 +104,7 @@
 		<h2>Market Value</h2>
 		<div>
 			{#if marketValue}
-				{formatCurrency(marketValue)}
+				{formatCurrency(marketValue, 5)}
 				<small>KRO</small>
 			{:else}
 				N/A
@@ -133,7 +133,7 @@
 								{@const priceValue = Number(price.value)}
 								<tr>
 									<th>Price <small>({price.currency})</small></th>
-									<td class="right">{formatCurrency(priceValue)} <small>{price.currency}</small></td
+									<td class="right">{formatCurrency(priceValue, 5)} <small>{price.currency}</small></td
 									>
 								</tr>
 							{/each}

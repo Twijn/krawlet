@@ -86,7 +86,7 @@
 								{@const priceValue = Number(price.value)}
 								<tr>
 									<th>{$t$('shop.price')} <small>({price.currency})</small></th>
-									<td class="right">{formatCurrency(priceValue)} <small>{price.currency}</small></td
+									<td class="right">{formatCurrency(priceValue, 5)} <small>{price.currency}</small></td
 									>
 								</tr>
 							{/each}

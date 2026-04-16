@@ -94,37 +94,39 @@
 	<div class="item-grid">
 		{#each filteredListings as listing (listing.itemName + (':' + listing.itemNbt))}
 			<ItemCard item={listing} showBadges={false}>
-				<table>
-					<thead>
-						<tr>
-							<th>{$t$('shop.shopName')}</th>
-							<th class="right">{$t$('shop.stock')}</th>
-							<th class="right">{$t$('shop.price')}</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each listing.shops as shop (shop.listing.id)}
-							{@const stock = shop.listing.stock}
+				<div class="table-container">
+					<table>
+						<thead>
 							<tr>
-								<td>
-									<a href="/shops/{shop.id}">{cleanShopData(shop.name)}</a>
-								</td>
-								<td class="right">
-									{stock.toLocaleString()}
-								</td>
-								<td class="right">
-									{#if shop.listing.prices?.[0].value}
-										{@const price = shop.listing.prices[0]}
-										{formatCurrency(price.value)}
-										<small>{price.currency}</small>
-									{:else}
-										N/A
-									{/if}
-								</td>
+								<th>{$t$('shop.shopName')}</th>
+								<th class="right">{$t$('shop.stock')}</th>
+								<th class="right">{$t$('shop.price')}</th>
 							</tr>
-						{/each}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{#each listing.shops as shop (shop.listing.id)}
+								{@const stock = shop.listing.stock}
+								<tr>
+									<td>
+										<a href="/shops/{shop.id}">{cleanShopData(shop.name)}</a>
+									</td>
+									<td class="right">
+										{stock.toLocaleString()}
+									</td>
+									<td class="right">
+										{#if shop.listing.prices?.[0].value}
+											{@const price = shop.listing.prices[0]}
+											{formatCurrency(price.value, 5)}
+											<small>{price.currency}</small>
+										{:else}
+											N/A
+										{/if}
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
 			</ItemCard>
 		{/each}
 	</div>
