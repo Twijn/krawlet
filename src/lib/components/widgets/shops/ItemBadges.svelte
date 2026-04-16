@@ -16,7 +16,7 @@
 			>
 		{/if}
 		{#if item.madeOnDemand}
-			<span class="badge badge-demand" title="This item is when the purchase is completed"
+			<span class="badge badge-demand" title="This item is crafted, smelted, or processed on purchase rather than being pre-stocked"
 				>Made on Demand</span
 			>
 		{/if}
