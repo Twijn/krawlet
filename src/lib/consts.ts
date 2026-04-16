@@ -6,42 +6,24 @@ export const SEVEN_DAYS = 1000 * 60 * 60 * 24 * 7;
 
 export type SyncNode = {
 	id: string;
-	official: boolean;
 	name: string;
 	url: string;
+	// To enable internal tools (create-wallet, give-money), set the API key below after forking.
 	internalKey?: string;
 };
 
-let activeNode = 'kromer';
+// Forks can set this key to enable internal tools that call private API endpoints.
+export const KROMER_INTERNAL_API_KEY = '';
 
-export const SYNC_NODES: SyncNode[] = [
-	{
-		id: 'kromer',
-		official: true,
-		name: 'ReconnectedCC Kromer',
-		url: 'https://kromer.reconnected.cc/api/krist/'
-	},
-	{
-		id: 'beta',
-		official: true,
-		name: 'ReconnectedCC Beta',
-		url: 'https://kromerbeta.reconnected.cc/api/krist/'
-	},
-	{
-		id: 'herrkatze',
-		official: false,
-		name: 'HerrKatze.com',
-		url: 'https://kromer.herrkatze.com/api/krist/',
-		internalKey: 'dQw4w9WgXcQ'
-	}
-];
+export const SYNC_NODE: SyncNode = {
+	id: 'kromer',
+	name: 'ReconnectedCC Kromer',
+	url: 'https://kromer.reconnected.cc/api/krist/',
+	internalKey: KROMER_INTERNAL_API_KEY
+};
 
-export const SYNC_NODE_OFFICIAL: SyncNode = SYNC_NODES[0];
-
-export function updateActiveNode(id: string) {
-	activeNode = id;
-}
+export const SYNC_NODE_OFFICIAL = SYNC_NODE;
 
 export function getSyncNode(): SyncNode {
-	return SYNC_NODES.find((node) => node.id === activeNode) ?? SYNC_NODE_OFFICIAL;
+	return SYNC_NODE;
 }

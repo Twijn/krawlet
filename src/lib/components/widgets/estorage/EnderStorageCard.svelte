@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getItemImageUrl } from '$lib/stores/shopsync';
 	import type { EnderStorageChest, EnderStorageColor } from 'krawlet-js';
 
 	const { chest }: { chest: EnderStorageChest } = $props();
@@ -112,7 +113,9 @@
 			<ul class="contents">
 				{#each itemEntries as [itemKey, item] (itemKey)}
 					<li class="item-row">
-						<span class="item-bullet">▪</span>
+						<div class="item-img">
+							<img src={getItemImageUrl(item)} alt={item.displayName} width="32" height="32" loading="lazy" />
+						</div>
 						<div class="item-detail">
 							<span class="item-name" title={item.name}>{item.displayName}</span>
 						</div>
@@ -290,11 +293,14 @@
 		background-color: rgba(255, 255, 255, 0.04);
 	}
 
-	.item-bullet {
-		color: var(--text-color-2);
-		font-size: 0.8rem;
+	.item-img {
+		width: 32px;
+		height: 32px;
 		flex-shrink: 0;
-		line-height: 1;
+		border-radius: 0.2rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.item-detail {

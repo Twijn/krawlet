@@ -2,7 +2,7 @@
 	import '$lib/app.css';
 	import { config } from '@fortawesome/fontawesome-svg-core';
 	import '@fortawesome/fontawesome-svg-core/styles.css';
-	import { faArrowDown, faBars, faGear } from '@fortawesome/free-solid-svg-icons';
+	import { faBars, faGear } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -15,14 +15,13 @@
 	import '@fontsource/space-grotesk/600.css';
 
 	import Navigation from '$lib/components/ui/Navigation.svelte';
-	import { getSyncNode, SYNC_NODE_OFFICIAL, VERSION } from '$lib/consts';
+	import { VERSION } from '$lib/consts';
 	import Notifications from '$lib/components/dialogs/Notifications.svelte';
 	import Confirm from '$lib/components/dialogs/Confirm.svelte';
 	import Prompt from '$lib/components/dialogs/Prompt.svelte';
 	import AddWalletModal from '$lib/components/dialogs/AddWalletModal.svelte';
 	import EditWalletModal from '$lib/components/dialogs/EditWalletModal.svelte';
 	import RefundModal from '$lib/components/dialogs/RefundModal.svelte';
-	import Button from '$lib/components/ui/Button.svelte';
 	import settings from '$lib/stores/settings';
 	import InstallPrompt from '$lib/components/widgets/InstallPrompt.svelte';
 	import UpdatePrompt from '$lib/components/widgets/UpdatePrompt.svelte';
@@ -41,7 +40,6 @@
 
 	const { children } = $props();
 	let showNavigation = $state(false);
-	let showSyncNodeWarning = $state(true);
 
 	let handleResize: () => void;
 	let cleanupPWA: (() => void) | undefined;
@@ -79,12 +77,6 @@
 		}
 	}
 
-	function revertNode() {
-		$settings.syncNode = SYNC_NODE_OFFICIAL.id;
-		if (browser) {
-			location.reload();
-		}
-	}
 </script>
 
 <svelte:window onclick={handleWindowClick} />
@@ -169,30 +161,6 @@
 {#if !$isOnline}
 	<div class="offline-banner" role="alert" aria-live="assertive">
 		<p>{$t$('pwa.offline')}: {$t$('pwa.offlineMessage')}</p>
-	</div>
-{/if}
-
-{#if !getSyncNode().official}
-	<div class="sync-node-warning" class:hide={!showSyncNodeWarning}>
-		<button
-			class="close-btn"
-			aria-label={$t$('syncNodeWarning.closeWarning')}
-			onclick={() => (showSyncNodeWarning = !showSyncNodeWarning)}
-		>
-			<FontAwesomeIcon icon={faArrowDown} size="2xs" />
-		</button>
-		{#if showSyncNodeWarning}
-			<p>
-				{$t$('syncNodeWarning.warning', { name: getSyncNode().name, url: getSyncNode().url })}
-				<br />
-				<strong>!! {$t$('syncNodeWarning.privateKeyWarning')} !!</strong>
-			</p>
-			<Button variant="error" full type="button" onClick={revertNode}
-				>{$t$('syncNodeWarning.revertToOfficial')}</Button
-			>
-		{:else}
-			{$t$('syncNodeWarning.connectedToCustom', { name: getSyncNode().name })}
-		{/if}
 	</div>
 {/if}
 
@@ -353,55 +321,6 @@
 
 	.offline-banner p {
 		margin: 0;
-	}
-
-	.sync-node-warning {
-		position: fixed;
-		width: calc(100% - 3em);
-		max-width: 35em;
-		bottom: 1em;
-		left: 50%;
-		transform: translateX(-50%);
-		z-index: 10000;
-		text-align: center;
-		background-color: rgba(var(--red), 0.6);
-		border: 0.1em solid rgba(var(--red), 0.8);
-		padding: 0.6em 0.75em;
-		border-radius: 0.5em;
-		backdrop-filter: blur(5px);
-		color: white;
-		box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-		transition: 0.25s;
-	}
-
-	.sync-node-warning.hide {
-		max-width: 30em;
-		bottom: -1em;
-		padding: 0.25em 0.75em 1em 0.25em;
-	}
-
-	.close-btn {
-		position: absolute;
-		top: 0.2em;
-		right: 0.2em;
-		background: none;
-		border: none;
-		color: white;
-		font-size: 1.5em;
-		cursor: pointer;
-		opacity: 0.7;
-		transition: 0.25s;
-	}
-	.close-btn:hover,
-	.close-btn:focus-visible {
-		opacity: 1;
-		color: rgb(var(--red));
-	}
-
-	.sync-node-warning.hide .close-btn {
-		top: -0.1em;
-		right: -0.1em;
-		transform: rotate(180deg);
 	}
 
 	/* Focus styles for skip link target */

@@ -16,7 +16,7 @@
 
 <Breadcrumbs />
 
-<CompactWallets lgCols={5} mdCols={12} limit={8} showAddButton={true} compact={true} />
+<CompactWallets lgCols={5} mdCols={12} limit={8} showAddButton={true} />
 <div class="col-7 col-md-12">
 	<AdvancedTransactions storePrefix="tx" title="Recent Transactions" limit={10} query={{}} />
 </div>

@@ -19,8 +19,6 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
-	import ButtonSelect from '$lib/components/ui/ButtonSelect.svelte';
-	import { SYNC_NODE_OFFICIAL, SYNC_NODES } from '$lib/consts';
 	import { notifications } from '$lib/stores/notifications';
 	import { t, t$ } from '$lib/i18n';
 	import { relativeTime } from '$lib/util';
@@ -39,29 +37,6 @@
 			notifications.success(t('common.copied'));
 		} catch {
 			notifications.error(t('wallet.addressCopyFailed'));
-		}
-	}
-
-	let allowSyncNodeChange = $state($settings.syncNode !== SYNC_NODE_OFFICIAL.id);
-
-	function onSyncNodeAllowChange() {
-		if (!allowSyncNodeChange) {
-			$settings.syncNode = SYNC_NODE_OFFICIAL.id;
-			onSyncNodeChange();
-		}
-	}
-
-	let currentSyncNode = $settings.syncNode;
-	let notificationId: null | string = null;
-	function onSyncNodeChange() {
-		notifications.success(t('notifications.syncNodeChanged'));
-		if (currentSyncNode !== $settings.syncNode) {
-			if (!notificationId) {
-				notificationId = notifications.error(t('notifications.refreshRequired'), null, true);
-			}
-		} else if (notificationId) {
-			notifications.remove(notificationId);
-			notificationId = null;
 		}
 	}
 
@@ -214,28 +189,6 @@
 	<h2><FontAwesomeIcon icon={faServer} /> {$t$('settings.tabs.advanced')}</h2>
 
 	<div class="settings-grid">
-		<SettingsFieldset>
-			{#snippet legend()}<FontAwesomeIcon icon={faServer} /> {$t$('settings.syncNode')}{/snippet}
-			<div class="settings-columns">
-				<div class="setting-content">
-					<ToggleCheckbox bind:checked={allowSyncNodeChange} onChange={onSyncNodeAllowChange}>
-						{$t$('settings.changeSyncNode')}
-					</ToggleCheckbox>
-					{#if allowSyncNodeChange}
-						<ButtonSelect
-							vertical
-							bind:selected={$settings.syncNode}
-							options={SYNC_NODES.map((node) => ({
-								id: node.id,
-								name: `${node.name} (${node.url})`
-							}))}
-							change={onSyncNodeChange}
-						/>
-					{/if}
-				</div>
-			</div>
-		</SettingsFieldset>
-
 		<SettingsFieldset>
 			{#snippet legend()}<FontAwesomeIcon icon={faKey} /> {$t$('settings.apiKeys')}{/snippet}
 			<div class="settings-columns">

@@ -1,7 +1,7 @@
 import { writable, get, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import type { APIError, KromerApi } from 'kromer';
-import { getSyncNode, SYNC_NODE_OFFICIAL, updateActiveNode } from '$lib/consts';
+import { getSyncNode, SYNC_NODE_OFFICIAL } from '$lib/consts';
 
 export type Wallet = {
 	name: string;
@@ -29,8 +29,6 @@ export type SettingsData = {
 	simplePlaceholders: boolean;
 	// wallets
 	wallets: Wallet[];
-	// sync node
-	syncNode: string;
 	showAllWalletsOption: boolean;
 	showAllWalletsDefault: boolean;
 	// language
@@ -319,7 +317,6 @@ class Settings {
 		relativeTimeAbove7d: false,
 		simplePlaceholders: true,
 		wallets: [],
-		syncNode: SYNC_NODE_OFFICIAL.id,
 		showAllWalletsOption: false,
 		showAllWalletsDefault: false,
 		language: 'en',
@@ -339,11 +336,8 @@ class Settings {
 						this.data.set({ ...this.initial, ...parsed });
 					}
 
-					// Update the active sync node in consts.ts
+					// Ensure wallets are associated with a sync node (for backwards compatibility)
 					const stored = get(this.data);
-					updateActiveNode(stored.syncNode ?? SYNC_NODE_OFFICIAL.id);
-
-					// Ensure wallets are associated with a sync node
 					stored.wallets.forEach((wallet) => {
 						wallet.syncNode = wallet.syncNode ?? SYNC_NODE_OFFICIAL.id;
 					});
@@ -368,7 +362,7 @@ class Settings {
 	) {
 		const store = get(this.data);
 		const wallet: Wallet = {
-			syncNode: store.syncNode,
+			syncNode: SYNC_NODE_OFFICIAL.id,
 			...w
 		};
 		for (const existingWallet of store.wallets) {
@@ -425,7 +419,7 @@ class Settings {
 			name: wallet.name,
 			address: wallet.address,
 			private: encrypted,
-			syncNode: store.syncNode
+			syncNode: SYNC_NODE_OFFICIAL.id
 		};
 		this.data.update((state) => ({ ...state, wallets: [...state.wallets, entry] }));
 		return entry;
