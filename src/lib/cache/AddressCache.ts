@@ -1,4 +1,4 @@
-import type { Address, AddressesResponse, PaginatedQuery } from 'kromer';
+import type { Address, AddressesResponse, PaginatedQuery, TransactionWithMeta } from 'kromer';
 import { KromerCache } from './KromerCache';
 import kromer from '../api/kromer';
 import { getDB, type KrawletDatabase } from '.';
@@ -28,6 +28,33 @@ type CachedAddress = AddressWithNames & {
 
 export class AddressCache extends KromerCache<AddressCacheLookup, AddressCacheResult> {
 	private readonly rehydrateWindowMs = 60_000;
+
+	public static async refreshCachedAddresses(addresses: string[]): Promise<void> {
+		const uniqueAddresses = Array.from(
+			new Set(addresses.map((address) => address?.trim()).filter(Boolean) as string[])
+		);
+
+		if (uniqueAddresses.length === 0) return;
+
+		const response = await kromer.addresses.lookupAddresses(uniqueAddresses, true);
+		const db = await getDB();
+		const tx = db.transaction('addresses', 'readwrite');
+		const store = tx.objectStore('addresses');
+		const cachedAt = Date.now();
+
+		for (const item of Object.values(response.addresses)) {
+			await store.put({
+				...item,
+				cachedAt
+			});
+		}
+
+		await tx.done;
+	}
+
+	public static async refreshFromTransaction(tx: Pick<TransactionWithMeta, 'from' | 'to'>): Promise<void> {
+		await AddressCache.refreshCachedAddresses([tx.from ?? '', tx.to ?? '']);
+	}
 
 	private toAddress(cacheItem: CachedAddress): AddressWithNames {
 		const address = { ...cacheItem };
