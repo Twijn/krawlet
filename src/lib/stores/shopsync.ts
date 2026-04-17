@@ -124,7 +124,7 @@ export const getListingBuyLink = (item: Listing, lock: boolean = true): string =
 };
 
 export const getItemImageUrl = (item: Listing | ItemListing) => {
-	return `https://shops.alexdevs.me/assets/items/${item.itemName.replace(':', '/')}.png`;
+	return `https://cdn.krawlet.cc/${item.itemName.replace(':', '/')}.png`;
 };
 
 export const getRelativeItemUrl = (item: Listing | ItemListing) => {

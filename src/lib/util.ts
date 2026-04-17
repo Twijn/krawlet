@@ -69,5 +69,5 @@ export const formatCurrency = (balance: number, maxPrecision?: number): string =
  * @returns {string} The URL of the Minecraft avatar image
  */
 export const getMinecraftAvatar = (user: string, size: number = 64): string => {
-	return `https://mc-heads.net/avatar/${encodeURIComponent(user.replace("-", ""))}/${encodeURIComponent(size)}.png`;
-}
+	return `https://mc-heads.net/avatar/${encodeURIComponent(user.replace('-', ''))}/${encodeURIComponent(size)}.png`;
+};

@@ -146,10 +146,7 @@
 		{/if}
 		{verifiedEntry.name}
 	{:else if player && $settings.replaceAddressesWithPlayer}
-		<img
-			src={getMinecraftAvatar(player.minecraftUUID)}
-			alt="Avatar for {player.minecraftName}"
-		/>
+		<img src={getMinecraftAvatar(player.minecraftUUID)} alt="Avatar for {player.minecraftName}" />
 		{player.minecraftName}
 	{:else if wallet}
 		<FontAwesomeIcon icon={faWallet} />
