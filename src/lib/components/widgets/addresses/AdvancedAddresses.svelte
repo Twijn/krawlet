@@ -3,6 +3,7 @@
 	import AddressComp from '$lib/components/widgets/addresses/Address.svelte';
 	import Placeholder from '$lib/components/ui/Placeholder.svelte';
 	import type { SortableColumnData } from '$lib/components/ui/SortableTable';
+	import type { ContextMenuItem } from '$lib/components/ui/ContextMenu.svelte';
 	import TableControls from '$lib/components/ui/TableControls.svelte';
 	import LimitSelector from '$lib/components/ui/LimitSelector.svelte';
 	import PaginationInfo from '$lib/components/ui/PaginationInfo.svelte';
@@ -10,6 +11,16 @@
 	import { paramState } from '$lib/paramState.svelte';
 	import { AddressCache, type AddressCacheLookup } from '$lib/cache/AddressCache';
 	import type { Address } from 'kromer';
+	import {
+		faCopy,
+		faExchange,
+		faEye,
+		faPaperPlane,
+		faTag
+	} from '@fortawesome/free-solid-svg-icons';
+	import { t$ } from '$lib/i18n';
+	import { contextMenu } from '$lib/stores/contextMenu';
+	import { notifications } from '$lib/stores/notifications';
 
 	let {
 		query = {},
@@ -67,13 +78,60 @@
 		{ key: 'totalout', label: 'Total Out', align: 'right' },
 		{ key: 'firstseen', label: 'First Seen', align: 'right' }
 	]);
+
+	const handleAddressContextMenu = (event: MouseEvent, item: Address) => {
+		if (event.defaultPrevented) return;
+		event.preventDefault();
+
+		const copyAddress = async () => {
+			try {
+				await navigator.clipboard.writeText(item.address);
+				notifications.success(`Address '${item.address}' copied to clipboard.`);
+			} catch (err) {
+				console.error(err);
+				notifications.error('Failed to copy address to clipboard.');
+			}
+		};
+
+		const menuItems: ContextMenuItem[] = [
+			{
+				label: $t$('contextMenu.viewAddress'),
+				icon: faEye,
+				href: `/addresses/${item.address}`
+			},
+			{
+				label: $t$('contextMenu.copyAddress'),
+				icon: faCopy,
+				action: copyAddress
+			},
+			{ separator: true, label: '' },
+			{
+				label: $t$('contextMenu.viewTransactions'),
+				icon: faExchange,
+				href: `/addresses/${item.address}/transactions`
+			},
+			{
+				label: $t$('contextMenu.viewNames'),
+				icon: faTag,
+				href: `/addresses/${item.address}/names`
+			},
+			{ separator: true, label: '' },
+			{
+				label: $t$('contextMenu.sendKromer'),
+				icon: faPaperPlane,
+				href: `/transactions/new?to=${item.address}`
+			}
+		];
+
+		contextMenu.show(event.clientX, event.clientY, menuItems);
+	};
 </script>
 
 {#if !title}
 	<TableControls {loading} bind:page={page.value} {limit} {total} onRefresh={refresh} />
 {/if}
 
-<SortableTable {refresh} {columns} data={addresses} {loading} {title}>
+<SortableTable {refresh} {columns} data={addresses} {loading} {title} rowContextMenu={handleAddressContextMenu}>
 	{#snippet cell(item, column)}
 		{#if column.key === 'address'}
 			{@const address = item[column.key]}

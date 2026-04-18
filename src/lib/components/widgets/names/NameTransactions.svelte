@@ -5,12 +5,18 @@
 	import { formatCurrency, relativeTime } from '$lib/util';
 	import Placeholder from '$lib/components/ui/Placeholder.svelte';
 	import { t$ } from '$lib/i18n';
+	import { contextMenu } from '$lib/stores/contextMenu';
+	import { notifications } from '$lib/stores/notifications';
+	import { refundModal } from '$lib/stores/refundModal';
+	import settings from '$lib/stores/settings';
 	import ParsedMetadata from '../transactions/ParsedMetadata.svelte';
 	import type { SortableColumnData } from '$lib/components/ui/SortableTable';
+	import type { ContextMenuItem } from '$lib/components/ui/ContextMenu.svelte';
 	import { NameHistoryCache, type NameHistoryLookupQuery } from '$lib/cache';
 	import TableControls from '$lib/components/ui/TableControls.svelte';
 	import LimitSelector from '$lib/components/ui/LimitSelector.svelte';
 	import PaginationInfo from '$lib/components/ui/PaginationInfo.svelte';
+	import { faCopy, faEye, faMoneyBillTransfer, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import { paramState } from '$lib/paramState.svelte';
 
 	let {
@@ -101,6 +107,72 @@
 		{ key: 'metadata', label: 'Message' },
 		{ key: 'time', label: 'Time', align: 'right', sortable: true }
 	];
+
+	const handleTransactionContextMenu = (event: MouseEvent, transaction: TransactionWithMeta) => {
+		if (event.defaultPrevented) return;
+		event.preventDefault();
+
+		const copyTransactionId = async () => {
+			try {
+				await navigator.clipboard.writeText(transaction.id.toString());
+				notifications.success(`Transaction ID '${transaction.id}' copied to clipboard.`);
+			} catch (err) {
+				console.error(err);
+				notifications.error('Failed to copy transaction ID to clipboard.');
+			}
+		};
+
+		const menuItems: ContextMenuItem[] = [
+			{
+				label: $t$('contextMenu.viewTransaction'),
+				icon: faEye,
+				href: `/transactions/${transaction.id}`
+			},
+			{
+				label: $t$('contextMenu.copyTransactionId'),
+				icon: faCopy,
+				action: copyTransactionId
+			}
+		];
+
+		const ownsToAddress =
+			transaction.to && $settings.wallets.some((wallet) => wallet.address === transaction.to);
+
+		if (ownsToAddress) {
+			menuItems.push(
+				{ separator: true, label: '' },
+				{
+					label: $t$('contextMenu.refundTransaction'),
+					icon: faMoneyBillTransfer,
+					action: () => refundModal.open(transaction)
+				}
+			);
+		}
+
+		if (transaction.to) {
+			menuItems.push(
+				{ separator: true, label: '' },
+				{
+					label: $t$('contextMenu.sendToRecipient'),
+					icon: faPaperPlane,
+					href: `/transactions/new?to=${transaction.to}`
+				}
+			);
+		}
+
+		if (transaction.from) {
+			if (!transaction.to) {
+				menuItems.push({ separator: true, label: '' });
+			}
+			menuItems.push({
+				label: $t$('contextMenu.sendToSender'),
+				icon: faPaperPlane,
+				href: `/transactions/new?to=${transaction.from}`
+			});
+		}
+
+		contextMenu.show(event.clientX, event.clientY, menuItems);
+	};
 </script>
 
 {#if !title}
@@ -113,6 +185,7 @@
 	data={transactions}
 	{loading}
 	{title}
+	rowContextMenu={handleTransactionContextMenu}
 	bind:sortedColumn={sortedColumn.value}
 	bind:sortDirection={sortDirection.value}
 >

@@ -4,17 +4,21 @@
 	import Address from '../addresses/Address.svelte';
 	import Placeholder from '$lib/components/ui/Placeholder.svelte';
 	import type { SortableColumnData } from '$lib/components/ui/SortableTable';
+	import type { ContextMenuItem } from '$lib/components/ui/ContextMenu.svelte';
 	import TableControls from '$lib/components/ui/TableControls.svelte';
 	import QueryBar from '$lib/components/ui/QueryBar.svelte';
 	import LimitSelector from '$lib/components/ui/LimitSelector.svelte';
 	import PaginationInfo from '$lib/components/ui/PaginationInfo.svelte';
 	import AddressFilterModal from '$lib/components/dialogs/AddressFilterModal.svelte';
 	import type { Filter } from '$lib/components/ui/QueryBar';
-	import { faPlus } from '@fortawesome/free-solid-svg-icons';
+	import { faCopy, faEye, faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
 	import { NameCache, type NameCacheLookup } from '$lib/cache';
 	import { relativeTime } from '$lib/util';
 	import { paramState } from '$lib/paramState.svelte';
 	import settings from '$lib/stores/settings';
+	import { t$ } from '$lib/i18n';
+	import { contextMenu } from '$lib/stores/contextMenu';
+	import { notifications } from '$lib/stores/notifications';
 
 	let {
 		query = {},
@@ -188,6 +192,42 @@
 		addressFilters = addressFilters.filter((_, i) => i !== index);
 		page.value = 1; // Reset to first page when filter changes
 	};
+
+	const handleNameContextMenu = (event: MouseEvent, name: Name) => {
+		if (event.defaultPrevented) return;
+		event.preventDefault();
+
+		const copyName = async () => {
+			try {
+				await navigator.clipboard.writeText(`${name.name}.kro`);
+				notifications.success(`Name '${name.name}.kro' copied to clipboard.`);
+			} catch (err) {
+				console.error(err);
+				notifications.error('Failed to copy name to clipboard.');
+			}
+		};
+
+		const menuItems: ContextMenuItem[] = [
+			{
+				label: $t$('contextMenu.viewName'),
+				icon: faEye,
+				href: `/names/${name.name}`
+			},
+			{
+				label: $t$('contextMenu.copyName'),
+				icon: faCopy,
+				action: copyName
+			},
+			{ separator: true, label: '' },
+			{
+				label: $t$('contextMenu.viewNameOwner'),
+				icon: faUser,
+				href: `/addresses/${name.owner}`
+			}
+		];
+
+		contextMenu.show(event.clientX, event.clientY, menuItems);
+	};
 </script>
 
 <AddressFilterModal
@@ -230,6 +270,7 @@
 	data={names}
 	{loading}
 	{title}
+	rowContextMenu={handleNameContextMenu}
 	bind:sortedColumn={sortedColumn.value}
 	bind:sortDirection={sortDirection.value}
 >

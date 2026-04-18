@@ -9,6 +9,7 @@
 		title?: string;
 		headerCell?: Snippet<[key: T, label: string]>;
 		cell: Snippet<[item: D, column: SortableColumnData<T>]>;
+		rowContextMenu?: ((event: MouseEvent, item: D) => void) | null;
 		columns: SortableColumnData<T>[];
 		data: D[];
 		hydrated?: boolean;
@@ -22,6 +23,7 @@
 		title,
 		headerCell,
 		cell,
+		rowContextMenu = null,
 		columns,
 		data,
 		loading = $bindable(false),
@@ -95,7 +97,10 @@
 			</thead>
 			<tbody>
 				{#each data as item, i (i)}
-					<tr>
+					<tr
+						class:context-menu-row={Boolean(rowContextMenu)}
+						oncontextmenu={(event) => rowContextMenu?.(event, item)}
+					>
 						{#each columns as column (column.key)}
 							<td style="text-align: {column.align ?? 'left'}">
 								{@render cell(item, column)}
@@ -156,5 +161,14 @@
 
 	.clickable:hover .sort-icon.active {
 		opacity: 1;
+	}
+
+	.context-menu-row {
+		cursor: context-menu;
+		transition: background-color 0.15s ease;
+	}
+
+	.context-menu-row:hover {
+		background-color: rgba(var(--theme-color-rgb), 0.05);
 	}
 </style>
