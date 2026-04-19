@@ -20,6 +20,7 @@
 	import AddressFilterModal from '$lib/components/dialogs/AddressFilterModal.svelte';
 	import type { Filter } from '$lib/components/ui/QueryBar';
 	import {
+	faCheck,
 		faCopy,
 		faEye,
 		faMoneyBillTransfer,
@@ -54,6 +55,16 @@
 		deserialize: (s) => parseInt(s) || 1,
 		shouldSet: (v) => v > 1
 	});
+
+	const includeMined = paramState<boolean>(
+		`${storePrefix.length > 0 ? storePrefix + '_' : ''}incl_welf`,
+		false,
+		{
+			serialize: (v) => v.toString(),
+			deserialize: (s) => s === 'true',
+			shouldSet: (v) => v
+		}
+	);
 
 	type SortableField = 'id' | 'from' | 'to' | 'value' | 'time';
 	const VALID_SORT_FIELDS: SortableField[] = ['id', 'from', 'to', 'value', 'time'];
@@ -118,6 +129,7 @@
 			: DEFAULT_SORT_COLUMN,
 		order: sortDirection.value ?? DEFAULT_SORT_DIRECTION,
 		...query,
+		includeMined: includeMined.value,
 		addresses: allAddresses,
 		limit,
 		offset
@@ -167,6 +179,11 @@
 		const index = parseInt(filter.id.replace('address-', ''));
 		addressFilters = addressFilters.filter((_, i) => i !== index);
 		page.value = 1; // Reset to first page when filter changes
+	};
+
+	const toggleIncludeMined = () => {
+		includeMined.value = !includeMined.value;
+		page.value = 1;
 	};
 
 	const handleTransactionContextMenu = (event: MouseEvent, transaction: TransactionWithMeta) => {
@@ -263,6 +280,14 @@
 						icon: faPlus,
 						size: 'small',
 						onClick: () => (showAddressModal = true)
+					},
+					{
+						tk: 'transaction.includeWelfare',
+						type: 'button',
+						variant: includeMined.value ? 'success' : 'secondary',
+						icon: includeMined.value ? faCheck : faMoneyBillTransfer,
+						size: 'small',
+						onClick: toggleIncludeMined
 					}
 				]}
 			/>
@@ -296,7 +321,7 @@
 				class:type-name-purchase={item.type === 'name_purchase'}
 				class:type-name-a-record={item.type === 'name_a_record'}
 				class:type-name-transfer={item.type === 'name_transfer'}
-				>{item.type.replace(/_/g, ' ')}</span
+				>{item.type === 'mined' ? $t$('transaction.welfare') : item.type.replace(/_/g, ' ')}</span
 			>
 		{:else if column.key === 'value'}
 			{formatCurrency(item.value)}

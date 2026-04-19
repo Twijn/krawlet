@@ -37,7 +37,7 @@ export class TransactionCache extends KromerCache<TransactionCacheLookup, Transa
 
 		// Filter out mined transactions if includeMined is false
 		if (!params.includeMined) {
-			result = result.filter((tx) => tx.from !== null);
+			result = result.filter((tx) => tx.type !== 'mined');
 		}
 
 		// Get total before pagination
@@ -112,7 +112,7 @@ export class TransactionCache extends KromerCache<TransactionCacheLookup, Transa
 		const filtered = this.filterAndSort(result, params);
 		return {
 			transactions: this.parseMetadata(filtered.transactions),
-			total: resultMap.size
+			total: filtered.total
 		};
 	}
 
