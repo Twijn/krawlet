@@ -19,7 +19,8 @@
 	let contents = $state<StorageSlotContents | null>(null);
 
 	const items = $derived.by(() => {
-		return (contents?.items ?? []).slice().sort((a, b) => a.name.localeCompare(b.name));
+		const rawItems = contents?.items;
+		return (Array.isArray(rawItems) ? rawItems : []).slice().sort((a, b) => a.name.localeCompare(b.name));
 	});
 
 	async function loadContents() {
