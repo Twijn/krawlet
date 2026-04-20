@@ -4,6 +4,7 @@
 	import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 	import {
 		faAddressBook,
+		faBoxes,
 		faBoxesPacking,
 		faChartLine,
 		faFont,
@@ -18,6 +19,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { getSyncNode } from '$lib/consts';
 	import { t$ } from '$lib/i18n';
+	import settings from '$lib/stores/settings';
 
 	type NavigationLink = {
 		icon: IconDefinition;
@@ -103,6 +105,18 @@
 					nameKey: 'nav.allAddresses',
 					href: '/addresses',
 					startsWith: true
+				}
+			]
+		},
+		{
+			nameKey: 'nav.klog',
+			shouldShow: () =>
+				getSyncNode().id === 'kromer' && $settings.krawletApiKey.startsWith('kraw_'),
+			links: [
+				{
+					icon: faBoxes,
+					nameKey: 'nav.transfers',
+					href: '/transfers'
 				}
 			]
 		},

@@ -32,7 +32,11 @@
 	{#if buttons && defaultButtonProps}
 		<nav class="buttons">
 			{#each buttons as button, i (button.title ?? button.tk ?? button.href ?? `${button.type ?? 'button'}-${button.variant ?? 'secondary'}-${i}`)}
-				<Button {...defaultButtonProps} {...button} />
+				<Button {...defaultButtonProps} {...button}>
+					{#if button.label}
+						{button.label}
+					{/if}
+				</Button>
 			{/each}
 		</nav>
 	{/if}

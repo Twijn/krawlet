@@ -47,6 +47,8 @@ export default {
 		transactions: 'Transactions',
 		viewTransactions: 'View Transactions',
 		sendKromer: 'Send Kromer',
+		klog: 'Krawlet Logistics (Klog)',
+		transfers: 'Transfers',
 		names: 'Names',
 		allNames: 'All Names',
 		manageNames: 'Manage Names',

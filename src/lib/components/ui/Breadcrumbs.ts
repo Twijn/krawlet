@@ -1,5 +1,9 @@
 import type { ButtonProps } from './Button';
 
+export type BreadcrumbButton = Partial<ButtonProps> & {
+	label?: string;
+};
+
 export type BreadcrumbNavItem = {
 	href: string;
 	label?: string;
@@ -8,6 +12,6 @@ export type BreadcrumbNavItem = {
 
 export type BreadcrumbProps = {
 	navItems?: BreadcrumbNavItem[];
-	buttons?: Partial<ButtonProps>[];
+	buttons?: BreadcrumbButton[];
 	defaultButtonProps?: ButtonProps;
 };
