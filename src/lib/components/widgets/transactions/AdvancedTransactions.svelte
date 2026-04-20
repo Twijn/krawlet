@@ -20,7 +20,7 @@
 	import AddressFilterModal from '$lib/components/dialogs/AddressFilterModal.svelte';
 	import type { Filter } from '$lib/components/ui/QueryBar';
 	import {
-	faCheck,
+		faCheck,
 		faCopy,
 		faEye,
 		faMoneyBillTransfer,

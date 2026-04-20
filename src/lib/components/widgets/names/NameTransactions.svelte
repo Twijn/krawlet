@@ -16,7 +16,12 @@
 	import TableControls from '$lib/components/ui/TableControls.svelte';
 	import LimitSelector from '$lib/components/ui/LimitSelector.svelte';
 	import PaginationInfo from '$lib/components/ui/PaginationInfo.svelte';
-	import { faCopy, faEye, faMoneyBillTransfer, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faCopy,
+		faEye,
+		faMoneyBillTransfer,
+		faPaperPlane
+	} from '@fortawesome/free-solid-svg-icons';
 	import { paramState } from '$lib/paramState.svelte';
 
 	let {

@@ -131,7 +131,14 @@
 	<TableControls {loading} bind:page={page.value} {limit} {total} onRefresh={refresh} />
 {/if}
 
-<SortableTable {refresh} {columns} data={addresses} {loading} {title} rowContextMenu={handleAddressContextMenu}>
+<SortableTable
+	{refresh}
+	{columns}
+	data={addresses}
+	{loading}
+	{title}
+	rowContextMenu={handleAddressContextMenu}
+>
 	{#snippet cell(item, column)}
 		{#if column.key === 'address'}
 			{@const address = item[column.key]}

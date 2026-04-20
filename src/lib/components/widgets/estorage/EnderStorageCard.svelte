@@ -1,5 +1,11 @@
 <script lang="ts">
+	import EnderStorageRequestModal from '$lib/components/dialogs/EnderStorageRequestModal.svelte';
+	import TransferProgressModal from '$lib/components/dialogs/TransferProgressModal.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
+	import settings from '$lib/stores/settings';
 	import { getItemImageUrl } from '$lib/stores/shopsync';
+	import { faBellConcierge } from '@fortawesome/free-solid-svg-icons';
+	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import type { EnderStorageChest, EnderStorageColor } from 'krawlet-js';
 
 	const { chest }: { chest: EnderStorageChest } = $props();
@@ -65,6 +71,17 @@
 	const total = $derived(totalItems(chest));
 	const capacity = $derived(estimatedCapacity(chest));
 	const percent = $derived(fillPercent(chest));
+
+	const isKlogSetup = $derived($settings.krawletApiKey.startsWith('kraw_'));
+
+	let showRequestModal = $state(false);
+	let showTransferProgressModal = $state(false);
+	let transferId = $state('');
+
+	function handleTransferCreated(nextTransferId: string) {
+		transferId = nextTransferId;
+		showTransferProgressModal = true;
+	}
 </script>
 
 <div class="card">
@@ -133,7 +150,34 @@
 	</div>
 
 	<hr />
+
+	<div class="buttons">
+		<Button
+			variant="primary"
+			disabled={!isKlogSetup}
+			title={!isKlogSetup
+				? 'Set up a Krawlet API key in settings to enable this feature.'
+				: undefined}
+			href={!isKlogSetup ? '/settings/advanced' : undefined}
+			onClick={() => (showRequestModal = !showRequestModal)}
+		>
+			<FontAwesomeIcon icon={faBellConcierge} />
+			Request with Klog
+		</Button>
+	</div>
 </div>
+
+{#if showRequestModal}
+	<EnderStorageRequestModal
+		{chest}
+		bind:open={showRequestModal}
+		onTransferCreated={handleTransferCreated}
+	/>
+{/if}
+
+{#if transferId}
+	<TransferProgressModal bind:open={showTransferProgressModal} {transferId} />
+{/if}
 
 <style>
 	.card {
