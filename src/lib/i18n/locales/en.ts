@@ -597,7 +597,12 @@ export default {
 		syncNodeChanged:
 			'Sync node changed successfully! Please refresh the app to apply the new sync node.',
 		refreshRequired: 'Please refresh the app to apply the new sync node.',
-		newTransaction: 'New transaction: {from} sent {amount} KRO to {to}'
+		newTransaction: 'New transaction: {from} sent {amount} KRO to {to}',
+		transferStarted: 'Transfer started: {quantity}x {item} to {target}',
+		transferCompleted: 'Transfer completed: {quantity}x {item} to {target}',
+		transferFailed: 'Transfer failed: {item} to {target}',
+		transferFailedWithReason: 'Transfer failed: {item} to {target} ({reason})',
+		transferCancelled: 'Transfer cancelled: {item} to {target}'
 	},
 	errors: {
 		networkError: 'Network error. Please try again.',

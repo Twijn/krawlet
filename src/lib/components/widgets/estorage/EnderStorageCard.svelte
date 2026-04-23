@@ -154,9 +154,11 @@
 	<div class="buttons">
 		<Button
 			variant="primary"
-			disabled={!isKlogSetup}
+			disabled={!isKlogSetup || itemEntries.length === 0}
 			title={!isKlogSetup
-				? 'Set up a Krawlet API key in settings to enable this feature.'
+				? ('Set up a Krawlet API key in settings to enable this feature.')
+				: itemEntries.length === 0
+				? 'No items available to request.'
 				: undefined}
 			href={!isKlogSetup ? '/settings/advanced' : undefined}
 			onClick={() => (showRequestModal = !showRequestModal)}

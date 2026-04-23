@@ -29,6 +29,7 @@
 	import ApiStatus from '$lib/components/widgets/ApiStatus.svelte';
 	import ContextMenu from '$lib/components/ui/ContextMenu.svelte';
 	import { initPWA, isOnline } from '$lib/stores/pwa';
+	import { krawletWebsocket } from '$lib/stores/krawletWebsocket';
 	import { websocket } from '$lib/stores/websocket';
 	import { contextMenu } from '$lib/stores/contextMenu';
 	import { initLocale, t$ } from '$lib/i18n';
@@ -42,15 +43,35 @@
 	let showNavigation = $state(false);
 
 	let handleResize: () => void;
+	let handleImageError: (event: Event) => void;
 	let cleanupPWA: (() => void) | undefined;
 
 	onMount(() => {
 		handleResize = () => {
 			showNavigation = window.innerWidth > 768;
 		};
+
+		handleImageError = (event: Event) => {
+			const target = event.target;
+			if (!(target instanceof HTMLImageElement)) return;
+
+			try {
+				const srcUrl = new URL(target.src);
+				const isKrawletCdn = srcUrl.hostname === 'cdn.krawlet.cc';
+				const isPng = srcUrl.pathname.endsWith('.png');
+				const isFallback = srcUrl.pathname === '/minecraft/air.png';
+
+				if (!isKrawletCdn || !isPng || isFallback) return;
+
+				target.src = 'https://cdn.krawlet.cc/minecraft/air.png';
+			} catch {
+				// Ignore invalid image URLs.
+			}
+		};
 		handleResize();
 
 		window.addEventListener('resize', handleResize);
+		window.addEventListener('error', handleImageError, true);
 
 		// Initialize PWA features
 		cleanupPWA = initPWA();
@@ -60,13 +81,16 @@
 
 		// Connect WebSocket for real-time updates
 		websocket.connect();
+		krawletWebsocket.connect();
 	});
 
 	onDestroy(() => {
 		if (browser) {
 			window.removeEventListener('resize', handleResize);
+			window.removeEventListener('error', handleImageError, true);
 			cleanupPWA?.();
 			websocket.disconnect();
+			krawletWebsocket.disconnect();
 		}
 	});
 

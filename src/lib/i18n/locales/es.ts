@@ -577,7 +577,12 @@ export default {
 			'¡Nodo de sincronización cambiado exitosamente! Por favor actualiza la aplicación para aplicar el nuevo nodo.',
 		refreshRequired:
 			'Por favor actualiza la aplicación para aplicar el nuevo nodo de sincronización.',
-		newTransaction: 'Nueva transacción: {from} envió {amount} KRO a {to}'
+		newTransaction: 'Nueva transacción: {from} envió {amount} KRO a {to}',
+		transferStarted: 'Transferencia iniciada: {quantity}x {item} hacia {target}',
+		transferCompleted: 'Transferencia completada: {quantity}x {item} hacia {target}',
+		transferFailed: 'La transferencia falló: {item} hacia {target}',
+		transferFailedWithReason: 'La transferencia falló: {item} hacia {target} ({reason})',
+		transferCancelled: 'Transferencia cancelada: {item} hacia {target}'
 	},
 	errors: {
 		networkError: 'Error de red. Por favor intenta de nuevo.',

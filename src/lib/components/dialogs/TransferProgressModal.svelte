@@ -1,32 +1,28 @@
 <script lang="ts">
 	import Modal from '../ui/Modal.svelte';
-	import { getKrawletClient } from '$lib/api/krawlet';
 	import { confirm } from '$lib/stores/confirm';
+	import { krawletWebsocket } from '$lib/stores/krawletWebsocket';
+	import type { Transfer } from 'krawlet-js';
 
 	type Props = {
 		open: boolean;
 		transferId: string;
-		pollIntervalMs?: number | null;
 	};
 
-	let { open = $bindable(false), transferId, pollIntervalMs = 500 }: Props = $props();
+	let { open = $bindable(false), transferId }: Props = $props();
 
-	const client = getKrawletClient();
-
-	type Transfer = {
-		status: string;
-		itemName: string;
-		quantityTransferred?: number;
-		quantity?: number;
-		error?: string | null;
-	};
-
-	let transfer = $state<Transfer | null>(null);
+	const transfersStore = krawletWebsocket.transfers;
+	let transfer = $derived($transfersStore.find((item) => item.id === transferId) ?? null);
 	let loading = $state(false);
 	let errorMessage: string | null = $state(null);
 
 	const quantityTransferred = $derived(transfer?.quantityTransferred ?? 0);
 	const quantityRequested = $derived(transfer?.quantity ?? 0);
+	const transferItemLabel = $derived.by(() => {
+		if (!transfer) return 'Unknown item';
+		const transferWithDisplayName = transfer as Transfer & { itemDisplayName?: string | null };
+		return transferWithDisplayName.itemDisplayName ?? transfer.itemName ?? 'Unknown item';
+	});
 
 	const progressPercent = $derived.by(() => {
 		if (quantityRequested > 0) {
@@ -41,12 +37,15 @@
 	const statusClass = $derived.by(() => {
 		if (transfer?.status === 'completed') return 'completed';
 		if (transfer?.status === 'failed') return 'failed';
+		if (transfer?.status === 'cancelled') return 'cancelled';
 		return 'active';
 	});
 
-	const pollingEnabled = $derived(typeof pollIntervalMs === 'number' && pollIntervalMs > 0);
-
-	const isFinished = $derived(transfer?.status === 'completed' || transfer?.status === 'failed');
+	const isFinished = $derived(
+		transfer?.status === 'completed' ||
+			transfer?.status === 'failed' ||
+			transfer?.status === 'cancelled'
+	);
 
 	function handleClose() {
 		if (isFinished || !transfer) {
@@ -66,49 +65,34 @@
 
 	$effect(() => {
 		if (!open || !transferId) {
-			transfer = null;
 			errorMessage = null;
 			loading = false;
 			return;
 		}
 
 		let disposed = false;
-		let inFlight = false;
 
-		const fetchTransfer = async () => {
-			if (disposed || inFlight) return;
-			inFlight = true;
-
-			try {
-				const nextTransfer = await client.transfers.get(transferId);
+		loading = transfer === null;
+		void krawletWebsocket
+			.getTransfer(transferId)
+			.then(() => {
 				if (!disposed) {
-					transfer = nextTransfer as Transfer;
 					errorMessage = null;
 				}
-			} catch (error) {
+			})
+			.catch((error) => {
 				if (!disposed) {
 					errorMessage = error instanceof Error ? error.message : 'Unknown error';
 				}
-			} finally {
+			})
+			.finally(() => {
 				if (!disposed) {
 					loading = false;
 				}
-				inFlight = false;
-			}
-		};
-
-		loading = true;
-		void fetchTransfer();
-
-		const intervalMs =
-			typeof pollIntervalMs === 'number' && pollIntervalMs > 0 ? pollIntervalMs : null;
-		const interval = intervalMs !== null ? setInterval(fetchTransfer, intervalMs) : null;
+			});
 
 		return () => {
 			disposed = true;
-			if (interval) {
-				clearInterval(interval);
-			}
 		};
 	});
 </script>
@@ -136,13 +120,16 @@
 			</div>
 
 			<div class="stats">
-				<p><span class="label">Item</span> <span class="value">{transfer.itemName}</span></p>
+				<p><span class="label">Item</span> <span class="value">{transferItemLabel}</span></p>
 				<p>
 					<span class="label">Moved</span>
 					<span class="value"
 						>{quantityTransferred.toLocaleString()} / {quantityRequested.toLocaleString()}</span
 					>
 				</p>
+				{#if transfer.memo}
+					<p><span class="label">Memo</span> <span class="value">{transfer.memo}</span></p>
+				{/if}
 				{#if transfer.error}
 					<p class="error">
 						<span class="label">Error</span> <span class="value">{transfer.error}</span>
@@ -150,9 +137,6 @@
 				{/if}
 			</div>
 
-			{#if loading && pollingEnabled}
-				<p class="muted">Refreshing every {pollIntervalMs} ms...</p>
-			{/if}
 		</section>
 	{/if}
 </Modal>
@@ -201,6 +185,10 @@
 		color: rgb(var(--red));
 	}
 
+	.status.cancelled {
+		color: rgb(var(--yellow));
+	}
+
 	.percent {
 		font-variant-numeric: tabular-nums;
 		color: var(--text-color-1);
@@ -231,6 +219,10 @@
 
 	.fill.failed {
 		background: linear-gradient(90deg, rgba(var(--red), 0.6), rgba(var(--red), 1));
+	}
+
+	.fill.cancelled {
+		background: linear-gradient(90deg, rgba(var(--yellow), 0.55), rgba(var(--yellow), 0.95));
 	}
 
 	.stats {

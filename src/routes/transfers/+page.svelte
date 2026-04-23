@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PageData } from './$types';
+	import type { Transfer } from 'krawlet-js';
 	import { getMinecraftAvatar, relativeTime } from '$lib/util';
 	import LiveContentsModal from '$lib/components/dialogs/LiveContentsModal.svelte';
 	import StartTransferModal from '$lib/components/dialogs/StartTransferModal.svelte';
@@ -9,18 +9,27 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import SortableTable from '$lib/components/ui/SortableTable.svelte';
 	import type { SortableColumnData } from '$lib/components/ui/SortableTable';
+	import { krawletWebsocket } from '$lib/stores/krawletWebsocket';
 	import { faBellConcierge, faBoxArchive, faPlus } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 
-	const { data }: { data: PageData } = $props();
-	const transferList = $derived(data.transfers ?? []);
+	const transferListStore = krawletWebsocket.transfers;
+	const transferErrorStore = krawletWebsocket.error;
+	const transferList = $derived($transferListStore ?? []);
+	const transferError = $derived($transferErrorStore);
 
-	type RouteTransfer = PageData['transfers'][number];
+	type RouteTransfer = Transfer & {
+		fromName?: string | null;
+		toName?: string | null;
+		fromUUID?: string | null;
+		toUUID?: string | null;
+		itemDisplayName?: string | null;
+	};
 
 	type TransferColumn =
 		| 'itemName'
-		| 'fromName'
-		| 'toName'
+		| 'fromUsername'
+		| 'toUsername'
 		| 'quantityTransferred'
 		| 'quantity'
 		| 'status'
@@ -29,8 +38,8 @@
 
 	const columns: SortableColumnData<TransferColumn>[] = [
 		{ key: 'itemName', label: 'Item', sortable: true },
-		{ key: 'fromName', label: 'From', sortable: true },
-		{ key: 'toName', label: 'To', sortable: true },
+		{ key: 'fromUsername', label: 'From', sortable: true },
+		{ key: 'toUsername', label: 'To', sortable: true },
 		{ key: 'quantityTransferred', label: 'Moved', align: 'right', sortable: true },
 		{ key: 'quantity', label: 'Requested', align: 'right', sortable: true },
 		{ key: 'status', label: 'Status', sortable: true },
@@ -60,43 +69,22 @@
 		return `https://cdn.krawlet.cc/${safeItemName.replace(':', '/')}.png`;
 	}
 
-	function isMinecraftUuid(value: string | null | undefined): boolean {
-		return (
-			typeof value === 'string' &&
-			/^[0-9a-f]{8}-?[0-9a-f]{4}-?[1-5][0-9a-f]{3}-?[89ab][0-9a-f]{3}-?[0-9a-f]{12}$/i.test(value)
-		);
-	}
-
-	function isMinecraftName(value: string | null | undefined): boolean {
-		return typeof value === 'string' && /^[A-Za-z0-9_]{3,16}$/.test(value);
-	}
-
-	function formatPlayerLabel(
-		name: string | null | undefined,
-		uuid: string | null | undefined
-	): string {
-		const safeName = typeof name === 'string' ? name.trim() : '';
-		const safeUuid = typeof uuid === 'string' ? uuid.trim() : '';
-
-		if (isMinecraftName(safeName)) return safeName;
-		if (safeName.length > 0) return safeName;
-		if (isMinecraftUuid(safeUuid)) return safeUuid;
-		if (safeUuid.length > 0) return safeUuid;
-		return 'Unknown';
+	function getTransferItemLabel(transfer: RouteTransfer): string {
+		return transfer.itemDisplayName ?? transfer.itemName ?? 'Unknown item';
 	}
 
 	function compareTransfers(a: RouteTransfer, b: RouteTransfer): number {
 		if (!sortedColumn) return 0;
 
 		if (sortedColumn === 'itemName') {
-			const aValue = a.itemName ?? '';
-			const bValue = b.itemName ?? '';
+			const aValue = getTransferItemLabel(a);
+			const bValue = getTransferItemLabel(b);
 			return sortDirection === 'ASC' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
 		}
 
-		if (sortedColumn === 'fromName' || sortedColumn === 'toName') {
-			const aValue = (a[sortedColumn] ?? '') as string;
-			const bValue = (b[sortedColumn] ?? '') as string;
+		if (sortedColumn === 'fromUsername' || sortedColumn === 'toUsername') {
+			const aValue = sortedColumn === 'fromUsername' ? (a.fromUsername ?? a.fromName ?? '') : (a.toUsername ?? a.toName ?? '');
+			const bValue = sortedColumn === 'fromUsername' ? (b.fromUsername ?? b.fromName ?? '') : (b.toUsername ?? b.toName ?? '');
 			return sortDirection === 'ASC' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
 		}
 
@@ -151,10 +139,10 @@
 <Breadcrumbs navItems={[{ label: 'Transfers', href: '/transfers' }]} buttons={breadcrumbButtons} />
 
 <div class="col-12">
-	{#if data.transfersError}
-		<p class="error">Error loading transfers: {data.transfersError}</p>
+	{#if transferError}
+		<p class="error">Error loading transfers: {transferError}</p>
 	{:else if transferList.length === 0}
-		<p class="muted">No active transfers.</p>
+		<p class="muted">No transfer history.</p>
 	{:else}
 		<SortableTable
 			bind:sortedColumn
@@ -164,50 +152,51 @@
 			data={getSortedTransfers(transferList)}
 		>
 			{#snippet cell(item, column)}
+				{@const itemLabel = getTransferItemLabel(item)}
+				{@const isFromMC = item.fromMcName && item.fromEntityId}
+				{@const isToMC = item.toMcName && item.toEntityId}
+				{@const fromName = item.fromMcName ? item.fromMcName : item.fromName}
+				{@const fromUuid = item.fromMcName ? item.fromMcUuid : item.fromEntityId}
+				{@const toName = item.toMcName ? item.toMcName : item.toName}
+				{@const toUuid = item.toMcName ? item.toMcUuid : item.toEntityId}
 				{#if column.key === 'itemName'}
 					<div class="item-cell">
 						<img
 							src={getTransferImageUrl(item.itemName)}
-							alt={item.itemName ?? 'Unknown item'}
+							alt={itemLabel}
 							class="item-image"
 							loading="lazy"
 						/>
-						<span class="item-name">{item.itemName ?? 'Unknown item'}</span>
+						<span class="item-name">{itemLabel}</span>
 					</div>
 				{:else if column.key === 'quantityTransferred'}
 					{(item.quantityTransferred ?? 0).toLocaleString()}
-				{:else if column.key === 'fromName'}
+				{:else if column.key === 'fromUsername'}
 					<div class="party-cell">
-						{#if isMinecraftName(item.fromName) && isMinecraftUuid(item.fromUUID)}
+						{#if isFromMC}
 							<img
 								class="player-avatar"
-								src={getMinecraftAvatar(item.fromUUID ?? '', 32)}
-								alt="Avatar for {item.fromName}"
+								src={getMinecraftAvatar(fromUuid ?? '', 32)}
+								alt="Avatar for {fromName}"
 								loading="lazy"
 							/>
 						{/if}
 						<div class="party-text">
-							<span class="party">{formatPlayerLabel(item.fromName, item.fromUUID)}</span>
-							{#if isMinecraftUuid(item.fromUUID)}
-								<small class="uuid">{item.fromUUID}</small>
-							{/if}
+							<span class="party">{fromName}</span>
 						</div>
 					</div>
-				{:else if column.key === 'toName'}
+				{:else if column.key === 'toUsername'}
 					<div class="party-cell">
-						{#if isMinecraftName(item.toName) && isMinecraftUuid(item.toUUID)}
+						{#if isToMC}
 							<img
 								class="player-avatar"
-								src={getMinecraftAvatar(item.toUUID ?? '', 32)}
-								alt="Avatar for {item.toName}"
+								src={getMinecraftAvatar(toUuid ?? '', 32)}
+								alt="Avatar for {toName}"
 								loading="lazy"
 							/>
 						{/if}
 						<div class="party-text">
-							<span class="party">{formatPlayerLabel(item.toName, item.toUUID)}</span>
-							{#if isMinecraftUuid(item.toUUID)}
-								<small class="uuid">{item.toUUID}</small>
-							{/if}
+							<span class="party">{toName}</span>
 						</div>
 					</div>
 				{:else if column.key === 'quantity'}
@@ -230,11 +219,7 @@
 </div>
 
 {#if selectedTransferId}
-	<TransferProgressModal
-		bind:open={showProgressModal}
-		transferId={selectedTransferId}
-		pollIntervalMs={null}
-	/>
+		<TransferProgressModal bind:open={showProgressModal} transferId={selectedTransferId} />
 {/if}
 
 <StartTransferModal bind:open={showStartTransferModal} onTransferCreated={handleTransferCreated} />
