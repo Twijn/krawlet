@@ -31,10 +31,8 @@
 	let klogModalOpen = $state(false);
 
 	let shop = $state<Shop | null>(null);
-	const canUseKlog = $derived(
-		shop?.softwareVersion?.toLowerCase()?.includes('+klog') &&
-			$settings.krawletApiKey.startsWith('kraw_')
-	);
+	const shopSupportsKlog = $derived(shop?.softwareVersion?.toLowerCase()?.includes('+klog'));
+	const canUseKlog = $derived($settings.krawletApiKey.startsWith('kraw_'));
 
 	$effect(() => {
 		if ('shopId' in item) {
@@ -72,12 +70,17 @@
 		{#if showPurchaseLink && 'id' in item}
 			{@const stock = item.stock ?? 0}
 			{@const href = getListingBuyLink(item)}
-			{#if canUseKlog}
+			{#if shopSupportsKlog}
 				<Button
 					variant="secondary"
-					disabled={stock <= 0}
+					disabled={stock <= 0 && !canUseKlog}
 					icon={faCoins}
 					onClick={() => (klogModalOpen = true)}
+					title={stock <= 0
+						? 'This item is currently out of stock.'
+						: !canUseKlog
+							? 'You need to connect a Krawlet API Key to purchase this item through Klog.'
+							: undefined}
 				>
 					Purchase with Klog
 				</Button>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { notifications } from '$lib/stores/notifications';
 	import type { Listing } from '$lib/types/shops';
 	const { item }: { item: Listing } = $props();
 </script>
@@ -6,27 +7,36 @@
 {#if item.shopBuysItem || item.dynamicPrice || item.madeOnDemand || item.requiresInteraction}
 	<div class="badges">
 		{#if item.shopBuysItem}
-			<span class="badge badge-sell" title="This shop purchases this item rather than selling it"
-				>Sell Shop</span
+			<button
+				class="badge badge-sell"
+				onclick={() => notifications.info('This shop purchases this item rather than selling it')}
+				>Sell Shop</button
 			>
 		{/if}
 		{#if item.dynamicPrice}
-			<span class="badge badge-dynamic" title="The price for this listing will dynamically change"
-				>Dynamic Price</span
+			<button
+				class="badge badge-dynamic"
+				onclick={() =>
+					notifications.info("This item's price changes based on stock, demand, or other factors")}
 			>
+				Dynamic Price
+			</button>
 		{/if}
 		{#if item.madeOnDemand}
-			<span
+			<button
 				class="badge badge-demand"
-				title="This item is crafted, smelted, or processed on purchase rather than being pre-stocked"
-				>Made on Demand</span
+				onclick={() =>
+					notifications.info(
+						'This item is crafted, smelted, or processed on purchase rather than being pre-stocked'
+					)}>Made on Demand</button
 			>
 		{/if}
 		{#if item.requiresInteraction}
-			<span
+			<button
 				class="badge badge-interaction"
-				title="This requires interaction with the shop's monitor, chatbox, etc."
-				>Requires Interaction</span
+				onclick={() =>
+					notifications.info("This requires interaction with the shop's monitor, chatbox, etc.")}
+				>Requires Interaction</button
 			>
 		{/if}
 	</div>
@@ -66,5 +76,6 @@
 		font-weight: 500;
 		white-space: nowrap;
 		border: 1px solid rgba(var(--color), 0.4);
+		cursor: pointer;
 	}
 </style>
