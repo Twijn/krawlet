@@ -4,11 +4,15 @@
 		getItemImageUrl,
 		getListingBuyLink,
 		getRelativeItemUrl,
+		getShopById,
 		type ItemListing
 	} from '$lib/stores/shopsync';
-	import type { Listing } from '$lib/types/shops';
+	import type { Listing, Shop } from '$lib/types/shops';
 	import Button from '$lib/components/ui/Button.svelte';
 	import ItemBadges from '../ItemBadges.svelte';
+	import settings from '$lib/stores/settings';
+	import { faCoins } from '@fortawesome/free-solid-svg-icons';
+	import KlogPurchaseModal from '$lib/components/dialogs/KlogPurchaseModal.svelte';
 
 	const {
 		item,
@@ -23,6 +27,22 @@
 		showPurchaseLink?: boolean;
 		showViewLink?: boolean;
 	} = $props();
+
+	let klogModalOpen = $state(false);
+
+	let shop = $state<Shop | null>(null);
+	const canUseKlog = $derived(
+		shop?.softwareVersion?.toLowerCase()?.includes('+klog') &&
+			$settings.krawletApiKey.startsWith('kraw_')
+	);
+
+	$effect(() => {
+		if ('shopId' in item) {
+			getShopById(item.shopId).then((s) => {
+				shop = s;
+			});
+		}
+	});
 </script>
 
 <div class="item">
@@ -30,6 +50,9 @@
 		<img src={getItemImageUrl(item)} alt="Item icon for {item.itemDisplayName}" />
 		<div class="item-head-text">
 			<h3>{item.itemDisplayName}</h3>
+			{#if 'itemDescription' in item && item.itemDescription}
+				<p class="caps">{item.itemDescription}</p>
+			{/if}
 			<small title={item.itemNbt ? `NBT: ${item.itemNbt}` : undefined}>{item.itemName}</small>
 		</div>
 	</div>
@@ -47,9 +70,18 @@
 	<hr />
 	<div class="buttons">
 		{#if showPurchaseLink && 'id' in item}
+			{@const stock = item.stock ?? 0}
 			{@const href = getListingBuyLink(item)}
-			{#if 'id' in item}
-				{@const stock = item.stock ?? 0}
+			{#if canUseKlog}
+				<Button
+					variant="secondary"
+					disabled={stock <= 0}
+					icon={faCoins}
+					onClick={() => (klogModalOpen = true)}
+				>
+					Purchase with Klog
+				</Button>
+			{:else if 'id' in item}
 				<Button
 					variant="secondary"
 					disabled={stock <= 0 || !canBuyListing(item)}
@@ -71,6 +103,8 @@
 		{/if}
 	</div>
 </div>
+
+<KlogPurchaseModal bind:open={klogModalOpen} {item} />
 
 <style>
 	.item {
@@ -124,7 +158,14 @@
 		color: var(--text-color-1);
 	}
 
+	.item-head-text p {
+		margin: 0 0 0.25rem 0;
+		font-size: 0.95rem;
+		color: var(--text-color-1);
+	}
+
 	.item-head-text small {
+		display: block;
 		font-size: 0.875rem;
 		color: var(--text-color-2);
 	}

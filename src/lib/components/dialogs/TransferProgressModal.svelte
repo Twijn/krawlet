@@ -136,7 +136,6 @@
 					</p>
 				{/if}
 			</div>
-
 		</section>
 	{/if}
 </Modal>

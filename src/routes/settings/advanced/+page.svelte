@@ -22,12 +22,10 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { t, t$ } from '$lib/i18n';
 	import { relativeTime } from '$lib/util';
-	import krawletClient, { getKrawletClient, isValidApiKey } from '$lib/api/krawlet';
+	import { getKrawletClient, isValidApiKey } from '$lib/api/krawlet';
+	import apiKeyInfo from '$lib/stores/apiKeyInfo';
 	import { confirm } from '$lib/stores/confirm';
 	import { browser } from '$app/environment';
-
-	// Infer ApiKeyInfo type from the client method
-	type ApiKeyInfo = Awaited<ReturnType<typeof krawletClient.apiKey.getInfo>>;
 
 	const API_KEY_COMMAND = '\\krawlet api';
 
@@ -40,31 +38,8 @@
 		}
 	}
 
-	// API Key info state
-	let apiKeyInfo: ApiKeyInfo | null = $state(null);
-	let apiKeyLoading = $state(false);
-	let apiKeyError: string | null = $state(null);
-
-	async function fetchApiKeyInfo() {
-		// Only fetch info for valid API keys (must start with 'kraw_')
-		if (!$settings.krawletApiKey || !isValidApiKey($settings.krawletApiKey)) {
-			apiKeyInfo = null;
-			apiKeyError = null;
-			return;
-		}
-
-		apiKeyLoading = true;
-		apiKeyError = null;
-
-		try {
-			apiKeyInfo = await krawletClient.apiKey.getInfo({ usage: true });
-		} catch (err: unknown) {
-			console.error('Failed to fetch API key info:', err);
-			apiKeyInfo = null;
-			apiKeyError = err instanceof Error ? err.message : 'Failed to fetch API key info';
-		} finally {
-			apiKeyLoading = false;
-		}
+	async function fetchApiKeyInfo(force = false) {
+		await apiKeyInfo.ensureLoaded({ force });
 	}
 
 	// Fetch API key info when the key changes
@@ -72,10 +47,11 @@
 		// Only fetch info for valid API keys (must start with 'kraw_')
 		if ($settings.krawletApiKey && isValidApiKey($settings.krawletApiKey)) {
 			// Small delay to allow the client to update with the new key
-			setTimeout(fetchApiKeyInfo, 100);
+			setTimeout(() => {
+				apiKeyInfo.ensureLoaded();
+			}, 100);
 		} else {
-			apiKeyInfo = null;
-			apiKeyError = null;
+			apiKeyInfo.clear();
 		}
 	});
 
@@ -325,40 +301,56 @@
 							<button
 								type="button"
 								class="refresh-btn"
-								onclick={fetchApiKeyInfo}
-								disabled={apiKeyLoading}
+								onclick={() => fetchApiKeyInfo(true)}
+								disabled={$apiKeyInfo.loading}
 								aria-label={$t$('common.refresh')}
 							>
-								<FontAwesomeIcon icon={faSync} spin={apiKeyLoading} />
+								<FontAwesomeIcon icon={faSync} spin={$apiKeyInfo.loading} />
 							</button>
 						</div>
 						<div class="preview-content api-key-info">
-							{#if apiKeyLoading}
+							{#if $apiKeyInfo.loading}
 								<div class="api-key-loading">{$t$('common.loading')}</div>
-							{:else if apiKeyError}
+							{:else if $apiKeyInfo.error}
 								<div class="api-key-error">
 									<FontAwesomeIcon icon={faTimesCircle} />
-									{apiKeyError}
+									{$apiKeyInfo.error}
 								</div>
-							{:else if apiKeyInfo}
+							{:else if $apiKeyInfo.info}
 								<div class="api-key-details">
 									<div class="api-key-row">
 										<span class="api-key-label">{$t$('settings.apiKeyName')}</span>
-										<span class="api-key-value">{apiKeyInfo.name}</span>
+										<span class="api-key-value">{$apiKeyInfo.info.name}</span>
 									</div>
+									{#if $apiKeyInfo.mcName}
+										<div class="api-key-row">
+											<span class="api-key-label">{$t$('settings.apiKeyMinecraftName')}</span>
+											<span class="api-key-value">{$apiKeyInfo.mcName}</span>
+										</div>
+									{/if}
+									{#if $apiKeyInfo.mcUuid}
+										<div class="api-key-row">
+											<span class="api-key-label">{$t$('settings.apiKeyMinecraftUuid')}</span>
+											<span class="api-key-value">{$apiKeyInfo.mcUuid}</span>
+										</div>
+									{/if}
 									<div class="api-key-row">
 										<span class="api-key-label">{$t$('settings.apiKeyTier')}</span>
-										<span class="api-key-value tier-{apiKeyInfo.tier}">{apiKeyInfo.tier}</span>
+										<span class="api-key-value tier-{$apiKeyInfo.info.tier}"
+											>{$apiKeyInfo.info.tier}</span
+										>
 									</div>
 									<div class="api-key-row">
 										<span class="api-key-label">{$t$('settings.apiKeyStatus')}</span>
 										<span
 											class="api-key-value"
-											class:active={apiKeyInfo.isActive}
-											class:inactive={!apiKeyInfo.isActive}
+											class:active={$apiKeyInfo.info.isActive}
+											class:inactive={!$apiKeyInfo.info.isActive}
 										>
-											<FontAwesomeIcon icon={apiKeyInfo.isActive ? faCheckCircle : faTimesCircle} />
-											{apiKeyInfo.isActive
+											<FontAwesomeIcon
+												icon={$apiKeyInfo.info.isActive ? faCheckCircle : faTimesCircle}
+											/>
+											{$apiKeyInfo.info.isActive
 												? $t$('settings.apiKeyActive')
 												: $t$('settings.apiKeyInactive')}
 										</span>
@@ -366,30 +358,30 @@
 									<div class="api-key-row">
 										<span class="api-key-label">{$t$('settings.apiKeyRateLimit')}</span>
 										<span class="api-key-value"
-											>{apiKeyInfo.rateLimit} {$t$('settings.apiKeyRequestsPerMinute')}</span
+											>{$apiKeyInfo.info.rateLimit} {$t$('settings.apiKeyRequestsPerMinute')}</span
 										>
 									</div>
-									{#if apiKeyInfo.usage}
+									{#if $apiKeyInfo.info.usage}
 										<div class="api-key-row">
 											<span class="api-key-label">{$t$('settings.apiKeyUsage24h')}</span>
 											<span class="api-key-value"
-												>{apiKeyInfo.usage.last24h.toLocaleString()}
+												>{$apiKeyInfo.info.usage.last24h.toLocaleString()}
 												{$t$('settings.apiKeyRequests')}</span
 											>
 										</div>
 										<div class="api-key-row">
 											<span class="api-key-label">{$t$('settings.apiKeyUsage7d')}</span>
 											<span class="api-key-value"
-												>{apiKeyInfo.usage.last7d.toLocaleString()}
+												>{$apiKeyInfo.info.usage.last7d.toLocaleString()}
 												{$t$('settings.apiKeyRequests')}</span
 											>
 										</div>
 									{/if}
-									{#if apiKeyInfo.lastUsedAt}
+									{#if $apiKeyInfo.info.lastUsedAt}
 										<div class="api-key-row">
 											<span class="api-key-label">{$t$('settings.apiKeyLastUsed')}</span>
 											<span class="api-key-value"
-												>{relativeTime(new Date(apiKeyInfo.lastUsedAt))}</span
+												>{relativeTime(new Date($apiKeyInfo.info.lastUsedAt))}</span
 											>
 										</div>
 									{/if}

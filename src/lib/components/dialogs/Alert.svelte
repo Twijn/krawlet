@@ -1,7 +1,17 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
+
 	type AlertVariant = 'info' | 'success' | 'danger';
 
-	export let variant: AlertVariant = 'info';
+	const {
+		variant = 'info',
+		noMargin = false,
+		children
+	}: {
+		variant?: AlertVariant;
+		noMargin?: boolean;
+		children: Snippet;
+	} = $props();
 </script>
 
 <div
@@ -9,9 +19,10 @@
 	class:info={variant === 'info'}
 	class:success={variant === 'success'}
 	class:danger={variant === 'danger'}
+	class:no-margin={noMargin}
 	role="alert"
 >
-	<slot />
+	{@render children()}
 </div>
 
 <style>
@@ -39,6 +50,10 @@
 		);
 		border-radius: 0.5rem;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	}
+
+	.alert.no-margin {
+		margin: 0;
 	}
 
 	.alert :global(p) {

@@ -53,7 +53,7 @@
 		"@vercel/analytics": "^1.6.1",
 		"crypto-js": "^4.2.0",
 		"idb": "^8.0.3",
-		"krawlet-js": "^2.2.3",
+		"krawlet-js": "^2.2.5",
 		"kromer": "^1.7.1",
 		"svelteplot": "^0.3.9"
 	}

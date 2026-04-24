@@ -494,6 +494,8 @@ export default {
 		apiKeySaved: 'Clave API guardada exitosamente',
 		apiKeyInfo: 'Info de Clave API',
 		apiKeyName: 'Nombre',
+		apiKeyMinecraftName: 'Nombre de Minecraft',
+		apiKeyMinecraftUuid: 'UUID de Minecraft',
 		apiKeyTier: 'Nivel',
 		apiKeyStatus: 'Estado',
 		apiKeyActive: 'Activa',

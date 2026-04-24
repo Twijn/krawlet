@@ -509,6 +509,8 @@ export default {
 		apiKeySaved: 'API key saved successfully',
 		apiKeyInfo: 'API Key Info',
 		apiKeyName: 'Name',
+		apiKeyMinecraftName: 'Minecraft Name',
+		apiKeyMinecraftUuid: 'Minecraft UUID',
 		apiKeyTier: 'Tier',
 		apiKeyStatus: 'Status',
 		apiKeyActive: 'Active',

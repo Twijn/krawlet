@@ -183,7 +183,7 @@
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 0.75rem;
 	}
-	
+
 	@media only screen and (max-width: 768px) {
 		.field-row {
 			grid-template-columns: 1fr;

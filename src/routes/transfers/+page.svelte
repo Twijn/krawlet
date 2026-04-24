@@ -83,8 +83,14 @@
 		}
 
 		if (sortedColumn === 'fromUsername' || sortedColumn === 'toUsername') {
-			const aValue = sortedColumn === 'fromUsername' ? (a.fromUsername ?? a.fromName ?? '') : (a.toUsername ?? a.toName ?? '');
-			const bValue = sortedColumn === 'fromUsername' ? (b.fromUsername ?? b.fromName ?? '') : (b.toUsername ?? b.toName ?? '');
+			const aValue =
+				sortedColumn === 'fromUsername'
+					? (a.fromUsername ?? a.fromName ?? '')
+					: (a.toUsername ?? a.toName ?? '');
+			const bValue =
+				sortedColumn === 'fromUsername'
+					? (b.fromUsername ?? b.fromName ?? '')
+					: (b.toUsername ?? b.toName ?? '');
 			return sortDirection === 'ASC' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
 		}
 
@@ -219,7 +225,7 @@
 </div>
 
 {#if selectedTransferId}
-		<TransferProgressModal bind:open={showProgressModal} transferId={selectedTransferId} />
+	<TransferProgressModal bind:open={showProgressModal} transferId={selectedTransferId} />
 {/if}
 
 <StartTransferModal bind:open={showStartTransferModal} onTransferCreated={handleTransferCreated} />

@@ -20,7 +20,9 @@
 
 	const items = $derived.by(() => {
 		const rawItems = contents?.items;
-		return (Array.isArray(rawItems) ? rawItems : []).slice().sort((a, b) => a.name.localeCompare(b.name));
+		return (Array.isArray(rawItems) ? rawItems : [])
+			.slice()
+			.sort((a, b) => a.name.localeCompare(b.name));
 	});
 
 	async function loadContents() {

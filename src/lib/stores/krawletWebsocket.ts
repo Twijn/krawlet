@@ -14,16 +14,26 @@ type KrawletWebsocketClient = ReturnType<typeof getKrawletClient>['websockets'];
 function sortTransfers(transfers: Transfer[]): Transfer[] {
 	return transfers
 		.slice()
-		.sort((left, right) => new Date(right.timestamp).getTime() - new Date(left.timestamp).getTime());
+		.sort(
+			(left, right) => new Date(right.timestamp).getTime() - new Date(left.timestamp).getTime()
+		);
 }
 
 function formatTransferTarget(transfer: Transfer): string {
-	return transfer.toUsername?.trim() || transfer.toUUID?.trim() || 'Unknown target';
+	const transferWithLegacyUuid = transfer as Transfer & { toUUID?: string | null };
+	return (
+		transfer.toUsername?.trim() ||
+		transfer.toMcUuid?.trim() ||
+		transferWithLegacyUuid.toUUID?.trim() ||
+		'Unknown target'
+	);
 }
 
 function formatTransferItem(transfer: Transfer): string {
 	const transferWithDisplayName = transfer as Transfer & { itemDisplayName?: string | null };
-	return transferWithDisplayName.itemDisplayName?.trim() || transfer.itemName?.trim() || 'unknown item';
+	return (
+		transferWithDisplayName.itemDisplayName?.trim() || transfer.itemName?.trim() || 'unknown item'
+	);
 }
 
 function formatTransferQuantity(transfer: Transfer): string {
@@ -98,14 +108,14 @@ function createKrawletWebsocketStore() {
 			notifications.error(
 				message
 					? t('notifications.transferFailedWithReason', {
-						item,
-						target,
-						reason: message
-					})
+							item,
+							target,
+							reason: message
+						})
 					: t('notifications.transferFailed', {
-						item,
-						target
-					})
+							item,
+							target
+						})
 			);
 			return;
 		}
