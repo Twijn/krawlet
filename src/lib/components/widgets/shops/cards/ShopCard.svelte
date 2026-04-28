@@ -1,17 +1,18 @@
 <script lang="ts">
 	import type { Shop } from '$lib/types/shops';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faShop } from '@fortawesome/free-solid-svg-icons';
+	import { faShop, faTowerBroadcast, faTruckFast } from '@fortawesome/free-solid-svg-icons';
 	import { cleanShopData } from '$lib/stores/shopsync';
 	import { relativeTime } from '$lib/util';
 	import Button from '$lib/components/ui/Button.svelte';
+	import type { Snippet } from 'svelte';
 
 	const {
 		shop,
 		children
 	}: {
 		shop: Shop;
-		children: unknown;
+		children: Snippet;
 	} = $props();
 </script>
 
@@ -19,7 +20,19 @@
 	<div class="shop-head">
 		<div class="shop-head-icon"><FontAwesomeIcon icon={faShop} /></div>
 		<div class="shop-head-text">
-			<h3>{cleanShopData(shop.name)}</h3>
+			<h3>
+				{cleanShopData(shop.name)}
+				{#if shop.sourceType === "radio_tower"}
+					<span class="title-icon title-bottom" title="Transmitted via Radio Tower">
+						<FontAwesomeIcon icon={faTowerBroadcast} />
+					</span>
+				{/if}
+				{#if shop.supportsKlog}
+					<span class="title-icon title-green title-bottom" title="Supports Klog Delivery">
+						<FontAwesomeIcon icon={faTruckFast} />
+					</span>
+				{/if}
+			</h3>
 			<small>
 				{#if shop.owner}
 					By {cleanShopData(shop.owner)}
@@ -34,7 +47,7 @@
 			</small>
 			{#if shop.updatedDate}
 				{@const date = new Date(shop.updatedDate)}
-				<small title={date.toLocaleString()}>
+				<small class="title-left" title={date.toLocaleString()}>
 					Last updated {relativeTime(date)}
 				</small>
 			{/if}
@@ -125,6 +138,16 @@
 
 	.shop-body {
 		flex-grow: 1;
+	}
+
+	.title-icon {
+		font-size: .875em;
+		margin: 0 0 0 0.3rem;
+		color: rgb(var(--orange));
+	}
+
+	.title-green {
+		color: rgb(var(--green));
 	}
 
 	hr {

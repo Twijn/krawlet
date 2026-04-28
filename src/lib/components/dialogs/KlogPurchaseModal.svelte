@@ -10,6 +10,7 @@
 	import Alert from './Alert.svelte';
 	import kromer from '$lib/api/kromer';
 	import type { APIError } from 'kromer';
+	import QuantitySelector from '../form/QuantitySelector.svelte';
 
 	let {
 		open = $bindable(),
@@ -138,10 +139,7 @@
 			</div>
 		</Alert>
 	{/if}
-	<label>
-		Purchase Quantity
-		<input type="number" min="1" max={stock} bind:value={quantity} />
-	</label>
+	<QuantitySelector bind:quantity min={1} max={stock} label="Purchase Quantity" />
 	<p>
 		Purchasing x{typeof quantity == 'number' ? quantity : 1}
 		{item.itemDisplayName} from {shop ? shop.name : 'the shop'}

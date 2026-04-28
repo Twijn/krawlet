@@ -39,8 +39,8 @@ importers:
         specifier: ^8.0.3
         version: 8.0.3
       krawlet-js:
-        specifier: ^2.2.5
-        version: 2.2.5
+        specifier: ^2.2.6
+        version: 2.2.6
       kromer:
         specifier: ^1.7.1
         version: 1.7.1
@@ -1360,8 +1360,8 @@ packages:
   known-css-properties@0.37.0:
     resolution: {integrity: sha512-JCDrsP4Z1Sb9JwG0aJ8Eo2r7k4Ou5MwmThS/6lcIe1ICyb7UBJKGRIUUdqc2ASdE/42lgz6zFUnzAIhtXnBVrQ==}
 
-  krawlet-js@2.2.5:
-    resolution: {integrity: sha512-vnS5QemS0b91vl4XeGXOkMaCLYSlVyb7D6tSlWY0B/86zUVqnsmmISq2KPhH+mvIxv4sb0NSNrISydg6pn83Bg==}
+  krawlet-js@2.2.6:
+    resolution: {integrity: sha512-Unvw7eKtF1mhi4kb+1ryJkHKX7ScGg3ii1vdy9HKqhnAWZl2D+MjYmmhiEJ2zdSUdLPmFiEm6LmGvYHDZ4RsEA==}
     engines: {node: '>=18.0.0'}
 
   kromer@1.7.1:
@@ -2939,7 +2939,7 @@ snapshots:
 
   known-css-properties@0.37.0: {}
 
-  krawlet-js@2.2.5: {}
+  krawlet-js@2.2.6: {}
 
   kromer@1.7.1:
     dependencies:

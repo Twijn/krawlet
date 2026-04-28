@@ -43,12 +43,14 @@ const transformItem = (item: ItemApi): Listing => ({
 // Transform krawlet-js Shop to our Shop type
 const transformShop = (shop: ShopApi): Shop => ({
 	id: shop.id,
+	sourceType: shop.sourceType,
 	name: shop.name,
 	description: shop.description,
 	owner: shop.owner,
 	computerId: shop.computerId,
 	softwareName: shop.softwareName,
 	softwareVersion: shop.softwareVersion,
+	supportsKlog: shop.softwareVersion?.toLowerCase().includes('+klog') ?? false,
 	locationCoordinates: shop.locationCoordinates,
 	locationDescription: shop.locationDescription,
 	locationDimension: shop.locationDimension,

@@ -3,6 +3,7 @@
 	import Modal from '../ui/Modal.svelte';
 	import { getKrawletClient } from '$lib/api/krawlet';
 	import { notifications } from '$lib/stores/notifications';
+	import QuantitySelector from '../form/QuantitySelector.svelte';
 
 	type Props = {
 		open: boolean;
@@ -23,8 +24,14 @@
 			chest.colors[2]?.color ?? 0
 		];
 
+		const item = chest.contents[selectedItem];
+		if (!item) {
+			notifications.error('Selected item is not available in the chest.');
+			return;
+		}
+
 		client.transfers
-			.requestPublicStorage({ itemName: selectedItem, quantity, colors })
+			.requestPublicStorage({ itemName: item.name, itemNbt: typeof(item.nbt) === 'string' ? item.nbt : undefined, quantity, colors })
 			.then((response) => {
 				onTransferCreated?.(response.transfer.id);
 				open = false;
@@ -46,8 +53,5 @@
 			{/each}
 		</select>
 	</label>
-	<label>
-		Quantity
-		<input type="number" min="8" max="1024" step="8" bind:value={quantity} />
-	</label>
+	<QuantitySelector bind:quantity max={chest.contents[selectedItem]?.count ?? 1024} />
 </Modal>

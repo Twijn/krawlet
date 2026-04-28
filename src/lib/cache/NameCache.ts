@@ -103,17 +103,12 @@ export class NameCache extends KromerCache<NameCacheLookup, NameCacheResult> {
 
 		if (params.addresses.length > 0) {
 			for (const address of params.addresses) {
-				// Query both from and to indexes
 				const ownerIndex = store.index('ownerIndex');
-				const originalOwnerIndex = store.index('originalOwnerIndex');
 
-				const [fromNames, toNames] = await Promise.all([
-					ownerIndex.getAll(address),
-					originalOwnerIndex.getAll(address)
-				]);
+				const fromNames = await ownerIndex.getAll(address);
 
 				// Use map to deduplicate by name
-				for (const item of [...fromNames, ...toNames]) {
+				for (const item of fromNames) {
 					resultMap.set(item.name, item);
 				}
 			}

@@ -11,7 +11,7 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import ItemBadges from '../ItemBadges.svelte';
 	import settings from '$lib/stores/settings';
-	import { faCoins } from '@fortawesome/free-solid-svg-icons';
+	import { faTruckFast } from '@fortawesome/free-solid-svg-icons';
 	import KlogPurchaseModal from '$lib/components/dialogs/KlogPurchaseModal.svelte';
 
 	const {
@@ -31,7 +31,7 @@
 	let klogModalOpen = $state(false);
 
 	let shop = $state<Shop | null>(null);
-	const shopSupportsKlog = $derived(shop?.softwareVersion?.toLowerCase()?.includes('+klog'));
+	const shopSupportsKlog = $derived(shop?.supportsKlog ?? false);
 	const canUseKlog = $derived($settings.krawletApiKey.startsWith('kraw_'));
 
 	$effect(() => {
@@ -72,9 +72,9 @@
 			{@const href = getListingBuyLink(item)}
 			{#if shopSupportsKlog}
 				<Button
-					variant="secondary"
+					variant="success"
 					disabled={stock <= 0 && !canUseKlog}
-					icon={faCoins}
+					icon={faTruckFast}
 					onClick={() => (klogModalOpen = true)}
 					title={stock <= 0
 						? 'This item is currently out of stock.'

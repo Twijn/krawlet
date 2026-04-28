@@ -22,8 +22,8 @@ function sortTransfers(transfers: Transfer[]): Transfer[] {
 function formatTransferTarget(transfer: Transfer): string {
 	const transferWithLegacyUuid = transfer as Transfer & { toUUID?: string | null };
 	return (
-		transfer.toUsername?.trim() ||
-		transfer.toMcUuid?.trim() ||
+		transfer.toMcName?.trim() ||
+		transfer.toName?.trim() ||
 		transferWithLegacyUuid.toUUID?.trim() ||
 		'Unknown target'
 	);
