@@ -71,7 +71,7 @@ function createApiKeyInfoStore() {
 		const requestKey = apiKey;
 		inFlight = (async () => {
 			try {
-				const info = await krawletClient.apiKey.getInfo({ usage: true });
+				const info = await krawletClient.apiKey.getInfo({ usage: false });
 				const { mcUuid, mcName } = getMinecraftIdentity(info);
 				if ((get(settings).krawletApiKey?.trim() ?? '') !== requestKey) {
 					return null;

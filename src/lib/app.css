@@ -129,6 +129,13 @@ body {
 	backdrop-filter: blur(8px);
 }
 
+.title-full-right[title]:hover::after {
+	left: unset;
+	top: 50%;
+	right: 0;
+	translate: 0 -50%;
+}
+
 .title-left[title]:hover::after {
 	left: 0;
 	translate: 0 0;

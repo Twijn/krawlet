@@ -28,6 +28,7 @@
 		faPlus
 	} from '@fortawesome/free-solid-svg-icons';
 	import { paramState } from '$lib/paramState.svelte';
+	import TransactionType from './TransactionType.svelte';
 
 	let {
 		query = {},
@@ -314,15 +315,7 @@
 				<Placeholder text={$t$('transaction.noMetadata')} />
 			{/if}
 		{:else if column.key === 'type'}
-			<span
-				class="type"
-				class:type-welfare={item.type === 'mined'}
-				class:type-transfer={item.type === 'transfer'}
-				class:type-name-purchase={item.type === 'name_purchase'}
-				class:type-name-a-record={item.type === 'name_a_record'}
-				class:type-name-transfer={item.type === 'name_transfer'}
-				>{item.type === 'mined' ? $t$('transaction.welfare') : item.type.replace(/_/g, ' ')}</span
-			>
+			<TransactionType tx={item} />
 		{:else if column.key === 'value'}
 			{formatCurrency(item.value)}
 			<small>KRO</small>
@@ -378,33 +371,5 @@
 	.error {
 		color: rgb(var(--red));
 		margin-top: 1em;
-	}
-
-	.type-welfare {
-		color: rgb(var(--green));
-	}
-
-	.type-transfer {
-		color: rgb(var(--blue));
-	}
-
-	.type-name-purchase {
-		color: rgb(var(--red));
-	}
-
-	.type-name-a-record {
-		color: rgb(var(--red));
-	}
-
-	.type-name-transfer {
-		color: rgb(var(--red));
-	}
-
-	.type {
-		text-transform: capitalize;
-		padding: 1em;
-		border-radius: 0.25em;
-		font-size: 0.9em;
-		font-weight: 500;
 	}
 </style>

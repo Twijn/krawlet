@@ -22,7 +22,7 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { t, t$ } from '$lib/i18n';
 	import { relativeTime } from '$lib/util';
-	import { getKrawletClient, isValidApiKey } from '$lib/api/krawlet';
+	import { getKrawletClient } from '$lib/api/krawlet';
 	import apiKeyInfo from '$lib/stores/apiKeyInfo';
 	import { confirm } from '$lib/stores/confirm';
 	import { browser } from '$app/environment';
@@ -41,19 +41,6 @@
 	async function fetchApiKeyInfo(force = false) {
 		await apiKeyInfo.ensureLoaded({ force });
 	}
-
-	// Fetch API key info when the key changes
-	$effect(() => {
-		// Only fetch info for valid API keys (must start with 'kraw_')
-		if ($settings.krawletApiKey && isValidApiKey($settings.krawletApiKey)) {
-			// Small delay to allow the client to update with the new key
-			setTimeout(() => {
-				apiKeyInfo.ensureLoaded();
-			}, 100);
-		} else {
-			apiKeyInfo.clear();
-		}
-	});
 
 	// Quick Code state
 	let quickCodeInput = $state('');

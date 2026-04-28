@@ -24,6 +24,7 @@
 	import shopsync, { getItemImageUrl, getRelativeItemUrl } from '$lib/stores/shopsync';
 	import { findBestRelatedShopSyncListing } from '$lib/utils/shopsyncMatching';
 	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
+	import TransactionType from '$lib/components/widgets/transactions/TransactionType.svelte';
 
 	// Shop modal state
 	let showShopModal = $state(false);
@@ -201,8 +202,8 @@
 		<tbody>
 			<tr>
 				<th>Type</th>
-				<td class="capitalize right">
-					{transaction.type}
+				<td class="right">
+					<TransactionType tx={transaction} />
 				</td>
 			</tr>
 			<tr>

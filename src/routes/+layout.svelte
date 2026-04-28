@@ -1,8 +1,8 @@
 <script lang="ts">
 	import '$lib/app.css';
-	import { config } from '@fortawesome/fontawesome-svg-core';
+	import { config, type IconDefinition } from '@fortawesome/fontawesome-svg-core';
 	import '@fortawesome/fontawesome-svg-core/styles.css';
-	import { faBars, faGear } from '@fortawesome/free-solid-svg-icons';
+	import { faBars, faCheck, faEllipsis, faExclamation, faGear, faSignIn, faSpinner, faTimes, faWallet } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -25,15 +25,19 @@
 	import settings from '$lib/stores/settings';
 	import InstallPrompt from '$lib/components/widgets/InstallPrompt.svelte';
 	import UpdatePrompt from '$lib/components/widgets/UpdatePrompt.svelte';
-	import ConnectionStatus from '$lib/components/widgets/ConnectionStatus.svelte';
 	import ApiStatus from '$lib/components/widgets/ApiStatus.svelte';
 	import ContextMenu from '$lib/components/ui/ContextMenu.svelte';
 	import { initPWA, isOnline } from '$lib/stores/pwa';
 	import { krawletWebsocket } from '$lib/stores/krawletWebsocket';
-	import { websocket } from '$lib/stores/websocket';
+	import { websocket, type WebSocketState } from '$lib/stores/websocket';
 	import { contextMenu } from '$lib/stores/contextMenu';
 	import { initLocale, t$ } from '$lib/i18n';
 	import MasterPasswordModal from '$lib/components/dialogs/MasterPasswordModal.svelte';
+	import apiKeyInfo from '$lib/stores/apiKeyInfo';
+	import { getMinecraftAvatar } from '$lib/util';
+	import { scale } from 'svelte/transition';
+	import { isValidApiKey } from '$lib/api/krawlet';
+	import KrawletLoginModal from '$lib/components/dialogs/KrawletLoginModal.svelte';
 
 	config.autoAddCss = false;
 
@@ -41,10 +45,26 @@
 
 	const { children } = $props();
 	let showNavigation = $state(false);
+	let showQuickMenu = $state(false);
+
+	let krawletLoginModalOpen = $state(false);
 
 	let handleResize: () => void;
 	let handleImageError: (event: Event) => void;
 	let cleanupPWA: (() => void) | undefined;
+
+	// Fetch API key info when the key changes
+	$effect(() => {
+		// Only fetch info for valid API keys (must start with 'kraw_')
+		if ($settings.krawletApiKey && isValidApiKey($settings.krawletApiKey)) {
+			// Small delay to allow the client to update with the new key
+			setTimeout(() => {
+				apiKeyInfo.ensureLoaded();
+			}, 100);
+		} else {
+			apiKeyInfo.clear();
+		}
+	});
 
 	onMount(() => {
 		handleResize = () => {
@@ -99,7 +119,50 @@
 		if (!target.closest('#show-navigation') && window.innerWidth <= 768) {
 			showNavigation = false;
 		}
+		if (!target.closest("#quick-menu") && !target.closest(".show-quick-menu")) {
+			showQuickMenu = false;
+		}
 	}
+
+	type QuickMenuLink = {
+		label: string;
+		href?: string;
+		onclick?: () => void;
+		icon: IconDefinition;
+		cta?: boolean;
+	}
+
+	let quickMenuLinks = $state<QuickMenuLink[]>([]);
+
+	$effect(() => {
+		const links: QuickMenuLink[] = [
+			{ label: $t$('quickMenu.wallets'), href: '/wallets', icon: faWallet },
+			{ label: $t$('quickMenu.settings'), href: '/settings', icon: faGear }
+		];
+
+		if (!$settings.krawletApiKey || !isValidApiKey($settings.krawletApiKey)) {
+			links.push({
+				label: $t$('quickMenu.login'),
+				onclick: () => {
+					krawletLoginModalOpen = true;
+				},
+				icon: faSignIn,
+				cta: true
+			});
+		}
+
+		quickMenuLinks = links;
+	});
+
+	type Service = {
+		name: string;
+		getStatus: () => WebSocketState;
+	}
+	
+	let services: Service[] = [
+		{ name: 'Kromer WS', getStatus: () => websocket.getState() },
+		{ name: 'Krawlet WS (Klog)', getStatus: () => krawletWebsocket.getState() }
+	];
 </script>
 
 <svelte:window onclick={handleWindowClick} />
@@ -119,10 +182,9 @@
 		</button>
 		<a href="/" class="logo" aria-label="Krawlet - Home">Krawlet</a>
 		<div class="header-right">
-			<ConnectionStatus />
-			<a href="/settings" class="settings-btn" aria-label={$t$('accessibility.openSettings')}>
-				<FontAwesomeIcon icon={faGear} size="1x" />
-			</a>
+			<button type="button" class="show-quick-menu" aria-label={$t$('accessibility.quickMenu')} onclick={() => {showQuickMenu = !showQuickMenu}} aria-haspopup="true">
+				<FontAwesomeIcon icon={faEllipsis} size="lg" />
+			</button>
 		</div>
 	</header>
 	<aside id="main-navigation" role="navigation" aria-label={$t$('accessibility.navigation')}>
@@ -180,11 +242,58 @@
 	onClose={contextMenu.hide}
 />
 <MasterPasswordModal />
+<KrawletLoginModal bind:open={krawletLoginModalOpen} />
 
 {#if !$isOnline}
 	<div class="offline-banner" role="alert" aria-live="assertive">
 		<p>{$t$('pwa.offline')}: {$t$('pwa.offlineMessage')}</p>
 	</div>
+{/if}
+
+{#if showQuickMenu}
+	<aside
+		id="quick-menu"
+		aria-label={$t$('accessibility.quickMenu')}
+		transition:scale={{ duration: 100, start: 0.95, opacity: 0 }}
+	>
+		{#each services as service (service.name)}
+			{@const status = service.getStatus()}
+			<div class="service-status">
+				<span>{service.name}</span>
+				<span class="status-indicator title-full-right" class:status-connected={status === 'connected'} class:status-connecting={status === 'connecting'} class:status-disconnected={status === 'disconnected'} class:status-error={status === 'error'}>
+					<FontAwesomeIcon spin={status === "connecting"} icon={status === 'connected' ? faCheck : status === 'connecting' ? faSpinner : status === 'disconnected' ? faTimes : faExclamation} fixedWidth />
+					{status}
+				</span>
+			</div>
+		{/each}
+		{#if $apiKeyInfo.mcUuid && $apiKeyInfo.mcName}
+			<div class="minecraft-player">
+				<img src={getMinecraftAvatar($apiKeyInfo.mcUuid)} alt="{$apiKeyInfo.mcName}'s avatar" />
+				<span>{$apiKeyInfo.mcName}</span>
+			</div>
+		{:else if !$settings.krawletApiKey || !isValidApiKey($settings.krawletApiKey)}
+			<div class="not-logged-in">
+				{$t$('quickMenu.notLoggedIn')}
+			</div>
+		{/if}
+		<ul>
+			{#each quickMenuLinks as link (link.href)}
+				<li class:cta={link.cta}>
+					{#if link.href}
+						<a href={link.href} role="menuitem">
+							<FontAwesomeIcon icon={link.icon} fixedWidth />
+							<span>{link.label}</span>
+						</a>
+					{:else}
+						<button onclick={link.onclick} role="menuitem">
+							<FontAwesomeIcon icon={link.icon} fixedWidth />
+							<span>{link.label}</span>
+						</button>
+					{/if}
+				</li>
+			{/each}
+		</ul>
+	</aside>
 {/if}
 
 <style>
@@ -220,7 +329,6 @@
 		font-family: 'Space Grotesk', sans-serif;
 		font-weight: 600;
 		letter-spacing: 0.02em;
-		color: var(--theme-color);
 		transition: opacity 0.2s ease;
 	}
 
@@ -235,7 +343,7 @@
 		gap: 0.25rem;
 	}
 
-	aside {
+	#main-navigation {
 		position: fixed;
 		top: 3.8rem;
 		left: 0;
@@ -249,7 +357,7 @@
 		transition: 0.3s ease-in-out;
 	}
 
-	#app.nav-hidden aside {
+	#app.nav-hidden #main-navigation {
 		left: -250px;
 		opacity: 0;
 		pointer-events: none;
@@ -311,24 +419,6 @@
 	footer a {
 		color: var(--text-color-2);
 	}
-	.settings-btn {
-		background: none;
-		border: none;
-		color: var(--text-color-2);
-		cursor: pointer;
-		padding: 0.5rem 1rem;
-		display: flex;
-		align-items: center;
-		font-size: 1em;
-		text-decoration: none;
-		transition: color 0.25s ease-in-out;
-	}
-
-	.settings-btn:hover,
-	.settings-btn:focus-visible {
-		color: var(--theme-color-2);
-	}
-
 	.offline-banner {
 		position: fixed;
 		top: 3.8rem;
@@ -349,5 +439,155 @@
 	/* Focus styles for skip link target */
 	#main-content:focus {
 		outline: none;
+	}
+
+	#quick-menu {
+		position: fixed;
+		top: 4.5rem;
+		right: 0.75rem;
+		background-color: var(--background-color-2);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 0.5rem;
+		box-shadow:
+			0 10px 40px rgba(0, 0, 0, 0.4),
+			0 0 0 1px rgba(255, 255, 255, 0.05);
+		width: calc(100% - 1.5rem);
+		max-width: 18rem;
+		padding: 0.35rem;
+		overflow: hidden;
+		z-index: 10001;
+	}
+
+	#quick-menu ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	#quick-menu li {
+		margin: 0;
+	}
+
+	#quick-menu li.cta {
+		margin-top: 0.35rem;
+	}
+
+	#quick-menu li.cta a, #quick-menu li.cta button {
+		background-color: rgba(var(--theme-color-rgb), 0.16);
+		border: 1px solid rgba(var(--theme-color-rgb), 0.35);
+		font-weight: 600;
+	}
+
+	#quick-menu li.cta a :global(svg), #quick-menu li.cta button :global(svg) {
+		color: var(--theme-color-2);
+	}
+
+	#quick-menu li :global(svg) {
+		color: var(--text-color-2);
+	}
+
+	#quick-menu .minecraft-player {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.6rem 0.75rem;
+		margin-top: 0.35rem;
+		margin-bottom: 0.35rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		color: var(--text-color-1);
+		font-size: 0.9rem;
+	}
+
+	#quick-menu .minecraft-player img {
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+	}
+
+	.not-logged-in {
+		padding: 0.6rem 0.75rem;
+		margin-top: 0.35rem;
+		margin-bottom: 0.35rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		color: var(--text-color-2);
+		font-size: 0.85rem;
+		text-align: center;
+	}
+
+	#quick-menu ul a, #quick-menu ul button {
+		display: flex;
+		gap: 0.5em;
+		align-items: center;
+		background: transparent;
+		border: none;
+		text-decoration: none;
+		width: 100%;
+		padding: 0.6rem 0.75rem;
+		border-radius: 0.35rem;
+		color: var(--text-color-1);
+		font-size: 0.9rem;
+		transition:
+			background-color 0.15s ease,
+			color 0.15s ease;
+	}
+
+	#quick-menu ul a:hover,
+	#quick-menu ul a:focus-visible,
+	#quick-menu ul button:hover,
+	#quick-menu ul button:focus-visible {
+		background-color: rgba(var(--theme-color-rgb), 0.2);
+		color: white;
+	}
+
+	#quick-menu li.cta a:hover,
+	#quick-menu li.cta a:focus-visible,
+	#quick-menu li.cta button:hover,
+	#quick-menu li.cta button:focus-visible {
+		background-color: rgba(var(--theme-color-rgb), 0.28);
+		border-color: rgba(var(--theme-color-rgb), 0.6);
+	}
+
+	#quick-menu .service-status {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.4rem 0.75rem;
+		font-size: 0.85rem;
+		color: var(--text-color-2);
+	}
+
+	#quick-menu .status-indicator.status-connecting {
+		--color: rgb(var(--yellow));
+	}
+
+	#quick-menu .status-indicator.status-connected {
+		--color: rgb(var(--green));
+	}
+
+	#quick-menu .status-indicator.status-disconnected {
+		--color: rgb(var(--orange));
+	}
+
+	#quick-menu .status-indicator.status-error {
+		--color: rgb(var(--red));
+	}
+
+	#quick-menu .status-indicator {
+		color: var(--color);
+		font-size: 0.75rem;
+		padding: 0.15rem 0.4rem;
+		border-radius: 0.25rem;
+		text-transform: capitalize;
+	}
+
+	@media only screen and (max-width: 480px) {
+		#quick-menu {
+			right: 0.5rem;
+			max-width: calc(100vw - 1rem);
+			min-width: min(12rem, calc(100vw - 1rem));
+		}
 	}
 </style>

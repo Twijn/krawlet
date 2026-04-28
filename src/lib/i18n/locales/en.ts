@@ -295,7 +295,9 @@ export default {
 		viewAll: 'View all transactions',
 		viewAllFor: 'View all transactions for {address}',
 		includeWelfare: 'Include Welfare Transactions',
-		welfare: 'welfare',
+		welfare: 'Welfare',
+		admin: 'Admin',
+		adminTooltip: 'This transaction was likely initiated by an administrator.',
 		// Send transaction
 		sendKromer: 'Send Kromer',
 		senderFrom: 'Sender / From',
@@ -623,6 +625,12 @@ export default {
 		websocketFailed: 'Failed to connect to real-time updates after multiple attempts',
 		offline: 'You are currently offline'
 	},
+	quickMenu: {
+		wallets: "Wallets",
+		settings: "Settings",
+		notLoggedIn: "You are not logged in. Log in below to access additional features, including Krawlet Logistics (Klog) support, increased API limits, and more.",
+		login: "Log In",
+	},
 	accessibility: {
 		skipToContent: 'Skip to main content',
 		menuToggle: 'Toggle navigation menu',
@@ -635,6 +643,7 @@ export default {
 		footer: 'Footer',
 		expandSection: 'Expand section',
 		collapseSection: 'Collapse section',
+		quickMenu: 'Quick menu',
 		sortBy: 'Sort by',
 		filterBy: 'Filter by',
 		pagination: 'Pagination',
