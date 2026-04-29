@@ -17,9 +17,9 @@
 		faSign,
 		faWallet
 	} from '@fortawesome/free-solid-svg-icons';
-	import { getSyncNode } from '$lib/consts';
 	import { t$ } from '$lib/i18n';
 	import settings from '$lib/stores/settings';
+	import { INTERNAL_KEY, SHOW_RCC_SPECIFIC } from '$lib/consts';
 
 	type NavigationLink = {
 		icon: IconDefinition;
@@ -110,8 +110,7 @@
 		},
 		{
 			nameKey: 'nav.klog',
-			shouldShow: () =>
-				getSyncNode().id === 'kromer' && $settings.krawletApiKey.startsWith('kraw_'),
+			shouldShow: () => $settings.krawletApiKey.startsWith('kraw_'),
 			links: [
 				{
 					icon: faBoxes,
@@ -122,7 +121,7 @@
 		},
 		{
 			nameKey: 'nav.reconnectedCC',
-			shouldShow: () => getSyncNode().id === 'kromer',
+			shouldShow: () => SHOW_RCC_SPECIFIC,
 			links: [
 				{
 					icon: faBoxesPacking,
@@ -149,7 +148,7 @@
 		},
 		{
 			nameKey: 'nav.internalEndpoints',
-			shouldShow: () => (getSyncNode().internalKey ? true : false),
+			shouldShow: () => INTERNAL_KEY !== null,
 			links: [
 				{
 					icon: faWallet,

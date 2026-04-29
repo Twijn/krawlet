@@ -20,7 +20,6 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import type { Address } from 'kromer';
 	import { notifications } from '$lib/stores/notifications';
-	import { getSyncNode } from '$lib/consts';
 	import { masterPasswordStore } from '$lib/stores/masterPassword';
 	import { onMount } from 'svelte';
 
@@ -55,7 +54,7 @@
 	type Addr = Wallet | Player | KnownAddress;
 
 	let allAddresses: Addr[] = $derived([
-		...$settings.wallets.filter((x) => x.syncNode === getSyncNode().id),
+		...$settings.wallets,
 		...$playerWallets.data,
 		...$knownAddresses.data
 	]);

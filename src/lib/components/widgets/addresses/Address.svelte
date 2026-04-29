@@ -18,7 +18,6 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { getAddress, type KnownAddress } from '$lib/stores/knownAddresses';
 	import settings, { type Wallet } from '$lib/stores/settings';
-	import { getSyncNode } from '$lib/consts';
 	import { contextMenu } from '$lib/stores/contextMenu';
 	import { t$ } from '$lib/i18n';
 	import type { ContextMenuItem } from '$lib/components/ui/ContextMenu.svelte';
@@ -33,9 +32,7 @@
 	} = $props();
 
 	let wallet: Wallet | null = $derived(
-		$settings.wallets
-			.filter((x) => x.syncNode === getSyncNode().id)
-			.find((x) => x.address === address) ?? null
+		$settings.wallets.find((x) => x.address === address) ?? null
 	);
 
 	let player: Player | null = $derived(
@@ -52,7 +49,7 @@
 			notifications.success(`Address '${address}' copied to clipboard.`);
 		} catch (err) {
 			console.error(err);
-			notifications.success('Failed to copy address to clipboard.');
+			notifications.error(`Failed to copy address '${address}' to clipboard.`);
 		}
 	};
 

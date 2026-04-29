@@ -1,6 +1,5 @@
 <script lang="ts">
 	import SortableTable from '$lib/components/ui/SortableTable.svelte';
-	import { getSyncNode } from '$lib/consts';
 	import settings, { type Wallet } from '$lib/stores/settings';
 	import type { SortableColumnData } from '$lib/components/ui/SortableTable';
 	import AddressComp from '$lib/components/widgets/addresses/Address.svelte';
@@ -18,7 +17,6 @@
 	const cache = new AddressCache();
 	const getWalletAddresses = () =>
 		$settings.wallets
-			.filter((wallet) => wallet.syncNode === getSyncNode().id)
 			.map((wallet) => wallet.address);
 
 	const compareWallets = (a: WalletWithAddress, b: WalletWithAddress) => {
@@ -39,7 +37,7 @@
 	};
 
 	let currentNodeWallets = $derived(
-		$settings.wallets.filter((wallet) => wallet.syncNode === getSyncNode().id)
+		$settings.wallets
 	);
 	let walletAddresses = $derived(currentNodeWallets.map((wallet) => wallet.address));
 	let walletAddressesKey = $derived(walletAddresses.join(','));

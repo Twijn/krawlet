@@ -4,7 +4,6 @@
 	import type { Address, APIError } from 'kromer';
 	import kromer from '$lib/api/kromer';
 	import settings from '$lib/stores/settings';
-	import { getSyncNode } from '$lib/consts';
 	import { masterPasswordStore } from '$lib/stores/masterPassword';
 
 	let {
@@ -23,7 +22,6 @@
 
 	let options = $derived(
 		$settings.wallets
-			.filter((x) => x.syncNode === getSyncNode().id)
 			.map((x) => {
 				return {
 					id: x.address,
@@ -47,7 +45,6 @@
 		}
 
 		const wallet = $settings.wallets
-			.filter((x) => x.syncNode === getSyncNode().id)
 			.find((x) => x.address === selected);
 		if (!wallet) return;
 

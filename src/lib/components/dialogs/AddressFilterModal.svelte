@@ -14,7 +14,6 @@
 	import knownAddresses, { type KnownAddress } from '$lib/stores/knownAddresses';
 	import type { Wallet } from '$lib/stores/settings';
 	import settings from '$lib/stores/settings';
-	import { getSyncNode } from '$lib/consts';
 	import { getMinecraftAvatar } from '$lib/util';
 	import kromer from '$lib/api/kromer';
 	import { notifications } from '$lib/stores/notifications';
@@ -49,7 +48,7 @@
 	let loading = $state(false);
 
 	let allAddresses: Addr[] = $derived([
-		...$settings.wallets.filter((x) => x.syncNode === getSyncNode().id),
+		...$settings.wallets,
 		...$playerWallets.data,
 		...$knownAddresses.data
 	]);

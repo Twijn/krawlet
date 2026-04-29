@@ -10,9 +10,9 @@
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 	import settings from '$lib/stores/settings';
 	import { paramState } from '$lib/paramState.svelte';
-	import { getSyncNode } from '$lib/consts';
 	import type { APIError } from 'kromer';
 	import { masterPasswordStore } from '$lib/stores/masterPassword';
+	import { INTERNAL_KEY } from '$lib/consts';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -27,7 +27,7 @@
 	} = $props();
 
 	let loading = $state(false);
-	let kromerKey = $state(getSyncNode().internalKey ?? '');
+	let kromerKey = $state(INTERNAL_KEY ?? '');
 
 	let uuid = paramState('uuid', '', {
 		shouldSet: (value) => value.length === 36
@@ -127,7 +127,7 @@
 	<form method="POST">
 		<ModuleLoading {loading} absolute />
 
-		{#if !getSyncNode().internalKey}
+		{#if !INTERNAL_KEY}
 			<label>
 				Internal Key
 				<input type="text" bind:value={kromerKey} />

@@ -1,13 +1,14 @@
 import { writable, get, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import type { APIError, KromerApi } from 'kromer';
-import { getSyncNode, SYNC_NODE_OFFICIAL } from '$lib/consts';
+import { SYNC_NODE } from '$lib/consts';
 
 export type Wallet = {
 	name: string;
 	address: string;
 	private: string; // encrypted payload (JSON string) when stored
-	syncNode: string; // sync node ID where this wallet was created
+	/** @deprecated Multiple sync nodes are no longer supported */
+	syncNode?: string; // sync node ID where this wallet was created
 };
 
 export type SettingsData = {
@@ -116,7 +117,6 @@ export function validateImportedSettingsData(data: unknown): { wallets: Wallet[]
 		throw createImportError('Import data is not a valid wallet export.');
 	}
 
-	const fallbackSyncNode = getSyncNode().id ?? SYNC_NODE_OFFICIAL.id;
 	const rawWallets = data.wallets;
 	if (rawWallets == null) {
 		return { wallets: [] };
@@ -130,7 +130,7 @@ export function validateImportedSettingsData(data: unknown): { wallets: Wallet[]
 	const wallets: Wallet[] = [];
 
 	for (const rawWallet of rawWallets) {
-		const wallet = normalizeImportedWallet(rawWallet, fallbackSyncNode);
+		const wallet = normalizeImportedWallet(rawWallet, SYNC_NODE);
 		if (seenAddresses.has(wallet.address)) {
 			continue;
 		}
@@ -339,7 +339,7 @@ class Settings {
 					// Ensure wallets are associated with a sync node (for backwards compatibility)
 					const stored = get(this.data);
 					stored.wallets.forEach((wallet) => {
-						wallet.syncNode = wallet.syncNode ?? SYNC_NODE_OFFICIAL.id;
+						wallet.syncNode = wallet.syncNode ?? SYNC_NODE;
 					});
 				} catch {
 					console.warn('Failed to parse settings from localStorage.');
@@ -356,15 +356,11 @@ class Settings {
 	}
 
 	public async addWallet(
-		w: Wallet | Omit<Wallet, 'syncNode'>,
+		wallet: Wallet | Omit<Wallet, 'syncNode'>,
 		encryptionKey: string,
 		kromerApi?: KromerApi
 	) {
-		const store = get(this.data);
-		const wallet: Wallet = {
-			syncNode: SYNC_NODE_OFFICIAL.id,
-			...w
-		};
+		const store = get(this.data)
 		for (const existingWallet of store.wallets) {
 			const decrypted = await decryptWithPassword(encryptionKey, existingWallet.private);
 			if (existingWallet.address === wallet.address) {
@@ -418,8 +414,7 @@ class Settings {
 		const entry: Wallet = {
 			name: wallet.name,
 			address: wallet.address,
-			private: encrypted,
-			syncNode: SYNC_NODE_OFFICIAL.id
+			private: encrypted
 		};
 		this.data.update((state) => ({ ...state, wallets: [...state.wallets, entry] }));
 		return entry;
@@ -427,8 +422,7 @@ class Settings {
 
 	public getWallets() {
 		const store = get(this.data);
-		const currentSyncNodeId = getSyncNode().id ?? SYNC_NODE_OFFICIAL.id;
-		return store.wallets.filter((x) => x.syncNode === currentSyncNodeId);
+		return store.wallets;
 	}
 
 	public removeWallet(address: string) {

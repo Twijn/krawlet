@@ -5,7 +5,6 @@
 	import { fade } from 'svelte/transition';
 	import Alert from '$lib/components/dialogs/Alert.svelte';
 	import settings from '$lib/stores/settings';
-	import { getSyncNode } from '$lib/consts';
 	import { t$ } from '$lib/i18n';
 	import Button from '../../ui/Button.svelte';
 	import { addWalletModal } from '$lib/stores/addWalletModal';
@@ -34,10 +33,9 @@
 	const addressCache = new AddressCache();
 	const getWalletAddresses = () =>
 		$settings.wallets
-			.filter((wallet) => wallet.syncNode === getSyncNode().id)
 			.map((wallet) => wallet.address);
 
-	let filteredWallets = $derived($settings.wallets.filter((x) => x.syncNode === getSyncNode().id));
+	let filteredWallets = $derived($settings.wallets);
 	let walletAddresses = $derived(filteredWallets.map((wallet) => wallet.address));
 	let walletAddressesKey = $derived(walletAddresses.join(','));
 	let lastRequestedWalletAddressesKey = $state<string | null>(null);
