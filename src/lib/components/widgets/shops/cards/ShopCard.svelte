@@ -22,7 +22,7 @@
 		<div class="shop-head-text">
 			<h3>
 				{cleanShopData(shop.name)}
-				{#if shop.sourceType === "radio_tower"}
+				{#if shop.sourceType === 'radio_tower'}
 					<span class="title-icon title-bottom" title="Transmitted via Radio Tower">
 						<FontAwesomeIcon icon={faTowerBroadcast} />
 					</span>
@@ -141,7 +141,7 @@
 	}
 
 	.title-icon {
-		font-size: .875em;
+		font-size: 0.875em;
 		margin: 0 0 0 0.3rem;
 		color: rgb(var(--orange));
 	}

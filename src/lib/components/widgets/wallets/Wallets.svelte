@@ -15,9 +15,7 @@
 	};
 
 	const cache = new AddressCache();
-	const getWalletAddresses = () =>
-		$settings.wallets
-			.map((wallet) => wallet.address);
+	const getWalletAddresses = () => $settings.wallets.map((wallet) => wallet.address);
 
 	const compareWallets = (a: WalletWithAddress, b: WalletWithAddress) => {
 		if (!sortedColumn) return 0;
@@ -36,9 +34,7 @@
 		return 0;
 	};
 
-	let currentNodeWallets = $derived(
-		$settings.wallets
-	);
+	let currentNodeWallets = $derived($settings.wallets);
 	let walletAddresses = $derived(currentNodeWallets.map((wallet) => wallet.address));
 	let walletAddressesKey = $derived(walletAddresses.join(','));
 	let lastRequestedWalletAddressesKey = $state<string | null>(null);

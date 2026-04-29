@@ -82,17 +82,21 @@
 
 	// Internal address filters (with labels for display)
 	type AddressFilter = { address: string; label?: string };
-	let addressFilters = paramState<AddressFilter[]>(`${storePrefix.length > 0 ? storePrefix + '_' : ''}af`, [], {
-		serialize: (filters) => filters.map((f) => `${f.address}:${f.label || ''}`).join(','),
-		deserialize: (s) => {
-			if (!s) return [];
-			return s.split(',').map((part) => {
-				const [address, label] = part.split(':');
-				return { address, label: label || undefined };
-			});
-		},
-		shouldSet: (filters) => Array.isArray(filters) && filters.length > 0
-	});
+	let addressFilters = paramState<AddressFilter[]>(
+		`${storePrefix.length > 0 ? storePrefix + '_' : ''}af`,
+		[],
+		{
+			serialize: (filters) => filters.map((f) => `${f.address}:${f.label || ''}`).join(','),
+			deserialize: (s) => {
+				if (!s) return [];
+				return s.split(',').map((part) => {
+					const [address, label] = part.split(':');
+					return { address, label: label || undefined };
+				});
+			},
+			shouldSet: (filters) => Array.isArray(filters) && filters.length > 0
+		}
+	);
 
 	// Combine prop addresses with internal filters
 	let allAddresses = $derived([...addresses, ...addressFilters.value.map((f) => f.address)]);

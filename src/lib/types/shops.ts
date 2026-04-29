@@ -50,7 +50,7 @@ export interface Shop {
 	items?: Listing[];
 	addresses?: string[];
 
-	sourceType: "modem" | "radio_tower";
+	sourceType: 'modem' | 'radio_tower';
 	supportsKlog: boolean;
 
 	createdDate?: string | null;

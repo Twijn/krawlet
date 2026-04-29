@@ -16,7 +16,12 @@
 	class:type-name-a-record={tx.type === 'name_a_record'}
 	class:type-name-transfer={tx.type === 'name_transfer'}
 	title={isAdmin ? $t$('transaction.adminTooltip') : undefined}
->{tx.type === 'mined' ? (isAdmin ? $t$('transaction.admin') : $t$('transaction.welfare')) : tx.type.replace(/_/g, ' ')}</span>
+	>{tx.type === 'mined'
+		? isAdmin
+			? $t$('transaction.admin')
+			: $t$('transaction.welfare')
+		: tx.type.replace(/_/g, ' ')}</span
+>
 
 <style>
 	.type-welfare {

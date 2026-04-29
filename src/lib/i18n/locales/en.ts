@@ -626,10 +626,11 @@ export default {
 		offline: 'You are currently offline'
 	},
 	quickMenu: {
-		wallets: "Wallets",
-		settings: "Settings",
-		notLoggedIn: "You are not logged in. Log in below to access additional features, including Krawlet Logistics (Klog) support, increased API limits, and more.",
-		login: "Log In",
+		wallets: 'Wallets',
+		settings: 'Settings',
+		notLoggedIn:
+			'You are not logged in. Log in below to access additional features, including Krawlet Logistics (Klog) support, increased API limits, and more.',
+		login: 'Log In'
 	},
 	accessibility: {
 		skipToContent: 'Skip to main content',

@@ -21,13 +21,12 @@
 	let selected: string = $state('');
 
 	let options = $derived(
-		$settings.wallets
-			.map((x) => {
-				return {
-					id: x.address,
-					name: `${x.name} (${x.address})`
-				};
-			})
+		$settings.wallets.map((x) => {
+			return {
+				id: x.address,
+				name: `${x.name} (${x.address})`
+			};
+		})
 	);
 
 	addClearHandler(() => {
@@ -44,8 +43,7 @@
 			console.error(e);
 		}
 
-		const wallet = $settings.wallets
-			.find((x) => x.address === selected);
+		const wallet = $settings.wallets.find((x) => x.address === selected);
 		if (!wallet) return;
 
 		privatekey = (await settings.decryptWallet(wallet, masterPassword)) ?? '';

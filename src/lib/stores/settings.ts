@@ -360,7 +360,7 @@ class Settings {
 		encryptionKey: string,
 		kromerApi?: KromerApi
 	) {
-		const store = get(this.data)
+		const store = get(this.data);
 		for (const existingWallet of store.wallets) {
 			const decrypted = await decryptWithPassword(encryptionKey, existingWallet.private);
 			if (existingWallet.address === wallet.address) {

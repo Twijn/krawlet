@@ -31,9 +31,7 @@
 	} = $props();
 
 	const addressCache = new AddressCache();
-	const getWalletAddresses = () =>
-		$settings.wallets
-			.map((wallet) => wallet.address);
+	const getWalletAddresses = () => $settings.wallets.map((wallet) => wallet.address);
 
 	let filteredWallets = $derived($settings.wallets);
 	let walletAddresses = $derived(filteredWallets.map((wallet) => wallet.address));

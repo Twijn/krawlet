@@ -2,7 +2,17 @@
 	import '$lib/app.css';
 	import { config, type IconDefinition } from '@fortawesome/fontawesome-svg-core';
 	import '@fortawesome/fontawesome-svg-core/styles.css';
-	import { faBars, faCheck, faEllipsis, faExclamation, faGear, faSignIn, faSpinner, faTimes, faWallet } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faBars,
+		faCheck,
+		faEllipsis,
+		faExclamation,
+		faGear,
+		faSignIn,
+		faSpinner,
+		faTimes,
+		faWallet
+	} from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -119,7 +129,7 @@
 		if (!target.closest('#show-navigation') && window.innerWidth <= 768) {
 			showNavigation = false;
 		}
-		if (!target.closest("#quick-menu") && !target.closest(".show-quick-menu")) {
+		if (!target.closest('#quick-menu') && !target.closest('.show-quick-menu')) {
 			showQuickMenu = false;
 		}
 	}
@@ -130,7 +140,7 @@
 		onclick?: () => void;
 		icon: IconDefinition;
 		cta?: boolean;
-	}
+	};
 
 	let quickMenuLinks = $state<QuickMenuLink[]>([]);
 
@@ -157,8 +167,8 @@
 	type Service = {
 		name: string;
 		getStatus: () => WebSocketState;
-	}
-	
+	};
+
 	let services: Service[] = [
 		{ name: 'Kromer WS', getStatus: () => websocket.getState() },
 		{ name: 'Krawlet WS (Klog)', getStatus: () => krawletWebsocket.getState() }
@@ -182,7 +192,15 @@
 		</button>
 		<a href="/" class="logo" aria-label="Krawlet - Home">Krawlet</a>
 		<div class="header-right">
-			<button type="button" class="show-quick-menu" aria-label={$t$('accessibility.quickMenu')} onclick={() => {showQuickMenu = !showQuickMenu}} aria-haspopup="true">
+			<button
+				type="button"
+				class="show-quick-menu"
+				aria-label={$t$('accessibility.quickMenu')}
+				onclick={() => {
+					showQuickMenu = !showQuickMenu;
+				}}
+				aria-haspopup="true"
+			>
 				<FontAwesomeIcon icon={faEllipsis} size="lg" />
 			</button>
 		</div>
@@ -260,8 +278,24 @@
 			{@const status = service.getStatus()}
 			<div class="service-status">
 				<span>{service.name}</span>
-				<span class="status-indicator title-full-right" class:status-connected={status === 'connected'} class:status-connecting={status === 'connecting'} class:status-disconnected={status === 'disconnected'} class:status-error={status === 'error'}>
-					<FontAwesomeIcon spin={status === "connecting"} icon={status === 'connected' ? faCheck : status === 'connecting' ? faSpinner : status === 'disconnected' ? faTimes : faExclamation} fixedWidth />
+				<span
+					class="status-indicator title-full-right"
+					class:status-connected={status === 'connected'}
+					class:status-connecting={status === 'connecting'}
+					class:status-disconnected={status === 'disconnected'}
+					class:status-error={status === 'error'}
+				>
+					<FontAwesomeIcon
+						spin={status === 'connecting'}
+						icon={status === 'connected'
+							? faCheck
+							: status === 'connecting'
+								? faSpinner
+								: status === 'disconnected'
+									? faTimes
+									: faExclamation}
+						fixedWidth
+					/>
 					{status}
 				</span>
 			</div>
@@ -472,13 +506,15 @@
 		margin-top: 0.35rem;
 	}
 
-	#quick-menu li.cta a, #quick-menu li.cta button {
+	#quick-menu li.cta a,
+	#quick-menu li.cta button {
 		background-color: rgba(var(--theme-color-rgb), 0.16);
 		border: 1px solid rgba(var(--theme-color-rgb), 0.35);
 		font-weight: 600;
 	}
 
-	#quick-menu li.cta a :global(svg), #quick-menu li.cta button :global(svg) {
+	#quick-menu li.cta a :global(svg),
+	#quick-menu li.cta button :global(svg) {
 		color: var(--theme-color-2);
 	}
 
@@ -517,7 +553,8 @@
 		text-align: center;
 	}
 
-	#quick-menu ul a, #quick-menu ul button {
+	#quick-menu ul a,
+	#quick-menu ul button {
 		display: flex;
 		gap: 0.5em;
 		align-items: center;

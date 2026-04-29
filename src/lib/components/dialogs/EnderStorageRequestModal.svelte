@@ -31,7 +31,12 @@
 		}
 
 		client.transfers
-			.requestPublicStorage({ itemName: item.name, itemNbt: typeof(item.nbt) === 'string' ? item.nbt : undefined, quantity, colors })
+			.requestPublicStorage({
+				itemName: item.name,
+				itemNbt: typeof item.nbt === 'string' ? item.nbt : undefined,
+				quantity,
+				colors
+			})
 			.then((response) => {
 				onTransferCreated?.(response.transfer.id);
 				open = false;
