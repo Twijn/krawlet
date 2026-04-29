@@ -96,7 +96,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each data as item, i (i)}
+				{#each data as item (item)}
 					<tr
 						class:context-menu-row={Boolean(rowContextMenu)}
 						oncontextmenu={(event) => rowContextMenu?.(event, item)}

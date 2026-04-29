@@ -100,10 +100,20 @@
 
 	// Internal address filters (with labels for display)
 	type AddressFilter = { address: string; label?: string };
-	let addressFilters: AddressFilter[] = $state([]);
+	let addressFilters = paramState<AddressFilter[]>(`${storePrefix.length > 0 ? storePrefix + '_' : ''}af`, [], {
+		serialize: (filters) => filters.map((f) => `${f.address}:${f.label || ''}`).join(','),
+		deserialize: (s) => {
+			if (!s) return [];
+			return s.split(',').map((part) => {
+				const [address, label] = part.split(':');
+				return { address, label: label || undefined };
+			});
+		},
+		shouldSet: (filters) => Array.isArray(filters) && filters.length > 0
+	});
 
 	// Combine prop addresses with internal filters
-	let allAddresses = $derived([...addresses, ...addressFilters.map((f) => f.address)]);
+	let allAddresses = $derived([...addresses, ...addressFilters.value.map((f) => f.address)]);
 
 	// Convert to Filter[] for QueryBar (includes both prop addresses and internal filters)
 	let filters: Filter[] = $derived([
@@ -116,7 +126,7 @@
 			removable: false
 		})),
 		// Internal address filters (removable)
-		...addressFilters.map((f, i) => ({
+		...addressFilters.value.map((f, i) => ({
 			id: `address-${i}`,
 			field: 'Address',
 			value: f.label || f.address,
@@ -169,8 +179,8 @@
 
 	const handleAddAddress = (address: string, label?: string) => {
 		// Don't add duplicates
-		if (addressFilters.some((f) => f.address === address)) return;
-		addressFilters = [...addressFilters, { address, label }];
+		if (addressFilters.value.some((f) => f.address === address)) return;
+		addressFilters.value = [...addressFilters.value, { address, label }];
 		page.value = 1; // Reset to first page when filter changes
 	};
 
@@ -178,7 +188,7 @@
 		// Only allow removing internal filters, not prop addresses
 		if (!filter.id.startsWith('address-')) return;
 		const index = parseInt(filter.id.replace('address-', ''));
-		addressFilters = addressFilters.filter((_, i) => i !== index);
+		addressFilters.value = addressFilters.value.filter((_, i) => i !== index);
 		page.value = 1; // Reset to first page when filter changes
 	};
 

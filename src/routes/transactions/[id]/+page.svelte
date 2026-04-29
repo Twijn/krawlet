@@ -532,10 +532,6 @@
 		word-break: break-all;
 	}
 
-	.capitalize {
-		text-transform: capitalize;
-	}
-
 	/* Refund note styles */
 	.refund-note {
 		display: flex;

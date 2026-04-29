@@ -1,26 +1,25 @@
 <script lang="ts">
-	import { t$ } from "$lib/i18n";
-	import type { Transaction } from "kromer";
+	import { t$ } from '$lib/i18n';
+	import type { Transaction } from 'kromer';
 
-    const { tx }: { tx: Transaction } = $props();
+	let { tx }: { tx: Transaction } = $props();
 
-    const isAdmin = tx.type === "mined" && tx.to === "serverwelf";
+	let isAdmin = $derived(tx.type === 'mined' && tx.to === 'serverwelf');
 </script>
 
 <span
-    class="type"
-    class:type-admin={isAdmin}
-    class:type-welfare={tx.type === 'mined' && !isAdmin}
-    class:type-transfer={tx.type === 'transfer'}
-    class:type-name-purchase={tx.type === 'name_purchase'}
-    class:type-name-a-record={tx.type === 'name_a_record'}
-    class:type-name-transfer={tx.type === 'name_transfer'}
-    title={isAdmin ? $t$('transaction.adminTooltip') : undefined}
-    >{tx.type === 'mined' ? (isAdmin ? $t$('transaction.admin') : $t$('transaction.welfare')) : tx.type.replace(/_/g, ' ')}</span
->
+	class="type"
+	class:type-admin={isAdmin}
+	class:type-welfare={tx.type === 'mined' && !isAdmin}
+	class:type-transfer={tx.type === 'transfer'}
+	class:type-name-purchase={tx.type === 'name_purchase'}
+	class:type-name-a-record={tx.type === 'name_a_record'}
+	class:type-name-transfer={tx.type === 'name_transfer'}
+	title={isAdmin ? $t$('transaction.adminTooltip') : undefined}
+>{tx.type === 'mined' ? (isAdmin ? $t$('transaction.admin') : $t$('transaction.welfare')) : tx.type.replace(/_/g, ' ')}</span>
 
 <style>
-    .type-welfare {
+	.type-welfare {
 		color: rgb(var(--green));
 	}
 
@@ -40,10 +39,10 @@
 		color: rgb(var(--red));
 	}
 
-    .type-admin {
-        color: rgb(var(--orange));
-        text-shadow: 0 0 2px rgba(var(--orange), 0.7);
-    }
+	.type-admin {
+		color: rgb(var(--orange));
+		text-shadow: 0 0 2px rgba(var(--orange), 0.7);
+	}
 
 	.type {
 		text-transform: capitalize;
