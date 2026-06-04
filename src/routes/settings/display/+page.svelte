@@ -14,7 +14,6 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 	import { t$ } from '$lib/i18n';
-	import { SYNC_NODE_OFFICIAL } from '$lib/consts';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import Transactions from '$lib/components/widgets/transactions/Transactions.svelte';
 	import Names from '$lib/components/widgets/names/Names.svelte';
@@ -31,7 +30,6 @@
 		name: 'My Wallet',
 		address: EXAMPLE_ADDRESS,
 		private: '',
-		syncNode: SYNC_NODE_OFFICIAL.id
 	};
 
 	function onShowMetadataChange() {

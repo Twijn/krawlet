@@ -32,7 +32,7 @@
 		label,
 		mode = 'address',
 		query = $bindable(''),
-		privatekey = $bindable(),
+		privatekey = $bindable(''),
 		address = $bindable(''),
 		balances = $bindable({}),
 		disabled = false,
