@@ -183,12 +183,11 @@
 				/>
 			</label>
 		{:else}
-			<p>We will use your master password to encrypt your wallets.</p>
+			<p>
+				When importing this <code>.krawlet</code> file, your current master password will be
+				required to import your wallets <em>and</em> decrypt (use) them after import.
+			</p>
 		{/if}
-		<p>
-			Your current master password will be required to import your wallets and decrypt (use) them
-			after import.
-		</p>
 		<div class="padding">
 			<ButtonSelect bind:selected={selectedExportOption} options={exportOptions} vertical={false} />
 		</div>

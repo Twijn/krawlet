@@ -10,6 +10,7 @@ export default {
 		delete: 'Delete',
 		confirm: 'Confirm',
 		close: 'Close',
+		view: 'View',
 		back: 'Back',
 		next: 'Next',
 		previous: 'Previous',
@@ -185,7 +186,7 @@ export default {
 		privateKeyCleared: 'Private key field cleared',
 		confirmCloseWithData: 'You have unsaved data. Are you sure you want to close?',
 		// Edit
-		editWallet: 'Edit Wallet',
+		editWallet: 'Edit',
 		walletEditSuccess: 'Successfully updated wallet {name}!',
 		walletEditCancelled: 'Wallet edit cancelled',
 		copyPrivateKey: 'Copy Private Key',
@@ -474,7 +475,7 @@ export default {
 			display: 'Display',
 			notifications: 'Notifications',
 			cache: 'Cache',
-			advanced: 'Advanced'
+			krawletApi: 'Krawlet API'
 		},
 		language: 'Language',
 		selectLanguage: 'Select Language',

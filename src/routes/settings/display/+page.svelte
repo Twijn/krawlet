@@ -7,7 +7,6 @@
 		faAddressCard,
 		faList,
 		faTags,
-		faWallet,
 		faEye,
 		faMinus
 	} from '@fortawesome/free-solid-svg-icons';
@@ -17,20 +16,12 @@
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import Transactions from '$lib/components/widgets/transactions/Transactions.svelte';
 	import Names from '$lib/components/widgets/names/Names.svelte';
-	import WalletCardCompact from '$lib/components/widgets/wallets/WalletCardCompact.svelte';
 	import Placeholder from '$lib/components/ui/Placeholder.svelte';
 
 	// Example address for previews - uses Twijn's address to demonstrate player name feature
 	const EXAMPLE_ADDRESS = 'ks0d5iqb6p';
 	const EXAMPLE_SHOP_ADDRESS = 'ktwijnmall';
 	const KRAWLET_ADDRESS = 'kkrawletii';
-
-	// Example wallet for wallet display preview
-	const EXAMPLE_WALLET = {
-		name: 'My Wallet',
-		address: EXAMPLE_ADDRESS,
-		private: '',
-	};
 
 	function onShowMetadataChange() {
 		if (!$settings.showMetadata) {
@@ -50,12 +41,6 @@
 	function onParsePurchaseItemChange() {
 		if (!$settings.parsePurchaseItem) {
 			$settings.parsePurchaseItemQuantity = false;
-		}
-	}
-
-	function onShowAllWalletsOptionChange() {
-		if (!$settings.showAllWalletsOption) {
-			$settings.showAllWalletsDefault = false;
 		}
 	}
 </script>
@@ -165,42 +150,6 @@
 				</div>
 			</div>
 		</SettingsFieldset>
-
-		<SettingsFieldset>
-			{#snippet legend()}<FontAwesomeIcon icon={faWallet} />
-				{$t$('settings.walletDisplay')}{/snippet}
-			<div class="settings-columns">
-				<div class="setting-content">
-					<ToggleCheckbox
-						bind:checked={$settings.showAllWalletsOption}
-						onChange={onShowAllWalletsOptionChange}
-					>
-						{$t$('settings.showAllWalletsOption')}
-					</ToggleCheckbox>
-					<ToggleCheckbox
-						bind:checked={$settings.showAllWalletsDefault}
-						disabled={!$settings.showAllWalletsOption}
-					>
-						{$t$('settings.showAllWalletsDefault')}
-					</ToggleCheckbox>
-				</div>
-				<div class="setting-preview">
-					<div class="preview-label"><FontAwesomeIcon icon={faEye} /> Preview</div>
-					<div class="preview-content wallet-preview">
-						<WalletCardCompact wallet={EXAMPLE_WALLET} balance={1234.56} />
-						{#if $settings.showAllWalletsOption}
-							<small class="wallet-hint">
-								{#if $settings.showAllWalletsDefault}
-									Wallets from all sync nodes shown by default
-								{:else}
-									Toggle available to show wallets from other sync nodes
-								{/if}
-							</small>
-						{/if}
-					</div>
-				</div>
-			</div>
-		</SettingsFieldset>
 	</div>
 </Section>
 
@@ -287,33 +236,6 @@
 		overflow-x: auto;
 	}
 
-	.wallet-preview {
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-		font-size: 0.85rem;
-	}
-
-	.wallet-preview :global(.wallet-card-compact) {
-		padding: 0.5rem 0.75rem;
-		gap: 0.5rem;
-	}
-
-	.wallet-preview :global(.wallet-icon) {
-		font-size: 1rem;
-	}
-
-	.wallet-preview :global(.balance-amount) {
-		font-size: 0.9rem;
-	}
-
-	.wallet-hint {
-		font-size: 0.75rem;
-		color: rgba(255, 255, 255, 0.5);
-		text-align: center;
-		font-style: italic;
-	}
-
 	.placeholder-preview {
 		display: flex;
 		align-items: center;
@@ -334,8 +256,5 @@
 		.setting-preview.wide-preview {
 			grid-column: auto;
 		}
-	}
-
-	@media (max-width: 768px) {
 	}
 </style>

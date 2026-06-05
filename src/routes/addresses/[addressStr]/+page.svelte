@@ -7,6 +7,7 @@
 	import AdvancedTransactions from '$lib/components/widgets/transactions/AdvancedTransactions.svelte';
 	import AdvancedNames from '$lib/components/widgets/names/AdvancedNames.svelte';
 	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
+	import Tag from '$lib/components/ui/Tag.svelte';
 	import {
 		faAddressBook,
 		faBuilding,
@@ -30,6 +31,17 @@
 		company: 'Company'
 	};
 
+	const knownAddressTypeVariant: Record<
+		KnownAddress['type'],
+		'green' | 'blue' | 'red' | 'yellow' | 'purple'
+	> = {
+		official: 'green',
+		shop: 'blue',
+		gamble: 'red',
+		service: 'yellow',
+		company: 'purple'
+	};
+
 	const knownAddressTypeDescriptions: Record<KnownAddress['type'], string> = {
 		official: 'Verified by Krawlet as an official address.',
 		shop: 'Listed in Krawlet as a shop address.',
@@ -45,16 +57,20 @@
 	const playerStatusLabel = $derived(player?.online ? 'Online now' : 'Offline');
 
 	onDestroy(playerWalletStore.destroy);
+
+	const effectiveName = $derived(
+		player?.minecraftName ?? knownEntry?.name ?? address.address ?? 'unknown'
+	);
 </script>
 
 <svelte:head>
-	<title>{address.address} | Krawlet</title>
+	<title>{effectiveName} | Krawlet</title>
 </svelte:head>
 
 <Breadcrumbs
 	navItems={[
 		{ label: 'Addresses', href: '/addresses' },
-		{ label: address.address, href: `/addresses/${address.address}` }
+		{ label: effectiveName, href: `/addresses/${address.address}` }
 	]}
 	buttons={[
 		{
@@ -64,7 +80,7 @@
 			variant: 'secondary'
 		},
 		{
-			tk: 'address.actions.sendKromer',
+			label: `Pay ${effectiveName}`,
 			href: `/transactions/new?to=${address.address}`,
 			icon: faPaperPlane,
 			variant: 'primary'
@@ -103,14 +119,13 @@
 				<div class="known-entry-card__title-row">
 					<h2>{knownEntry.name}</h2>
 					<div class="known-entry-card__title-row">
-						<span class="known-entry-card__badge">{knownAddressTypeLabels[knownEntry.type]}</span>
+						<Tag variant={knownAddressTypeVariant[knownEntry.type]} uppercase={true}>
+							{knownAddressTypeLabels[knownEntry.type]}
+						</Tag>
 						{#if knownEntry.updatedDate}
-							<span
-								class="identity-card__updated-badge"
-								title={new Date(knownEntry.updatedDate).toLocaleString()}
-							>
+							<Tag variant="gray" title={new Date(knownEntry.updatedDate).toLocaleString()}>
 								Updated {relativeTime(new Date(knownEntry.updatedDate))}
-							</span>
+							</Tag>
 						{/if}
 					</div>
 				</div>
@@ -136,17 +151,12 @@
 				<div class="known-entry-card__title-row">
 					<h2>{player.minecraftName}</h2>
 					<div class="known-entry-card__title-row">
-						<span class="known-entry-card__badge">Player</span>
-						<span class:online={player.online} class="identity-card__status-badge"
-							>{playerStatusLabel}</span
-						>
-						{#if player.updatedDate}
-							<span
-								class="identity-card__updated-badge"
-								title={new Date(player.updatedDate).toLocaleString()}
-							>
-								Updated {relativeTime(new Date(player.updatedDate))}
-							</span>
+						<Tag variant="blue" uppercase={true}>Player</Tag>
+						<Tag variant={player.online ? 'green' : 'gray'}>{playerStatusLabel}</Tag>
+						{#if !player.online && player.lastSeenDate}
+							<Tag variant="gray" title={new Date(player.lastSeenDate).toLocaleString()}>
+								Last online {relativeTime(new Date(player.lastSeenDate))}
+							</Tag>
 						{/if}
 					</div>
 				</div>
@@ -247,26 +257,6 @@
 		gap: 1rem;
 	}
 
-	.identity-card__updated-badge,
-	.identity-card__status-badge {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.2rem 0.55rem;
-		border-radius: 999px;
-		font-size: 0.72rem;
-		font-weight: 700;
-		letter-spacing: 0.04em;
-		background: rgba(255, 255, 255, 0.06);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		color: rgba(255, 255, 255, 0.84);
-	}
-
-	.identity-card__status-badge.online {
-		background: rgba(var(--green), 0.14);
-		border-color: rgba(var(--green), 0.24);
-		color: rgba(var(--green), 1);
-	}
-
 	.known-entry-card__avatar {
 		width: 3.2rem;
 		height: 3.2rem;
@@ -317,20 +307,6 @@
 		margin: 0;
 		font-size: 1.15rem;
 		line-height: 1.2;
-	}
-
-	.known-entry-card__badge {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.2rem 0.55rem;
-		border-radius: 999px;
-		font-size: 0.78rem;
-		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
-		background: rgba(var(--known-entry-color), 0.15);
-		border: 1px solid rgba(var(--known-entry-color), 0.28);
-		color: rgba(var(--known-entry-color), 1);
 	}
 
 	.known-entry-card__summary,

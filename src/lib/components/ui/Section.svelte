@@ -86,6 +86,7 @@
 	}
 
 	section > :global(h2),
+	section > :global(h1),
 	section > :global(h3),
 	section > :global(h4),
 	section > :global(h5),
@@ -96,6 +97,11 @@
 		padding: 0 0 0.75rem 0;
 		margin: 0 0 1rem 0;
 		border-bottom: 1px solid rgba(var(--theme-color-rgb), 0.8);
+	}
+
+	section > :global(h1) {
+		font-size: 1.35rem;
+		font-weight: 700;
 	}
 
 	@media only screen and (max-width: 768px) {
@@ -111,12 +117,17 @@
 		}
 
 		section > :global(h2),
+		section > :global(h1),
 		section > :global(h3),
 		section > :global(h4),
 		section > :global(h5),
 		section > :global(h6) {
 			padding: 0 0 0.625rem 0;
 			margin: 0 0 0.75rem 0;
+		}
+
+		section > :global(h1) {
+			font-size: 1.2rem;
 		}
 	}
 </style>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { notifications } from '$lib/stores/notifications';
 	import type { Listing } from '$lib/types/shops';
+	import Tag from '$lib/components/ui/Tag.svelte';
 	const { item }: { item: Listing } = $props();
 </script>
 
@@ -8,36 +9,40 @@
 	<div class="badges">
 		{#if item.shopBuysItem}
 			<button
-				class="badge badge-sell"
+				class="badge-button"
 				onclick={() => notifications.info('This shop purchases this item rather than selling it')}
-				>Sell Shop</button
 			>
+				<Tag variant="red" size="md">Sell Shop</Tag>
+			</button>
 		{/if}
 		{#if item.dynamicPrice}
 			<button
-				class="badge badge-dynamic"
+				class="badge-button"
 				onclick={() =>
 					notifications.info("This item's price changes based on stock, demand, or other factors")}
 			>
-				Dynamic Price
+				<Tag variant="green" size="md">Dynamic Price</Tag>
 			</button>
 		{/if}
 		{#if item.madeOnDemand}
 			<button
-				class="badge badge-demand"
+				class="badge-button"
 				onclick={() =>
 					notifications.info(
 						'This item is crafted, smelted, or processed on purchase rather than being pre-stocked'
-					)}>Made on Demand</button
+					)}
 			>
+				<Tag variant="blue" size="md">Made on Demand</Tag>
+			</button>
 		{/if}
 		{#if item.requiresInteraction}
 			<button
-				class="badge badge-interaction"
+				class="badge-button"
 				onclick={() =>
 					notifications.info("This requires interaction with the shop's monitor, chatbox, etc.")}
-				>Requires Interaction</button
 			>
+				<Tag variant="red" size="md">Requires Interaction</Tag>
+			</button>
 		{/if}
 	</div>
 {/if}
@@ -50,32 +55,10 @@
 		margin-bottom: 0.5em;
 	}
 
-	.badge-dynamic {
-		--color: var(--green);
-	}
-
-	.badge-demand {
-		--color: var(--blue);
-	}
-
-	.badge-interaction {
-		--color: var(--red);
-	}
-
-	.badge-sell {
-		--color: var(--red);
-		font-weight: 500;
-	}
-
-	.badge {
-		background: rgba(var(--color), 0.2);
-		color: white;
-		border-radius: 0.5em;
-		padding: 0.2em 0.7em;
-		font-size: 0.85em;
-		font-weight: 500;
-		white-space: nowrap;
-		border: 1px solid rgba(var(--color), 0.4);
+	.badge-button {
+		background: none;
+		padding: 0;
+		border: none;
 		cursor: pointer;
 	}
 </style>

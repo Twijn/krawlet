@@ -163,7 +163,7 @@
 <style>
 	.context-menu {
 		position: fixed;
-		z-index: 10000;
+		z-index: 10250;
 		background-color: var(--background-color-2);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 0.5rem;

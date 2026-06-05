@@ -2,6 +2,7 @@
 	import Section from '$lib/components/ui/Section.svelte';
 	import SkeletonTable from '$lib/components/ui/SkeletonTable.svelte';
 	import Pagination from '$lib/components/ui/Pagination.svelte';
+	import Tag from '$lib/components/ui/Tag.svelte';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faStore, faPlus, faExchange } from '@fortawesome/free-solid-svg-icons';
@@ -140,15 +141,15 @@
 						<tr>
 							<td>
 								{#if record.isNewShop}
-									<span class="change-badge new-shop">
+									<Tag variant="green" size="md">
 										<FontAwesomeIcon icon={faPlus} />
 										{$t$('reports.newShop')}
-									</span>
+									</Tag>
 								{:else}
-									<span class="change-badge updated">
+									<Tag variant="blue" size="md">
 										<FontAwesomeIcon icon={faExchange} />
 										{$t$('reports.updated')}
-									</span>
+									</Tag>
 								{/if}
 							</td>
 							<td>
@@ -220,26 +221,6 @@
 		padding: 2.5em;
 		background-color: var(--background-color-2);
 		border-radius: 0.5rem;
-	}
-
-	.change-badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.4em;
-		padding: 0.25em 0.6em;
-		border-radius: 0.25em;
-		font-size: 0.85em;
-		font-weight: 500;
-	}
-
-	.change-badge.new-shop {
-		background-color: rgba(var(--green), 0.2);
-		color: rgb(var(--green));
-	}
-
-	.change-badge.updated {
-		background-color: rgba(var(--blue), 0.2);
-		color: rgb(var(--blue));
 	}
 
 	.changes-cell {

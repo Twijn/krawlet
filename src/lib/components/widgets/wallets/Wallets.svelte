@@ -7,6 +7,7 @@
 	import { AddressCache } from '$lib/cache/AddressCache';
 	import Button from '$lib/components/ui/Button.svelte';
 	import { editWalletModal } from '$lib/stores/editWalletModal';
+	import { faEye, faPencil } from '@fortawesome/free-solid-svg-icons';
 
 	type WalletWithAddress = Wallet & {
 		balance: number;
@@ -91,14 +92,16 @@
 		{:else if column.key === 'actions'}
 			<Button
 				variant="secondary"
-				size="small"
+				size="xsmall"
+				icon={faPencil}
 				tk="wallet.editWallet"
 				onClick={() => editWalletModal.open(item)}
 			/>
 			<Button
 				variant="primary"
-				size="small"
-				tk="address.viewAddress"
+				size="xsmall"
+				icon={faEye}
+				tk="common.view"
 				href="/addresses/{item.address}"
 			/>
 		{:else}

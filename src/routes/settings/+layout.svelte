@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faGlobe, faDesktop, faBell, faServer } from '@fortawesome/free-solid-svg-icons';
+	import { faGlobe, faDesktop, faBell, faServer, faCrown } from '@fortawesome/free-solid-svg-icons';
 	import { t$ } from '$lib/i18n';
 	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 
@@ -9,6 +9,12 @@
 
 	const tabs = [
 		{ href: '/settings', icon: faGlobe, labelKey: 'settings.tabs.general', exact: true },
+		{
+			href: '/settings/krawlet-api',
+			icon: faCrown,
+			labelKey: 'settings.tabs.krawletApi',
+			exact: false
+		},
 		{ href: '/settings/display', icon: faDesktop, labelKey: 'settings.tabs.display', exact: false },
 		{
 			href: '/settings/notifications',
@@ -16,8 +22,7 @@
 			labelKey: 'settings.tabs.notifications',
 			exact: false
 		},
-		{ href: '/settings/cache', icon: faServer, labelKey: 'settings.tabs.cache', exact: false },
-		{ href: '/settings/advanced', icon: faServer, labelKey: 'settings.tabs.advanced', exact: false }
+		{ href: '/settings/cache', icon: faServer, labelKey: 'settings.tabs.cache', exact: false }
 	];
 
 	function isActive(href: string, exact: boolean): boolean {

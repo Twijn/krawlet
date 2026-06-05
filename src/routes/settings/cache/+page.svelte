@@ -525,10 +525,8 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 1rem;
-		padding: 0.75rem;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 0.5rem;
-		background: rgba(255, 255, 255, 0.02);
+		padding: 0.25rem 0 0.5rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 	}
 
 	.summary-copy {
@@ -559,32 +557,29 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: flex-end;
-		gap: 0.45rem;
+		gap: 0.35rem 0.8rem;
+		font-size: 0.85rem;
+		opacity: 0.85;
 	}
 
 	.summary-stats span {
-		padding: 0.2rem 0.5rem;
-		border-radius: 999px;
-		font-size: 0.8rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		background: rgba(0, 0, 0, 0.16);
+		padding: 0;
+		border: none;
+		background: transparent;
 	}
 
 	.health-note {
-		padding: 0.45rem 0.65rem;
-		border-radius: 0.4rem;
+		padding: 0;
 		font-size: 0.88rem;
 		font-weight: 500;
 	}
 
 	.health-note.good {
 		color: rgb(var(--green));
-		background-color: rgba(var(--green), 0.12);
 	}
 
 	.health-note.warn {
 		color: rgb(255, 196, 96);
-		background-color: rgba(255, 185, 72, 0.12);
 	}
 
 	.cache-sections {
@@ -596,12 +591,12 @@
 	.actions-row {
 		display: flex;
 		justify-content: flex-end;
-		margin-bottom: 0.75rem;
+		margin-bottom: 0.5rem;
 	}
 
 	.table-grid {
-		display: grid;
-		gap: 0.6rem;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.table-row {
@@ -609,10 +604,12 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 0.75rem;
-		padding: 0.6rem 0.7rem;
-		border-radius: 0.6rem;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		background: rgba(255, 255, 255, 0.02);
+		padding: 0.65rem 0;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	.table-row:last-child {
+		border-bottom: none;
 	}
 
 	.row-main {
@@ -631,7 +628,7 @@
 		flex-wrap: wrap;
 		gap: 0.45rem 0.8rem;
 		font-size: 0.85rem;
-		opacity: 0.78;
+		opacity: 0.72;
 	}
 
 	.empty {
@@ -644,10 +641,8 @@
 		justify-content: space-between;
 		align-items: center;
 		gap: 0.8rem;
-		padding: 0.75rem;
-		border: 1px solid rgba(var(--red), 0.35);
-		border-radius: 0.5rem;
-		background: linear-gradient(160deg, rgba(var(--red), 0.12), rgba(0, 0, 0, 0.05));
+		padding: 0.65rem 0;
+		border-top: 1px solid rgba(var(--red), 0.35);
 	}
 
 	.danger-zone h4 {

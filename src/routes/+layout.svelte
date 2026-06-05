@@ -15,6 +15,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { onDestroy, onMount } from 'svelte';
+	import { afterNavigate } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 
@@ -74,6 +75,10 @@
 		} else {
 			apiKeyInfo.clear();
 		}
+	});
+
+	afterNavigate(() => {
+		showQuickMenu = false;
 	});
 
 	onMount(() => {
@@ -164,14 +169,27 @@
 		quickMenuLinks = links;
 	});
 
+	type ServiceStatusHints = Partial<Record<WebSocketState, string>>;
+
 	type Service = {
 		name: string;
 		getStatus: () => WebSocketState;
+		statusHints?: ServiceStatusHints;
 	};
 
 	let services: Service[] = [
-		{ name: 'Kromer WS', getStatus: () => websocket.getState() },
-		{ name: 'Krawlet WS (Klog)', getStatus: () => krawletWebsocket.getState() }
+		{
+			name: 'Kromer WS',
+			getStatus: () => websocket.getState(),
+			statusHints: { disconnected: "You won't receive real-time Kromer notifications." }
+		},
+		{
+			name: 'Krawlet WS (Klog)',
+			getStatus: () => krawletWebsocket.getState(),
+			statusHints: {
+				disconnected: "You won't be able to utilize Krawlet Logistics (Klog) features."
+			}
+		}
 	];
 </script>
 
@@ -223,6 +241,10 @@
 					{$t$('footer.version', { version: VERSION })}
 					<small>&bullet;</small>
 					<a href="/whats-new">{$t$('footer.whatsNew')}</a>
+					<small>&bullet;</small>
+					<a href="/privacy">Privacy</a>
+					<small>&bullet;</small>
+					<a href="/terms">Terms</a>
 				</p>
 				<p>
 					Made for the <a href="https://reconnected.cc/" target="_blank" rel="noopener noreferrer"
@@ -276,14 +298,16 @@
 	>
 		{#each services as service (service.name)}
 			{@const status = service.getStatus()}
+			{@const statusHint = service.statusHints?.[status]}
 			<div class="service-status">
 				<span>{service.name}</span>
 				<span
-					class="status-indicator title-full-right"
+					class="status-indicator title-bottom"
 					class:status-connected={status === 'connected'}
 					class:status-connecting={status === 'connecting'}
 					class:status-disconnected={status === 'disconnected'}
 					class:status-error={status === 'error'}
+					title={statusHint ? `${service.name}: ${statusHint}` : undefined}
 				>
 					<FontAwesomeIcon
 						spin={status === 'connecting'}
@@ -486,8 +510,8 @@
 			0 10px 40px rgba(0, 0, 0, 0.4),
 			0 0 0 1px rgba(255, 255, 255, 0.05);
 		width: calc(100% - 1.5rem);
-		max-width: 18rem;
-		padding: 0.35rem;
+		max-width: 20rem;
+		padding: 0.6rem 1rem;
 		overflow: hidden;
 		z-index: 10001;
 	}
@@ -526,13 +550,13 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.6rem 0.75rem;
+		padding: 0.6rem 1rem;
 		margin-top: 0.35rem;
 		margin-bottom: 0.35rem;
 		border-top: 1px solid rgba(255, 255, 255, 0.1);
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		color: var(--text-color-1);
-		font-size: 0.9rem;
+		font-size: 0.95rem;
 	}
 
 	#quick-menu .minecraft-player img {
@@ -543,13 +567,13 @@
 	}
 
 	.not-logged-in {
-		padding: 0.6rem 0.75rem;
+		padding: 0.6rem 1rem;
 		margin-top: 0.35rem;
 		margin-bottom: 0.35rem;
 		border-top: 1px solid rgba(255, 255, 255, 0.1);
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		color: var(--text-color-2);
-		font-size: 0.85rem;
+		font-size: 0.95rem;
 		text-align: center;
 	}
 
@@ -562,10 +586,10 @@
 		border: none;
 		text-decoration: none;
 		width: 100%;
-		padding: 0.6rem 0.75rem;
+		padding: 0.6rem 1rem;
 		border-radius: 0.35rem;
 		color: var(--text-color-1);
-		font-size: 0.9rem;
+		font-size: 0.95rem;
 		transition:
 			background-color 0.15s ease,
 			color 0.15s ease;
@@ -592,7 +616,8 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.4rem 0.75rem;
-		font-size: 0.85rem;
+		font-size: 0.95rem;
+		font-weight: 500;
 		color: var(--text-color-2);
 	}
 

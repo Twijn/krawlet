@@ -149,7 +149,7 @@
 </script>
 
 <Section lgCols={12} mdCols={12} smCols={12}>
-	<h2><FontAwesomeIcon icon={faServer} /> {$t$('settings.tabs.advanced')}</h2>
+	<h2><FontAwesomeIcon icon={faServer} /> {$t$('settings.tabs.krawletApi')}</h2>
 
 	<div class="settings-grid">
 		<SettingsFieldset>

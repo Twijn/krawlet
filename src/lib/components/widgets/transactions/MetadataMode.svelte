@@ -16,6 +16,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import krawlet from '$lib/api/krawlet';
 	import { formatCurrency } from '$lib/util';
+	import Tag from '$lib/components/ui/Tag.svelte';
 
 	type MetadataMode = 'player' | 'message' | 'actions' | 'refund' | 'raw';
 	type MessageType = 'message' | 'error';
@@ -344,7 +345,7 @@
 						<div class="player-info">
 							<span class="player-name">{selectedPlayer.minecraftName}</span>
 							{#if selectedPlayer.online}
-								<span class="online-badge">Online</span>
+								<Tag variant="green" uppercase={true}>Online</Tag>
 							{/if}
 						</div>
 						{#if !lock}
@@ -376,7 +377,7 @@
 								>
 									<span class="player-name">{player.minecraftName}</span>
 									{#if player.online}
-										<span class="online-badge">Online</span>
+										<Tag variant="green" uppercase={true}>Online</Tag>
 									{/if}
 									{#if player.minecraftUUID === selectedPlayerUUID}
 										<FontAwesomeIcon icon={faCheck} />
@@ -460,7 +461,9 @@
 			>
 				{#if selectedAction.refundsAmount}
 					<div class="action-free-notice">
-						<span class="free-badge">{$t$('transaction.metadataModes.free')}</span>
+						<Tag variant="green" uppercase={true}>
+							{$t$('transaction.metadataModes.free')}
+						</Tag>
 						<small>{$t$('transaction.metadataModes.actionFreeNotice')}</small>
 					</div>
 				{:else}
@@ -707,16 +710,6 @@
 		color: var(--text-color-1);
 	}
 
-	.online-badge {
-		font-size: 0.7rem;
-		padding: 0.15rem 0.4rem;
-		background: rgba(var(--green), 0.2);
-		color: rgb(var(--green));
-		border-radius: 0.25rem;
-		font-weight: 600;
-		text-transform: uppercase;
-	}
-
 	.change-btn {
 		padding: 0.3rem 0.6rem;
 		background: transparent;
@@ -904,19 +897,6 @@
 		border: 1px solid rgba(var(--green), 0.2);
 		border-radius: 0.5rem;
 		margin-bottom: 0.75rem;
-	}
-
-	.action-free-notice .free-badge {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.25rem 0.6rem;
-		background: rgba(var(--green), 0.2);
-		border-radius: 0.375rem;
-		color: rgb(var(--green));
-		font-size: 0.75rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.03em;
 	}
 
 	.action-free-notice small {

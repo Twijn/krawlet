@@ -14,6 +14,7 @@ export type Player = {
 
 	createdDate?: string;
 	updatedDate?: string;
+	lastSeenDate?: string;
 
 	online: boolean;
 };
@@ -25,6 +26,7 @@ const transformPlayer = (player: PlayerApi): Player => ({
 	kromerAddress: player.kromerAddress,
 	createdDate: player.createdDate ?? undefined,
 	updatedDate: player.updatedDate ?? undefined,
+	lastSeenDate: player.lastSeenDate ?? undefined,
 	online: player.online
 });
 

@@ -7,6 +7,7 @@
 	import type { BreadcrumbButton } from '$lib/components/ui/Breadcrumbs';
 	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
+	import Tag from '$lib/components/ui/Tag.svelte';
 	import SortableTable from '$lib/components/ui/SortableTable.svelte';
 	import type { SortableColumnData } from '$lib/components/ui/SortableTable';
 	import { krawletWebsocket } from '$lib/stores/krawletWebsocket';
@@ -84,13 +85,9 @@
 
 		if (sortedColumn === 'fromUsername' || sortedColumn === 'toUsername') {
 			const aValue =
-				sortedColumn === 'fromUsername'
-					? (a.fromUsername ?? a.fromName ?? '')
-					: (a.toUsername ?? a.toName ?? '');
+				sortedColumn === 'fromUsername' ? (a.fromName ?? 'unknown') : (a.toName ?? 'unknown');
 			const bValue =
-				sortedColumn === 'fromUsername'
-					? (b.fromUsername ?? b.fromName ?? '')
-					: (b.toUsername ?? b.toName ?? '');
+				sortedColumn === 'fromUsername' ? (b.fromName ?? 'unknown') : (b.toName ?? 'unknown');
 			return sortDirection === 'ASC' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
 		}
 
@@ -117,6 +114,23 @@
 
 	function getSortedTransfers(transferList: RouteTransfer[]): RouteTransfer[] {
 		return transferList.slice().sort(compareTransfers);
+	}
+
+	function getTransferStatusVariant(status: string): 'blue' | 'green' | 'red' | 'yellow' | 'gray' {
+		switch (status) {
+			case 'pending':
+			case 'in_progress':
+				return 'blue';
+			case 'completed':
+				return 'green';
+			case 'failed':
+			case 'cancelled':
+				return 'red';
+			case 'queued':
+				return 'yellow';
+			default:
+				return 'gray';
+		}
 	}
 
 	function refresh() {
@@ -208,7 +222,9 @@
 				{:else if column.key === 'quantity'}
 					{(item.quantity ?? 0).toLocaleString()}
 				{:else if column.key === 'status'}
-					<span class="transfer-status {item.status}">{item.status.replaceAll('_', ' ')}</span>
+					<Tag variant={getTransferStatusVariant(item.status)} uppercase={true}>
+						{item.status.replaceAll('_', ' ')}
+					</Tag>
 				{:else if column.key === 'timestamp'}
 					<small class="title-right" title={new Date(item.timestamp).toLocaleString()}>
 						{relativeTime(new Date(item.timestamp))}
@@ -281,37 +297,6 @@
 		border-radius: 0.35rem;
 		flex-shrink: 0;
 		image-rendering: pixelated;
-	}
-
-	.uuid {
-		color: var(--text-color-2);
-		font-family: monospace;
-		font-size: 0.72rem;
-		line-height: 1.2;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.transfer-status {
-		text-transform: capitalize;
-		font-weight: 700;
-		letter-spacing: 0.01em;
-		white-space: nowrap;
-	}
-
-	.transfer-status.pending,
-	.transfer-status.in_progress {
-		color: rgb(var(--blue));
-	}
-
-	.transfer-status.completed {
-		color: rgb(var(--green));
-	}
-
-	.transfer-status.failed,
-	.transfer-status.cancelled {
-		color: rgb(var(--red));
 	}
 
 	.muted {

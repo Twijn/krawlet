@@ -2,6 +2,7 @@
 	import Section from '$lib/components/ui/Section.svelte';
 	import SkeletonTable from '$lib/components/ui/SkeletonTable.svelte';
 	import Pagination from '$lib/components/ui/Pagination.svelte';
+	import Tag from '$lib/components/ui/Tag.svelte';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import {
@@ -279,14 +280,14 @@
 		}
 	}
 
-	function getChangeClass(changeType: 'added' | 'removed' | 'updated') {
+	function getChangeVariant(changeType: 'added' | 'removed' | 'updated'): 'green' | 'red' | 'blue' {
 		switch (changeType) {
 			case 'added':
-				return 'change-added';
+				return 'green';
 			case 'removed':
-				return 'change-removed';
+				return 'red';
 			case 'updated':
-				return 'change-updated';
+				return 'blue';
 		}
 	}
 
@@ -415,10 +416,10 @@
 						<tr>
 							{#if source.value === 'memory'}
 								<td>
-									<span class="change-badge {getChangeClass(change.changeType)}">
+									<Tag variant={getChangeVariant(change.changeType)} uppercase={true}>
 										<FontAwesomeIcon icon={getChangeIcon(change.changeType)} />
 										{$t$(`reports.${change.changeType}`)}
-									</span>
+									</Tag>
 								</td>
 							{/if}
 							<td class="item-cell">
@@ -613,34 +614,6 @@
 		padding: 2.5em;
 		background-color: var(--background-color-2);
 		border-radius: 0.5rem;
-	}
-
-	/* Change Badges */
-	.change-badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35em;
-		padding: 0.3em 0.65em;
-		border-radius: 1.5em;
-		font-size: 0.75em;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.02em;
-	}
-
-	.change-added {
-		background-color: rgba(var(--green), 0.15);
-		color: rgb(var(--green));
-	}
-
-	.change-removed {
-		background-color: rgba(var(--red), 0.15);
-		color: rgb(var(--red));
-	}
-
-	.change-updated {
-		background-color: rgba(var(--blue), 0.15);
-		color: rgb(var(--blue));
 	}
 
 	/* Item Cell */

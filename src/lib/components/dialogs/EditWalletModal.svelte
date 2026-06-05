@@ -143,11 +143,11 @@
 	{/if}
 
 	<div class="button-group">
-		<Button type="button" onClick={handleCopyPrivateKey} variant="secondary">
+		<Button type="button" onClick={handleCopyPrivateKey} variant="secondary" size="small">
 			<FontAwesomeIcon icon={faCopy} />
 			{$t$('wallet.copyPrivateKey')}
 		</Button>
-		<Button type="button" onClick={handleDeleteWallet} variant="error">
+		<Button type="button" onClick={handleDeleteWallet} variant="error" size="small">
 			<FontAwesomeIcon icon={faTrash} />
 			{$t$('wallet.deleteWallet')}
 		</Button>
