@@ -14,13 +14,13 @@
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 	import { t$ } from '$lib/i18n';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
-	import Transactions from '$lib/components/widgets/transactions/Transactions.svelte';
-	import Names from '$lib/components/widgets/names/Names.svelte';
 	import Placeholder from '$lib/components/ui/Placeholder.svelte';
+	import AdvancedTransactions from '$lib/components/widgets/transactions/AdvancedTransactions.svelte';
+	import AdvancedNames from '$lib/components/widgets/names/AdvancedNames.svelte';
 
 	// Example address for previews - uses Twijn's address to demonstrate player name feature
 	const EXAMPLE_ADDRESS = 'ks0d5iqb6p';
-	const EXAMPLE_SHOP_ADDRESS = 'ktwijnmall';
+	const EXAMPLE_SHOP_ADDRESSES = ['kfemcorpfw', 'kfemcorpbt', 'kcomputers', 'klibrarycc'];
 	const KRAWLET_ADDRESS = 'kkrawletii';
 
 	function onShowMetadataChange() {
@@ -66,7 +66,7 @@
 					<div class="preview-label"><FontAwesomeIcon icon={faEye} /> Preview</div>
 					<div class="preview-content address-preview">
 						<Address address={EXAMPLE_ADDRESS} showCopy={false} />
-						<Address address={EXAMPLE_SHOP_ADDRESS} showCopy={false} />
+						<Address address={EXAMPLE_SHOP_ADDRESSES[1]} showCopy={false} />
 						<Address address={KRAWLET_ADDRESS} showCopy={false} />
 					</div>
 				</div>
@@ -107,7 +107,7 @@
 				<div class="setting-preview wide-preview">
 					<div class="preview-label"><FontAwesomeIcon icon={faEye} /> Preview</div>
 					<div class="preview-content component-preview">
-						<Transactions address={EXAMPLE_SHOP_ADDRESS} limit={3} queryPrefix="settings_tx_" />
+						<AdvancedTransactions limit={5} addresses={EXAMPLE_SHOP_ADDRESSES} storePrefix="tx" />
 					</div>
 				</div>
 			</div>
@@ -127,7 +127,7 @@
 				<div class="setting-preview wide-preview">
 					<div class="preview-label"><FontAwesomeIcon icon={faEye} /> Preview</div>
 					<div class="preview-content component-preview">
-						<Names limit={3} queryPrefix="settings_names_" />
+						<AdvancedNames limit={5} storePrefix="nm" />
 					</div>
 				</div>
 			</div>

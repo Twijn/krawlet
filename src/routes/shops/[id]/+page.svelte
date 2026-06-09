@@ -9,7 +9,7 @@
 	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 
 	const { data } = $props();
-	const { shop } = data;
+	const shop = $derived(data.shop);
 
 	let items = $derived(shop?.items ?? []);
 

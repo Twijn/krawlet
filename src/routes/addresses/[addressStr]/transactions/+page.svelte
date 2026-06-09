@@ -3,7 +3,7 @@
 	import AdvancedTransactions from '$lib/components/widgets/transactions/AdvancedTransactions.svelte';
 
 	const { data } = $props();
-	const { address } = data;
+	const address = $derived(data.address);
 </script>
 
 <svelte:head>
