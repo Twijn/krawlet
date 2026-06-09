@@ -14,6 +14,16 @@ export type NameHistoryCacheResult = {
 };
 
 export class NameHistoryCache extends KromerCache<NameHistoryLookupQuery, NameHistoryCacheResult> {
+	protected getQueryKey(params: NameHistoryLookupQuery): string {
+		const { name, type, orderBy, order } = params;
+		return this.buildRecordKey({
+			name: name.trim(),
+			type,
+			orderBy: orderBy ?? '',
+			order: order ?? ''
+		});
+	}
+
 	private parseMetadata(transactions: Transaction[]): TransactionWithMeta[] {
 		return transactions.map((tx) => ({
 			...tx,

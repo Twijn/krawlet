@@ -29,6 +29,27 @@ type CachedAddress = AddressWithNames & {
 export class AddressCache extends KromerCache<AddressCacheLookup, AddressCacheResult> {
 	private readonly rehydrateWindowMs = 60_000;
 
+	protected getQueryKey(params: AddressCacheLookup): string {
+		if ('addresses' in params && params.addresses.length > 0) {
+			return this.buildQueryKey([
+				'addresses',
+				...params.addresses.map((address) => address.trim()).sort(),
+				'richest',
+				Boolean(params.richest)
+			]);
+		}
+
+		if ('offset' in params && 'limit' in params) {
+			return this.buildQueryKey([
+				'paginated',
+				'richest',
+				Boolean('richest' in params && params.richest)
+			]);
+		}
+
+		return this.buildQueryKey(['unknown']);
+	}
+
 	public static async refreshCachedAddresses(addresses: string[]): Promise<void> {
 		const uniqueAddresses = Array.from(
 			new Set(addresses.map((address) => address?.trim()).filter(Boolean) as string[])

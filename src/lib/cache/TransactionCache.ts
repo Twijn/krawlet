@@ -13,6 +13,20 @@ export type TransactionCacheResult = {
 };
 
 export class TransactionCache extends KromerCache<TransactionCacheLookup, TransactionCacheResult> {
+	protected getQueryKey(params: TransactionCacheLookup): string {
+		const { addresses, orderBy, order, ...rest } = params;
+		return this.buildQueryKey([
+			'rest',
+			this.buildRecordKey(rest),
+			'addresses',
+			...addresses.map((address) => address.trim()).sort(),
+			'orderBy',
+			orderBy ?? '',
+			'order',
+			order ?? ''
+		]);
+	}
+
 	private parseMetadata(transactions: Transaction[]): TransactionWithMeta[] {
 		return transactions.map((tx) => ({
 			...tx,

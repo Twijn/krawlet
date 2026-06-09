@@ -13,6 +13,20 @@ export type NameCacheResult = {
 };
 
 export class NameCache extends KromerCache<NameCacheLookup, NameCacheResult> {
+	protected getQueryKey(params: NameCacheLookup): string {
+		const { addresses, orderBy, order, ...rest } = params;
+		return this.buildQueryKey([
+			'rest',
+			this.buildRecordKey(rest),
+			'addresses',
+			...addresses.map((address) => address.trim()).sort(),
+			'orderBy',
+			orderBy ?? '',
+			'order',
+			order ?? ''
+		]);
+	}
+
 	protected async fetch(params: NameCacheLookup): Promise<NameCacheResult | null> {
 		const { addresses, ...query } = params;
 		const response = await kromer.names.lookupNames(addresses, query);
