@@ -1,9 +1,10 @@
-import kromer from '$lib/api/kromer.js';
+import { getKromerApi } from '$lib/api/kromer.js';
 import { error } from '@sveltejs/kit';
 import type { APIError } from 'kromer';
 
-export async function load({ params }) {
+export async function load({ params, fetch }) {
 	try {
+		const kromer = getKromerApi({ fetchImpl: fetch });
 		const name = await kromer.names.get(params.name);
 		return {
 			name

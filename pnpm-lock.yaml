@@ -42,8 +42,8 @@ importers:
         specifier: ^2.2.8
         version: 2.2.8
       kromer:
-        specifier: ^1.8.4
-        version: 1.8.4
+        specifier: ^1.8.5
+        version: 1.8.5
       svelteplot:
         specifier: ^0.14.2
         version: 0.14.2(svelte@5.56.3(@typescript-eslint/types@8.61.0))
@@ -1401,8 +1401,8 @@ packages:
     resolution: {integrity: sha512-3Rk3TFNlgFIhnkw4E0c5jXa5G9eLZ6Iqa2jM/+BleS5Dib5hy6pWG9UFfhL1u9UyLhuXWnjyYTc3sW5jt0CDCw==}
     engines: {node: '>=18.0.0'}
 
-  kromer@1.8.4:
-    resolution: {integrity: sha512-qc8acSIKLH11hKnARVvNbDXwPEjMyh75te7EIRYDM8cyfP5MuKs4yi5NBa0D/29uVwEnGGhwGvmrfcChM9AODw==}
+  kromer@1.8.5:
+    resolution: {integrity: sha512-Ucj493DdCxwJGbHhHN3mQmeSLeUn29/nXJIXkx78RebAUM460FlUggYh+PTKkICRjEKIy/q7njn/27C7W0SeJw==}
 
   lazy-cache@0.2.7:
     resolution: {integrity: sha512-gkX52wvU/R8DVMMt78ATVPFMJqfW8FPz1GZ1sVHBVQHmu/WvhIWE4cE1GBzhJNFicDeYhnwp6Rl35BcAIM3YOQ==}
@@ -2935,7 +2935,7 @@ snapshots:
 
   krawlet-js@2.2.8: {}
 
-  kromer@1.8.4:
+  kromer@1.8.5:
     dependencies:
       '@noble/hashes': 1.8.0
 

@@ -56,7 +56,7 @@
 		"crypto-js": "^4.2.0",
 		"idb": "^8.0.3",
 		"krawlet-js": "^2.2.8",
-		"kromer": "^1.8.4",
+		"kromer": "^1.8.5",
 		"svelteplot": "^0.14.2"
 	}
 }
