@@ -41,7 +41,10 @@
 		<li>Keep your key private and do not share it publicly.</li>
 		<li>You are responsible for activity performed with your key.</li>
 	</ul>
-	<p>Raw API keys are not stored in plaintext; hashed key representations are stored.</p>
+	<p>
+		Raw API keys are not stored in plaintext on the Krawlet API server; hashed key representations
+		are stored.
+	</p>
 	<ul>
 		<li>Do not abuse, overload, scrape, or disrupt Krawlet API infrastructure.</li>
 		<li>Do not bypass authentication, tier limits, or abuse controls.</li>

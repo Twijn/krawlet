@@ -92,8 +92,8 @@
 	let special = $derived(
 		Boolean(
 			wallet ||
-				(player && $settings.replaceAddressesWithPlayer) ||
-				(verifiedEntry && $settings.replaceAddressesWithKnown)
+			(player && $settings.replaceAddressesWithPlayer) ||
+			(verifiedEntry && $settings.replaceAddressesWithKnown)
 		)
 	);
 </script>

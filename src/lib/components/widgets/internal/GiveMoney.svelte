@@ -55,13 +55,20 @@
 		confirm.confirm({
 			message: `Are you sure you want to give ${formatCurrency(amount.value)} KRO to ${address.value}?`,
 			confirmButtonLabel: 'Send',
-			confirm: () => {
-				kromer.external.giveMoney(kromerKey, address.value, amount.value).then((wallet) => {
+			confirm: async () => {
+				loading = true;
+				try {
+					const wallet = await kromer.external.giveMoney(kromerKey, address.value, amount.value);
 					balances[wallet.address] = wallet.balance;
 					notifications.success(
 						`Successfully sent ${formatCurrency(amount.value)} KRO to ${wallet.address}. New balance: ${formatCurrency(wallet.balance)} KRO`
 					);
-				});
+				} catch (err: unknown) {
+					const message = err instanceof Error ? err.message : 'Failed to send money.';
+					notifications.error(message);
+				} finally {
+					loading = false;
+				}
 			}
 		});
 		return false;

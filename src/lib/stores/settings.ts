@@ -296,8 +296,7 @@ export async function decryptWithPassword(
 		);
 		const dec = new TextDecoder();
 		return dec.decode(plainBuf);
-	} catch (err) {
-		console.error(err);
+	} catch {
 		// decryption failed (wrong password or tampering)
 		return null;
 	}
