@@ -122,30 +122,6 @@ Base skeleton component with shimmer animation.
 
 ---
 
-### SkeletonTransaction
-
-**Location**: `src/lib/components/ui/SkeletonTransaction.svelte`
-
-Skeleton placeholder for transaction list items.
-
----
-
-### SkeletonAddress
-
-**Location**: `src/lib/components/ui/SkeletonAddress.svelte`
-
-Skeleton placeholder for address displays.
-
----
-
-### SkeletonWallet
-
-**Location**: `src/lib/components/ui/SkeletonWallet.svelte`
-
-Skeleton placeholder for wallet cards.
-
----
-
 ### SkeletonTable
 
 **Location**: `src/lib/components/ui/SkeletonTable.svelte`
@@ -242,20 +218,6 @@ PWA installation prompt banner.
 - Shows when app can be installed
 - Dismissable (hides for session)
 - Triggers native install prompt
-
----
-
-### ConnectionStatus
-
-**Location**: `src/lib/components/widgets/ConnectionStatus.svelte`
-
-WebSocket connection status indicator.
-
-**States**:
-
-- 🟢 Green: Connected
-- 🟡 Yellow: Connecting/Reconnecting
-- 🔴 Red: Disconnected
 
 ---
 

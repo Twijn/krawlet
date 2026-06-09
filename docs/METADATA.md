@@ -1,111 +1,96 @@
 # Transaction Metadata Reference
 
-Kromer transaction metadata is a semicolon-delimited string of `key=value` pairs.
-Entries without a `=` sign are **value-only / flag entries** (the full token is treated as the key with no value).
+This file documents all metadata keys currently recognized or emitted by Krawlet, plus where they are used in the UI.
 
-**Format:**
+Kromer transaction metadata is a semicolon-delimited string of key-value pairs.
+Entries without `=` are treated as value-only flags.
+
+Format:
 
 ```
 key1=value1;key2=value2;flag_key
 ```
 
-Parsing is handled by `kromer.transactions.parseMetadata()`. All key lookups are case-insensitive.
+Parsing uses `kromer.transactions.parseMetadata()`. Krawlet key matching is case-insensitive via `toLowerCase()`.
 
 ---
 
-## Player Data Keys
+## Where Metadata Is Parsed and Rendered
 
-Populated by rcc-kromer.
+### Main parsing entry points
 
-| Key        | Type     | Description                                                                                                                                         |
-| ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `useruuid` | `string` | Minecraft player UUID. Extracted into `minecraftPlayer.uuid` by the parser and removed from the `entries` array. Renders a player avatar in the UI. |
-| `username` | `string` | Minecraft player display name. Extracted into `minecraftPlayer.name` and removed from `entries`.                                                    |
-| `return`   | `string` | Kromer address to send change/refunds back to the player. Displayed as a linked address.                                                            |
+- `src/lib/components/widgets/transactions/ParsedMetadata.svelte`
+  - Shared compact renderer used by transaction list tables.
+- `src/routes/transactions/[id]/+page.svelte`
+  - Dedicated full transaction detail renderer.
+- `src/lib/components/widgets/transactions/RefundTransactionModal.svelte`
+  - Parses metadata on referenced/original transactions inside refund UI.
+- `src/lib/cache/TransactionCache.ts`
+  - Pre-parses transaction metadata for cached transaction lists.
+- `src/lib/cache/NameHistoryCache.ts`
+  - Pre-parses metadata for name history transaction lists.
 
-**Example:**
+### Surfaces that show parsed metadata
 
-```
-useruuid=550e8400-e29b-41d4-a716-446655440000;username=Steve;return=kst_abc123
-```
+- Transaction list/table views:
+  - `src/lib/components/widgets/transactions/AdvancedTransactions.svelte`
+  - `src/lib/components/widgets/names/NameTransactions.svelte`
+- Transaction detail page:
+  - `src/routes/transactions/[id]/+page.svelte`
 
----
+### Surfaces that compose/send metadata
 
-## Message Keys
-
-| Key       | Type     | Description                                                                                                     |
-| --------- | -------- | --------------------------------------------------------------------------------------------------------------- |
-| `message` | `string` | Generic informational message. Displayed in transaction list rows and detail views.                             |
-| `msg`     | `string` | Alias for `message`. Parsed identically; `message` takes precedence when both are present.                      |
-| `error`   | `string` | Error message. Displayed with red styling. Takes precedence over `message`/`msg` in the display priority chain. |
-| `success` | `string` | Success confirmation message. Displayed after a refund badge in the transaction detail view.                    |
-
-Display priority order: `error` → `message` → `msg` → first value-only entry.
-
----
-
-## Refund Keys
-
-Set automatically by Krawlet when issuing a refund via **Refund Modal** or the **Metadata Builder** (refund mode).
-
-| Key        | Type     | Description                                                                                                    |
-| ---------- | -------- | -------------------------------------------------------------------------------------------------------------- |
-| `type`     | `string` | Set to `refund` to mark this transaction as a refund. Triggers the refund badge and referenced-transaction UI. |
-| `ref`      | `string` | ID of the original transaction being refunded. Used to fetch and link the source transaction.                  |
-| `original` | `number` | KRO value of the original transaction. Used to compute the refund percentage displayed in the UI.              |
-
-**Example (full refund with message):**
-
-```
-ref=12345;type=refund;original=50;message=Sorry about that!
-```
-
-> **Note:** `ref` is currently only parsed in the context of `type=refund`. See [Proposed Additions](#proposed-additions) below for plans to extend its use.
+- Send flow metadata builder:
+  - `src/lib/components/widgets/transactions/MetadataMode.svelte`
+  - Used by `src/lib/components/widgets/transactions/Send.svelte`
+- Quick refund modal sender:
+  - `src/lib/components/dialogs/RefundModal.svelte`
+- Klog purchase sender:
+  - `src/lib/components/dialogs/KlogPurchaseModal.svelte`
+- Raw metadata textarea input:
+  - `src/lib/components/widgets/transactions/MetaInput.svelte`
+  - Used by `src/lib/components/widgets/transactions/ItemPurchase.svelte`
 
 ---
 
-## Shop Action Keys
+## Key Matrix (Current Implementation)
 
-Sent to the ShopSync server address (`kkrawletii` or equivalent) to register or remove shop metadata. Only meaningful when the recipient is the sync server.
+Legend:
 
-| Key                | Type     | Description                                                                                                                                                  |
-| ------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `shop_name`        | `string` | Sets the human-readable shop name for the sender address.                                                                                                    |
-| `shop_description` | `string` | Sets the shop description text shown in the shop catalog.                                                                                                    |
-| `shop_delete`      | flag     | **Value-only entry** (no `=value`). Presence marks the transaction as a "delete shop info" action, removing all stored shop metadata for the sender address. |
+- Compose: where Krawlet emits this key
+- Parse/Display: where Krawlet interprets or renders it
 
-**Examples:**
-
-```
-shop_name=Steve's Emporium;shop_description=Best prices on the server
-```
-
-```
-shop_delete
-```
-
----
-
-## Special / Game Keys
-
-Recognised by Krawlet for display purposes only; not constructed by the app.
-
-| Key      | Type     | Description                                                               |
-| -------- | -------- | ------------------------------------------------------------------------- |
-| `winner` | `string` | Displayed with a styled badge. Used by game/lottery scripts.              |
-| `loser`  | `string` | Displayed with a styled badge.                                            |
-| `payout` | `number` | Parsed as a numeric KRO amount and formatted with the currency formatter. |
+| Key                | Type          | Meaning                                                                     | Compose                                                                                                  | Parse/Display                                                                                                                 |
+| ------------------ | ------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `useruuid`         | string        | Minecraft UUID for player-related tx metadata                               | `MetadataMode.svelte` (player mode), `KlogPurchaseModal.svelte`                                          | `ParsedMetadata.svelte` (player badge/avatar), transaction detail page (`[id]/+page.svelte`)                                  |
+| `username`         | string        | Minecraft username for player metadata                                      | `MetadataMode.svelte` (player mode), `KlogPurchaseModal.svelte`                                          | `ParsedMetadata.svelte`, transaction detail page                                                                              |
+| `return`           | string        | Return/refund destination address                                           | `MetadataMode.svelte` (player mode)                                                                      | `ParsedMetadata.svelte` (linked address), transaction detail page                                                             |
+| `message`          | string        | Informational message                                                       | `MetadataMode.svelte` (message mode), `RefundModal.svelte`, `MetadataMode.svelte` (refund mode optional) | `ParsedMetadata.svelte`, transaction detail page (Message section), `RefundTransactionModal.svelte`                           |
+| `msg`              | string        | Alias for message                                                           | Raw/user-provided only                                                                                   | `ParsedMetadata.svelte`, transaction detail page (`message` fallback), `RefundTransactionModal.svelte`                        |
+| `error`            | string        | Error message                                                               | Raw/user-provided only                                                                                   | `ParsedMetadata.svelte` (priority over message), transaction detail page (Error section), `RefundTransactionModal.svelte`     |
+| `success`          | string        | Success message                                                             | Raw/user-provided only                                                                                   | `ParsedMetadata.svelte` (refund branch), transaction detail page (Success section)                                            |
+| `type`             | string        | Metadata subtype marker; currently interpreted as refund when `type=refund` | `MetadataMode.svelte` (refund mode), `RefundModal.svelte`                                                | `ParsedMetadata.svelte` (`isRefund`), transaction detail page (`isRefund`)                                                    |
+| `ref`              | string/number | Referenced transaction ID (used by refunds)                                 | `MetadataMode.svelte` (refund mode), `RefundModal.svelte`                                                | `ParsedMetadata.svelte` (refund badge + modal), transaction detail page (refund note + link), `RefundTransactionModal.svelte` |
+| `original`         | number        | Original transaction amount for refund percentage                           | `MetadataMode.svelte` (refund mode optional), `RefundModal.svelte`                                       | transaction detail page (refund percentage), `RefundTransactionModal.svelte`                                                  |
+| `shop_name`        | string        | Set shop display name                                                       | `MetadataMode.svelte` (actions mode)                                                                     | `ParsedMetadata.svelte` (shop action), transaction detail page (shop section)                                                 |
+| `shop_description` | string        | Set shop description                                                        | `MetadataMode.svelte` (actions mode)                                                                     | `ParsedMetadata.svelte` (shop action), transaction detail page (shop section)                                                 |
+| `shop_delete`      | flag          | Delete shop metadata for sender                                             | `MetadataMode.svelte` (actions mode)                                                                     | `ParsedMetadata.svelte` (delete-shop badge), transaction detail page (delete warning)                                         |
+| `winner`           | string        | Game result label                                                           | External/raw                                                                                             | `ParsedMetadata.svelte` (styled chip). On detail page, appears under "Metadata Table" fallback.                               |
+| `loser`            | string        | Game result label                                                           | External/raw                                                                                             | `ParsedMetadata.svelte` (styled chip). On detail page, appears under "Metadata Table" fallback.                               |
+| `payout`           | number        | Game payout amount                                                          | External/raw                                                                                             | `ParsedMetadata.svelte` (formatted KRO chip). On detail page, appears under "Metadata Table" fallback.                        |
+| `klog`             | flag          | Marker flag for Klog purchases                                              | `KlogPurchaseModal.svelte`                                                                               | No dedicated branch. Treated as generic/value-only metadata (or purchase matching input).                                     |
 
 ---
 
-## ShopSync Purchase Matching
+## Value-Only Flags and Unknown Keys
 
-Value-only (flag) entries that don't match any of the keys above are treated as **item identifiers** for ShopSync purchase matching. They are compared against a listing's `requiredMeta` field to associate a transaction with a specific shop listing.
+Any value-only token (for example `oak_log_x64`, `@myshop`, `klog`) may be used as purchase-matching metadata.
 
-- Entries containing `@` are treated as address hints (e.g. `item@shop.kro`).
-- Matching logic lives in `src/lib/utils/shopsyncMatching.ts`.
+- Used by ShopSync matching logic in `src/lib/utils/shopsyncMatching.ts`.
+- Consumed by compact list rendering in `ParsedMetadata.svelte` when purchase matching is enabled.
+- On the transaction detail page, unmatched/unfiltered keys appear in the "Metadata Table" fallback.
 
-**Example raw metadata from a ShopSync purchase:**
+Example:
 
 ```
 useruuid=550e8400-e29b-41d4-a716-446655440000;username=Steve;return=kst_abc123;@myshop;oak_log_x64
@@ -113,43 +98,127 @@ useruuid=550e8400-e29b-41d4-a716-446655440000;username=Steve;return=kst_abc123;@
 
 ---
 
-## Internal Meta Filter
+## ParsedMetadata.svelte Display Priority (Compact List Views)
 
-The following keys are considered "internal" and are stripped before rendering the **Other Metadata** fallback section, to avoid double-displaying them:
+`ParsedMetadata.svelte` uses a single branch chain in this order:
+
+1. Refund branch (`type=refund` and `ref` present)
+2. Shop action branch (`shop_name`, `shop_description`, or `shop_delete`)
+3. Player data branch (`useruuid` or `username`)
+4. Special/game branch (`winner`, `loser`, `payout`)
+5. ShopSync related listing branch (value-only meta match)
+6. Generic display meta branch (`error` -> `message` -> `msg` -> first value-only)
+7. Placeholder: `[No message]`
+
+Important: because this is an if/else chain, only one branch renders per transaction row.
+
+---
+
+## Transaction Detail Page Behavior (`/transactions/[id]`)
+
+The detail page does not use the same single-branch chain as `ParsedMetadata.svelte`.
+It renders multiple independent sections when available:
+
+- Refund note/summary
+- Shop action section
+- Player data section
+- Message section
+- Error section
+- Success section
+- Item purchase section (ShopSync listing match)
+- Metadata Table fallback for remaining entries
+- Raw metadata `<details>` block
+
+This means detail-page output can include several metadata sections at the same time.
+
+---
+
+## Internal Filter Lists
+
+### Detail page "internal" keys
+
+`src/routes/transactions/[id]/+page.svelte` excludes these from "Metadata Table":
 
 ```
 type, ref, original, shop_name, shop_description, shop_delete,
 useruuid, username, return, message, msg, error, success
 ```
 
-The narrower `REFUND_INTERNAL_META` list (`ref`, `type`, `original`) is used inside the refund detail block specifically.
+If a ShopSync listing match is found, value-only purchase tokens are also excluded from the table.
+
+### Refund-only internal keys
+
+`ParsedMetadata.svelte` and `RefundTransactionModal.svelte` use:
+
+```
+ref, type, original
+```
+
+for refund-specific fallback filtering.
 
 ---
 
-## Proposed Additions
+## Settings That Affect Metadata Rendering
 
-### `ref=` — General Transaction Reference
+- `showMetadata` / `parseTransactionMessage`
+  - Used by legacy/simple `Transactions.svelte` table and display settings page.
+- `parsePurchaseItem`
+  - Enables/disables ShopSync purchase matching in `ParsedMetadata.svelte`.
+- `parsePurchaseItemQuantity`
+  - Enables quantity calculation display in `ParsedMetadata.svelte` when listing price is known.
 
-Currently `ref` is only interpreted when `type=refund` is also present. It would be useful to treat `ref` as a **general-purpose transaction reference** in other contexts too:
-
-| Proposed use                                                                              | Metadata example                                    | Notes                                                                   |
-| ----------------------------------------------------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------- |
-| **Order confirmation** — link a "payment received" transaction back to a quote/invoice tx | `ref=99887;message=Order confirmed`                 | The referenced tx would be shown as "In response to transaction #99887" |
-| **Chained payments** — multi-leg purchases that each reference a root order tx            | `ref=99887;type=payment;message=Installment 2 of 3` | Would need a new `type` value to distinguish from refunds               |
-| **Payout reference** — lottery/game payouts that reference the original bet tx            | `ref=99887;type=payout;payout=500`                  | Combines with the existing `payout` special key                         |
-
-**Suggested implementation:** extract `ref` display into a reusable "Referenced Transaction" component independent of `type=refund`, and render it whenever `ref` is present — with the badge text determined by `type` (defaults to a neutral "references" label when `type` is absent or unrecognised).
+Settings UI: `src/routes/settings/display/+page.svelte`
 
 ---
 
-### `type=` — Extended Transaction Types
+## Canonical Examples
 
-Extending the `type` key beyond just `refund`:
+Player metadata:
 
-| Value      | Proposed meaning                                                                        |
-| ---------- | --------------------------------------------------------------------------------------- |
-| `refund`   | Existing — marks a refund payment                                                       |
-| `payment`  | Explicit purchase/payment marker (distinguishes from gifts/transfers)                   |
-| `payout`   | Game/lottery payout (pairs with `payout=` amount key and optional `ref=` to the bet tx) |
-| `tip`      | Discretionary tip with no expected return                                               |
-| `donation` | Directed donation to a service/address                                                  |
+```
+useruuid=550e8400-e29b-41d4-a716-446655440000;username=Steve;return=kst_abc123
+```
+
+Message metadata:
+
+```
+message=Thanks for shopping!
+```
+
+Error metadata:
+
+```
+error=Insufficient stock
+```
+
+Refund metadata:
+
+```
+ref=12345;type=refund;original=50;message=Sorry about that!
+```
+
+Shop info update:
+
+```
+shop_name=Steve's Emporium;shop_description=Best prices on the server
+```
+
+Shop delete:
+
+```
+shop_delete
+```
+
+Klog purchase metadata (current sender format):
+
+```
+<requiredMeta>;useruuid=<uuid>;username=<name>;klog
+```
+
+---
+
+## Notes
+
+- `ref` is currently interpreted as a refund reference in current UI logic (`type=refund`).
+- Unknown keys are preserved and may surface in generic/fallback displays.
+- Raw metadata is always available on transaction detail pages under "View Raw Metadata".
