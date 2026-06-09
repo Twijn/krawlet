@@ -9,12 +9,6 @@
 
 	const tabs = [
 		{ href: '/settings', icon: faGlobe, labelKey: 'settings.tabs.general', exact: true },
-		{
-			href: '/settings/krawlet-api',
-			icon: faCrown,
-			labelKey: 'settings.tabs.krawletApi',
-			exact: false
-		},
 		{ href: '/settings/display', icon: faDesktop, labelKey: 'settings.tabs.display', exact: false },
 		{
 			href: '/settings/notifications',
@@ -22,7 +16,13 @@
 			labelKey: 'settings.tabs.notifications',
 			exact: false
 		},
-		{ href: '/settings/cache', icon: faServer, labelKey: 'settings.tabs.cache', exact: false }
+		{ href: '/settings/cache', icon: faServer, labelKey: 'settings.tabs.cache', exact: false },
+		{
+			href: '/settings/krawlet-api',
+			icon: faCrown,
+			labelKey: 'settings.tabs.krawletApi',
+			exact: false
+		}
 	];
 
 	function isActive(href: string, exact: boolean): boolean {

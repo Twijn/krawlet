@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
-	import Section from '$lib/components/ui/Section.svelte';
 
-	const effectiveDate = '2026-06-03';
-	const lastUpdated = '2026-06-03';
+	const lastUpdated = '2026-06-08';
+
+	const KROMER_URL = 'https://kromer.reconnected.cc';
 </script>
 
 <svelte:head>
@@ -16,100 +16,124 @@
 
 <Breadcrumbs navItems={[{ label: 'Privacy Policy', href: '/privacy' }]} />
 
-<Section lgCols={12}>
-	<h1>Privacy Policy</h1>
-	<div class="stack">
+<article class="policy-doc col-12" aria-labelledby="privacy-title">
+	<header>
+		<h1 id="privacy-title">Privacy Policy</h1>
 		<p>
-			Krawlet is a wallet frontend for Kromer. This policy explains what data is used, why, and your
-			main controls.
+			Krawlet is a wallet frontend for <a
+				href={KROMER_URL}
+				target="_blank"
+				rel="noopener noreferrer external">the Kromer API</a
+			>. This policy explains what data is used, why, and your main controls.
 		</p>
 		<p>
-			It covers the Krawlet frontend and Krawlet API endpoints used by the app. Core wallet and
-			network data comes from Kromer, a separate third-party service with its own policies.
+			It covers the <a
+				href="https://github.com/Twijn/krawlet"
+				target="_blank"
+				rel="noopener noreferrer external">Krawlet frontend</a
+			>
+			and
+			<a
+				href="https://github.com/Twijn/krawlet-api"
+				target="_blank"
+				rel="noopener noreferrer external">Krawlet API</a
+			> endpoints used by the app. Core wallet and network data comes from Kromer, a separate third-party
+			service with its own policies.
 		</p>
-	</div>
-</Section>
+	</header>
 
-<Section lgCols={12}>
 	<h2>What we use and why</h2>
-	<ul class="stack-list">
-		<li><strong>Local wallet data:</strong> Settings and wallet entries stored in your browser.</li>
+	<ul>
 		<li>
-			<strong>Encrypted key payloads:</strong> Private key material protected by your master password.
+			<strong>Wallet data (private keys):</strong>
+			Wallet private keys are encrypted and stored client-side in the browser (local storage). Your Kromer
+			private key is only ever sent to the
+			<a href={KROMER_URL} target="_blank" rel="noopener noreferrer external">official Kromer API</a
+			>.
 		</li>
-		<li><strong>Optional API key:</strong> Stored only if you choose to save one.</li>
 		<li>
-			<strong>Network data:</strong> Address and transaction data from Kromer and Krawlet API.
+			<strong>Krawlet API usage data:</strong>
+			We collect minimal logs of API requests for security and abuse prevention. This may include request
+			metadata such as timestamp, IP address, endpoint accessed, or the API key used.
+			<strong>These logs are automatically deleted after 7 days.</strong>
 		</li>
 		<li>
-			<strong>Security telemetry:</strong> Minimal reliability and abuse-prevention data where enabled.
+			<strong>Infrastructure data:</strong>
+			We use third-party hosting and infrastructure providers (Vercel, Cloudflare, and others) that may
+			process data necessary to operate the service, such as server logs or analytics. We do not control
+			these providers' data practices.
+		</li>
+		<li>
+			<strong>Cookies and local storage:</strong>
+			The Krawlet frontend uses local storage instead of cookies for client-side data, including wallet
+			data and settings. Transactions, addresses, and names are also cached inside IndexedDB for performance.
+			We do not use cookies for tracking or advertising purposes.
+		</li>
+		<li>
+			<strong>Other data collected:</strong>
+			Krawlet API acts as an aggregator and proxy for
+			<a
+				href="https://github.com/scmcgowen/ShopSync"
+				target="_blank"
+				rel="noopener noreferrer external">Shopsync shop/listing data</a
+			>, player-to-Kromer address mappings, known address metadata, and Shopsync report/change logs
+			(for example validation failures, successful posts, and shop/item/price changes).
 		</li>
 	</ul>
-	<ul class="stack-list compact">
-		<li>Provide wallet features and app functionality.</li>
-		<li>Operate Krawlet API-backed services.</li>
-		<li>Prevent abuse and apply rate limiting.</li>
-		<li>Meet legal obligations where required.</li>
-	</ul>
-</Section>
 
-<Section lgCols={12}>
-	<h2>Security, retention, and rights</h2>
-	<div class="stack">
-		<p>
-			Local wallet data stays in your browser until you remove it. Private key material is encrypted
-			client-side. Krawlet API keeps minimal security logs with limited retention (at least 7 days)
-			and automatic cleanup.
-		</p>
-		<p>Infrastructure providers may process data needed to host and operate the service.</p>
-		<p>
-			Depending on your region, you may have rights to access, correct, delete, or restrict
-			processing. We may update this policy over time by posting a revised version.
-		</p>
-		<div class="dates">
-			<p><strong>Effective date:</strong> {effectiveDate}</p>
-			<p><strong>Last updated:</strong> {lastUpdated}</p>
-		</div>
-	</div>
-</Section>
+	<footer class="meta">
+		<p><strong>Last updated:</strong> {lastUpdated}</p>
+	</footer>
+</article>
 
 <style>
+	.policy-doc {
+		max-width: 78ch;
+		padding: 0.2rem 0.25rem;
+	}
+
 	h1 {
 		margin: 0;
+		font-size: 1.5rem;
 	}
 
 	h2 {
-		margin-top: 0;
-		margin-bottom: 0.4rem;
-		font-size: 1.02rem;
+		margin: 1.3rem 0 0.45rem;
+		font-size: 1.08rem;
 	}
 
-	.stack {
-		display: flex;
-		flex-direction: column;
-		gap: 0.65rem;
+	p {
+		margin: 0.5rem 0;
+		line-height: 1.55;
+		color: rgba(255, 255, 255, 0.92);
 	}
 
-	.stack-list {
-		display: flex;
-		flex-direction: column;
-		gap: 0.35rem;
-		margin: 0.1rem 0 0 1.1rem;
+	ul {
+		margin: 0.45rem 0 0.75rem 1.15rem;
 		padding: 0;
 	}
 
-	.stack-list.compact {
-		margin-top: 0.55rem;
+	li {
+		margin: 0.28rem 0;
+		line-height: 1.45;
 	}
 
-	.stack p {
-		margin: 0;
+	header p:first-of-type {
+		margin-top: 0.7rem;
 	}
 
-	.dates {
+	.meta {
+		margin-top: 1.3rem;
+		padding-top: 0.7rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.14);
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.9rem 1.4rem;
-		padding-top: 0.2rem;
+		gap: 0.3rem 1.25rem;
+	}
+
+	@media only screen and (max-width: 768px) {
+		.policy-doc {
+			padding: 0.1rem 0;
+		}
 	}
 </style>
