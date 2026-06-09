@@ -51,28 +51,25 @@
 	const DEFAULT_SORT_COLUMN: keyof TransactionWithMeta = 'time';
 	const DEFAULT_SORT_DIRECTION: 'ASC' | 'DESC' = 'DESC';
 
-	const page = paramState<number>(`${storePrefix.length > 0 ? storePrefix + '_' : ''}page`, 1, {
+	const paramPrefix = storePrefix.length > 0 ? `${storePrefix}_` : '';
+	const page = paramState<number>(`${paramPrefix}page`, 1, {
 		serialize: (v) => v.toString(),
 		deserialize: (s) => parseInt(s) || 1,
 		shouldSet: (v) => v > 1
 	});
 
-	const includeMined = paramState<boolean>(
-		`${storePrefix.length > 0 ? storePrefix + '_' : ''}incl_welf`,
-		false,
-		{
-			serialize: (v) => v.toString(),
-			deserialize: (s) => s === 'true',
-			shouldSet: (v) => v
-		}
-	);
+	const includeMined = paramState<boolean>(`${paramPrefix}incl_welf`, false, {
+		serialize: (v) => v.toString(),
+		deserialize: (s) => s === 'true',
+		shouldSet: (v) => v
+	});
 
 	type SortableField = 'id' | 'from' | 'to' | 'value' | 'time';
 	const VALID_SORT_FIELDS: SortableField[] = ['id', 'from', 'to', 'value', 'time'];
 	const ALL_DISPLAY_FIELDS = ['id', 'type', 'from', 'to', 'value', 'metadata', 'time'] as const;
 
 	let sortedColumn = paramState<keyof TransactionWithMeta>(
-		`${storePrefix.length > 0 ? storePrefix + '_' : ''}sc`,
+		`${paramPrefix}sc`,
 		DEFAULT_SORT_COLUMN,
 		{
 			serialize: (v) => v,
@@ -83,16 +80,12 @@
 			shouldSet: (v) => ALL_DISPLAY_FIELDS.includes(v as SortableField) && v !== DEFAULT_SORT_COLUMN
 		}
 	);
-	let sortDirection = paramState<'ASC' | 'DESC'>(
-		`${storePrefix.length > 0 ? storePrefix + '_' : ''}sd`,
-		DEFAULT_SORT_DIRECTION,
-		{
-			serialize: (v) => v,
-			deserialize: (s) =>
-				['ASC', 'DESC'].includes(s) ? (s as 'ASC' | 'DESC') : DEFAULT_SORT_DIRECTION,
-			shouldSet: (v) => ['ASC', 'DESC'].includes(v) && v !== DEFAULT_SORT_DIRECTION
-		}
-	);
+	let sortDirection = paramState<'ASC' | 'DESC'>(`${paramPrefix}sd`, DEFAULT_SORT_DIRECTION, {
+		serialize: (v) => v,
+		deserialize: (s) =>
+			['ASC', 'DESC'].includes(s) ? (s as 'ASC' | 'DESC') : DEFAULT_SORT_DIRECTION,
+		shouldSet: (v) => ['ASC', 'DESC'].includes(v) && v !== DEFAULT_SORT_DIRECTION
+	});
 	let offset = $derived((page.value - 1) * limit);
 
 	// Address filter modal state
@@ -100,21 +93,17 @@
 
 	// Internal address filters (with labels for display)
 	type AddressFilter = { address: string; label?: string };
-	let addressFilters = paramState<AddressFilter[]>(
-		`${storePrefix.length > 0 ? storePrefix + '_' : ''}af`,
-		[],
-		{
-			serialize: (filters) => filters.map((f) => `${f.address}:${f.label || ''}`).join(','),
-			deserialize: (s) => {
-				if (!s) return [];
-				return s.split(',').map((part) => {
-					const [address, label] = part.split(':');
-					return { address, label: label || undefined };
-				});
-			},
-			shouldSet: (filters) => Array.isArray(filters) && filters.length > 0
-		}
-	);
+	let addressFilters = paramState<AddressFilter[]>(`${paramPrefix}af`, [], {
+		serialize: (filters) => filters.map((f) => `${f.address}:${f.label || ''}`).join(','),
+		deserialize: (s) => {
+			if (!s) return [];
+			return s.split(',').map((part) => {
+				const [address, label] = part.split(':');
+				return { address, label: label || undefined };
+			});
+		},
+		shouldSet: (filters) => Array.isArray(filters) && filters.length > 0
+	});
 
 	// Combine prop addresses with internal filters
 	let allAddresses = $derived([...addresses, ...addressFilters.value.map((f) => f.address)]);

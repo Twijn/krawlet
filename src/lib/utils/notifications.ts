@@ -115,14 +115,6 @@ export function areNotificationsSupported(): boolean {
 }
 
 /**
- * Check if service worker push is supported
- */
-export function isPushSupported(): boolean {
-	if (!browser) return false;
-	return 'serviceWorker' in navigator && 'PushManager' in window;
-}
-
-/**
  * Show a notification using the Notification API (foreground)
  * @param title - Notification title
  * @param options - Notification options
@@ -264,48 +256,6 @@ export function formatTransactionNotification(
 			amount,
 			from,
 			to
-		}
-	};
-}
-
-/**
- * Format a name event into notification data
- */
-export function formatNameNotification(
-	name: string,
-	event: 'purchased' | 'transferred',
-	details: { owner?: string; previousOwner?: string; cost?: number }
-): NameNotificationData {
-	let title: string;
-	let body: string;
-
-	if (event === 'purchased') {
-		title = t('pushNotifications.namePurchased', { name: `${name}.kst` });
-		body = details.cost
-			? t('pushNotifications.nameCost', { amount: details.cost.toLocaleString() })
-			: '';
-	} else {
-		title = t('pushNotifications.nameTransferred', { name: `${name}.kst` });
-		if (details.owner) {
-			body = t('pushNotifications.to', { recipient: details.owner });
-		} else if (details.previousOwner) {
-			body = t('pushNotifications.from', { sender: details.previousOwner });
-		} else {
-			body = '';
-		}
-	}
-
-	return {
-		type: event === 'purchased' ? 'purchase' : 'transfer',
-		title,
-		body,
-		tag: `name-${name}`,
-		data: {
-			url: `/names/${name}`,
-			name,
-			amount: details.cost,
-			from: details.previousOwner,
-			to: details.owner
 		}
 	};
 }

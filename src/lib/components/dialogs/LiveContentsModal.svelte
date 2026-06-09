@@ -27,21 +27,16 @@
 
 	async function loadContents() {
 		loading = true;
-		errorMessage = null;
 
 		try {
 			contents = await client.transfers.getContents();
+			errorMessage = null;
 		} catch (error) {
 			errorMessage = error instanceof Error ? error.message : 'Unknown error';
 		} finally {
 			loading = false;
 		}
 	}
-
-	$effect(() => {
-		if (!open) return;
-		void loadContents();
-	});
 
 	function getImageUrl(item: StorageSlotItem): string {
 		return `https://cdn.krawlet.cc/${item.name.replace(':', '/')}.png`;

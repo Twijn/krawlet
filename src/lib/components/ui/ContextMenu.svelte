@@ -27,11 +27,14 @@
 	} = $props();
 
 	let menuElement: HTMLDivElement | null = $state(null);
-	let adjustedX = $state(x);
-	let adjustedY = $state(y);
+	let adjustedX = $state(0);
+	let adjustedY = $state(0);
 
 	// Adjust position to keep menu on screen
 	$effect(() => {
+		adjustedX = x;
+		adjustedY = y;
+
 		if (visible && menuElement) {
 			const rect = menuElement.getBoundingClientRect();
 			const viewportWidth = window.innerWidth;

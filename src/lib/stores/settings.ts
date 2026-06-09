@@ -141,14 +141,6 @@ export function validateImportedSettingsData(data: unknown): { wallets: Wallet[]
 	return { wallets };
 }
 
-export function getImportedWalletPreview(data: unknown): ImportedWalletPreview[] {
-	return validateImportedSettingsData(data).wallets.map(({ name, address, syncNode }) => ({
-		name,
-		address,
-		syncNode
-	}));
-}
-
 export function createWalletImportPlan(currentWallets: Wallet[], data: unknown): WalletImportPlan {
 	const { wallets: importedWallets } = validateImportedSettingsData(data);
 	const mergedWallets = currentWallets.map((wallet) => ({ ...wallet }));

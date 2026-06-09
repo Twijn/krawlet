@@ -133,29 +133,6 @@ export async function withRateLimitRetry<T>(
 }
 
 /**
- * Create a rate-limited version of an async function
- * Adds a minimum delay between calls to avoid hitting rate limits
- */
-export function createRateLimitedFn<T extends (...args: unknown[]) => Promise<unknown>>(
-	fn: T,
-	minDelayMs: number = 100
-): T {
-	let lastCallTime = 0;
-
-	return (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
-		const now = Date.now();
-		const timeSinceLastCall = now - lastCallTime;
-
-		if (timeSinceLastCall < minDelayMs) {
-			await sleep(minDelayMs - timeSinceLastCall);
-		}
-
-		lastCallTime = Date.now();
-		return fn(...args) as ReturnType<T>;
-	}) as T;
-}
-
-/**
  * Simple delay helper - waits for a specified time
  * Automatically uses shorter delays when user is authenticated with an API key
  * @param ms - Optional delay in milliseconds. If not provided, uses default based on auth status.
