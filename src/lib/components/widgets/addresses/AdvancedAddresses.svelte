@@ -21,6 +21,7 @@
 	import { t$ } from '$lib/i18n';
 	import { contextMenu } from '$lib/stores/contextMenu';
 	import { notifications } from '$lib/stores/notifications';
+	import { untrack } from 'svelte';
 
 	let {
 		query = {},
@@ -40,11 +41,15 @@
 
 	const cache = new AddressCache();
 
-	let page = paramState<number>(`${storePrefix.length > 0 ? storePrefix + '_' : ''}page`, 1, {
-		serialize: (v) => v.toString(),
-		deserialize: (s) => parseInt(s) || 1,
-		shouldSet: (v) => v > 1
-	});
+	let page = paramState<number>(
+		untrack(() => `${storePrefix.length > 0 ? storePrefix + '_' : ''}page`),
+		1,
+		{
+			serialize: (v) => v.toString(),
+			deserialize: (s) => parseInt(s) || 1,
+			shouldSet: (v) => v > 1
+		}
+	);
 
 	let offset = $derived((page.value - 1) * limit);
 

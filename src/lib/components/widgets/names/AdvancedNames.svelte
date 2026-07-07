@@ -19,6 +19,7 @@
 	import { t$ } from '$lib/i18n';
 	import { contextMenu } from '$lib/stores/contextMenu';
 	import { notifications } from '$lib/stores/notifications';
+	import { untrack } from 'svelte';
 
 	let {
 		query = {},
@@ -50,13 +51,17 @@
 		'registered'
 	];
 
-	let page = paramState<number>(`${storePrefix.length > 0 ? storePrefix + '_' : ''}page`, 1, {
-		serialize: (v) => v.toString(),
-		deserialize: (s) => parseInt(s) || 1,
-		shouldSet: (v) => v > 1
-	});
+	let page = paramState<number>(
+		untrack(() => `${storePrefix.length > 0 ? storePrefix + '_' : ''}page`),
+		1,
+		{
+			serialize: (v) => v.toString(),
+			deserialize: (s) => parseInt(s) || 1,
+			shouldSet: (v) => v > 1
+		}
+	);
 	let sortedColumn = paramState<keyof Name>(
-		`${storePrefix.length > 0 ? storePrefix + '_' : ''}sc`,
+		untrack(() => `${storePrefix.length > 0 ? storePrefix + '_' : ''}sc`),
 		DEFAULT_SORT_COLUMN,
 		{
 			serialize: (v) => v,
@@ -66,7 +71,7 @@
 		}
 	);
 	let sortDirection = paramState<'ASC' | 'DESC'>(
-		`${storePrefix.length > 0 ? storePrefix + '_' : ''}sd`,
+		untrack(() => `${storePrefix.length > 0 ? storePrefix + '_' : ''}sd`),
 		DEFAULT_SORT_DIRECTION,
 		{
 			serialize: (v) => v,
@@ -83,7 +88,7 @@
 	// Internal address filters (with labels for display)
 	type AddressFilter = { address: string; label?: string };
 	let addressFilters = paramState<AddressFilter[]>(
-		`${storePrefix.length > 0 ? storePrefix + '_' : ''}af`,
+		untrack(() => `${storePrefix.length > 0 ? storePrefix + '_' : ''}af`),
 		[],
 		{
 			serialize: (filters) => filters.map((f) => `${f.address}:${f.label || ''}`).join(','),

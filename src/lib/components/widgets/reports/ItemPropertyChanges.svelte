@@ -20,7 +20,7 @@
 	import type { ItemChangesResponse, PriceChangesResponse } from '$lib/types/shopsync-reports';
 	import { relativeTime } from '$lib/util';
 	import { paramState } from '$lib/paramState.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { browser } from '$app/environment';
 	import { t$ } from '$lib/i18n';
 
@@ -52,9 +52,14 @@
 		shouldSet: (value) => value >= 2
 	});
 
-	let source = paramState<DataSource>('ipc_src', defaultSource, {
-		shouldSet: (value) => value !== defaultSource && (value === 'memory' || value === 'persistent')
-	});
+	let source = paramState<DataSource>(
+		'ipc_src',
+		untrack(() => defaultSource),
+		{
+			shouldSet: (value) =>
+				value !== defaultSource && (value === 'memory' || value === 'persistent')
+		}
+	);
 
 	let changeFilter = paramState<ChangeType>('ipc_type', 'all', {
 		shouldSet: (value) => value !== 'all' && ['added', 'removed', 'updated'].includes(value)

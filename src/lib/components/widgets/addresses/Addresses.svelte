@@ -12,6 +12,7 @@
 	import type { AddressesResponse } from 'kromer';
 	import { paramState } from '$lib/paramState.svelte.js';
 	import { t$ } from '$lib/i18n';
+	import { untrack } from 'svelte';
 
 	const SERVERWELF_ADDRESS = 'serverwelf';
 
@@ -33,7 +34,7 @@
 		queryPrefix?: string;
 	} = $props();
 
-	let page = paramState(`${queryPrefix}page`, 1, {
+	let page = paramState(`${untrack(() => queryPrefix)}page`, 1, {
 		serialize: (value) => value.toString(),
 		deserialize: (value) => Number(value),
 		shouldSet: (value) => value >= 2

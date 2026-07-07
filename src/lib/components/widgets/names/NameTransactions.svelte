@@ -23,6 +23,7 @@
 		faPaperPlane
 	} from '@fortawesome/free-solid-svg-icons';
 	import { paramState } from '$lib/paramState.svelte';
+	import { untrack } from 'svelte';
 
 	let {
 		query,
@@ -43,18 +44,22 @@
 	const DEFAULT_SORT_COLUMN: keyof TransactionWithMeta = 'time';
 	const DEFAULT_SORT_DIRECTION: 'ASC' | 'DESC' = 'DESC';
 
-	const page = paramState<number>(`${storePrefix.length > 0 ? storePrefix + '_' : ''}page`, 1, {
-		serialize: (v) => v.toString(),
-		deserialize: (s) => parseInt(s) || 1,
-		shouldSet: (v) => v > 1
-	});
+	const page = paramState<number>(
+		untrack(() => `${storePrefix.length > 0 ? storePrefix + '_' : ''}page`),
+		1,
+		{
+			serialize: (v) => v.toString(),
+			deserialize: (s) => parseInt(s) || 1,
+			shouldSet: (v) => v > 1
+		}
+	);
 
 	type SortableField = 'id' | 'from' | 'to' | 'value' | 'time';
 	const VALID_SORT_FIELDS: SortableField[] = ['id', 'from', 'to', 'value', 'time'];
 	const ALL_DISPLAY_FIELDS = ['id', 'type', 'from', 'to', 'value', 'metadata', 'time'] as const;
 
 	let sortedColumn = paramState<keyof TransactionWithMeta>(
-		`${storePrefix.length > 0 ? storePrefix + '_' : ''}sc`,
+		untrack(() => `${storePrefix.length > 0 ? storePrefix + '_' : ''}sc`),
 		DEFAULT_SORT_COLUMN,
 		{
 			serialize: (v) => v,
@@ -66,7 +71,7 @@
 		}
 	);
 	let sortDirection = paramState<'ASC' | 'DESC'>(
-		`${storePrefix.length > 0 ? storePrefix + '_' : ''}sd`,
+		untrack(() => `${storePrefix.length > 0 ? storePrefix + '_' : ''}sd`),
 		DEFAULT_SORT_DIRECTION,
 		{
 			serialize: (v) => v,

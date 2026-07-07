@@ -3,6 +3,7 @@
 	import Modal from '../ui/Modal.svelte';
 	import { krawletWebsocket } from '$lib/stores/krawletWebsocket';
 	import { notifications } from '$lib/stores/notifications';
+	import { untrack } from 'svelte';
 
 	type Props = {
 		open: boolean;
@@ -27,11 +28,16 @@
 	let targetsError = $state<string | null>(null);
 
 	let selectedTargetId = $state('');
-	let itemName = $state(initialItemName);
-	let itemNbt = $state(initialItemNbt);
-	let quantity = $state(Math.max(1, initialQuantity));
+	let itemName = $state(untrack(() => initialItemName));
+	let itemNbt = $state(untrack(() => initialItemNbt));
+	let quantity = $state(
+		Math.max(
+			1,
+			untrack(() => initialQuantity)
+		)
+	);
 	let memo = $state('');
-	let timeout = $state<number | null>(initialTimeout);
+	let timeout = $state<number | null>(untrack(() => initialTimeout));
 
 	const canSubmit = $derived(
 		selectedTargetId.length > 0 && itemName.trim().length > 0 && quantity > 0 && !loadingTargets

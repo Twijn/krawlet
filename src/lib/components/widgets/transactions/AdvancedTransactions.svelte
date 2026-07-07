@@ -29,6 +29,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { paramState } from '$lib/paramState.svelte';
 	import TransactionType from './TransactionType.svelte';
+	import { untrack } from 'svelte';
 
 	let {
 		query = {},
@@ -51,7 +52,7 @@
 	const DEFAULT_SORT_COLUMN: keyof TransactionWithMeta = 'time';
 	const DEFAULT_SORT_DIRECTION: 'ASC' | 'DESC' = 'DESC';
 
-	const paramPrefix = storePrefix.length > 0 ? `${storePrefix}_` : '';
+	const paramPrefix = untrack(() => (storePrefix.length > 0 ? `${storePrefix}_` : ''));
 	const page = paramState<number>(`${paramPrefix}page`, 1, {
 		serialize: (v) => v.toString(),
 		deserialize: (s) => parseInt(s) || 1,

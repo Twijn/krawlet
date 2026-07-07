@@ -18,6 +18,7 @@
 	import { contextMenu } from '$lib/stores/contextMenu';
 	import { notifications } from '$lib/stores/notifications';
 	import type { ContextMenuItem } from '$lib/components/ui/ContextMenu.svelte';
+	import { untrack } from 'svelte';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -37,7 +38,7 @@
 		queryPrefix?: string;
 	} = $props();
 
-	let page = paramState(`${queryPrefix}page`, 1, {
+	let page = paramState(`${untrack(() => queryPrefix)}page`, 1, {
 		serialize: (value) => value.toString(),
 		deserialize: (value) => Number(value),
 		shouldSet: (value) => value >= 2
