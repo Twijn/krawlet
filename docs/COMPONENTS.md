@@ -232,16 +232,6 @@ Located in `src/lib/components/form/address/`:
 - **RawAddressInput.svelte**: Direct address input
 - **ShopAddressInput.svelte**: Select from shops
 
-### Private Key Input Components
-
-Located in `src/lib/components/form/privatekey/`:
-
-- **PrivateKeyInputMethod.svelte**: Toggle between input methods
-- **RawPrivateKeyInput.svelte**: Direct private key input
-- **SavedWalletSelector.svelte**: Select from saved wallets
-
----
-
 ## Creating New Components
 
 When creating new components, follow these patterns:
