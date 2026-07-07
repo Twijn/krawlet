@@ -39,7 +39,11 @@
 	);
 	const shopAddress = $derived(priceEntry ? priceEntry.address : null);
 	const hasValidShopAddress = $derived(
-		!!shopAddress && shopAddress.length === 10 && shopAddress.startsWith('k')
+		(!!shopAddress &&
+			shopAddress.length === 10 &&
+			shopAddress.startsWith('k') &&
+			priceEntry?.requiredMeta) ||
+			(!!shopAddress && shopAddress.match(/^\w+\.kro$/) && priceEntry?.requiredMeta)
 	);
 	const grandTotal = $derived(priceEntry ? priceEntry.value * quantity : 0);
 
@@ -124,30 +128,64 @@
 			<small title={item.itemNbt ? `NBT: ${item.itemNbt}` : undefined}>{item.itemName}</small>
 		</div>
 	</div>
-	<AddressSelector mode="privatekey" bind:privatekey bind:address label="From / Sender Address" />
-	{#if mcIdentifier}
-		<Alert variant="info">
-			<strong>Items will be sent via Klog to:</strong>
-			<div class="minecraft-player">
-				<img
-					src={getMinecraftAvatar(mcIdentifier)}
-					alt={$apiKeyInfo.mcName ? `Avatar for ${$apiKeyInfo.mcName}` : 'Minecraft avatar'}
-				/>
-				{#if $apiKeyInfo.mcName}
-					<span class="minecraft-name">{$apiKeyInfo.mcName}</span>
+	{#if !canUseKlog}
+		<Alert variant="danger">
+			<strong>You cannot use Klog to purchase this item.</strong>
+			<ul>
+				{#if shop?.softwareVersion?.includes('+klog')}
+					<li>
+						The shop must have <code>+klog</code> in its software version.
+					</li>
 				{/if}
-			</div>
+				{#if !$settings.krawletApiKey}
+					<li>
+						You must have an API key specified in <a href="/settings/krawlet-api">settings</a>.
+					</li>
+				{/if}
+			</ul>
 		</Alert>
+	{:else if !hasValidShopAddress}
+		<Alert variant="danger">
+			<strong>The shop is missing a valid Kromer address or name to send payments to.</strong>
+			<ul>
+				<li>
+					The shopsync listing must include a valid Kromer address or name (ending in <code
+						>.kro</code
+					>)
+				</li>
+				<li></li>
+			</ul>
+		</Alert>
+	{:else if stock <= 0}
+		<Alert variant="danger">
+			<strong>This item is out of stock.</strong>
+		</Alert>
+	{:else}
+		<AddressSelector mode="privatekey" bind:privatekey bind:address label="From / Sender Address" />
+		{#if mcIdentifier}
+			<Alert variant="info">
+				<strong>Items will be sent via Klog to:</strong>
+				<div class="minecraft-player">
+					<img
+						src={getMinecraftAvatar(mcIdentifier)}
+						alt={$apiKeyInfo.mcName ? `Avatar for ${$apiKeyInfo.mcName}` : 'Minecraft avatar'}
+					/>
+					{#if $apiKeyInfo.mcName}
+						<span class="minecraft-name">{$apiKeyInfo.mcName}</span>
+					{/if}
+				</div>
+			</Alert>
+		{/if}
+		<QuantitySelector bind:quantity min={1} max={stock} label="Purchase Quantity" />
+		<p>
+			Purchasing x{typeof quantity == 'number' ? quantity : 1}
+			{item.itemDisplayName} from {shop ? shop.name : 'the shop'}
+		</p>
+		<p>
+			<strong>Total Cost:</strong>
+			{formatCurrency(!grandTotal || isNaN(grandTotal) ? 0 : grandTotal, 5)} <small>KRO</small>
+		</p>
 	{/if}
-	<QuantitySelector bind:quantity min={1} max={stock} label="Purchase Quantity" />
-	<p>
-		Purchasing x{typeof quantity == 'number' ? quantity : 1}
-		{item.itemDisplayName} from {shop ? shop.name : 'the shop'}
-	</p>
-	<p>
-		<strong>Total Cost:</strong>
-		{formatCurrency(!grandTotal || isNaN(grandTotal) ? 0 : grandTotal, 5)} <small>KRO</small>
-	</p>
 </Modal>
 
 <style>

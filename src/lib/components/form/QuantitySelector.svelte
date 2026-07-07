@@ -34,6 +34,7 @@
 			{/if}
 		{/each}
 	</div>
+	<small>Allowed purchase quantities: {min} to {max}</small>
 </label>
 
 <style>
