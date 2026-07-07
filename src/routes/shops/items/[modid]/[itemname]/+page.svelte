@@ -9,7 +9,7 @@
 	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 
 	const { data } = $props();
-	const { item } = data;
+	const { item } = $derived(data);
 
 	let lowestShop = $state<ShopWithListing | null>(null);
 	let highestShop = $state<ShopWithListing | null>(null);

@@ -3,7 +3,7 @@
 	import AdvancedNames from '$lib/components/widgets/names/AdvancedNames.svelte';
 
 	const { data } = $props();
-	const { address } = data;
+	const { address } = $derived(data);
 </script>
 
 <svelte:head>

@@ -4,6 +4,7 @@
 	import { getKrawletClient } from '$lib/api/krawlet';
 	import { notifications } from '$lib/stores/notifications';
 	import QuantitySelector from '../form/QuantitySelector.svelte';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		open: boolean;
@@ -13,8 +14,12 @@
 
 	let { open = $bindable(false), chest, onTransferCreated }: Props = $props();
 
-	let selectedItem: string = $state(Object.keys(chest.contents)[0] ?? '');
+	let selectedItem: string = $state('');
 	let quantity: number = $state(64);
+
+	onMount(() => {
+		selectedItem = Object.keys(chest.contents)[0] ?? '';
+	});
 
 	function onSubmit() {
 		const client = getKrawletClient();
