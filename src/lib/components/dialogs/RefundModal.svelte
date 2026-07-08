@@ -121,7 +121,7 @@
 				</div>
 				<div class="detail-row">
 					<span class="detail-label">{$t$('refund.originalAmount')}</span>
-					<span class="detail-value amount">{formatCurrency(transaction.value)} KRO</span>
+					<span class="detail-value amount">{formatCurrency(transaction.value, 5)} KRO</span>
 				</div>
 				{#if transaction.from}
 					<div class="detail-row">
@@ -184,13 +184,13 @@
 					bind:value={refundAmount}
 					required
 				/>
-				<small>{$t$('common.maximum')}: {formatCurrency(transaction.value)} KRO</small>
+				<small>{$t$('common.maximum')}: {formatCurrency(transaction.value, 5)} KRO</small>
 			</label>
 		{/if}
 
 		<div class="calculated-refund">
 			<strong>{$t$('refund.refundAmount')}:</strong>
-			<span class="amount">{formatCurrency(calculatedRefund)} KRO</span>
+			<span class="amount">{formatCurrency(calculatedRefund, 5)} KRO</span>
 		</div>
 
 		<label>
