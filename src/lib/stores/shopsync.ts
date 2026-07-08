@@ -48,9 +48,13 @@ const transformShop = (shop: ShopApi): Shop => ({
 	description: shop.description,
 	owner: shop.owner,
 	computerId: shop.computerId,
+	features: shop.features,
 	softwareName: shop.softwareName,
 	softwareVersion: shop.softwareVersion,
-	supportsKlog: shop.softwareVersion?.toLowerCase().includes('+klog') ?? false,
+	supportsKlog:
+		(shop.softwareVersion?.toLowerCase().includes('+klog') ||
+			shop.features?.map((f) => f.toLowerCase()).includes('klog')) ??
+		false,
 	locationCoordinates: shop.locationCoordinates,
 	locationDescription: shop.locationDescription,
 	locationDimension: shop.locationDimension,

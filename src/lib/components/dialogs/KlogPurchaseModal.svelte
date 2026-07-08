@@ -25,10 +25,7 @@
 	let quantity = $state(1);
 
 	let shop = $state<Shop | null>(null);
-	const canUseKlog = $derived(
-		shop?.softwareVersion?.toLowerCase()?.includes('+klog') &&
-			$settings.krawletApiKey.startsWith('kraw_')
-	);
+	const canUseKlog = $derived(shop?.supportsKlog && $settings.krawletApiKey.startsWith('kraw_'));
 	const mcIdentifier = $derived($apiKeyInfo.mcUuid ?? $apiKeyInfo.mcName ?? null);
 	const stock = $derived('stock' in item && item.stock > 0 ? item.stock : 0);
 

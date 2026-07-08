@@ -23,6 +23,8 @@ export interface Listing {
 	requiresInteraction: boolean;
 	stock: number;
 
+	features?: string[] | null;
+
 	prices?: ListingPrice[];
 	shop?: Shop;
 	addresses?: string[];
@@ -39,6 +41,8 @@ export interface Shop {
 	description: string | null;
 	owner: string | null;
 	computerId: number;
+
+	features?: string[] | null;
 
 	softwareName: string | null;
 	softwareVersion: string | null;
