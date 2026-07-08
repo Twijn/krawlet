@@ -5,7 +5,8 @@
 		getListingBuyLink,
 		getRelativeItemUrl,
 		getShopById,
-		type ItemListing
+		type ItemListing,
+		type ShopWithListing
 	} from '$lib/stores/shopsync';
 	import type { Listing, Shop } from '$lib/types/shops';
 	import Button from '$lib/components/ui/Button.svelte';
@@ -13,6 +14,7 @@
 	import settings from '$lib/stores/settings';
 	import { faTruckFast } from '@fortawesome/free-solid-svg-icons';
 	import KlogPurchaseModal from '$lib/components/dialogs/KlogPurchaseModal.svelte';
+	import { getBestDeliveryListing } from '$lib/utils/shopsyncMatching';
 
 	const {
 		item,
@@ -33,6 +35,10 @@
 	let shop = $state<Shop | null>(null);
 	const shopSupportsKlog = $derived(shop?.supportsKlog ?? false);
 	const canUseKlog = $derived($settings.krawletApiKey.startsWith('kraw_'));
+
+	const bestDeliveryOption = $derived<ShopWithListing | null>(
+		!showPurchaseLink && item && 'shops' in item ? getBestDeliveryListing(item) : null
+	);
 
 	$effect(() => {
 		if ('shopId' in item) {
@@ -67,19 +73,34 @@
 	</div>
 	<hr />
 	<div class="buttons">
+		{#if bestDeliveryOption}
+			{@const stock = bestDeliveryOption.listing.stock ?? 0}
+			<Button
+				variant="success"
+				disabled={stock <= 0 || !canUseKlog}
+				icon={faTruckFast}
+				onClick={() => (klogModalOpen = true)}
+				title={stock <= 0
+					? 'This item is currently out of stock.'
+					: !canUseKlog
+						? 'You must add a Krawlet API Key in settings to purchase this item through Klog'
+						: 'Items will be delivered via Klog'}>Purchase from {bestDeliveryOption.name}</Button
+			>
+		{/if}
+
 		{#if showPurchaseLink && 'id' in item}
 			{@const stock = item.stock ?? 0}
 			{@const href = getListingBuyLink(item)}
 			{#if shopSupportsKlog}
 				<Button
 					variant="success"
-					disabled={stock <= 0 && !canUseKlog}
+					disabled={stock <= 0 || !canUseKlog}
 					icon={faTruckFast}
 					onClick={() => (klogModalOpen = true)}
 					title={stock <= 0
 						? 'This item is currently out of stock.'
 						: !canUseKlog
-							? 'You need to connect a Krawlet API Key to purchase this item through Klog.'
+							? 'You must add a Krawlet API Key in settings to purchase this item through Klog'
 							: undefined}
 				>
 					Purchase with Klog
@@ -107,7 +128,7 @@
 	</div>
 </div>
 
-<KlogPurchaseModal bind:open={klogModalOpen} {item} />
+<KlogPurchaseModal bind:open={klogModalOpen} item={bestDeliveryOption?.listing ?? item} />
 
 <style>
 	.item {

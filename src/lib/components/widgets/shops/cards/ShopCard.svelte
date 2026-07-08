@@ -35,7 +35,7 @@
 			</h3>
 			<small>
 				{#if shop.owner}
-					By {cleanShopData(shop.owner)}
+					{cleanShopData(shop.owner)}
 				{/if}
 				{#if shop.softwareName}
 					{#if shop.owner}&bullet;{/if}

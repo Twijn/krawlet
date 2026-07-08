@@ -1,5 +1,6 @@
 import type { Transaction } from 'kromer';
 import type { Listing, ListingPrice, Shop } from '$lib/types/shops';
+import type { ItemListing, ShopWithListing } from '$lib/stores/shopsync';
 
 export type RelatedShopSyncListing = {
 	listing: Listing;
@@ -133,4 +134,24 @@ export function findBestRelatedShopSyncListing(
 
 	const [winner] = topCandidates;
 	return winner ? { listing: winner.listing, shop: winner.shop, price: winner.price } : null;
+}
+
+export function getListingPrice(listing: Listing): number {
+	if (!listing.prices || listing.prices.length === 0) return 0;
+
+	const price = listing.prices.find((p) => p?.currency?.toLowerCase() === 'kro');
+	if (!price?.value) return 0;
+	return price.value;
+}
+
+export function getBestDeliveryListing(itemListing: ItemListing): ShopWithListing | null {
+	const deliverySupported = itemListing.shops.filter(
+		(shop) =>
+			!shop.listing.shopBuysItem &&
+			shop.supportsKlog &&
+			(!shop.listing.features || // if the shop does have features fall back to shop-level setting (supportsKlog), if it exists check for 'klog' feature
+				shop.listing.features?.map((f) => f.toLowerCase()).includes('klog'))
+	);
+	deliverySupported.sort((a, b) => getListingPrice(b.listing) - getListingPrice(a.listing));
+	return deliverySupported[0] ?? null;
 }

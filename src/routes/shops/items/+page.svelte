@@ -94,7 +94,7 @@
 	{/if}
 	<div class="item-grid">
 		{#each filteredListings as listing (listing.itemName + (':' + listing.itemNbt))}
-			<ItemCard item={listing} showBadges={false}>
+			<ItemCard item={listing} showBadges={false} showPurchaseLink={false}>
 				<div class="table-container">
 					<table>
 						<thead>
