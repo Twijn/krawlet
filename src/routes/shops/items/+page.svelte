@@ -17,6 +17,7 @@
 	import { DEFAULT_ITEM_SORT, ITEM_SORT_OPTIONS, type ItemSortOption } from '$lib/types/sort';
 	import { t$ } from '$lib/i18n';
 	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
+	import Tag from '$lib/components/ui/Tag.svelte';
 
 	let listings: ItemListing[] = $state([]);
 
@@ -24,7 +25,7 @@
 		shouldSet: (v) => v.length > 0
 	});
 	let sortOption = paramState<ItemSortOption>('sort', DEFAULT_ITEM_SORT, {
-		shouldSet: (v) => ITEM_SORT_OPTIONS.includes(v)
+		shouldSet: (v) => ITEM_SORT_OPTIONS.includes(v) && v !== DEFAULT_ITEM_SORT
 	});
 
 	let filteredListings = $derived(
@@ -109,6 +110,9 @@
 								<tr>
 									<td>
 										<a href="/shops/{shop.id}">{cleanShopData(shop.name)}</a>
+										{#if shop.listing.shopBuysItem}
+											<Tag variant="red" title="This shop buys this item">Sellshop</Tag>
+										{/if}
 									</td>
 									<td class="right">
 										{stock.toLocaleString()}
