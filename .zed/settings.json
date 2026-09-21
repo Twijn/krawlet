@@ -1,0 +1,14 @@
+{
+	"tab_size": 2,
+	"hard_tabs": true,
+	"language_overrides": {
+		"TypeScript": {
+			"tab_size": 2,
+			"hard_tabs": true
+		},
+		"Svelte": {
+			"tab_size": 2,
+			"hard_tabs": true
+		}
+	}
+}
