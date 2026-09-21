@@ -3,18 +3,23 @@
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import Skeleton from '$lib/components/ui/Skeleton.svelte';
 	import ShopItems from '$lib/components/widgets/shops/ShopItems.svelte';
-	import { cleanShopData } from '$lib/stores/shopsync';
+	import { cleanShopData, refreshShopById } from '$lib/stores/shopsync';
 	import { relativeTime } from '$lib/util.js';
 	import { t$ } from '$lib/i18n';
 	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
+	import { notifications } from '$lib/stores/notifications.js';
+	import type { APIError } from 'kromer';
+	import { faRefresh } from '@fortawesome/free-solid-svg-icons';
 
 	const { data } = $props();
-	const shop = $derived(data.shop);
+
+	let shop = $derived(data.shop);
 
 	let items = $derived(shop?.items ?? []);
 
 	const addresses = $derived(shop?.addresses?.filter((a) => /^k[a-z0-9]{9}$/.test(a)) ?? []);
 	const names = $derived.by(() => {
+		if (!shop) return [];
 		const entries = shop?.addresses ?? [];
 		const uniqueNames: string[] = [];
 
@@ -34,6 +39,21 @@
 
 		return uniqueNames;
 	});
+
+	async function refreshShopSyncInformation() {
+		try {
+			const newShop = await refreshShopById(shop.id);
+
+			if (newShop) {
+				shop = newShop;
+			}
+
+			notifications.success($t$('shop.refreshedShop', { name: cleanShopData(shop.name) }))
+		} catch (e) {
+			const err = e as APIError;
+			notifications.error(err.message ?? $t$('transaction.unknownError'));
+		}
+	}
 </script>
 
 <svelte:head>
@@ -44,6 +64,13 @@
 	navItems={[
 		{ label: $t$('nav.shops'), href: '/shops' },
 		{ label: cleanShopData(shop?.name ?? ''), href: `/shops/${shop?.id ?? ''}` }
+	]}
+	buttons={[
+		{
+			onClick: refreshShopSyncInformation,
+			icon: faRefresh,
+			tk: 'common.refresh'
+		}
 	]}
 />
 

@@ -432,6 +432,8 @@ export default {
 		price: 'Price',
 		stock: 'Stock',
 		seller: 'Seller',
+		refreshedAll: 'Refreshed all shopsync information',
+		refreshedShop: 'Refreshed shop {name}',
 		noShops: 'No shops found',
 		noItems: 'No items found',
 		// Shop details

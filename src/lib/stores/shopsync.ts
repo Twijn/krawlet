@@ -97,6 +97,16 @@ const fetchShopById = async (id: string): Promise<Shop | null> => {
 	}
 };
 
+export const refreshShopById = async (id: string): Promise<Shop | null> => {
+	const shop = await fetchShopById(id);
+	if (shop) {
+		store.upsertOne(shop, (s) => s.id === id);
+	}
+	return shop;
+};
+
+export const refreshAllShops = (): Promise<FetchedStoreData<Shop>> => store.forceUpdate();
+
 export const getShopById = async (id: string): Promise<Shop | null> => {
 	const shops = get(store);
 	let shop = shops?.data?.find((x) => x.id === id) ?? null;
