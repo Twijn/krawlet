@@ -30,11 +30,6 @@ const transformPlayer = (player: PlayerApi): Player => ({
 	online: player.online
 });
 
-// TODO: Remove this in a future release.
-if (browser && localStorage.getItem('playerWalletStore')) {
-	localStorage.removeItem('playerWalletStore');
-}
-
 class PlayerWalletStore extends FetchedStore<Player> {
 	protected sort(data: Player[]): Player[] {
 		data.sort((a, b) => {
