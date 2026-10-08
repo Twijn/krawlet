@@ -174,21 +174,16 @@
 	type Service = {
 		name: string;
 		getStatus: () => WebSocketState;
-		statusHints?: ServiceStatusHints;
 	};
 
 	let services: Service[] = [
 		{
 			name: 'Kromer WS',
 			getStatus: () => websocket.getState(),
-			statusHints: { disconnected: "You won't receive real-time Kromer notifications." }
 		},
 		{
 			name: 'Krawlet WS (Klog)',
 			getStatus: () => krawletWebsocket.getState(),
-			statusHints: {
-				disconnected: "You won't be able to utilize Krawlet Logistics (Klog) features."
-			}
 		}
 	];
 </script>
@@ -298,7 +293,6 @@
 	>
 		{#each services as service (service.name)}
 			{@const status = service.getStatus()}
-			{@const statusHint = service.statusHints?.[status]}
 			<div class="service-status">
 				<span>{service.name}</span>
 				<span
@@ -307,7 +301,6 @@
 					class:status-connecting={status === 'connecting'}
 					class:status-disconnected={status === 'disconnected'}
 					class:status-error={status === 'error'}
-					title={statusHint ? `${service.name}: ${statusHint}` : undefined}
 				>
 					<FontAwesomeIcon
 						spin={status === 'connecting'}
