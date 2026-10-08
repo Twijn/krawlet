@@ -932,7 +932,6 @@ export default {
 		viewNames: 'Ver Nombres',
 		sendKromer: 'Enviar Kromer',
 		copyAddress: 'Copiar Dirección',
-		monitorAddress: 'Monitorear Dirección',
 		// Acciones de transacción
 		viewTransaction: 'Ver Transacción',
 		copyTransactionId: 'Copiar ID de Transacción',
