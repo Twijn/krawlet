@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { TransactionMetadata, TransactionMetadataEntry, TransactionWithMeta } from 'kromer';
-	import shopsync, { getItemImageUrl, getRelativeItemUrl } from '$lib/stores/shopsync';
+	import shopsync, { getRelativeItemUrl } from '$lib/stores/shopsync';
 	import type { Listing } from '$lib/types/shops';
 	import settings from '$lib/stores/settings';
-	import { formatCurrency, getMinecraftAvatar } from '$lib/util';
+	import { formatCurrency, getMinecraftAvatar, itemImageUrl } from '$lib/util';
 	import { findBestRelatedShopSyncListing } from '$lib/utils/shopsyncMatching';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
@@ -172,7 +172,7 @@
 	{:else if relatedListing}
 		<a class="item" href={getRelativeItemUrl(relatedListing)}>
 			<img
-				src={getItemImageUrl(relatedListing)}
+				src={itemImageUrl(relatedListing.itemName)}
 				alt="Item icon for {relatedListing.itemDisplayName}"
 			/>
 			<div class="item-info">

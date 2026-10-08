@@ -3,7 +3,7 @@
 	import TransferProgressModal from '$lib/components/dialogs/TransferProgressModal.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import settings from '$lib/stores/settings';
-	import { getItemImageUrl } from '$lib/stores/shopsync';
+	import { itemImageUrl } from '$lib/util';
 	import { faBellConcierge } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import type { EnderStorageChest, EnderStorageColor } from 'krawlet-js';
@@ -132,7 +132,7 @@
 					<li class="item-row">
 						<div class="item-img">
 							<img
-								src={getItemImageUrl(item)}
+								src={itemImageUrl(item.name)}
 								alt={item.displayName}
 								width="32"
 								height="32"

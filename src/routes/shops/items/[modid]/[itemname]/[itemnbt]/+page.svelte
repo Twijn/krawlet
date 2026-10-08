@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { cleanShopData, getItemImageUrl, type ShopWithListing } from '$lib/stores/shopsync';
-	import { formatCurrency } from '$lib/util';
+	import { cleanShopData, type ShopWithListing } from '$lib/stores/shopsync';
+	import { formatCurrency, itemImageUrl } from '$lib/util';
 	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faShop } from '@fortawesome/free-solid-svg-icons';
@@ -68,7 +68,7 @@
 
 <div class="col-12 statistics">
 	<div class="statistic">
-		<img src={getItemImageUrl(item)} alt={item.itemDisplayName} />
+		<img src={itemImageUrl(item)} alt={item.itemDisplayName} />
 	</div>
 	<div class="statistic">
 		<h2>Item Name</h2>

@@ -2,9 +2,9 @@
 	import { notifications } from '$lib/stores/notifications';
 	import settings from '$lib/stores/settings';
 	import apiKeyInfo from '$lib/stores/apiKeyInfo';
-	import { getItemImageUrl, getShopById, type ItemListing } from '$lib/stores/shopsync';
+	import { getShopById, type ItemListing } from '$lib/stores/shopsync';
 	import type { Listing, Shop } from '$lib/types/shops';
-	import { formatCurrency, getMinecraftAvatar } from '$lib/util';
+	import { formatCurrency, getMinecraftAvatar, itemImageUrl } from '$lib/util';
 	import Modal from '../ui/Modal.svelte';
 	import AddressSelector from '../widgets/addresses/AddressSelector.svelte';
 	import Alert from './Alert.svelte';
@@ -119,7 +119,7 @@
 	}}
 >
 	<div class="item-display">
-		<img src={getItemImageUrl(item)} alt="Item icon for {item.itemDisplayName}" />
+		<img src={itemImageUrl(item.itemName)} alt="Item icon for {item.itemDisplayName}" />
 		<div class="item-display-text">
 			<h3>{item.itemDisplayName}</h3>
 			<small title={item.itemNbt ? `NBT: ${item.itemNbt}` : undefined}>{item.itemName}</small>

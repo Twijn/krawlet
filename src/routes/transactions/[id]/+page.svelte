@@ -14,14 +14,14 @@
 		faExternalLinkAlt,
 		faMapMarkerAlt
 	} from '@fortawesome/free-solid-svg-icons';
-	import { relativeTime, formatCurrency, getMinecraftAvatar } from '$lib/util';
+	import { relativeTime, formatCurrency, getMinecraftAvatar, itemImageUrl } from '$lib/util';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import kromer from '$lib/api/kromer.js';
 	import type { Transaction, TransactionMetadataEntry } from 'kromer';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Placeholder from '$lib/components/ui/Placeholder.svelte';
 	import { t$ } from '$lib/i18n';
-	import shopsync, { getItemImageUrl, getRelativeItemUrl } from '$lib/stores/shopsync';
+	import shopsync, { getRelativeItemUrl } from '$lib/stores/shopsync';
 	import { findBestRelatedShopSyncListing } from '$lib/utils/shopsyncMatching';
 	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 	import TransactionType from '$lib/components/widgets/transactions/TransactionType.svelte';
@@ -373,7 +373,7 @@
 					<a class="item-image-link" href={getRelativeItemUrl(listing)}>
 						<img
 							class="item-image"
-							src={getItemImageUrl(listing)}
+							src={itemImageUrl(listing.itemName)}
 							alt="Item icon for {listing.itemDisplayName}"
 						/>
 					</a>

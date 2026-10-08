@@ -18,7 +18,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { getItemChanges, getPriceChanges } from '$lib/api/shopsync-reports';
 	import type { ItemChangesResponse, PriceChangesResponse } from '$lib/types/shopsync-reports';
-	import { relativeTime } from '$lib/util';
+	import { itemImageUrl, relativeTime } from '$lib/util';
 	import { paramState } from '$lib/paramState.svelte';
 	import { onMount, untrack } from 'svelte';
 	import { browser } from '$app/environment';
@@ -27,10 +27,6 @@
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 	type DataSource = 'memory' | 'persistent';
 	type ChangeType = 'all' | 'added' | 'removed' | 'updated';
-
-	function getItemImageUrlFromName(itemName: string): string {
-		return `https://cdn.krawlet.cc/${itemName.replace(':', '/')}.png`;
-	}
 
 	const {
 		lgCols = 12,
@@ -429,7 +425,7 @@
 							{/if}
 							<td class="item-cell">
 								<img
-									src={getItemImageUrlFromName(change.itemName)}
+									src={itemImageUrl(change.itemName)}
 									alt={change.itemDisplayName}
 									class="item-icon"
 								/>

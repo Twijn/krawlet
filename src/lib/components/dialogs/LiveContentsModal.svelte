@@ -1,10 +1,11 @@
 <script lang="ts">
-	import type { StorageSlotContents, StorageSlotItem } from 'krawlet-js';
+	import type { StorageSlotContents } from 'krawlet-js';
 	import Modal from '../ui/Modal.svelte';
 	import Button from '../ui/Button.svelte';
 	import { getKrawletClient } from '$lib/api/krawlet';
 	import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+	import { itemImageUrl } from '$lib/util';
 
 	type Props = {
 		open: boolean;
@@ -37,10 +38,6 @@
 			loading = false;
 		}
 	}
-
-	function getImageUrl(item: StorageSlotItem): string {
-		return `https://cdn.krawlet.cc/${item.name.replace(':', '/')}.png`;
-	}
 </script>
 
 <Modal {open} title="Live Contents" onClose={() => (open = false)}>
@@ -61,7 +58,7 @@
 		<ul class="contents-list">
 			{#each items as item, index (item.name + ':' + (item.nbt ?? '') + ':' + index)}
 				<li class="content-item">
-					<img src={getImageUrl(item)} alt={item.name} class="item-image" loading="lazy" />
+					<img src={itemImageUrl(item.name)} alt={item.name} class="item-image" loading="lazy" />
 					<div class="item-details">
 						<strong>{item.name}</strong>
 						{#if item.nbt}

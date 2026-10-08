@@ -1,7 +1,6 @@
 <script lang="ts">
 	import {
 		canBuyListing,
-		getItemImageUrl,
 		getListingBuyLink,
 		getRelativeItemUrl,
 		getShopById,
@@ -15,6 +14,7 @@
 	import { faTruckFast } from '@fortawesome/free-solid-svg-icons';
 	import KlogPurchaseModal from '$lib/components/dialogs/KlogPurchaseModal.svelte';
 	import { getBestDeliveryListing } from '$lib/utils/shopsyncMatching';
+	import { itemImageUrl } from '$lib/util';
 
 	const {
 		item,
@@ -51,7 +51,7 @@
 
 <div class="item">
 	<div class="item-head">
-		<img src={getItemImageUrl(item)} alt="Item icon for {item.itemDisplayName}" />
+		<img src={itemImageUrl(item.itemName)} alt="Item icon for {item.itemDisplayName}" />
 		<div class="item-head-text">
 			<h3>{item.itemDisplayName}</h3>
 			{#if 'itemDescription' in item && item.itemDescription}

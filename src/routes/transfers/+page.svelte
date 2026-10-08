@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Transfer } from 'krawlet-js';
-	import { getMinecraftAvatar, relativeTime } from '$lib/util';
+	import { getMinecraftAvatar, itemImageUrl, relativeTime } from '$lib/util';
 	import LiveContentsModal from '$lib/components/dialogs/LiveContentsModal.svelte';
 	import StartTransferModal from '$lib/components/dialogs/StartTransferModal.svelte';
 	import TransferProgressModal from '$lib/components/dialogs/TransferProgressModal.svelte';
@@ -63,11 +63,6 @@
 
 	function handleTransferCreated(transferId: string) {
 		openProgressModal(transferId);
-	}
-
-	function getTransferImageUrl(itemName: string | null | undefined): string {
-		const safeItemName = itemName ?? 'minecraft:barrier';
-		return `https://cdn.krawlet.cc/${safeItemName.replace(':', '/')}.png`;
 	}
 
 	function getTransferItemLabel(transfer: RouteTransfer): string {
@@ -182,7 +177,7 @@
 				{#if column.key === 'itemName'}
 					<div class="item-cell">
 						<img
-							src={getTransferImageUrl(item.itemName)}
+							src={itemImageUrl(item.itemName ?? 'minecraft:barrier')}
 							alt={itemLabel}
 							class="item-image"
 							loading="lazy"
