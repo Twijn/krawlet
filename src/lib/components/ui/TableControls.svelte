@@ -43,15 +43,17 @@
 		{/if}
 	</div>
 	{#if showRefresh && onRefresh}
-		<button
-			class:loading
-			type="button"
-			onclick={onRefresh}
-			disabled={loading}
-			aria-label={$t$('common.refresh')}
-		>
-			<FontAwesomeIcon icon={faSync} />
-		</button>
+		<div title={$t$('common.refresh')}>
+			<button
+				class:loading
+				type="button"
+				onclick={onRefresh}
+				disabled={loading}
+				aria-label={$t$('common.refresh')}
+			>
+				<FontAwesomeIcon icon={faSync} />
+			</button>
+		</div>
 	{/if}
 	{#if showPagination}
 		<Pagination bind:page {limit} {total} />
