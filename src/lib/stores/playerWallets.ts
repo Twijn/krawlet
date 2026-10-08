@@ -1,5 +1,4 @@
 import FetchedStore from '$lib/stores/FetchedStore';
-import { browser } from '$app/environment';
 import krawletClient from '$lib/api/krawlet';
 import type { Player as PlayerApi } from 'krawlet-js';
 

@@ -48,7 +48,7 @@
 				shop = newShop;
 			}
 
-			notifications.success($t$('shop.refreshedShop', { name: cleanShopData(shop.name) }))
+			notifications.success($t$('shop.refreshedShop', { name: cleanShopData(shop.name) }));
 		} catch (e) {
 			const err = e as APIError;
 			notifications.error(err.message ?? $t$('transaction.unknownError'));

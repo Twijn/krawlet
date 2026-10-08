@@ -169,8 +169,6 @@
 		quickMenuLinks = links;
 	});
 
-	type ServiceStatusHints = Partial<Record<WebSocketState, string>>;
-
 	type Service = {
 		name: string;
 		getStatus: () => WebSocketState;
@@ -179,11 +177,11 @@
 	let services: Service[] = [
 		{
 			name: 'Kromer WS',
-			getStatus: () => websocket.getState(),
+			getStatus: () => websocket.getState()
 		},
 		{
 			name: 'Krawlet WS (Klog)',
-			getStatus: () => krawletWebsocket.getState(),
+			getStatus: () => krawletWebsocket.getState()
 		}
 	];
 </script>

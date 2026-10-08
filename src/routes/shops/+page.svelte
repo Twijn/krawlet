@@ -18,7 +18,7 @@
 		try {
 			await refreshAllShops();
 
-			notifications.success($t$('shop.refreshedAll'))
+			notifications.success($t$('shop.refreshedAll'));
 		} catch (e) {
 			const err = e as APIError;
 			notifications.error(err.message ?? $t$('transaction.unknownError'));
