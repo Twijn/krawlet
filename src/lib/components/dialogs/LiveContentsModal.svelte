@@ -53,7 +53,7 @@
 	{:else if loading && !contents}
 		<p class="muted">Loading current contents...</p>
 	{:else if items.length === 0}
-		<p class="muted">No contents currently available.</p>
+		<p class="muted">No items.</p>
 	{:else}
 		<ul class="contents-list">
 			{#each items as item, index (item.name + ':' + (item.nbt ?? '') + ':' + index)}
