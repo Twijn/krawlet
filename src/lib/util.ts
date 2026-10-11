@@ -72,12 +72,13 @@ export const getMinecraftAvatar = (user: string, size: number = 64): string => {
 	return `https://mc-heads.net/avatar/${encodeURIComponent(user.replace('-', ''))}/${encodeURIComponent(size)}.png`;
 };
 
+export type ImageSize = 32 | 64 | 128 | 256 | 512;
+
 /**
  * Generates a URL for an item image based on the item name.
- *
  * @param {string} itemName - The name of the item
  * @returns {string} The URL of the item image
  */
-export const itemImageUrl = (itemName: string): string => {
-	return `https://cdn.krawlet.cc/${itemName.replace(':', '/')}.png`;
+export const itemImageUrl = (itemName: string, size: ImageSize = 64): string => {
+	return `https://cdn.krawlet.cc/${itemName.replace(':', '/')}-${size}px.png`;
 };

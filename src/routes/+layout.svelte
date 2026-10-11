@@ -97,11 +97,11 @@
 				const srcUrl = new URL(target.src);
 				const isKrawletCdn = srcUrl.hostname === 'cdn.krawlet.cc';
 				const isPng = srcUrl.pathname.endsWith('.png');
-				const isFallback = srcUrl.pathname === '/minecraft/air.png';
+				const isFallback = srcUrl.pathname === '/minecraft/air-256px.png';
 
 				if (!isKrawletCdn || !isPng || isFallback) return;
 
-				target.src = 'https://cdn.krawlet.cc/minecraft/air.png';
+				target.src = 'https://cdn.krawlet.cc/minecraft/air-256px.png';
 			} catch {
 				// Ignore invalid image URLs.
 			}
