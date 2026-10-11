@@ -49,6 +49,9 @@
 	import { scale } from 'svelte/transition';
 	import { isValidApiKey } from '$lib/api/krawlet';
 	import KrawletLoginModal from '$lib/components/dialogs/KrawletLoginModal.svelte';
+	import { Tween } from 'svelte/motion';
+	import { cubicOut } from 'svelte/easing';
+	import { navigating } from '$app/state';
 
 	config.autoAddCss = false;
 
@@ -184,11 +187,31 @@
 			getStatus: () => krawletWebsocket.getState()
 		}
 	];
+
+	const progress = new Tween(0, { duration: 400, easing: cubicOut });
+	let trackingProgress = false;
+
+	$effect(() => {
+		const isSameRoute = navigating.to?.route?.id === navigating.from?.route?.id;
+		if (navigating.to && !isSameRoute) {
+			trackingProgress = true;
+			progress.set(0.7, { duration: 800 });
+		} else if (!navigating.to && trackingProgress) {
+			trackingProgress = false;
+			progress.set(1, { duration: 200 }).then(() => {
+				setTimeout(() => progress.set(0, { duration: 0 }), 200);
+			});
+		}
+	});
 </script>
 
 <svelte:window onclick={handleWindowClick} />
 
 <a href="#main-content" class="skip-link">{$t$('accessibility.skipToContent')}</a>
+
+{#if progress.current > 0}
+	<div class="navigation-loader" style="width: {progress.current * 100}%"></div>
+{/if}
 
 <div id="app" class:nav-hidden={!showNavigation}>
 	<header>
@@ -354,8 +377,7 @@
 		display: flex;
 		align-items: center;
 		background-color: var(--background-color-2);
-		height: 3.8rem;
-		border-bottom: 0.1em solid var(--theme-color-2);
+		height: 3.6rem;
 		box-shadow: 0 0 1em rgba(0, 0, 0, 0.15);
 		z-index: 10000;
 	}
@@ -394,12 +416,13 @@
 
 	#main-navigation {
 		position: fixed;
-		top: 3.8rem;
+		top: 3.6rem;
 		left: 0;
 		bottom: 0;
 		width: 250px;
 		background-color: var(--background-color-2);
 		color: var(--text-color-1);
+		border-top: 3px solid var(--theme-color-1);
 		overflow-y: auto;
 		box-shadow: 0 0 1em rgba(0, 0, 0, 0.15);
 		z-index: 999;
@@ -413,7 +436,7 @@
 	}
 
 	#content {
-		margin-top: 3.8rem;
+		margin-top: 3.6rem;
 		padding: 1rem;
 		margin-left: 250px;
 		transition: margin-left 0.3s ease-in-out;
@@ -470,7 +493,7 @@
 	}
 	.offline-banner {
 		position: fixed;
-		top: 3.8rem;
+		top: 3.6rem;
 		left: 0;
 		right: 0;
 		z-index: 10000;
@@ -488,6 +511,16 @@
 	/* Focus styles for skip link target */
 	#main-content:focus {
 		outline: none;
+	}
+
+	.navigation-loader {
+		position: fixed;
+		top: 3.6rem;
+		right: 0;
+		left: 0;
+		height: 3px;
+		z-index: 1000;
+		background-color: var(--theme-color-2);
 	}
 
 	#quick-menu {
