@@ -1,37 +1,27 @@
-<!--
-  @component Button
-
-  A versatile button component supporting multiple variants and states.
-
-  @prop {'primary' | 'secondary' | 'success' | 'error'} variant - Visual style
-  @prop {boolean} disabled - Disables the button
-  @prop {boolean} full - Makes button full width
-  @prop {string} href - If provided, renders as an anchor tag
-  @prop {boolean} newTab - Opens link in new tab (when href is set)
-  @prop {boolean} external - Marks link as external
-  @prop {string} type - Button type ('button' | 'submit' | 'reset')
-  @prop {string} title - Tooltip text
-  @prop {boolean} loading - Shows loading state
-  @prop {(e: Event) => void} onClick - Click handler
-
-  @example
-  <Button variant="primary" onClick={handleClick}>Submit</Button>
-  <Button href="/settings" variant="secondary">Settings</Button>
--->
 <script lang="ts">
-	export let href: string | undefined = undefined;
-	export let newTab: boolean = false;
-	export let variant: 'primary' | 'secondary' | 'success' | 'error' = 'primary';
-	export let size: 'small' | 'medium' | 'large' = 'medium';
-	export let onClick: ((e: Event) => void | boolean | Promise<boolean>) | undefined = undefined;
-	export let full: boolean = false;
-	export let type: 'button' | 'submit' | 'reset' = 'button';
-	export let disabled: boolean = false;
-	export let external: boolean = false;
-	export let title: string | undefined = undefined;
-	export let loading: boolean = false;
+	import type { ButtonProps } from './Button';
+	import { t$ } from '$lib/i18n';
+	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 
-	$: isDisabled = disabled || loading;
+	const {
+		href,
+		newTab = false,
+		variant = 'primary',
+		size = 'medium',
+		onClick,
+		full = false,
+		type = 'button',
+		external = false,
+		tk,
+		title,
+		icon,
+		iconSize = '1x',
+		disabled = $bindable(false),
+		loading = $bindable(false),
+		children
+	}: ButtonProps = $props();
+
+	const isDisabled = $derived(disabled || loading);
 
 	function handleClick(e: Event) {
 		if (isDisabled) {
@@ -58,7 +48,14 @@
 		aria-disabled={isDisabled}
 		aria-busy={loading}
 	>
-		<slot />
+		{#if icon}
+			<FontAwesomeIcon {icon} size={iconSize} />
+		{/if}
+		{#if tk}
+			{$t$(tk)}
+		{:else if children}
+			{@render children()}
+		{/if}
 	</a>
 {:else}
 	<button
@@ -72,7 +69,14 @@
 		aria-busy={loading}
 		{title}
 	>
-		<slot />
+		{#if icon}
+			<FontAwesomeIcon {icon} size={iconSize} />
+		{/if}
+		{#if tk}
+			{$t$(tk)}
+		{:else if children}
+			{@render children()}
+		{/if}
 	</button>
 {/if}
 
@@ -93,22 +97,7 @@
 		cursor: pointer;
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-		position: relative;
-		overflow: hidden;
 		backdrop-filter: blur(8px);
-	}
-
-	.button::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background: rgba(255, 255, 255, 0.1);
-		opacity: 0;
-		transition: opacity 0.2s ease;
-	}
-
-	.button:hover::before {
-		opacity: 1;
 	}
 
 	.button :global(svg) {
@@ -175,6 +164,11 @@
 
 	.full {
 		width: 100%;
+	}
+
+	.xsmall {
+		font-size: 0.8rem;
+		padding: 0.3em 0.6em;
 	}
 
 	.small {

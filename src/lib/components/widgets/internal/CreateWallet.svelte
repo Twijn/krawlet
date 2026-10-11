@@ -4,15 +4,15 @@
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import { notifications } from '$lib/stores/notifications';
-	import { prompt } from '$lib/stores/prompt';
 	import { confirm } from '$lib/stores/confirm';
 	import { faWallet } from '@fortawesome/free-solid-svg-icons';
 	import kromer from '$lib/api/kromer';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 	import settings from '$lib/stores/settings';
 	import { paramState } from '$lib/paramState.svelte';
-	import { getSyncNode } from '$lib/consts';
 	import type { APIError } from 'kromer';
+	import { masterPasswordStore } from '$lib/stores/masterPassword';
+	import { INTERNAL_KEY } from '$lib/consts';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -27,7 +27,7 @@
 	} = $props();
 
 	let loading = $state(false);
-	let kromerKey = $state(getSyncNode().internalKey ?? '');
+	let kromerKey = $state(INTERNAL_KEY ?? '');
 
 	let uuid = paramState('uuid', '', {
 		shouldSet: (value) => value.length === 36
@@ -103,21 +103,18 @@
 		}
 
 		if (saveAsWallet) {
-			prompt.prompt({
-				type: 'password',
-				message: "Enter your master password to save the wallet you're creating",
-				inputLabel: 'Master Password',
-				confirmButtonLabel: 'Save',
-				confirm: (value) => {
-					confirmCreate(value);
+			masterPasswordStore.get().then(
+				(masterPassword) => {
+					confirmCreate(masterPassword);
 				},
-				validate: async (value) => {
-					if (!(await settings.validateMasterPassword(value))) {
-						return ['Invalid master password'];
+				(err) => {
+					if ('message' in err) {
+						notifications.error(err.message);
+					} else {
+						notifications.error('An unknown error occurred while retrieving the master password.');
 					}
-					return [];
 				}
-			});
+			);
 		} else {
 			confirmCreate();
 		}
@@ -130,7 +127,7 @@
 	<form method="POST">
 		<ModuleLoading {loading} absolute />
 
-		{#if !getSyncNode().internalKey}
+		{#if !INTERNAL_KEY}
 			<label>
 				Internal Key
 				<input type="text" bind:value={kromerKey} />

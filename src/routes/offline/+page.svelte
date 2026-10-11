@@ -13,7 +13,7 @@
 	<title>{$t$('common.offline')} - Krawlet</title>
 </svelte:head>
 
-<main class="offline-page" aria-labelledby="offline-title">
+<main class="offline-page col-12" aria-labelledby="offline-title">
 	<div class="offline-content">
 		<div class="offline-icon" aria-hidden="true">
 			<FontAwesomeIcon icon={faWifi} size="4x" />
@@ -30,7 +30,7 @@
 		</p>
 
 		<div class="offline-actions">
-			<Button onClick={retry}>
+			<Button variant="primary" onClick={retry}>
 				<FontAwesomeIcon icon={faRefresh} />
 				{$t$('common.retry')}
 			</Button>

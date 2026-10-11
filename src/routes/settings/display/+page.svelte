@@ -1,37 +1,27 @@
 <script lang="ts">
 	import Section from '$lib/components/ui/Section.svelte';
+	import SettingsFieldset from '$lib/components/ui/SettingsFieldset.svelte';
 	import settings from '$lib/stores/settings';
 	import {
 		faDesktop,
 		faAddressCard,
 		faList,
 		faTags,
-		faWallet,
 		faEye,
 		faMinus
 	} from '@fortawesome/free-solid-svg-icons';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import ToggleCheckbox from '$lib/components/form/ToggleCheckbox.svelte';
 	import { t$ } from '$lib/i18n';
-	import { SYNC_NODE_OFFICIAL } from '$lib/consts';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
-	import Transactions from '$lib/components/widgets/transactions/Transactions.svelte';
-	import Names from '$lib/components/widgets/names/Names.svelte';
-	import WalletCardCompact from '$lib/components/widgets/wallets/WalletCardCompact.svelte';
 	import Placeholder from '$lib/components/ui/Placeholder.svelte';
+	import AdvancedTransactions from '$lib/components/widgets/transactions/AdvancedTransactions.svelte';
+	import AdvancedNames from '$lib/components/widgets/names/AdvancedNames.svelte';
 
 	// Example address for previews - uses Twijn's address to demonstrate player name feature
 	const EXAMPLE_ADDRESS = 'ks0d5iqb6p';
-	const EXAMPLE_SHOP_ADDRESS = 'ktwijnmall';
+	const EXAMPLE_SHOP_ADDRESSES = ['kfemcorpfw', 'kfemcorpbt', 'kcomputers', 'klibrarycc'];
 	const KRAWLET_ADDRESS = 'kkrawletii';
-
-	// Example wallet for wallet display preview
-	const EXAMPLE_WALLET = {
-		name: 'My Wallet',
-		address: EXAMPLE_ADDRESS,
-		private: '',
-		syncNode: SYNC_NODE_OFFICIAL.id
-	};
 
 	function onShowMetadataChange() {
 		if (!$settings.showMetadata) {
@@ -53,20 +43,16 @@
 			$settings.parsePurchaseItemQuantity = false;
 		}
 	}
-
-	function onShowAllWalletsOptionChange() {
-		if (!$settings.showAllWalletsOption) {
-			$settings.showAllWalletsDefault = false;
-		}
-	}
 </script>
 
 <Section lgCols={12} mdCols={12} smCols={12}>
 	<h2><FontAwesomeIcon icon={faDesktop} /> {$t$('settings.tabs.display')}</h2>
 
 	<div class="settings-grid">
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faAddressCard} /> {$t$('settings.addressDisplay')}</legend>
+		<SettingsFieldset>
+			{#snippet legend()}
+				<FontAwesomeIcon icon={faAddressCard} /> {$t$('settings.addressDisplay')}
+			{/snippet}
 			<div class="settings-columns">
 				<div class="setting-content">
 					<ToggleCheckbox bind:checked={$settings.replaceAddressesWithPlayer}>
@@ -80,15 +66,17 @@
 					<div class="preview-label"><FontAwesomeIcon icon={faEye} /> Preview</div>
 					<div class="preview-content address-preview">
 						<Address address={EXAMPLE_ADDRESS} showCopy={false} />
-						<Address address={EXAMPLE_SHOP_ADDRESS} showCopy={false} />
+						<Address address={EXAMPLE_SHOP_ADDRESSES[1]} showCopy={false} />
 						<Address address={KRAWLET_ADDRESS} showCopy={false} />
 					</div>
 				</div>
 			</div>
-		</fieldset>
+		</SettingsFieldset>
 
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faList} /> {$t$('settings.transactionList')}</legend>
+		<SettingsFieldset>
+			{#snippet legend()}
+				<FontAwesomeIcon icon={faList} /> {$t$('settings.transactionList')}
+			{/snippet}
 			<div class="settings-columns">
 				<div class="setting-content">
 					<ToggleCheckbox bind:checked={$settings.showMetadata} onChange={onShowMetadataChange}>
@@ -119,14 +107,14 @@
 				<div class="setting-preview wide-preview">
 					<div class="preview-label"><FontAwesomeIcon icon={faEye} /> Preview</div>
 					<div class="preview-content component-preview">
-						<Transactions address={EXAMPLE_SHOP_ADDRESS} limit={3} queryPrefix="settings_tx_" />
+						<AdvancedTransactions limit={5} addresses={EXAMPLE_SHOP_ADDRESSES} storePrefix="tx" />
 					</div>
 				</div>
 			</div>
-		</fieldset>
+		</SettingsFieldset>
 
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faTags} /> {$t$('settings.nameList')}</legend>
+		<SettingsFieldset>
+			{#snippet legend()}<FontAwesomeIcon icon={faTags} /> {$t$('settings.nameList')}{/snippet}
 			<div class="settings-columns">
 				<div class="setting-content">
 					<ToggleCheckbox bind:checked={$settings.showOriginalOwner}>
@@ -139,14 +127,14 @@
 				<div class="setting-preview wide-preview">
 					<div class="preview-label"><FontAwesomeIcon icon={faEye} /> Preview</div>
 					<div class="preview-content component-preview">
-						<Names limit={3} queryPrefix="settings_names_" />
+						<AdvancedNames limit={5} storePrefix="nm" />
 					</div>
 				</div>
 			</div>
-		</fieldset>
+		</SettingsFieldset>
 
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faMinus} /> {$t$('settings.missingData')}</legend>
+		<SettingsFieldset>
+			{#snippet legend()}<FontAwesomeIcon icon={faMinus} /> {$t$('settings.missingData')}{/snippet}
 			<div class="settings-columns">
 				<div class="setting-content">
 					<ToggleCheckbox bind:checked={$settings.simplePlaceholders}>
@@ -161,42 +149,7 @@
 					</div>
 				</div>
 			</div>
-		</fieldset>
-
-		<fieldset class="settings-group">
-			<legend><FontAwesomeIcon icon={faWallet} /> {$t$('settings.walletDisplay')}</legend>
-			<div class="settings-columns">
-				<div class="setting-content">
-					<ToggleCheckbox
-						bind:checked={$settings.showAllWalletsOption}
-						onChange={onShowAllWalletsOptionChange}
-					>
-						{$t$('settings.showAllWalletsOption')}
-					</ToggleCheckbox>
-					<ToggleCheckbox
-						bind:checked={$settings.showAllWalletsDefault}
-						disabled={!$settings.showAllWalletsOption}
-					>
-						{$t$('settings.showAllWalletsDefault')}
-					</ToggleCheckbox>
-				</div>
-				<div class="setting-preview">
-					<div class="preview-label"><FontAwesomeIcon icon={faEye} /> Preview</div>
-					<div class="preview-content wallet-preview">
-						<WalletCardCompact wallet={EXAMPLE_WALLET} balance={1234.56} />
-						{#if $settings.showAllWalletsOption}
-							<small class="wallet-hint">
-								{#if $settings.showAllWalletsDefault}
-									Wallets from all sync nodes shown by default
-								{:else}
-									Toggle available to show wallets from other sync nodes
-								{/if}
-							</small>
-						{/if}
-					</div>
-				</div>
-			</div>
-		</fieldset>
+		</SettingsFieldset>
 	</div>
 </Section>
 
@@ -205,27 +158,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-	}
-
-	.settings-group {
-		margin-bottom: 0;
-		padding: 1rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 0.5rem;
-	}
-
-	.settings-group legend {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-weight: 500;
-		padding: 0 0.5rem;
-	}
-
-	.settings-group legend :global(svg) {
-		width: 1rem;
-		height: 1rem;
-		opacity: 0.7;
 	}
 
 	.settings-columns {
@@ -304,33 +236,6 @@
 		overflow-x: auto;
 	}
 
-	.wallet-preview {
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-		font-size: 0.85rem;
-	}
-
-	.wallet-preview :global(.wallet-card-compact) {
-		padding: 0.5rem 0.75rem;
-		gap: 0.5rem;
-	}
-
-	.wallet-preview :global(.wallet-icon) {
-		font-size: 1rem;
-	}
-
-	.wallet-preview :global(.balance-amount) {
-		font-size: 0.9rem;
-	}
-
-	.wallet-hint {
-		font-size: 0.75rem;
-		color: rgba(255, 255, 255, 0.5);
-		text-align: center;
-		font-style: italic;
-	}
-
 	.placeholder-preview {
 		display: flex;
 		align-items: center;
@@ -350,12 +255,6 @@
 
 		.setting-preview.wide-preview {
 			grid-column: auto;
-		}
-	}
-
-	@media (max-width: 768px) {
-		.settings-group {
-			padding: 0.75rem;
 		}
 	}
 </style>

@@ -137,6 +137,7 @@
 
 				{#if permissionStatus === 'default'}
 					<Button
+						variant="primary"
 						onClick={() => {
 							handleRequestPermission();
 						}}
@@ -219,7 +220,7 @@
 			<!-- Test Notification -->
 			<fieldset>
 				<legend>{$t$('pushNotifications.testing')}</legend>
-				<Button onClick={handleTestNotification}>
+				<Button variant="secondary" onClick={handleTestNotification}>
 					<FontAwesomeIcon icon={faVial} />
 					{$t$('pushNotifications.sendTest')}
 				</Button>

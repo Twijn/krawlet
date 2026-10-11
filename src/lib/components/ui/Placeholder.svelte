@@ -3,10 +3,10 @@
 
 	interface Props {
 		/** The verbose placeholder text to show when simplePlaceholders is disabled */
-		text: string;
+		text?: string;
 	}
 
-	let { text }: Props = $props();
+	let { text = '[No Data]' }: Props = $props();
 </script>
 
 {#if $settings.simplePlaceholders}
@@ -28,6 +28,6 @@
 
 	.placeholder.verbose {
 		color: rgba(255, 255, 255, 0.4);
-		font-size: 0.9em;
+		font-size: 0.75em;
 	}
 </style>

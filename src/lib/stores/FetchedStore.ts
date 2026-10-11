@@ -124,6 +124,28 @@ export default class FetchedStore<T> {
 	}
 
 	/**
+	 * Replace or insert a single item in the store without a full re-fetch.
+	 * @param item  The new/updated item to store.
+	 * @param match Predicate identifying the existing item to replace.
+	 */
+	public upsertOne(item: T, match: (existing: T) => boolean): void {
+		this.store.update((current) => {
+			const index = current.data.findIndex(match);
+			const data = index >= 0 ? current.data.with(index, item) : [...current.data, item];
+			return { ...current, data };
+		});
+	}
+
+	/**
+	 * Force a full re-fetch, bypassing the exponential-backoff guard.
+	 */
+	public async forceUpdate(): Promise<FetchedStoreData<T>> {
+		this.failureCount = 0;
+		this.lastFailure = 0;
+		return this.updateItems();
+	}
+
+	/**
 	 * Update items from the API. Deduplicates concurrent requests.
 	 */
 	public async updateItems(): Promise<FetchedStoreData<T>> {

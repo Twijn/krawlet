@@ -246,7 +246,7 @@ const page = paramState<number>('page', 1, {
 
 **Frequently Updated Files:**
 
-- `src/lib/verified.ts` - List of verified shops/services
+- `src/lib/stores/knownAddresses.ts` - Known address typing and lookup helpers
 - `src/routes/` - Page components and routing
 - `src/lib/components/` - Reusable components
 - `src/lib/i18n/locales/` - Translations

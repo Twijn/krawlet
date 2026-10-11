@@ -2,11 +2,13 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faEllipsis, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-	let {
-		page = $bindable(1),
-		limit = $bindable(10),
-		total = $bindable()
-	}: { page: number; limit: number; total: number } = $props();
+	type Props = {
+		page?: number;
+		limit?: number;
+		total: number;
+	};
+
+	let { page = $bindable(1), limit = $bindable(10), total = $bindable() }: Props = $props();
 
 	let maxPage: number = $derived(Math.ceil(total / limit));
 
@@ -58,6 +60,7 @@
 <style>
 	nav {
 		margin: 1.5em 0;
+		display: inline-block;
 	}
 
 	ul {

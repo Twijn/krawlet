@@ -15,7 +15,7 @@ project.
 
 Some files are frequently updated as part of normal maintenance:
 
-- `src/lib/verified.ts`: Contains the list of verified shops and services. Add new verified entities here.
+- `src/lib/stores/knownAddresses.ts`: Known-address typing and lookup logic used throughout address rendering.
 - `src/routes/`: Contains page routes and their components
 - `src/lib/components/`: Reusable Svelte components
 

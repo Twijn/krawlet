@@ -1,0 +1,348 @@
+<script lang="ts">
+	import type { Name, NameLookupQuery } from 'kromer';
+	import SortableTable from '$lib/components/ui/SortableTable.svelte';
+	import Address from '../addresses/Address.svelte';
+	import Placeholder from '$lib/components/ui/Placeholder.svelte';
+	import type { SortableColumnData } from '$lib/components/ui/SortableTable';
+	import type { ContextMenuItem } from '$lib/components/ui/ContextMenu.svelte';
+	import TableControls from '$lib/components/ui/TableControls.svelte';
+	import QueryBar from '$lib/components/ui/QueryBar.svelte';
+	import LimitSelector from '$lib/components/ui/LimitSelector.svelte';
+	import PaginationInfo from '$lib/components/ui/PaginationInfo.svelte';
+	import AddressFilterModal from '$lib/components/dialogs/AddressFilterModal.svelte';
+	import type { Filter } from '$lib/components/ui/QueryBar';
+	import { faCopy, faEye, faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
+	import { NameCache, type NameCacheLookup } from '$lib/cache';
+	import { relativeTime } from '$lib/util';
+	import { paramState } from '$lib/paramState.svelte';
+	import settings from '$lib/stores/settings';
+	import { t$ } from '$lib/i18n';
+	import { contextMenu } from '$lib/stores/contextMenu';
+	import { notifications } from '$lib/stores/notifications';
+	import { untrack } from 'svelte';
+
+	let {
+		query = {},
+		showDetails = false,
+		addresses = $bindable([]),
+		limit = $bindable(30),
+		storePrefix = '',
+		title
+	}: {
+		query?: NameLookupQuery;
+		showDetails?: boolean;
+		addresses?: string[];
+		limit: number;
+		storePrefix?: string;
+		title?: string;
+	} = $props();
+
+	const cache = new NameCache();
+
+	const DEFAULT_SORT_COLUMN: keyof Name = 'registered';
+	const DEFAULT_SORT_DIRECTION: 'ASC' | 'DESC' = 'DESC';
+	const SORTABLE_COLUMNS: (keyof Name)[] = [
+		'name',
+		'owner',
+		'original_owner',
+		'a',
+		'transferred',
+		'updated',
+		'registered'
+	];
+
+	let page = paramState<number>(
+		untrack(() => `${storePrefix.length > 0 ? storePrefix + '_' : ''}page`),
+		1,
+		{
+			serialize: (v) => v.toString(),
+			deserialize: (s) => parseInt(s) || 1,
+			shouldSet: (v) => v > 1
+		}
+	);
+	let sortedColumn = paramState<keyof Name>(
+		untrack(() => `${storePrefix.length > 0 ? storePrefix + '_' : ''}sc`),
+		DEFAULT_SORT_COLUMN,
+		{
+			serialize: (v) => v,
+			deserialize: (s) =>
+				SORTABLE_COLUMNS.includes(s as keyof Name) ? (s as keyof Name) : DEFAULT_SORT_COLUMN,
+			shouldSet: (v) => SORTABLE_COLUMNS.includes(v) && v !== DEFAULT_SORT_COLUMN
+		}
+	);
+	let sortDirection = paramState<'ASC' | 'DESC'>(
+		untrack(() => `${storePrefix.length > 0 ? storePrefix + '_' : ''}sd`),
+		DEFAULT_SORT_DIRECTION,
+		{
+			serialize: (v) => v,
+			deserialize: (s) =>
+				['ASC', 'DESC'].includes(s) ? (s as 'ASC' | 'DESC') : DEFAULT_SORT_DIRECTION,
+			shouldSet: (v) => ['ASC', 'DESC'].includes(v) && v !== DEFAULT_SORT_DIRECTION
+		}
+	);
+	let offset = $derived((page.value - 1) * limit);
+
+	// Address filter modal state
+	let showAddressModal = $state(false);
+
+	// Internal address filters (with labels for display)
+	type AddressFilter = { address: string; label?: string };
+	let addressFilters = paramState<AddressFilter[]>(
+		untrack(() => `${storePrefix.length > 0 ? storePrefix + '_' : ''}af`),
+		[],
+		{
+			serialize: (filters) => filters.map((f) => `${f.address}:${f.label || ''}`).join(','),
+			deserialize: (s) => {
+				if (!s) return [];
+				return s.split(',').map((part) => {
+					const [address, label] = part.split(':');
+					return { address, label: label || undefined };
+				});
+			},
+			shouldSet: (filters) => Array.isArray(filters) && filters.length > 0
+		}
+	);
+
+	// Combine prop addresses with internal filters
+	let allAddresses = $derived([...addresses, ...addressFilters.value.map((f) => f.address)]);
+
+	// Convert to Filter[] for QueryBar (includes both prop addresses and internal filters)
+	let filters: Filter[] = $derived([
+		// Prop addresses (not removable)
+		...addresses.map((addr, i) => ({
+			id: `prop-address-${i}`,
+			field: 'Address',
+			value: addr,
+			color: 'var(--blue)',
+			removable: false
+		})),
+		// Internal address filters (removable)
+		...addressFilters.value.map((f, i) => ({
+			id: `address-${i}`,
+			field: 'Address',
+			value: f.label || f.address,
+			color: 'var(--blue)'
+		}))
+	]);
+
+	let queryData: NameCacheLookup = $derived({
+		orderBy: sortedColumn.value ?? DEFAULT_SORT_COLUMN,
+		order: sortDirection.value ?? DEFAULT_SORT_DIRECTION,
+		...query,
+		addresses: allAddresses,
+		limit,
+		offset
+	});
+
+	// svelte-ignore state_referenced_locally
+	const nameQuery = cache.get(queryData);
+
+	const refresh = () => {
+		cache.update(queryData);
+	};
+
+	// Re-fetch when query parameters change (page, sort, etc.)
+	$effect(() => {
+		cache.update(queryData);
+	});
+
+	let loading: boolean = $derived($nameQuery?.loading ?? true);
+	let names: Name[] = $derived($nameQuery?.data?.names ?? []);
+	let total: number = $derived($nameQuery?.data?.total ?? 0);
+
+	const originalOwnerRow: SortableColumnData<keyof Name> = {
+		key: 'original_owner',
+		label: 'Original Owner',
+		align: 'right',
+		sortable: true
+	};
+
+	const transferredRow: SortableColumnData<keyof Name> = {
+		key: 'transferred',
+		label: 'Transferred',
+		align: 'right',
+		sortable: true
+	};
+
+	let columns: SortableColumnData<keyof Name>[] = $state([
+		{ key: 'name', label: 'Name', align: 'right', sortable: true },
+		{ key: 'owner', label: 'Owner', align: 'right', sortable: true },
+		{ key: 'original_owner', label: 'Original Owner', align: 'right', sortable: true },
+		{ key: 'a', label: 'A', align: 'right', sortable: true },
+		{ key: 'transferred', label: 'Transferred', align: 'right', sortable: true },
+		{ key: 'updated', label: 'Updated', align: 'right', sortable: true },
+		{ key: 'registered', label: 'Registered', align: 'right', sortable: true }
+	]);
+
+	settings.subscribe((value) => {
+		if (value.showOriginalOwner) {
+			if (!columns.find((c) => c.key === 'original_owner')) {
+				columns.splice(2, 0, originalOwnerRow);
+			}
+		} else {
+			columns = columns.filter((c) => c.key !== 'original_owner');
+		}
+
+		if (value.showTransferredDate) {
+			if (!columns.find((c) => c.key === 'transferred')) {
+				columns.splice(3, 0, transferredRow);
+			}
+		} else {
+			columns = columns.filter((c) => c.key !== 'transferred');
+		}
+	});
+
+	const resetSort = () => {
+		sortedColumn.value = DEFAULT_SORT_COLUMN;
+		sortDirection.value = DEFAULT_SORT_DIRECTION;
+	};
+
+	const handleAddAddress = (address: string, label?: string) => {
+		// Don't add duplicates
+		if (addressFilters.value.some((f) => f.address === address)) return;
+		addressFilters.value = [...addressFilters.value, { address, label }];
+		page.value = 1; // Reset to first page when filter changes
+	};
+
+	const handleRemoveFilter = (filter: Filter) => {
+		// Only allow removing internal filters, not prop addresses
+		if (!filter.id.startsWith('address-')) return;
+		const index = parseInt(filter.id.replace('address-', ''));
+		addressFilters.value = addressFilters.value.filter((_, i) => i !== index);
+		page.value = 1; // Reset to first page when filter changes
+	};
+
+	const handleNameContextMenu = (event: MouseEvent, name: Name) => {
+		if (event.defaultPrevented) return;
+		event.preventDefault();
+
+		const copyName = async () => {
+			try {
+				await navigator.clipboard.writeText(`${name.name}.kro`);
+				notifications.success(`Name '${name.name}.kro' copied to clipboard.`);
+			} catch (err) {
+				console.error(err);
+				notifications.error('Failed to copy name to clipboard.');
+			}
+		};
+
+		const menuItems: ContextMenuItem[] = [
+			{
+				label: $t$('contextMenu.viewName'),
+				icon: faEye,
+				href: `/names/${name.name}`
+			},
+			{
+				label: $t$('contextMenu.copyName'),
+				icon: faCopy,
+				action: copyName
+			},
+			{ separator: true, label: '' },
+			{
+				label: $t$('contextMenu.viewNameOwner'),
+				icon: faUser,
+				href: `/addresses/${name.owner}`
+			}
+		];
+
+		contextMenu.show(event.clientX, event.clientY, menuItems);
+	};
+</script>
+
+<AddressFilterModal
+	bind:open={showAddressModal}
+	onClose={() => (showAddressModal = false)}
+	onSelect={handleAddAddress}
+	selectedAddresses={allAddresses}
+/>
+
+{#if !title}
+	<TableControls {loading} bind:page={page.value} {limit} {total} onRefresh={refresh}>
+		{#if showDetails}
+			<QueryBar
+				sortedColumn={sortedColumn.value}
+				sortDirection={sortDirection.value}
+				defaultSortColumn="registered"
+				defaultSortDirection="DESC"
+				{columns}
+				onSortReset={resetSort}
+				{filters}
+				onFilterRemove={handleRemoveFilter}
+				filterButtons={[
+					{
+						tk: 'transaction.addAddressFilter',
+						type: 'button',
+						variant: 'primary',
+						icon: faPlus,
+						size: 'small',
+						onClick: () => (showAddressModal = true)
+					}
+				]}
+			/>
+		{/if}
+	</TableControls>
+{/if}
+
+<SortableTable
+	{refresh}
+	{columns}
+	data={names}
+	{loading}
+	{title}
+	rowContextMenu={handleNameContextMenu}
+	bind:sortedColumn={sortedColumn.value}
+	bind:sortDirection={sortDirection.value}
+>
+	{#snippet cell(item, column)}
+		{#if column.key === 'owner' || column.key === 'original_owner'}
+			{@const address = item[column.key]}
+			{#if address}
+				<Address {address} />
+			{:else}
+				<Placeholder />
+			{/if}
+		{:else if column.key === 'name'}
+			<a class="name-link" href={`/names/${item.name}`}>{item.name}<small>.kro</small></a>
+		{:else if column.key === 'registered' || column.key === 'updated' || column.key === 'transferred'}
+			{@const value = item[column.key]}
+			{#if value && new Date(value).getTime() > 1_000_000}
+				<small
+					class:title-right={column.key === 'registered'}
+					title={new Date(value).toLocaleString()}
+				>
+					{relativeTime(value)}
+				</small>
+			{:else}
+				<Placeholder />
+			{/if}
+		{:else if column.key === 'a'}
+			{#if item.a}
+				{item.a}
+			{:else}
+				<Placeholder />
+			{/if}
+		{/if}
+	{/snippet}
+</SortableTable>
+{#if $nameQuery?.error}
+	<div class="error">Error: {$nameQuery.error.message}</div>
+{/if}
+
+<TableControls {loading} bind:page={page.value} {limit} {total} onRefresh={refresh}>
+	{#if showDetails}
+		<LimitSelector bind:limit />
+	{/if}
+	<PaginationInfo page={page.value} {limit} {total} itemName="name" itemNamePlural="names" />
+</TableControls>
+
+<style>
+	.name-link {
+		color: var(--text-color-1);
+		text-decoration: none;
+	}
+
+	.error {
+		color: rgb(var(--red));
+		margin-top: 1em;
+	}
+</style>

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Motd from '$lib/components/widgets/Motd.svelte';
-	import Transactions from '$lib/components/widgets/transactions/Transactions.svelte';
-	import Addresses from '$lib/components/widgets/addresses/Addresses.svelte';
-	import Names from '$lib/components/widgets/names/Names.svelte';
-	import Wallets from '$lib/components/widgets/Wallets.svelte';
+	import CompactWallets from '$lib/components/widgets/wallets/CompactWallets.svelte';
+	import AdvancedNames from '$lib/components/widgets/names/AdvancedNames.svelte';
+	import AdvancedTransactions from '$lib/components/widgets/transactions/AdvancedTransactions.svelte';
+	import AdvancedAddresses from '$lib/components/widgets/addresses/AdvancedAddresses.svelte';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 </script>
 
 <svelte:head>
@@ -14,12 +14,16 @@
 	/>
 </svelte:head>
 
-<h1><a href="/">Krawlet</a></h1>
+<Breadcrumbs />
 
-<Wallets lgCols={5} mdCols={12} limit={8} showAddButton={true} compact={true} />
-<Transactions lgCols={7} mdCols={12} limit={10} queryPrefix="trans_" />
+<CompactWallets lgCols={5} mdCols={12} limit={8} showAddButton={true} />
+<div class="col-7 col-md-12">
+	<AdvancedTransactions storePrefix="tx" title="Recent Transactions" limit={10} query={{}} />
+</div>
 
-<Names lgCols={6} mdCols={12} limit={3} queryPrefix="name_" />
-<Addresses lgCols={6} mdCols={12} limit={3} rich={true} queryPrefix="addr_" />
-
-<Motd lgCols={12} />
+<div class="col-6 col-md-12">
+	<AdvancedNames storePrefix="nm" title="Recent Names" limit={5} query={{}} />
+</div>
+<div class="col-6 col-md-12">
+	<AdvancedAddresses storePrefix="ad" title="Top Addresses" limit={5} richest={true} />
+</div>

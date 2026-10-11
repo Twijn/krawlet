@@ -27,11 +27,14 @@
 	} = $props();
 
 	let menuElement: HTMLDivElement | null = $state(null);
-	let adjustedX = $state(x);
-	let adjustedY = $state(y);
+	let adjustedX = $state(0);
+	let adjustedY = $state(0);
 
 	// Adjust position to keep menu on screen
 	$effect(() => {
+		adjustedX = x;
+		adjustedY = y;
+
 		if (visible && menuElement) {
 			const rect = menuElement.getBoundingClientRect();
 			const viewportWidth = window.innerWidth;
@@ -163,7 +166,7 @@
 <style>
 	.context-menu {
 		position: fixed;
-		z-index: 10000;
+		z-index: 10250;
 		background-color: var(--background-color-2);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 0.5rem;

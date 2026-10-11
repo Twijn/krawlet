@@ -76,7 +76,7 @@
 	<!-- Import from wallets button -->
 	{#if $settings.wallets.length > 0}
 		<div class="import-section">
-			<Button onClick={handleImportFromWallets}>
+			<Button variant="secondary" onClick={handleImportFromWallets}>
 				<FontAwesomeIcon icon={faDownload} />
 				{$t$('pushNotifications.importFromWallets')}
 			</Button>
@@ -141,17 +141,17 @@
 				/>
 			</div>
 			<div class="form-actions">
-				<Button onClick={handleAddAddress}>
+				<Button variant="primary" onClick={handleAddAddress}>
 					<FontAwesomeIcon icon={faPlus} />
 					{$t$('pushNotifications.addAddress')}
 				</Button>
-				<Button onClick={() => (showAddForm = false)}>
+				<Button variant="secondary" onClick={() => (showAddForm = false)}>
 					{$t$('common.cancel')}
 				</Button>
 			</div>
 		</div>
 	{:else}
-		<Button onClick={() => (showAddForm = true)}>
+		<Button variant="primary" onClick={() => (showAddForm = true)}>
 			<FontAwesomeIcon icon={faPlus} />
 			{$t$('pushNotifications.addNewAddress')}
 		</Button>

@@ -2,6 +2,7 @@
 	import Section from '$lib/components/ui/Section.svelte';
 	import SkeletonTable from '$lib/components/ui/SkeletonTable.svelte';
 	import Pagination from '$lib/components/ui/Pagination.svelte';
+	import Tag from '$lib/components/ui/Tag.svelte';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faStore, faPlus, faExchange } from '@fortawesome/free-solid-svg-icons';
@@ -131,7 +132,7 @@
 						<th>{$t$('reports.changeType')}</th>
 						<th>{$t$('shop.shop')}</th>
 						<th>{$t$('reports.changes')}</th>
-						<th class="right">{$t$('transaction.time')}</th>
+						<th class="right mobile-hide">{$t$('transaction.time')}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -140,15 +141,15 @@
 						<tr>
 							<td>
 								{#if record.isNewShop}
-									<span class="change-badge new-shop">
+									<Tag variant="green" size="md">
 										<FontAwesomeIcon icon={faPlus} />
 										{$t$('reports.newShop')}
-									</span>
+									</Tag>
 								{:else}
-									<span class="change-badge updated">
+									<Tag variant="blue" size="md">
 										<FontAwesomeIcon icon={faExchange} />
 										{$t$('reports.updated')}
-									</span>
+									</Tag>
 								{/if}
 							</td>
 							<td>
@@ -170,7 +171,7 @@
 									{/each}
 								</div>
 							</td>
-							<td class="right time" title={timestamp.toLocaleString()}>
+							<td class="right time mobile-hide" title={timestamp.toLocaleString()}>
 								{relativeTime(timestamp)}
 							</td>
 						</tr>
@@ -188,44 +189,38 @@
 <style>
 	.error-message {
 		text-align: center;
-		padding: 2em;
+		padding: 2.5em 2em;
+		background-color: rgba(var(--red), 0.08);
+		border-radius: 0.5rem;
+		border: 1px solid rgba(var(--red), 0.2);
+	}
+
+	.error-message p {
 		color: rgb(var(--red));
+		font-weight: 500;
+		margin-bottom: 1em;
 	}
 
 	.error-message button {
-		margin-top: 1em;
-		padding: 0.5em 1em;
+		padding: 0.5em 1.25em;
 		background-color: var(--theme-color-1);
 		color: white;
 		border: none;
-		border-radius: 0.25em;
+		border-radius: 0.35em;
+		font-weight: 500;
 		cursor: pointer;
+	}
+
+	.error-message button:hover {
+		opacity: 0.9;
 	}
 
 	.no-data {
 		text-align: center;
 		color: var(--text-color-2);
-		padding: 2em;
-	}
-
-	.change-badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.4em;
-		padding: 0.25em 0.6em;
-		border-radius: 0.25em;
-		font-size: 0.85em;
-		font-weight: 500;
-	}
-
-	.change-badge.new-shop {
-		background-color: rgba(var(--green), 0.2);
-		color: rgb(var(--green));
-	}
-
-	.change-badge.updated {
-		background-color: rgba(var(--yellow), 0.2);
-		color: rgb(var(--yellow));
+		padding: 2.5em;
+		background-color: var(--background-color-2);
+		border-radius: 0.5rem;
 	}
 
 	.changes-cell {
@@ -275,5 +270,11 @@
 	.time {
 		font-size: 0.9rem;
 		white-space: nowrap;
+	}
+
+	@media only screen and (max-width: 600px) {
+		:global(.mobile-hide) {
+			display: none;
+		}
 	}
 </style>

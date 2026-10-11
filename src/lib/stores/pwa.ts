@@ -187,16 +187,6 @@ export function dismissInstall(): void {
 }
 
 /**
- * Reset the install dismissed preference
- */
-export function resetInstallDismissed(): void {
-	installDismissed.set(false);
-	if (browser) {
-		localStorage.removeItem(INSTALL_DISMISSED_KEY);
-	}
-}
-
-/**
  * Reload the app to apply updates
  * Sends SKIP_WAITING to the service worker first to activate the new version
  */
@@ -222,20 +212,5 @@ export async function applyUpdate(): Promise<void> {
 		}, 1000);
 	} else {
 		window.location.reload();
-	}
-}
-
-/**
- * Check if the app can work offline
- * @returns Whether service worker is registered and active
- */
-export async function canWorkOffline(): Promise<boolean> {
-	if (!browser || !('serviceWorker' in navigator)) return false;
-
-	try {
-		const registration = await navigator.serviceWorker.ready;
-		return registration.active !== null;
-	} catch {
-		return false;
 	}
 }

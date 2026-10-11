@@ -1,5 +1,14 @@
 # Krawlet
 
+[![Health (now)](https://status.twijn.net/api/v1/endpoints/krawlet_krawlet-api/health/badge.svg)](https://status.twijn.net/endpoints/krawlet_krawlet-api)
+[![API Uptime (30d)](https://status.twijn.net/api/v1/endpoints/krawlet_krawlet-api/uptimes/30d/badge.svg)](https://status.twijn.net/endpoints/krawlet_krawlet-api)
+[![API Uptime (24h)](https://status.twijn.net/api/v1/endpoints/krawlet_krawlet-api/uptimes/24h/badge.svg)](https://status.twijn.net/endpoints/krawlet_krawlet-api)
+[![API Latency (24h)](https://status.twijn.net/api/v1/endpoints/krawlet_krawlet-api/response-times/24h/badge.svg)](https://status.twijn.net/endpoints/krawlet_krawlet-api)
+
+[![CI](https://github.com/Twijn/krawlet/actions/workflows/ci.yml/badge.svg)](https://github.com/Twijn/krawlet/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/Twijn/krawlet)](https://github.com/Twijn/krawlet/blob/main/LICENSE)
+![Last commit](https://img.shields.io/github/last-commit/Twijn/krawlet)
+
 The (nearly) fully-featured Kromer wallet, built in Svelte!
 
 ## Features

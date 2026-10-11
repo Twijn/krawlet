@@ -148,7 +148,7 @@
 	}
 
 	let priceText = $derived(
-		`${formatCurrency(unitPrice.value)} KRO ea. * ${quantity.value ?? 0} = ${formatCurrency(amount)} KRO`
+		`${formatCurrency(unitPrice.value, 5)} KRO ea. * ${quantity.value ?? 0} = ${formatCurrency(amount, 5)} KRO`
 	);
 </script>
 

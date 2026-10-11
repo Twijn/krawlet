@@ -10,7 +10,7 @@
 	import { paramState } from '$lib/paramState.svelte';
 	import { formatCurrency } from '$lib/util';
 	import AddressSelector from '$lib/components/widgets/addresses/AddressSelector.svelte';
-	import { getSyncNode } from '$lib/consts';
+	import { INTERNAL_KEY } from '$lib/consts';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 
@@ -27,7 +27,7 @@
 	let balances: Record<string, number> = $state({});
 
 	let loading = $state(false);
-	let kromerKey = $state(getSyncNode().internalKey ?? '');
+	let kromerKey = $state(INTERNAL_KEY ?? '');
 
 	let address = paramState('address', '', {
 		shouldSet: (value) => value.length === 10
@@ -53,15 +53,22 @@
 		}
 
 		confirm.confirm({
-			message: `Are you sure you want to give ${formatCurrency(amount.value)} KRO to ${address.value}?`,
+			message: `Are you sure you want to give ${formatCurrency(amount.value, 5)} KRO to ${address.value}?`,
 			confirmButtonLabel: 'Send',
-			confirm: () => {
-				kromer.external.giveMoney(kromerKey, address.value, amount.value).then((wallet) => {
+			confirm: async () => {
+				loading = true;
+				try {
+					const wallet = await kromer.external.giveMoney(kromerKey, address.value, amount.value);
 					balances[wallet.address] = wallet.balance;
 					notifications.success(
-						`Successfully sent ${formatCurrency(amount.value)} KRO to ${wallet.address}. New balance: ${formatCurrency(wallet.balance)} KRO`
+						`Successfully sent ${formatCurrency(amount.value, 5)} KRO to ${wallet.address}. New balance: ${formatCurrency(wallet.balance)} KRO`
 					);
-				});
+				} catch (err: unknown) {
+					const message = err instanceof Error ? err.message : 'Failed to send money.';
+					notifications.error(message);
+				} finally {
+					loading = false;
+				}
 			}
 		});
 		return false;
@@ -73,7 +80,7 @@
 	<form method="POST">
 		<ModuleLoading {loading} absolute />
 
-		{#if !getSyncNode().internalKey}
+		{#if !INTERNAL_KEY}
 			<label>
 				Internal Key
 				<input type="text" bind:value={kromerKey} />

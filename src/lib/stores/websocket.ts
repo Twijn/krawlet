@@ -10,6 +10,7 @@ import { t } from '$lib/i18n';
 import type { TransactionWithMeta } from 'kromer';
 import kromer from '$lib/api/kromer';
 import { processTransactionForNotification } from '$lib/utils/notifications';
+import { AddressCache } from '$lib/cache/AddressCache';
 
 /**
  * WebSocket connection states
@@ -54,6 +55,10 @@ function createWebSocketStore() {
 
 			const unsubTransaction = wsClient.on('transaction', (tx: TransactionWithMeta) => {
 				lastTransaction.set(tx);
+
+				AddressCache.refreshFromTransaction(tx).catch((error) => {
+					console.error('Failed to refresh address cache from websocket transaction:', error);
+				});
 
 				const fromDisplay = tx.from || 'Mining reward';
 				notifications.info(

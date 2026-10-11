@@ -1,17 +1,18 @@
 <script lang="ts">
 	import type { Shop } from '$lib/types/shops';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faShop } from '@fortawesome/free-solid-svg-icons';
+	import { faShop, faTowerBroadcast, faTruckFast } from '@fortawesome/free-solid-svg-icons';
 	import { cleanShopData } from '$lib/stores/shopsync';
 	import { relativeTime } from '$lib/util';
 	import Button from '$lib/components/ui/Button.svelte';
+	import type { Snippet } from 'svelte';
 
 	const {
 		shop,
 		children
 	}: {
 		shop: Shop;
-		children: unknown;
+		children: Snippet;
 	} = $props();
 </script>
 
@@ -19,10 +20,22 @@
 	<div class="shop-head">
 		<div class="shop-head-icon"><FontAwesomeIcon icon={faShop} /></div>
 		<div class="shop-head-text">
-			<h3>{cleanShopData(shop.name)}</h3>
+			<h3>
+				{cleanShopData(shop.name)}
+				{#if shop.sourceType === 'radio_tower'}
+					<span class="title-icon title-bottom" title="Transmitted via Radio Tower">
+						<FontAwesomeIcon icon={faTowerBroadcast} />
+					</span>
+				{/if}
+				{#if shop.supportsKlog}
+					<span class="title-icon title-green title-bottom" title="Supports Klog Delivery">
+						<FontAwesomeIcon icon={faTruckFast} />
+					</span>
+				{/if}
+			</h3>
 			<small>
 				{#if shop.owner}
-					By {cleanShopData(shop.owner)}
+					{cleanShopData(shop.owner)}
 				{/if}
 				{#if shop.softwareName}
 					{#if shop.owner}&bullet;{/if}
@@ -34,17 +47,19 @@
 			</small>
 			{#if shop.updatedDate}
 				{@const date = new Date(shop.updatedDate)}
-				<small title={date.toLocaleString()}>
+				<small class="title-left" title={date.toLocaleString()}>
 					Last updated {relativeTime(date)}
 				</small>
 			{/if}
 		</div>
 	</div>
+	<hr />
 	<div class="shop-body">
 		{#if typeof children === 'function'}
 			{@render children()}
 		{/if}
 	</div>
+	<hr />
 	<div class="buttons">
 		{#if shop.locationCoordinates && shop.locationCoordinates.split(' ').length === 3}
 			{@const coordinates = shop.locationCoordinates.split(' ')}
@@ -66,7 +81,7 @@
 		position: relative;
 		display: flex;
 		flex-direction: column;
-		background-color: var(--background-color-2);
+		background-color: var(--background-color-1);
 		min-width: 0;
 		max-width: 100%;
 		padding: 1rem;
@@ -76,7 +91,7 @@
 			0 2px 8px rgba(0, 0, 0, 0.3),
 			0 0 1px rgba(255, 255, 255, 0.1) inset;
 		transition: all 0.2s ease;
-		gap: 1rem;
+		gap: 0.5rem;
 	}
 
 	.shop:hover {
@@ -125,6 +140,22 @@
 		flex-grow: 1;
 	}
 
+	.title-icon {
+		font-size: 0.875em;
+		margin: 0 0 0 0.3rem;
+		color: rgb(var(--orange));
+	}
+
+	.title-green {
+		color: rgb(var(--green));
+	}
+
+	hr {
+		border: none;
+		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		margin: 0;
+	}
+
 	small[title] {
 		cursor: help;
 	}
@@ -133,5 +164,11 @@
 		display: flex;
 		gap: 0.5rem;
 		margin-top: auto;
+	}
+
+	@media only screen and (max-width: 480px) {
+		.buttons {
+			flex-direction: column;
+		}
 	}
 </style>

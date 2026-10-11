@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { cleanShopData, getItemImageUrl, type ShopWithListing } from '$lib/stores/shopsync';
-	import { formatCurrency } from '$lib/util';
+	import { cleanShopData, type ShopWithListing } from '$lib/stores/shopsync';
+	import { formatCurrency, itemImageUrl } from '$lib/util';
 	import Section from '$lib/components/ui/Section.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faShop } from '@fortawesome/free-solid-svg-icons';
 	import ShopCard from '$lib/components/widgets/shops/cards/ShopCard.svelte';
 	import ItemBadges from '$lib/components/widgets/shops/ItemBadges.svelte';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 
 	const { data } = $props();
-	const { item } = data;
+	const item = $derived(data.item);
 
 	let lowestShop = $state<ShopWithListing | null>(null);
 	let highestShop = $state<ShopWithListing | null>(null);
@@ -54,18 +55,20 @@
 	<title>{cleanShopData(item?.itemDisplayName ?? '')} | Shop Items | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/shops">Shops</a> <span>&raquo;</span>
-	<a href="/shops/items">Items</a> <span>&raquo;</span>
-	<a href="/shops/items/{item?.itemName.replace(/:/g, '/')}"
-		>{cleanShopData(item?.itemDisplayName ?? '')}</a
-	>
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ tl: 'nav.shops', href: '/shops' },
+		{ label: 'Items', href: '/shops/items' },
+		{
+			label: cleanShopData(item?.itemDisplayName ?? ''),
+			href: `/shops/items/${item?.itemName.replace(/:/g, '/')}`
+		}
+	]}
+/>
 
 <div class="col-12 statistics">
 	<div class="statistic">
-		<img src={getItemImageUrl(item)} alt={item.itemDisplayName} />
+		<img src={itemImageUrl(item)} alt={item.itemDisplayName} />
 	</div>
 	<div class="statistic">
 		<h2>Item Name</h2>
@@ -79,7 +82,7 @@
 		<h2>Lowest Price</h2>
 		<div>
 			{#if lowestPrice}
-				{formatCurrency(lowestPrice)}
+				{formatCurrency(lowestPrice, 5)}
 				<small>KRO</small>
 			{:else}
 				N/A
@@ -90,7 +93,7 @@
 		<h2>Highest Price</h2>
 		<div>
 			{#if highestPrice}
-				{formatCurrency(highestPrice)}
+				{formatCurrency(highestPrice, 5)}
 				<small>KRO</small>
 			{:else}
 				N/A
@@ -101,7 +104,7 @@
 		<h2>Market Value</h2>
 		<div>
 			{#if marketValue}
-				{formatCurrency(marketValue)}
+				{formatCurrency(marketValue, 5)}
 				<small>KRO</small>
 			{:else}
 				N/A
@@ -130,7 +133,8 @@
 								{@const priceValue = Number(price.value)}
 								<tr>
 									<th>Price <small>({price.currency})</small></th>
-									<td class="right">{formatCurrency(priceValue)} <small>{price.currency}</small></td
+									<td class="right"
+										>{formatCurrency(priceValue, 5)} <small>{price.currency}</small></td
 									>
 								</tr>
 							{/each}

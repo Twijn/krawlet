@@ -16,6 +16,8 @@
 	import FilterSortControls from '$lib/components/widgets/shops/filtersort/ItemFilterSort.svelte';
 	import { DEFAULT_ITEM_SORT, ITEM_SORT_OPTIONS, type ItemSortOption } from '$lib/types/sort';
 	import { t$ } from '$lib/i18n';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
+	import Tag from '$lib/components/ui/Tag.svelte';
 
 	let listings: ItemListing[] = $state([]);
 
@@ -23,7 +25,7 @@
 		shouldSet: (v) => v.length > 0
 	});
 	let sortOption = paramState<ItemSortOption>('sort', DEFAULT_ITEM_SORT, {
-		shouldSet: (v) => ITEM_SORT_OPTIONS.includes(v)
+		shouldSet: (v) => ITEM_SORT_OPTIONS.includes(v) && v !== DEFAULT_ITEM_SORT
 	});
 
 	let filteredListings = $derived(
@@ -74,11 +76,12 @@
 	<title>Shop Items | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/shops">{$t$('nav.shops')}</a> <span>&raquo;</span>
-	<a href="/shops/items">{$t$('nav.items')}</a>
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ label: $t$('nav.shops'), href: '/shops' },
+		{ label: $t$('nav.items'), href: '/shops/items' }
+	]}
+/>
 
 <FilterSortControls bind:searchQuery={searchQuery.value} bind:sortOption={sortOption.value} />
 
@@ -91,38 +94,43 @@
 	{/if}
 	<div class="item-grid">
 		{#each filteredListings as listing (listing.itemName + (':' + listing.itemNbt))}
-			<ItemCard item={listing} showBadges={false}>
-				<table>
-					<thead>
-						<tr>
-							<th>{$t$('shop.shopName')}</th>
-							<th class="right">{$t$('shop.stock')}</th>
-							<th class="right">{$t$('shop.price')}</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each listing.shops as shop (shop.listing.id)}
-							{@const stock = shop.listing.stock}
+			<ItemCard item={listing} showBadges={false} showPurchaseLink={false}>
+				<div class="table-container">
+					<table>
+						<thead>
 							<tr>
-								<td>
-									<a href="/shops/{shop.id}">{cleanShopData(shop.name)}</a>
-								</td>
-								<td class="right">
-									{stock.toLocaleString()}
-								</td>
-								<td class="right">
-									{#if shop.listing.prices?.[0].value}
-										{@const price = shop.listing.prices[0]}
-										{formatCurrency(price.value)}
-										<small>{price.currency}</small>
-									{:else}
-										N/A
-									{/if}
-								</td>
+								<th>{$t$('shop.shopName')}</th>
+								<th class="right">{$t$('shop.stock')}</th>
+								<th class="right">{$t$('shop.price')}</th>
 							</tr>
-						{/each}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{#each listing.shops as shop (shop.listing.id)}
+								{@const stock = shop.listing.stock}
+								<tr>
+									<td>
+										<a href="/shops/{shop.id}">{cleanShopData(shop.name)}</a>
+										{#if shop.listing.shopBuysItem}
+											<Tag variant="red" title="This shop buys this item">Sellshop</Tag>
+										{/if}
+									</td>
+									<td class="right">
+										{stock.toLocaleString()}
+									</td>
+									<td class="right">
+										{#if shop.listing.prices?.[0].value}
+											{@const price = shop.listing.prices[0]}
+											{formatCurrency(price.value, 5)}
+											<small>{price.currency}</small>
+										{:else}
+											N/A
+										{/if}
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
 			</ItemCard>
 		{/each}
 	</div>

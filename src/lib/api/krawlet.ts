@@ -5,6 +5,8 @@
 
 import { KrawletClient } from 'krawlet-js';
 import { browser } from '$app/environment';
+import settings from '$lib/stores/settings';
+import { get } from 'svelte/store';
 
 // Create the initial client
 let _client = new KrawletClient();
@@ -48,22 +50,14 @@ export async function healthCheck(): Promise<boolean> {
 
 // Initialize with API key from settings (only in browser)
 if (browser) {
-	// Use setTimeout to avoid SSR issues with dynamic imports
-	setTimeout(async () => {
-		const { default: settings } = await import('$lib/stores/settings');
-		const { get } = await import('svelte/store');
+	const initialSettings = get(settings);
+	if (initialSettings.krawletApiKey) {
+		updateKrawletApiKey(initialSettings.krawletApiKey);
+	}
 
-		// Set initial API key
-		const initialSettings = get(settings);
-		if (initialSettings.krawletApiKey) {
-			updateKrawletApiKey(initialSettings.krawletApiKey);
-		}
-
-		// Subscribe to settings changes
-		settings.subscribe((s: { krawletApiKey: string }) => {
-			updateKrawletApiKey(s.krawletApiKey || '');
-		});
-	}, 0);
+	settings.subscribe((s: { krawletApiKey: string }) => {
+		updateKrawletApiKey(s.krawletApiKey || '');
+	});
 }
 
 // Export a proxy that always uses the current client with the healthCheck function

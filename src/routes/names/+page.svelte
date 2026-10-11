@@ -1,5 +1,6 @@
 <script lang="ts">
-	import Names from '$lib/components/widgets/names/Names.svelte';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
+	import AdvancedNames from '$lib/components/widgets/names/AdvancedNames.svelte';
 	import NameStats from '$lib/components/widgets/names/NameStats.svelte';
 </script>
 
@@ -7,11 +8,10 @@
 	<title>Names | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span>
-	<a href="/names">Names</a>
-</h1>
+<Breadcrumbs navItems={[{ label: 'Names', href: '/names' }]} />
 
 <NameStats lgCols={12} />
 
-<Names lgCols={12} limit={30} />
+<div class="col-12">
+	<AdvancedNames query={{}} limit={30} showDetails={true} />
+</div>

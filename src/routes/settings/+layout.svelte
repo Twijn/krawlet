@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faGlobe, faDesktop, faBell, faServer } from '@fortawesome/free-solid-svg-icons';
+	import { faGlobe, faDesktop, faBell, faServer, faCrown } from '@fortawesome/free-solid-svg-icons';
 	import { t$ } from '$lib/i18n';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 
 	const { children } = $props();
 
@@ -15,7 +16,13 @@
 			labelKey: 'settings.tabs.notifications',
 			exact: false
 		},
-		{ href: '/settings/advanced', icon: faServer, labelKey: 'settings.tabs.advanced', exact: false }
+		{ href: '/settings/cache', icon: faServer, labelKey: 'settings.tabs.cache', exact: false },
+		{
+			href: '/settings/krawlet-api',
+			icon: faCrown,
+			labelKey: 'settings.tabs.krawletApi',
+			exact: false
+		}
 	];
 
 	function isActive(href: string, exact: boolean): boolean {
@@ -30,11 +37,9 @@
 	<title>{$t$('settings.title')} | Krawlet</title>
 </svelte:head>
 
-<div class="col-12">
-	<h1>
-		<a href="/">Krawlet</a> <span>&raquo;</span> <a href="/settings">{$t$('settings.title')}</a>
-	</h1>
+<Breadcrumbs navItems={[{ href: '/settings', label: $t$('settings.title') }]} />
 
+<div class="col-12">
 	<div class="tabs-nav" role="tablist" aria-label="Settings navigation">
 		{#each tabs as tab (tab.href)}
 			<a

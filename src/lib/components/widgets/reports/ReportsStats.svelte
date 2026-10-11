@@ -133,24 +133,38 @@
 <style>
 	.error-message {
 		text-align: center;
-		padding: 2em;
+		padding: 2.5em 2em;
+		background-color: rgba(var(--red), 0.08);
+		border-radius: 0.5rem;
+		border: 1px solid rgba(var(--red), 0.2);
+	}
+
+	.error-message p {
 		color: rgb(var(--red));
+		font-weight: 500;
+		margin-bottom: 1em;
 	}
 
 	.error-message button {
-		margin-top: 1em;
-		padding: 0.5em 1em;
+		padding: 0.5em 1.25em;
 		background-color: var(--theme-color-1);
 		color: white;
 		border: none;
-		border-radius: 0.25em;
+		border-radius: 0.35em;
+		font-weight: 500;
 		cursor: pointer;
+	}
+
+	.error-message button:hover {
+		opacity: 0.9;
 	}
 
 	.no-data {
 		text-align: center;
 		color: var(--text-color-2);
-		padding: 2em;
+		padding: 2.5em;
+		background-color: var(--background-color-2);
+		border-radius: 0.5rem;
 	}
 
 	.stats-grid {
@@ -160,7 +174,7 @@
 	}
 
 	.stats-section {
-		background-color: var(--background-color-1);
+		background-color: var(--background-color-2);
 		border-radius: 0.5rem;
 		padding: 1rem;
 	}

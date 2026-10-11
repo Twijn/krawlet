@@ -6,6 +6,7 @@
 	import AddressComp from './Address.svelte';
 	import { formatCurrency, getMinecraftAvatar } from '$lib/util';
 	import kromer from '$lib/api/kromer';
+	import { AddressCache, type AddressWithNames } from '$lib/cache/AddressCache';
 	import ModuleLoading from '../other/ModuleLoading.svelte';
 	import {
 		faBuilding,
@@ -19,9 +20,8 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import type { Address } from 'kromer';
 	import { notifications } from '$lib/stores/notifications';
-	import { prompt } from '$lib/stores/prompt';
+	import { masterPasswordStore } from '$lib/stores/masterPassword';
 	import { onMount } from 'svelte';
-	import { getSyncNode } from '$lib/consts';
 
 	const NAME_REGEX = /^(\w+@)?(\w+)\.kro$/;
 	const ADDRESS_REGEX = /k[a-z0-9]{9}/;
@@ -32,7 +32,7 @@
 		label,
 		mode = 'address',
 		query = $bindable(''),
-		privatekey = $bindable(),
+		privatekey = $bindable(''),
 		address = $bindable(''),
 		balances = $bindable({}),
 		disabled = false,
@@ -54,7 +54,7 @@
 	type Addr = Wallet | Player | KnownAddress;
 
 	let allAddresses: Addr[] = $derived([
-		...$settings.wallets.filter((x) => x.syncNode === getSyncNode().id),
+		...$settings.wallets,
 		...$playerWallets.data,
 		...$knownAddresses.data
 	]);
@@ -94,6 +94,41 @@
 		return 'address' in addr ? addr.address : addr.kromerAddress;
 	}
 
+	async function fetchAddressMap(addresses: string[]): Promise<Record<string, AddressWithNames>> {
+		if (addresses.length === 0) {
+			return {};
+		}
+
+		const cache = new AddressCache();
+		const store = cache.get({ addresses });
+		if (!store) {
+			return {};
+		}
+
+		cache.update({ addresses });
+
+		return new Promise((resolve, reject) => {
+			let unsubscribe: () => void = () => {};
+			unsubscribe = store.subscribe((state) => {
+				if (state.error) {
+					unsubscribe();
+					reject(state.error);
+					return;
+				}
+
+				if (!state.loading && state.data) {
+					unsubscribe();
+					resolve(state.data.addressList);
+				}
+			});
+		});
+	}
+
+	async function fetchSingleAddress(address: string): Promise<AddressWithNames | null> {
+		const addressMap = await fetchAddressMap([address]);
+		return addressMap[address] ?? null;
+	}
+
 	function clear() {
 		selected = null;
 		address = '';
@@ -103,38 +138,27 @@
 
 	function setAddress(addr: Addr | Address, setQuery: boolean = true) {
 		if (mode === 'privatekey' && 'private' in addr) {
-			prompt
-				.prompt({
-					type: 'password',
-					message: 'Enter your master password to decrypt your private keys.',
-					inputLabel: 'Master Password',
-					confirmButtonLabel: 'Authorize',
-					cancelButtonLabel: 'Cancel',
-					validate: async (value) => {
-						try {
-							if (await settings.decryptWallet(addr, value)) {
-								return [];
-							}
-							return ['Invalid master password!'];
-						} catch (e) {
-							console.error(e);
-							return ['An unknown error occurred!'];
+			masterPasswordStore.get().then(
+				async (password) => {
+					const decrypted = await settings.decryptWallet(addr, password);
+					if (decrypted) {
+						privatekey = decrypted;
+						selected = addr;
+						address = getAddress(addr);
+						if (setQuery) {
+							query = address;
 						}
 					}
-				})
-				.then(async (result) => {
-					if (result) {
-						const decrypted = await settings.decryptWallet(addr, result);
-						if (decrypted) {
-							privatekey = decrypted;
-							selected = addr;
-							address = getAddress(addr);
-							if (setQuery) {
-								query = address;
-							}
-						}
+				},
+				(err) => {
+					console.error(err);
+					if (err?.message) {
+						notifications.error(err.message);
+					} else {
+						notifications.error('Failed to retrieve master password!');
 					}
-				});
+				}
+			);
 		} else {
 			selected = addr;
 			address = getAddress(addr);
@@ -153,8 +177,12 @@
 				const nameStr = nameMatch[2];
 				kromer.names.get(nameStr).then(
 					(name) => {
-						kromer.addresses.get(name.owner).then(
+						fetchSingleAddress(name.owner).then(
 							(addr) => {
+								if (!addr) {
+									notifications.warning(`Failed to fetch address for name ${nameStr}!`);
+									return;
+								}
 								exactResult = addr.address;
 								setAddress(addr, false);
 							},
@@ -170,8 +198,12 @@
 					}
 				);
 			} else if (ADDRESS_REGEX.test(query)) {
-				kromer.addresses.get(query).then(
+				fetchSingleAddress(query).then(
 					(addr) => {
+						if (!addr) {
+							notifications.warning(`Failed to fetch address ${query}!`);
+							return;
+						}
 						exactResult = addr.address;
 						setAddress(addr, false);
 					},
@@ -221,8 +253,9 @@
 		if (disabled && lockedValue && lockedValue !== address) {
 			// Check if locked value is a valid address
 			if (ADDRESS_REGEX.test(lockedValue)) {
-				kromer.addresses.get(lockedValue).then(
+				fetchSingleAddress(lockedValue).then(
 					(addr) => {
+						if (!addr) return;
 						setAddress(addr, false);
 					},
 					(e) => {
@@ -249,25 +282,36 @@
 
 		if (addresses.length > 0) {
 			loading = true;
-			kromer.addresses.getMultiple(addresses).then((addrs) => {
-				// Initially set all retrieve balances to 0, then update with actual balances
-				// This prevents unknown addresses from being continuously fetched
-				for (const addr of addresses) {
-					balances[addr] = 0;
-				}
+			fetchAddressMap(addresses)
+				.then((addrs) => {
+					// Initially set all retrieve balances to 0, then update with actual balances.
+					// This prevents unknown addresses from being continuously fetched.
+					for (const addr of addresses) {
+						balances[addr] = 0;
+					}
 
-				for (const [address, addressObj] of Object.entries(addrs)) {
-					balances[address] = addressObj.balance;
-				}
-				loading = false;
-			});
+					for (const [address, addressObj] of Object.entries(addrs)) {
+						balances[address] = addressObj.balance;
+					}
+				})
+				.catch((e) => {
+					console.error(e);
+				})
+				.finally(() => {
+					loading = false;
+				});
 		}
 	});
 
 	async function privateKeyExactResult(privateKey: string) {
 		const response = await kromer.login(privateKey);
 		if (response.address) {
-			const address = await kromer.addresses.get(response.address);
+			const address = await fetchSingleAddress(response.address);
+			if (!address) {
+				notifications.warning(`Failed to fetch address ${response.address}!`);
+				return;
+			}
+
 			balances[address.address] = address.balance;
 			privatekey = privateKey;
 			setAddress(address, false);

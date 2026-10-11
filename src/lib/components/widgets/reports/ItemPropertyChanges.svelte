@@ -2,6 +2,7 @@
 	import Section from '$lib/components/ui/Section.svelte';
 	import SkeletonTable from '$lib/components/ui/SkeletonTable.svelte';
 	import Pagination from '$lib/components/ui/Pagination.svelte';
+	import Tag from '$lib/components/ui/Tag.svelte';
 	import ModuleLoading from '$lib/components/widgets/other/ModuleLoading.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import {
@@ -17,19 +18,15 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { getItemChanges, getPriceChanges } from '$lib/api/shopsync-reports';
 	import type { ItemChangesResponse, PriceChangesResponse } from '$lib/types/shopsync-reports';
-	import { relativeTime } from '$lib/util';
+	import { itemImageUrl, relativeTime } from '$lib/util';
 	import { paramState } from '$lib/paramState.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { browser } from '$app/environment';
 	import { t$ } from '$lib/i18n';
 
 	type ColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | null;
 	type DataSource = 'memory' | 'persistent';
 	type ChangeType = 'all' | 'added' | 'removed' | 'updated';
-
-	function getItemImageUrlFromName(itemName: string): string {
-		return `https://cdn.krawlet.cc/${itemName.replace(':', '/')}.png`;
-	}
 
 	const {
 		lgCols = 12,
@@ -51,9 +48,14 @@
 		shouldSet: (value) => value >= 2
 	});
 
-	let source = paramState<DataSource>('ipc_src', defaultSource, {
-		shouldSet: (value) => value !== defaultSource && (value === 'memory' || value === 'persistent')
-	});
+	let source = paramState<DataSource>(
+		'ipc_src',
+		untrack(() => defaultSource),
+		{
+			shouldSet: (value) =>
+				value !== defaultSource && (value === 'memory' || value === 'persistent')
+		}
+	);
 
 	let changeFilter = paramState<ChangeType>('ipc_type', 'all', {
 		shouldSet: (value) => value !== 'all' && ['added', 'removed', 'updated'].includes(value)
@@ -279,14 +281,14 @@
 		}
 	}
 
-	function getChangeClass(changeType: 'added' | 'removed' | 'updated') {
+	function getChangeVariant(changeType: 'added' | 'removed' | 'updated'): 'green' | 'red' | 'blue' {
 		switch (changeType) {
 			case 'added':
-				return 'change-added';
+				return 'green';
 			case 'removed':
-				return 'change-removed';
+				return 'red';
 			case 'updated':
-				return 'change-updated';
+				return 'blue';
 		}
 	}
 
@@ -405,9 +407,9 @@
 							<th>{$t$('reports.changeType')}</th>
 						{/if}
 						<th>{$t$('shop.item')}</th>
-						<th>{$t$('shop.shop')}</th>
+						<th class="mobile-hide">{$t$('shop.shop')}</th>
 						<th>{$t$('reports.changes')}</th>
-						<th class="right">{$t$('transaction.time')}</th>
+						<th class="right mobile-hide">{$t$('transaction.time')}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -415,15 +417,15 @@
 						<tr>
 							{#if source.value === 'memory'}
 								<td>
-									<span class="change-badge {getChangeClass(change.changeType)}">
+									<Tag variant={getChangeVariant(change.changeType)} uppercase={true}>
 										<FontAwesomeIcon icon={getChangeIcon(change.changeType)} />
 										{$t$(`reports.${change.changeType}`)}
-									</span>
+									</Tag>
 								</td>
 							{/if}
 							<td class="item-cell">
 								<img
-									src={getItemImageUrlFromName(change.itemName)}
+									src={itemImageUrl(change.itemName)}
 									alt={change.itemDisplayName}
 									class="item-icon"
 								/>
@@ -432,7 +434,7 @@
 									<small class="item-id">{change.itemName}</small>
 								</div>
 							</td>
-							<td>
+							<td class="mobile-hide">
 								<a href="/shops/{change.shopId}">{change.shopName}</a>
 							</td>
 							<td class="changes-cell">
@@ -492,7 +494,7 @@
 									<span class="change-desc">{$t$('reports.propertyUpdated')}</span>
 								{/if}
 							</td>
-							<td class="right time" title={change.timestamp.toLocaleString()}>
+							<td class="right time mobile-hide" title={change.timestamp.toLocaleString()}>
 								{relativeTime(change.timestamp)}
 							</td>
 						</tr>
@@ -613,34 +615,6 @@
 		padding: 2.5em;
 		background-color: var(--background-color-2);
 		border-radius: 0.5rem;
-	}
-
-	/* Change Badges */
-	.change-badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35em;
-		padding: 0.3em 0.65em;
-		border-radius: 1.5em;
-		font-size: 0.75em;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.02em;
-	}
-
-	.change-added {
-		background-color: rgba(var(--green), 0.15);
-		color: rgb(var(--green));
-	}
-
-	.change-removed {
-		background-color: rgba(var(--red), 0.15);
-		color: rgb(var(--red));
-	}
-
-	.change-updated {
-		background-color: rgba(var(--blue), 0.15);
-		color: rgb(var(--blue));
 	}
 
 	/* Item Cell */
@@ -766,6 +740,12 @@
 		.field-change {
 			flex-wrap: wrap;
 			gap: 0.2em;
+		}
+	}
+
+	@media only screen and (max-width: 600px) {
+		:global(.mobile-hide) {
+			display: none;
 		}
 	}
 </style>

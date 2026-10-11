@@ -20,8 +20,11 @@
 	.toggle-container {
 		position: relative;
 		display: flex;
+		flex-direction: row;
 		align-items: center;
 		gap: 0.5em;
+		margin: 0;
+		font-weight: normal;
 		cursor: pointer;
 		user-select: none;
 	}

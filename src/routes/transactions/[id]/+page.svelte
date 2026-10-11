@@ -1,9 +1,7 @@
 <script lang="ts">
-	import Section from '$lib/components/ui/Section.svelte';
 	import Modal from '$lib/components/ui/Modal.svelte';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import {
-		faDatabase,
 		faInfoCircle,
 		faRepeat,
 		faRotateLeft,
@@ -16,15 +14,17 @@
 		faExternalLinkAlt,
 		faMapMarkerAlt
 	} from '@fortawesome/free-solid-svg-icons';
-	import { relativeTime, formatCurrency, getMinecraftAvatar } from '$lib/util';
+	import { relativeTime, formatCurrency, getMinecraftAvatar, itemImageUrl } from '$lib/util';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
 	import kromer from '$lib/api/kromer.js';
 	import type { Transaction, TransactionMetadataEntry } from 'kromer';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Placeholder from '$lib/components/ui/Placeholder.svelte';
 	import { t$ } from '$lib/i18n';
-	import shopsync, { getItemImageUrl, getRelativeItemUrl } from '$lib/stores/shopsync';
-	import type { Listing, Shop } from '$lib/types/shops';
+	import shopsync, { getRelativeItemUrl } from '$lib/stores/shopsync';
+	import { findBestRelatedShopSyncListing } from '$lib/utils/shopsyncMatching';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
+	import TransactionType from '$lib/components/widgets/transactions/TransactionType.svelte';
 
 	// Shop modal state
 	let showShopModal = $state(false);
@@ -74,46 +74,19 @@
 
 	// Find related listing for item purchases
 	const relatedListing = $derived.by(() => {
-		if (valueOnlyMeta.length === 0) return null;
-
-		const shops = $shopsync.data.filter((s) => s.addresses?.includes(transaction.to));
-		const listings = shops.reduce(
-			(acc, s) => {
-				if (s.items) {
-					const matchingItems = s.items.filter((i) =>
-						i.prices?.find(
-							(p) =>
-								p.currency.toLowerCase() === 'kro' &&
-								valueOnlyMeta.includes(p.requiredMeta?.toLowerCase() ?? '')
-						)
-					);
-					// Attach shop info to listing
-					matchingItems.forEach((item) => {
-						acc.push({ listing: item, shop: s });
-					});
-				}
-				return acc;
-			},
-			[] as { listing: Listing; shop: Shop }[]
-		);
-
-		return listings.length > 0 ? listings[0] : null;
+		return findBestRelatedShopSyncListing(transaction, $shopsync.data, valueOnlyMeta);
 	});
 
 	// Calculate quantity based on transaction value and unit price
 	const purchaseQuantity = $derived.by(() => {
 		if (!relatedListing) return 0;
-		const price = relatedListing.listing.prices?.find(
-			(p) => p.currency.toLowerCase() === 'kro'
-		)?.value;
+		const price = relatedListing.price.value;
 		if (!price || price <= 0) return 0;
 		return Math.floor(transaction.value / price);
 	});
 
 	// Get unit price
-	const unitPrice = $derived(
-		relatedListing?.listing.prices?.find((p) => p.currency.toLowerCase() === 'kro')?.value ?? 0
-	);
+	const unitPrice = $derived(relatedListing?.price.value ?? 0);
 
 	// Internal meta fields to filter out of "Other" display
 	const INTERNAL_META = [
@@ -162,18 +135,21 @@
 	<title>Transaction #{transaction.id} | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a> <span>&raquo;</span> <a href="/transactions">Transactions</a>
-	<span>&raquo;</span>
-	<a href="/transactions/{transaction.id}">#{transaction.id}</a>
-</h1>
+<Breadcrumbs
+	navItems={[
+		{ label: 'Transactions', href: '/transactions' },
+		{ label: `#${transaction.id}`, href: `/transactions/${transaction.id}` }
+	]}
+/>
 
 <div class="col-12 statistics">
 	<div class="statistic">
 		<div>
 			<Button
 				variant="primary"
-				href="/transactions/new?to={transaction.to}&amount={transaction.value}&metadata={transaction.metadata}"
+				href="/transactions/new?to={encodeURIComponent(transaction.to)}&amount={encodeURIComponent(
+					transaction.value.toFixed(5)
+				)}{transaction.metadata ? `&metadata=${encodeURIComponent(transaction.metadata)}` : ''}"
 			>
 				<FontAwesomeIcon icon={faRepeat} />
 				Repeat
@@ -221,70 +197,66 @@
 	</div>
 {/if}
 
-<Section lgCols={4} mdCols={12}>
-	<h2><FontAwesomeIcon icon={faInfoCircle} /> Raw Information</h2>
-	<div class="table-container">
-		<table>
-			<tbody>
+<div class="table-container col-4 col-md-12">
+	<table>
+		<tbody>
+			<tr>
+				<th>Type</th>
+				<td class="right">
+					<TransactionType tx={transaction} />
+				</td>
+			</tr>
+			<tr>
+				<th>From</th>
+				<td class="right">
+					{#if transaction.from}
+						<Address address={transaction.from} />
+					{:else}
+						<small>Unknown Sender</small>
+					{/if}
+				</td>
+			</tr>
+			<tr>
+				<th>To</th>
+				<td class="right">
+					<Address address={transaction.to} />
+				</td>
+			</tr>
+			{#if transaction.sent_name}
 				<tr>
-					<th>Type</th>
-					<td class="capitalize right">
-						{transaction.type}
-					</td>
-				</tr>
-				<tr>
-					<th>From</th>
+					<th>Sent to Name</th>
 					<td class="right">
-						{#if transaction.from}
-							<Address address={transaction.from} />
-						{:else}
-							<small>Unknown Sender</small>
-						{/if}
+						<code
+							>{transaction.sent_metaname
+								? `${transaction.sent_metaname}@`
+								: ''}{transaction.sent_name}<small>.kro</small></code
+						>
 					</td>
 				</tr>
-				<tr>
-					<th>To</th>
-					<td class="right">
-						<Address address={transaction.to} />
-					</td>
-				</tr>
-				{#if transaction.sent_name}
-					<tr>
-						<th>Sent to Name</th>
-						<td class="right">
-							<code
-								>{transaction.sent_metaname
-									? `${transaction.sent_metaname}@`
-									: ''}{transaction.sent_name}<small>.kro</small></code
-							>
-						</td>
-					</tr>
-				{/if}
-				<tr>
-					<th>Amount</th>
-					<td class="right">
-						{transaction.value.toFixed(2)} <small>KRO</small>
-					</td>
-				</tr>
-				<tr>
-					<th>Time</th>
-					<td class="right">
-						{transaction.time.toLocaleString()}
-					</td>
-				</tr>
-				<tr>
-					<th>Relative Time</th>
-					<td class="right">
-						{relativeTime(transaction.time)}
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-</Section>
+			{/if}
+			<tr>
+				<th>Amount</th>
+				<td class="right">
+					{transaction.value.toFixed(2)} <small>KRO</small>
+				</td>
+			</tr>
+			<tr>
+				<th>Time</th>
+				<td class="right">
+					{transaction.time.toLocaleString()}
+				</td>
+			</tr>
+			<tr>
+				<th>Relative Time</th>
+				<td class="right">
+					{relativeTime(transaction.time)}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
 
-<Section lgCols={8} mdCols={12}>
-	<h2><FontAwesomeIcon icon={faDatabase} /> Metadata</h2>
+<div class="col-8 col-md-12">
 	{#if transaction.metadata && transaction.metadata.length > 0}
 		<!-- Shop Action Section -->
 		{#if isShopAction}
@@ -401,7 +373,7 @@
 					<a class="item-image-link" href={getRelativeItemUrl(listing)}>
 						<img
 							class="item-image"
-							src={getItemImageUrl(listing)}
+							src={itemImageUrl(listing.itemName)}
 							alt="Item icon for {listing.itemDisplayName}"
 						/>
 					</a>
@@ -503,7 +475,7 @@
 		<!-- Other Metadata -->
 		{#if otherMetaEntries.length > 0}
 			<div class="meta-section meta-other">
-				<h3>Other Metadata</h3>
+				<h3>Metadata Table</h3>
 				<div class="table-container">
 					<table>
 						<thead>
@@ -516,7 +488,7 @@
 							{#each otherMetaEntries as metadata (metadata.name)}
 								<tr>
 									{#if metadata?.value}
-										<th class="caps">{metadata.name}</th>
+										<th class="caps">{metadata.name.replace('_', ' ')}</th>
 										<td>
 											{#if metadata.name === 'return' && metadata.value.length === 10}
 												<a href="/addresses/{metadata.value}">
@@ -527,7 +499,7 @@
 											{/if}
 										</td>
 									{:else}
-										<th><small><Placeholder text="[no name]" /></small></th>
+										<th><Placeholder text="[no name]" /></th>
 										<td>{metadata.name}</td>
 									{/if}
 								</tr>
@@ -546,7 +518,7 @@
 	{:else}
 		<small>There is no metadata on this transaction!</small>
 	{/if}
-</Section>
+</div>
 
 <style>
 	code.block {
@@ -558,10 +530,6 @@
 		margin: 0.5rem 0;
 		border-radius: 0.25rem;
 		word-break: break-all;
-	}
-
-	.capitalize {
-		text-transform: capitalize;
 	}
 
 	/* Refund note styles */

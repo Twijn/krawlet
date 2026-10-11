@@ -1,14 +1,20 @@
 <script lang="ts">
 	import {
 		canBuyListing,
-		getItemImageUrl,
 		getListingBuyLink,
 		getRelativeItemUrl,
-		type ItemListing
+		getShopById,
+		type ItemListing,
+		type ShopWithListing
 	} from '$lib/stores/shopsync';
-	import type { Listing } from '$lib/types/shops';
+	import type { Listing, Shop } from '$lib/types/shops';
 	import Button from '$lib/components/ui/Button.svelte';
 	import ItemBadges from '../ItemBadges.svelte';
+	import settings from '$lib/stores/settings';
+	import { faTruckFast } from '@fortawesome/free-solid-svg-icons';
+	import KlogPurchaseModal from '$lib/components/dialogs/KlogPurchaseModal.svelte';
+	import { getBestDeliveryListing } from '$lib/utils/shopsyncMatching';
+	import { itemImageUrl } from '$lib/util';
 
 	const {
 		item,
@@ -23,13 +29,34 @@
 		showPurchaseLink?: boolean;
 		showViewLink?: boolean;
 	} = $props();
+
+	let klogModalOpen = $state(false);
+
+	let shop = $state<Shop | null>(null);
+	const shopSupportsKlog = $derived(shop?.supportsKlog ?? false);
+	const canUseKlog = $derived($settings.krawletApiKey.startsWith('kraw_'));
+
+	const bestDeliveryOption = $derived<ShopWithListing | null>(
+		!showPurchaseLink && item && 'shops' in item ? getBestDeliveryListing(item) : null
+	);
+
+	$effect(() => {
+		if ('shopId' in item) {
+			getShopById(item.shopId).then((s) => {
+				shop = s;
+			});
+		}
+	});
 </script>
 
 <div class="item">
 	<div class="item-head">
-		<img src={getItemImageUrl(item)} alt="Item icon for {item.itemDisplayName}" />
+		<img src={itemImageUrl(item.itemName)} alt="Item icon for {item.itemDisplayName}" />
 		<div class="item-head-text">
 			<h3>{item.itemDisplayName}</h3>
+			{#if 'itemDescription' in item && item.itemDescription}
+				<p class="caps">{item.itemDescription}</p>
+			{/if}
 			<small title={item.itemNbt ? `NBT: ${item.itemNbt}` : undefined}>{item.itemName}</small>
 		</div>
 	</div>
@@ -38,17 +65,47 @@
 		<ItemBadges {item} />
 	{/if}
 
+	<hr />
 	<div class="item-body">
 		{#if typeof children === 'function'}
 			{@render children()}
 		{/if}
 	</div>
-
+	<hr />
 	<div class="buttons">
+		{#if bestDeliveryOption}
+			{@const stock = bestDeliveryOption.listing.stock ?? 0}
+			<Button
+				variant="success"
+				disabled={stock <= 0 || !canUseKlog}
+				icon={faTruckFast}
+				onClick={() => (klogModalOpen = true)}
+				title={stock <= 0
+					? 'This item is currently out of stock.'
+					: !canUseKlog
+						? 'You must add a Krawlet API Key in settings to purchase this item through Klog'
+						: 'Items will be delivered via Klog'}>Purchase from {bestDeliveryOption.name}</Button
+			>
+		{/if}
+
 		{#if showPurchaseLink && 'id' in item}
+			{@const stock = item.stock ?? 0}
 			{@const href = getListingBuyLink(item)}
-			{#if 'id' in item}
-				{@const stock = item.stock ?? 0}
+			{#if shopSupportsKlog}
+				<Button
+					variant="success"
+					disabled={stock <= 0 || !canUseKlog}
+					icon={faTruckFast}
+					onClick={() => (klogModalOpen = true)}
+					title={stock <= 0
+						? 'This item is currently out of stock.'
+						: !canUseKlog
+							? 'You must add a Krawlet API Key in settings to purchase this item through Klog'
+							: undefined}
+				>
+					Purchase with Klog
+				</Button>
+			{:else if 'id' in item}
 				<Button
 					variant="secondary"
 					disabled={stock <= 0 || !canBuyListing(item)}
@@ -71,13 +128,15 @@
 	</div>
 </div>
 
+<KlogPurchaseModal bind:open={klogModalOpen} item={bestDeliveryOption?.listing ?? item} />
+
 <style>
 	.item {
 		position: relative;
 		display: flex;
 		gap: 1rem;
 		flex-direction: column;
-		background-color: var(--background-color-2);
+		background-color: var(--background-color-1);
 		min-width: 0;
 		max-width: 100%;
 		padding: 1rem;
@@ -87,6 +146,7 @@
 			0 2px 8px rgba(0, 0, 0, 0.3),
 			0 0 1px rgba(255, 255, 255, 0.1) inset;
 		transition: all 0.2s ease;
+		gap: 0.5rem;
 	}
 
 	.item:hover {
@@ -122,7 +182,14 @@
 		color: var(--text-color-1);
 	}
 
+	.item-head-text p {
+		margin: 0 0 0.25rem 0;
+		font-size: 0.95rem;
+		color: var(--text-color-1);
+	}
+
 	.item-head-text small {
+		display: block;
 		font-size: 0.875rem;
 		color: var(--text-color-2);
 	}
@@ -131,9 +198,21 @@
 		flex-grow: 1;
 	}
 
+	hr {
+		border: none;
+		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		margin: 0;
+	}
+
 	.buttons {
 		display: flex;
 		gap: 0.5rem;
 		margin-top: auto;
+	}
+
+	@media only screen and (max-width: 480px) {
+		.buttons {
+			flex-direction: column;
+		}
 	}
 </style>

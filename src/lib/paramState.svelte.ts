@@ -1,6 +1,38 @@
 import { goto } from '$app/navigation';
 import { page } from '$app/state';
-import { SvelteURL } from 'svelte/reactivity';
+import { SvelteMap, SvelteURL } from 'svelte/reactivity';
+
+const pendingParamUpdates = new SvelteMap<string, string | null>();
+let flushScheduled = false;
+
+function scheduleUrlParamFlush() {
+	if (flushScheduled || typeof window === 'undefined') return;
+	flushScheduled = true;
+
+	queueMicrotask(() => {
+		flushScheduled = false;
+		if (pendingParamUpdates.size === 0) return;
+
+		const url = new SvelteURL(window.location.href);
+		for (const [key, value] of pendingParamUpdates.entries()) {
+			if (value === null) {
+				url.searchParams.delete(key);
+			} else {
+				url.searchParams.set(key, value);
+			}
+		}
+		pendingParamUpdates.clear();
+
+		if (url.toString() === window.location.href) return;
+
+		goto(url.toString(), {
+			replaceState: true,
+			keepFocus: true,
+			noScroll: true,
+			invalidateAll: false
+		});
+	});
+}
 
 export function paramState<T>(
 	paramName: string,
@@ -23,20 +55,10 @@ export function paramState<T>(
 
 	// Update URL when value changes
 	$effect(() => {
-		const url = new SvelteURL(window.location.href);
+		if (typeof window === 'undefined') return;
 
-		if (shouldSet(currentValue)) {
-			url.searchParams.set(paramName, serialize(currentValue));
-		} else {
-			url.searchParams.delete(paramName);
-		}
-
-		goto(url.toString(), {
-			replaceState: true,
-			keepFocus: true,
-			noScroll: true,
-			invalidateAll: false
-		});
+		pendingParamUpdates.set(paramName, shouldSet(currentValue) ? serialize(currentValue) : null);
+		scheduleUrlParamFlush();
 	});
 
 	return {

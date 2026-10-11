@@ -26,7 +26,7 @@
 			<span>{$t$('pwa.updateAvailable')}</span>
 		</div>
 		<div class="update-actions">
-			<Button onClick={handleUpdate} disabled={updating}>
+			<Button variant="primary" onClick={handleUpdate} disabled={updating}>
 				{#if updating}
 					{$t$('pwa.updating')}
 				{:else}

@@ -122,30 +122,6 @@ Base skeleton component with shimmer animation.
 
 ---
 
-### SkeletonTransaction
-
-**Location**: `src/lib/components/ui/SkeletonTransaction.svelte`
-
-Skeleton placeholder for transaction list items.
-
----
-
-### SkeletonAddress
-
-**Location**: `src/lib/components/ui/SkeletonAddress.svelte`
-
-Skeleton placeholder for address displays.
-
----
-
-### SkeletonWallet
-
-**Location**: `src/lib/components/ui/SkeletonWallet.svelte`
-
-Skeleton placeholder for wallet cards.
-
----
-
 ### SkeletonTable
 
 **Location**: `src/lib/components/ui/SkeletonTable.svelte`
@@ -217,17 +193,9 @@ Toast notification system.
 
 ### Wallets
 
-**Location**: `src/lib/components/widgets/Wallets.svelte`
+**Location**: `src/lib/components/widgets/wallets/Wallets.svelte`
 
 Displays user's wallets with balances.
-
----
-
-### Motd
-
-**Location**: `src/lib/components/widgets/Motd.svelte`
-
-Message of the day component.
 
 ---
 
@@ -253,20 +221,6 @@ PWA installation prompt banner.
 
 ---
 
-### ConnectionStatus
-
-**Location**: `src/lib/components/widgets/ConnectionStatus.svelte`
-
-WebSocket connection status indicator.
-
-**States**:
-
-- 🟢 Green: Connected
-- 🟡 Yellow: Connecting/Reconnecting
-- 🔴 Red: Disconnected
-
----
-
 ## Form Components
 
 ### Address Input Components
@@ -277,16 +231,6 @@ Located in `src/lib/components/form/address/`:
 - **PlayerAddressInput.svelte**: Input by player name
 - **RawAddressInput.svelte**: Direct address input
 - **ShopAddressInput.svelte**: Select from shops
-
-### Private Key Input Components
-
-Located in `src/lib/components/form/privatekey/`:
-
-- **PrivateKeyInputMethod.svelte**: Toggle between input methods
-- **RawPrivateKeyInput.svelte**: Direct private key input
-- **SavedWalletSelector.svelte**: Select from saved wallets
-
----
 
 ## Creating New Components
 

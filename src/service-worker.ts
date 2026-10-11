@@ -17,6 +17,9 @@ const ASSETS = [
 	...files // Static files
 ];
 
+// Route fallbacks to use when offline navigation fails
+const NAVIGATION_FALLBACKS = ['/offline', '/offline/', '/'];
+
 // API endpoints to cache with network-first strategy
 const API_CACHE_NAME = `krawlet-api-${version}`;
 const API_PATTERNS = [/\/api\/krist\//];
@@ -30,7 +33,18 @@ self.addEventListener('install', (event) => {
 	event.waitUntil(
 		caches
 			.open(CACHE_NAME)
-			.then((cache) => cache.addAll(ASSETS))
+			.then(async (cache) => {
+				await cache.addAll(ASSETS);
+
+				// Best effort: cache app shell/offline route HTML for offline navigation.
+				for (const fallback of NAVIGATION_FALLBACKS) {
+					try {
+						await cache.add(fallback);
+					} catch {
+						// Ignore if a fallback route is unavailable at install time.
+					}
+				}
+			})
 			.then(() => self.skipWaiting())
 	);
 });
@@ -156,9 +170,11 @@ self.addEventListener('fetch', (event) => {
 			} catch {
 				// If both cache and network fail, return offline page for navigation requests
 				if (event.request.mode === 'navigate') {
-					const offlinePage = await cache.match('/offline');
-					if (offlinePage) {
-						return offlinePage;
+					for (const fallback of NAVIGATION_FALLBACKS) {
+						const fallbackPage = await cache.match(fallback);
+						if (fallbackPage) {
+							return fallbackPage;
+						}
 					}
 				}
 

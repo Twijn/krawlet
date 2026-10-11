@@ -38,12 +38,18 @@ const transformItem = (item: ItemApi): Listing => ({
 // Transform krawlet-js Shop to our Shop type
 const transformShop = (shop: ShopApi): Shop => ({
 	id: shop.id,
+	sourceType: shop.sourceType,
 	name: shop.name,
 	description: shop.description,
 	owner: shop.owner,
 	computerId: shop.computerId,
+	features: shop.features,
 	softwareName: shop.softwareName,
 	softwareVersion: shop.softwareVersion,
+	supportsKlog:
+		(shop.softwareVersion?.toLowerCase().includes('+klog') ||
+			shop.features?.map((f) => f.toLowerCase()).includes('klog')) ??
+		false,
 	locationCoordinates: shop.locationCoordinates,
 	locationDescription: shop.locationDescription,
 	locationDimension: shop.locationDimension,
@@ -86,6 +92,16 @@ const fetchShopById = async (id: string): Promise<Shop | null> => {
 	}
 };
 
+export const refreshShopById = async (id: string): Promise<Shop | null> => {
+	const shop = await fetchShopById(id);
+	if (shop) {
+		store.upsertOne(shop, (s) => s.id === id);
+	}
+	return shop;
+};
+
+export const refreshAllShops = (): Promise<FetchedStoreData<Shop>> => store.forceUpdate();
+
 export const getShopById = async (id: string): Promise<Shop | null> => {
 	const shops = get(store);
 	let shop = shops?.data?.find((x) => x.id === id) ?? null;
@@ -121,10 +137,6 @@ export const getListingBuyLink = (item: Listing, lock: boolean = true): string =
 	} else {
 		return `https://krist.club/send?to=${encodeURIComponent(item?.addresses?.[0] ?? '')}&amount=${item.prices?.[0]?.value ?? 1}&metadata=${encodeURIComponent(item.prices?.[0].requiredMeta ?? '')}`;
 	}
-};
-
-export const getItemImageUrl = (item: Listing | ItemListing) => {
-	return `https://cdn.krawlet.cc/${item.itemName.replace(':', '/')}.png`;
 };
 
 export const getRelativeItemUrl = (item: Listing | ItemListing) => {
@@ -198,8 +210,6 @@ export const getListings = async (
 	modId?: string,
 	itemNbt?: string
 ): Promise<ItemListing[]> => {
-	console.log('getListings', { itemName, modId, itemNbt });
-
 	// Prepend modid if given
 	if (modId) {
 		itemName = modId + ':' + itemName;

@@ -62,7 +62,7 @@
 		}
 	}
 
-	let hasErrors = $derived($prompt?.errors && $prompt.errors.length > 0);
+	let hasErrors = $derived(Boolean($prompt?.errors?.length));
 </script>
 
 {#if $prompt}
@@ -81,7 +81,7 @@
 				<h2 id={titleId} class="sr-only">{$prompt.inputLabel}</h2>
 				{#if hasErrors}
 					<div id={errorId} role="alert" aria-live="assertive">
-						{#each $prompt.errors as error (error)}
+						{#each $prompt.errors ?? [] as error (error)}
 							<Alert variant="danger">
 								{error}
 							</Alert>
@@ -124,7 +124,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		z-index: 1100;
+		z-index: 10200;
 	}
 
 	.modal {
@@ -146,10 +146,6 @@
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		gap: 0.5rem;
-	}
-
-	label {
-		margin: 0.75em 0;
 	}
 
 	p {

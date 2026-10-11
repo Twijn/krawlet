@@ -1,5 +1,4 @@
 import FetchedStore from '$lib/stores/FetchedStore';
-import { browser } from '$app/environment';
 import krawletClient from '$lib/api/krawlet';
 import type { Player as PlayerApi } from 'krawlet-js';
 
@@ -14,6 +13,7 @@ export type Player = {
 
 	createdDate?: string;
 	updatedDate?: string;
+	lastSeenDate?: string;
 
 	online: boolean;
 };
@@ -25,13 +25,9 @@ const transformPlayer = (player: PlayerApi): Player => ({
 	kromerAddress: player.kromerAddress,
 	createdDate: player.createdDate ?? undefined,
 	updatedDate: player.updatedDate ?? undefined,
+	lastSeenDate: player.lastSeenDate ?? undefined,
 	online: player.online
 });
-
-// TODO: Remove this in a future release.
-if (browser && localStorage.getItem('playerWalletStore')) {
-	localStorage.removeItem('playerWalletStore');
-}
 
 class PlayerWalletStore extends FetchedStore<Player> {
 	protected sort(data: Player[]): Player[] {

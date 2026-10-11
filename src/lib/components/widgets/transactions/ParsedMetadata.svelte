@@ -1,156 +1,102 @@
 <script lang="ts">
-	import type {
-		Transaction,
-		TransactionMetadata,
-		TransactionMetadataEntry,
-		TransactionWithMeta
-	} from 'kromer';
-	import shopsync, { getItemImageUrl, getRelativeItemUrl } from '$lib/stores/shopsync';
+	import type { TransactionMetadata, TransactionMetadataEntry, TransactionWithMeta } from 'kromer';
+	import shopsync, { getRelativeItemUrl } from '$lib/stores/shopsync';
 	import type { Listing } from '$lib/types/shops';
 	import settings from '$lib/stores/settings';
-	import { onMount } from 'svelte';
-	import { formatCurrency, getMinecraftAvatar, relativeTime } from '$lib/util';
+	import { formatCurrency, getMinecraftAvatar, itemImageUrl } from '$lib/util';
+	import { findBestRelatedShopSyncListing } from '$lib/utils/shopsyncMatching';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
-	import { faRotateLeft, faArrowRight, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+	import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 	import { t$ } from '$lib/i18n';
-	import Modal from '$lib/components/ui/Modal.svelte';
 	import Address from '$lib/components/widgets/addresses/Address.svelte';
-	import Skeleton from '$lib/components/ui/Skeleton.svelte';
-	import Button from '$lib/components/ui/Button.svelte';
 	import Placeholder from '$lib/components/ui/Placeholder.svelte';
-	import kromer from '$lib/api/kromer';
-	import { goto } from '$app/navigation';
+	import Tag from '$lib/components/ui/Tag.svelte';
+	import RefundTransactionModal from '$lib/components/widgets/transactions/RefundTransactionModal.svelte';
 
 	const SPECIAL_META: string[] = ['winner', 'loser', 'payout'];
 	const REFUND_INTERNAL_META: string[] = ['ref', 'type', 'original'];
 
 	const {
-		transaction
+		transaction = $bindable()
 	}: {
 		transaction: TransactionWithMeta;
 	} = $props();
 
-	const meta = transaction.meta ?? { entries: [] };
-
-	// Check for shop actions (set or delete shop info)
-	const shopNameMeta = findMeta(meta, 'shop_name');
-	const shopDescriptionMeta = findMeta(meta, 'shop_description');
-	const shopDeleteMeta = meta.entries.find(
-		(e) => e.name.toLowerCase() === 'shop_delete' && !e.value
-	);
-	const isShopAction = shopNameMeta || shopDescriptionMeta || shopDeleteMeta;
-	const isSetShopInfo = shopNameMeta || shopDescriptionMeta;
-	const isDeleteShopInfo = shopDeleteMeta && !isSetShopInfo;
-
-	// Check for player data
-	const userUuidMeta = findMeta(meta, 'useruuid');
-	const usernameMeta = findMeta(meta, 'username');
-	const returnMeta = findMeta(meta, 'return');
-	const hasPlayerData = userUuidMeta || usernameMeta;
-
-	function findMeta(meta: TransactionMetadata, name: string): TransactionMetadataEntry | undefined {
+	function findMetaIn(
+		meta: TransactionMetadata,
+		name: string
+	): TransactionMetadataEntry | undefined {
 		return meta.entries.find((entry) => entry.name.toLowerCase() === name);
 	}
 
-	function findDisplayMeta(meta: TransactionMetadata): TransactionMetadataEntry | undefined {
+	function findDisplayMetaIn(meta: TransactionMetadata): TransactionMetadataEntry | undefined {
 		return (
-			findMeta(meta, 'error') ??
-			findMeta(meta, 'message') ??
-			findMeta(meta, 'msg') ??
+			findMetaIn(meta, 'error') ??
+			findMetaIn(meta, 'message') ??
+			findMetaIn(meta, 'msg') ??
 			meta.entries.find((e) => !e.value)
 		);
 	}
 
-	const displayMeta = findDisplayMeta(meta);
+	const meta = $derived(transaction.meta ?? { entries: [] });
+
+	// Check for shop actions (set or delete shop info)
+	const shopNameMeta = $derived(findMetaIn(meta, 'shop_name'));
+	const shopDescriptionMeta = $derived(findMetaIn(meta, 'shop_description'));
+	const shopDeleteMeta = $derived(
+		meta.entries.find((e) => e.name.toLowerCase() === 'shop_delete' && !e.value)
+	);
+	const isShopAction = $derived(shopNameMeta || shopDescriptionMeta || shopDeleteMeta);
+	const isSetShopInfo = $derived(shopNameMeta || shopDescriptionMeta);
+	const isDeleteShopInfo = $derived(shopDeleteMeta && !isSetShopInfo);
+
+	// Check for player data
+	const userUuidMeta = $derived(findMetaIn(meta, 'useruuid'));
+	const usernameMeta = $derived(findMetaIn(meta, 'username'));
+	const returnMeta = $derived(findMetaIn(meta, 'return'));
+	const hasPlayerData = $derived(userUuidMeta || usernameMeta);
+
+	const displayMeta = $derived(findDisplayMetaIn(meta));
 
 	// Check if this is a refund transaction
-	const refundType = findMeta(meta, 'type');
-	const isRefund = refundType?.value?.toLowerCase() === 'refund';
-	const refundRef = findMeta(meta, 'ref');
-	const refundOriginal = findMeta(meta, 'original');
-	const refundMessage = findMeta(meta, 'message') ?? findMeta(meta, 'msg');
-	const refundError = findMeta(meta, 'error');
+	const refundType = $derived(findMetaIn(meta, 'type'));
+	const isRefund = $derived(refundType?.value?.toLowerCase() === 'refund');
+	const refundRef = $derived(findMetaIn(meta, 'ref'));
+	const refundMessage = $derived(findMetaIn(meta, 'message') ?? findMetaIn(meta, 'msg'));
+	const refundError = $derived(findMetaIn(meta, 'error'));
 
-	// Refund modal state
 	let showRefundModal = $state(false);
-	let referencedTransaction: Transaction | null = $state(null);
-	let loadingRef = $state(false);
 
 	function openRefundModal(e: MouseEvent) {
 		e.preventDefault();
 		showRefundModal = true;
-
-		if (refundRef?.value && !referencedTransaction) {
-			loadingRef = true;
-			kromer.transactions
-				.get(Number(refundRef.value))
-				.then((tx) => {
-					referencedTransaction = tx;
-				})
-				.catch((err) => {
-					console.error('Failed to fetch referenced transaction:', err);
-				})
-				.finally(() => {
-					loadingRef = false;
-				});
-		}
 	}
 
-	function navigateToTransaction(id: number) {
-		showRefundModal = false;
-		goto(`/transactions/${id}`);
-	}
+	const relatedMatch: ReturnType<typeof findBestRelatedShopSyncListing> = $derived.by(() => {
+		if (!$settings.parsePurchaseItem) return null;
 
-	let relatedListing: Listing | null = $state(null);
-	let quantity: number = $state(0);
+		const valueOnlyMeta = meta.entries.filter((e) => !e.value).map((e) => e.name.toLowerCase());
+		return findBestRelatedShopSyncListing(transaction, $shopsync.data, valueOnlyMeta);
+	});
 
-	onMount(() => {
-		if ($settings.parsePurchaseItem) {
-			const valueOnlyMeta = meta.entries.filter((e) => !e.value).map((e) => e.name.toLowerCase());
-			if (valueOnlyMeta.length > 0) {
-				const shops = $shopsync.data.filter((s) => s.addresses?.includes(transaction.to));
-				const listings = shops.reduce((listings, s) => {
-					if (s.items) {
-						listings = [
-							...listings,
-							...s.items.filter((i) =>
-								i.prices?.find(
-									(p) =>
-										p.currency.toLowerCase() === 'kro' &&
-										valueOnlyMeta.includes(p.requiredMeta?.toLowerCase() ?? '')
-								)
-							)
-						];
-					}
-					return listings;
-				}, [] as Listing[]);
-				if (listings.length > 0) {
-					relatedListing = listings[0];
-					if ($settings.parsePurchaseItemQuantity) {
-						quantity = Math.floor(
-							transaction.value /
-								(relatedListing.prices?.find((p) => p.currency.toLowerCase() === 'kro')?.value ?? 1)
-						);
-					}
-					if (listings.length > 1) {
-						console.warn(
-							'Multiple listings found for transaction metadata:',
-							transaction,
-							listings
-						);
-					}
-				}
-			}
-		}
+	const relatedListing: Listing | null = $derived(relatedMatch?.listing ?? null);
+	const relatedPrice = $derived(relatedMatch?.price ?? null);
+
+	const quantity: number = $derived.by(() => {
+		if (!relatedPrice || !$settings.parsePurchaseItemQuantity) return 0;
+		if (relatedPrice.value <= 0) return 0;
+		return Math.floor(transaction.value / relatedPrice.value);
 	});
 </script>
 
 <div class="metadata">
 	{#if isRefund && refundRef}
 		<div class="refund-container">
-			<button class="refund-badge" onclick={openRefundModal}>
-				<FontAwesomeIcon icon={faRotateLeft} />
-				<span class="refund-id">#{refundRef.value}</span>
+			<button class="refund-trigger" onclick={openRefundModal}>
+				<Tag variant="yellow" size="md">
+					<FontAwesomeIcon icon={faRotateLeft} />
+					#{refundRef.value}
+				</Tag>
 			</button>
 			<!-- Show message/error/success after badge for refund transactions -->
 			{#if refundError}
@@ -159,7 +105,7 @@
 				<span class="refund-meta">{refundMessage.value}</span>
 			{:else}
 				<!-- Check for success= or plain text after filtering refund internal fields -->
-				{@const successMeta = findMeta(meta, 'success')}
+				{@const successMeta = findMetaIn(meta, 'success')}
 				{@const plainText = meta.entries.find(
 					(e) => !e.value && !REFUND_INTERNAL_META.includes(e.name.toLowerCase())
 				)}
@@ -174,13 +120,9 @@
 		<!-- Shop Actions: Set or Delete Shop Info -->
 		<div class="action-container">
 			{#if isDeleteShopInfo}
-				<span class="action-badge action-delete">
-					{$t$('parsedMeta.deleteShopInfo')}
-				</span>
+				<Tag variant="red">{$t$('parsedMeta.deleteShopInfo')}</Tag>
 			{:else if isSetShopInfo}
-				<span class="action-badge action-set">
-					{$t$('parsedMeta.setShopInfo')}
-				</span>
+				<Tag variant="blue">{$t$('parsedMeta.setShopInfo')}</Tag>
 				{#if shopNameMeta?.value}
 					<span class="action-detail">{shopNameMeta.value}</span>
 				{/if}
@@ -196,13 +138,13 @@
 					alt="Player avatar"
 				/>
 			{/if}
-			<span class="player-badge">
+			<Tag variant="green">
 				{#if usernameMeta?.value}
 					{usernameMeta.value}
 				{:else}
 					{$t$('parsedMeta.playerData')}
 				{/if}
-			</span>
+			</Tag>
 			{#if returnMeta?.value}
 				<span class="player-return">
 					→ <Address address={returnMeta.value} />
@@ -230,7 +172,7 @@
 	{:else if relatedListing}
 		<a class="item" href={getRelativeItemUrl(relatedListing)}>
 			<img
-				src={getItemImageUrl(relatedListing)}
+				src={itemImageUrl(relatedListing.itemName)}
 				alt="Item icon for {relatedListing.itemDisplayName}"
 			/>
 			<div class="item-info">
@@ -238,11 +180,8 @@
 					>{relatedListing.itemDisplayName}
 					<small>{quantity > 0 ? `x${quantity.toLocaleString()}` : ''}</small></strong
 				>
-				{#if $settings.parsePurchaseItemQuantity && relatedListing?.prices}
-					{@const price = relatedListing.prices.find((p) => p.currency.toLowerCase() === 'kro')}
-					{#if price}
-						<div class="each">{formatCurrency(price.value)} KRO each</div>
-					{/if}
+				{#if $settings.parsePurchaseItemQuantity && relatedPrice}
+					<div class="each">{formatCurrency(relatedPrice.value)} KRO each</div>
 				{/if}
 			</div>
 		</a>
@@ -258,152 +197,23 @@
 			{displayMeta.value ? displayMeta.value : displayMeta.name}
 		</span>
 	{:else}
-		<small><Placeholder text="[No message]" /></small>
+		<Placeholder text="[No message]" />
 	{/if}
 </div>
 
-<!-- Refund Details Modal -->
 {#if isRefund && refundRef}
-	<Modal
-		open={showRefundModal}
-		title={$t$('refund.refundTransaction')}
-		onClose={() => (showRefundModal = false)}
-		maxWidth="550px"
-	>
-		<div class="refund-modal-content">
-			<!-- This Transaction (the refund) -->
-			<div class="refund-section">
-				<h3>{$t$('transaction.thisTransaction')}</h3>
-				<div class="tx-card current">
-					<div class="tx-header">
-						<button class="tx-id" onclick={() => navigateToTransaction(transaction.id)}
-							>#{transaction.id}</button
-						>
-						<span class="tx-amount refund-amount">+{formatCurrency(transaction.value)} KRO</span>
-					</div>
-					<div class="tx-parties">
-						{#if transaction.from}
-							<span class="tx-address"><Address address={transaction.from} /></span>
-						{:else}
-							<span class="tx-address mined">Mined</span>
-						{/if}
-						<span class="tx-arrow"><FontAwesomeIcon icon={faArrowRight} /></span>
-						<span class="tx-address"><Address address={transaction.to} /></span>
-					</div>
-					<div class="tx-time">{relativeTime(transaction.time)}</div>
-				</div>
-			</div>
-
-			<!-- Refund Summary -->
-			{#if refundOriginal}
-				{@const originalValue = Number(refundOriginal.value)}
-				{@const percentage = (transaction.value / originalValue) * 100}
-				<div class="refund-summary">
-					<div class="summary-row">
-						<span class="summary-label">{$t$('refund.originalAmount')}</span>
-						<span class="summary-value">{formatCurrency(originalValue)} KRO</span>
-					</div>
-					<div class="summary-row">
-						<span class="summary-label">{$t$('refund.refundAmount')}</span>
-						<span class="summary-value refund">{formatCurrency(transaction.value)} KRO</span>
-					</div>
-					<div class="summary-row">
-						<span class="summary-label">{$t$('refund.refundPercentage')}</span>
-						<span class="summary-value percentage" class:full={percentage >= 100}
-							>{percentage.toFixed(1)}%</span
-						>
-					</div>
-				</div>
-			{/if}
-
-			<!-- Message or Error -->
-			{#if refundError}
-				<div class="refund-message error">
-					<strong>Error:</strong>
-					{refundError.value}
-				</div>
-			{:else if refundMessage}
-				<div class="refund-message">
-					<strong>{$t$('refund.message')}:</strong>
-					{refundMessage.value}
-				</div>
-			{:else if displayMeta && !displayMeta.value}
-				<div class="refund-message">
-					{displayMeta.name}
-				</div>
-			{/if}
-
-			<!-- Original Transaction -->
-			<div class="refund-section">
-				<h3>{$t$('refund.transactionToRefund')}</h3>
-				{#if loadingRef}
-					<Skeleton width="100%" height="90px" />
-				{:else if referencedTransaction}
-					{@const refTxId = referencedTransaction.id}
-					<div class="tx-card original">
-						<div class="tx-header">
-							<button class="tx-id" onclick={() => navigateToTransaction(refTxId)}
-								>#{referencedTransaction.id}</button
-							>
-							<span class="tx-amount">{formatCurrency(referencedTransaction.value)} KRO</span>
-						</div>
-						<div class="tx-parties">
-							{#if referencedTransaction.from}
-								<span class="tx-address"><Address address={referencedTransaction.from} /></span>
-							{:else}
-								<span class="tx-address mined">Mined</span>
-							{/if}
-							<span class="tx-arrow"><FontAwesomeIcon icon={faArrowRight} /></span>
-							<span class="tx-address"><Address address={referencedTransaction.to} /></span>
-						</div>
-						<div class="tx-time">{relativeTime(referencedTransaction.time)}</div>
-						{#if referencedTransaction.metadata}
-							{@const refMeta = kromer.transactions.parseMetadata(referencedTransaction)}
-							{@const refDisplayMeta = findDisplayMeta(refMeta)}
-							{@const refPlainText = refMeta.entries.find(
-								(e) => !e.value && !REFUND_INTERNAL_META.includes(e.name.toLowerCase())
-							)}
-							{#if refDisplayMeta}
-								<div class="tx-meta">
-									<small class:error={refDisplayMeta.name.toLowerCase() === 'error'}>
-										{#if refDisplayMeta.name.toLowerCase() === 'error'}
-											<strong>Error:</strong> {refDisplayMeta.value}
-										{:else if ['message', 'msg'].includes(refDisplayMeta.name.toLowerCase())}
-											{refDisplayMeta.value}
-										{:else}
-											{refDisplayMeta.value ?? refDisplayMeta.name}
-										{/if}
-									</small>
-								</div>
-							{:else if refPlainText}
-								<div class="tx-meta">
-									<small>{refPlainText.name}</small>
-								</div>
-							{/if}
-						{/if}
-					</div>
-				{:else}
-					<div class="tx-card error">
-						<span>Could not load transaction #{refundRef.value}</span>
-					</div>
-				{/if}
-			</div>
-
-			<div class="modal-actions">
-				<Button variant="secondary" onClick={() => navigateToTransaction(transaction.id)}>
-					<FontAwesomeIcon icon={faExternalLinkAlt} />
-					{$t$('contextMenu.viewTransaction')}
-				</Button>
-			</div>
-		</div>
-	</Modal>
+	<RefundTransactionModal bind:open={showRefundModal} {transaction} />
 {/if}
 
 <style>
 	.metadata span {
 		display: block;
 		max-width: 100%;
-		overflow: hidden;
+		overflow-x: hidden;
+	}
+
+	.metadata :global(.tag) {
+		display: inline-flex;
 	}
 
 	/* Shop Action Styles */
@@ -412,29 +222,6 @@
 		align-items: center;
 		gap: 0.5em;
 		min-width: 0;
-	}
-
-	.action-badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35em;
-		padding: 0.2em 0.5em;
-		border-radius: 0.3em;
-		font-size: 0.85em;
-		font-weight: 600;
-		flex-shrink: 0;
-	}
-
-	.action-badge.action-set {
-		background-color: rgba(var(--blue), 0.15);
-		border: 1px solid rgba(var(--blue), 0.3);
-		color: rgb(var(--blue));
-	}
-
-	.action-badge.action-delete {
-		background-color: rgba(var(--red), 0.15);
-		border: 1px solid rgba(var(--red), 0.3);
-		color: rgb(var(--red));
 	}
 
 	.action-detail {
@@ -460,19 +247,6 @@
 		flex-shrink: 0;
 	}
 
-	.player-badge {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.2em 0.5em;
-		background-color: rgba(var(--green), 0.15);
-		border: 1px solid rgba(var(--green), 0.3);
-		border-radius: 0.3em;
-		color: rgb(var(--green));
-		font-size: 0.85em;
-		font-weight: 600;
-		flex-shrink: 0;
-	}
-
 	.player-return {
 		color: var(--text-color-2);
 		font-size: 0.85em;
@@ -489,32 +263,20 @@
 		min-width: 0;
 	}
 
-	.refund-badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35em;
-		padding: 0.2em 0.5em;
-		background-color: rgba(var(--yellow), 0.15);
-		border: 1px solid rgba(var(--yellow), 0.3);
-		border-radius: 0.3em;
-		color: rgb(var(--yellow));
-		text-decoration: none;
-		font-size: 0.85em;
-		font-family: inherit;
+	.refund-trigger {
+		background: none;
+		padding: 0;
+		border: none;
 		cursor: pointer;
-		transition:
-			background-color 0.15s ease,
-			border-color 0.15s ease;
 		flex-shrink: 0;
 	}
 
-	.refund-badge:hover {
-		background-color: rgba(var(--yellow), 0.25);
-		border-color: rgba(var(--yellow), 0.5);
+	.refund-trigger :global(.tag) {
+		transition: filter 0.15s ease;
 	}
 
-	.refund-id {
-		font-weight: 600;
+	.refund-trigger:hover :global(.tag) {
+		filter: brightness(1.08);
 	}
 
 	.refund-meta {
@@ -613,179 +375,5 @@
 	.each {
 		font-size: 0.8em;
 		opacity: 0.8;
-	}
-
-	/* Refund Modal Styles */
-	.refund-modal-content {
-		display: flex;
-		flex-direction: column;
-		gap: 1.25rem;
-	}
-
-	.refund-section h3 {
-		margin: 0 0 0.5rem 0;
-		font-size: 0.85rem;
-		font-weight: 600;
-		color: var(--text-color-2);
-		text-transform: uppercase;
-		letter-spacing: 0.03em;
-	}
-
-	.tx-card {
-		padding: 1rem;
-		background-color: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 0.5rem;
-	}
-
-	.tx-card.current {
-		border-color: rgba(var(--yellow), 0.4);
-		background-color: rgba(var(--yellow), 0.05);
-	}
-
-	.tx-card.error {
-		border-color: rgba(var(--red), 0.4);
-		background-color: rgba(var(--red), 0.05);
-		color: rgb(var(--red));
-	}
-
-	.tx-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 0.5rem;
-	}
-
-	.tx-id {
-		font-weight: 600;
-		color: rgb(var(--primary));
-		text-decoration: none;
-		background: none;
-		border: none;
-		padding: 0;
-		font-size: inherit;
-		font-family: inherit;
-		cursor: pointer;
-	}
-
-	.tx-id:hover {
-		text-decoration: underline;
-	}
-
-	.tx-amount {
-		font-weight: 600;
-		font-size: 1.1em;
-	}
-
-	.tx-amount.refund-amount {
-		color: rgb(var(--green));
-	}
-
-	.tx-parties {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.9em;
-		flex-wrap: wrap;
-	}
-
-	.tx-arrow {
-		color: var(--text-color-2);
-		opacity: 0.6;
-	}
-
-	.tx-address.mined {
-		font-style: italic;
-		color: var(--text-color-2);
-	}
-
-	.tx-time {
-		margin-top: 0.5rem;
-		font-size: 0.85em;
-		color: var(--text-color-2);
-	}
-
-	.tx-meta {
-		margin-top: 0.5rem;
-		padding-top: 0.5rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-	}
-
-	.tx-meta small {
-		color: var(--text-color-2);
-		word-break: break-all;
-	}
-
-	.refund-summary {
-		padding: 1rem;
-		background-color: rgba(var(--yellow), 0.08);
-		border: 1px solid rgba(var(--yellow), 0.2);
-		border-radius: 0.5rem;
-	}
-
-	.summary-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0.35rem 0;
-	}
-
-	.summary-row:not(:last-child) {
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-	}
-
-	.summary-label {
-		color: var(--text-color-2);
-		font-size: 0.9em;
-	}
-
-	.summary-value {
-		font-weight: 600;
-	}
-
-	.summary-value.refund {
-		color: rgb(var(--green));
-	}
-
-	.summary-value.percentage {
-		padding: 0.15em 0.4em;
-		background-color: rgba(var(--blue), 0.15);
-		border-radius: 0.25em;
-		color: rgb(var(--blue));
-		font-size: 0.9em;
-	}
-
-	.summary-value.percentage.full {
-		background-color: rgba(var(--green), 0.15);
-		color: rgb(var(--green));
-	}
-
-	.refund-message {
-		padding: 0.75rem 1rem;
-		background-color: rgba(var(--blue), 0.1);
-		border: 1px solid rgba(var(--blue), 0.2);
-		border-radius: 0.4rem;
-		font-size: 0.9em;
-		color: var(--text-color);
-	}
-
-	.refund-message.error {
-		background-color: rgba(var(--red), 0.1);
-		border-color: rgba(var(--red), 0.3);
-	}
-
-	.refund-message.error strong {
-		color: rgb(var(--red));
-	}
-
-	.refund-message strong {
-		color: rgb(var(--blue));
-	}
-
-	.modal-actions {
-		display: flex;
-		justify-content: flex-end;
-		padding-top: 0.5rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
 	}
 </style>

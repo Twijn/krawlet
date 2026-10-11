@@ -15,6 +15,7 @@
 	import SuccessfulPosts from '$lib/components/widgets/reports/SuccessfulPosts.svelte';
 	import ShopChanges from '$lib/components/widgets/reports/ShopChanges.svelte';
 	import ItemPropertyChanges from '$lib/components/widgets/reports/ItemPropertyChanges.svelte';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 
 	type TabId = 'stats' | 'validation' | 'posts' | 'shops' | 'items';
 
@@ -35,13 +36,14 @@
 	<title>{$t$('nav.reports')} | Shops | Krawlet</title>
 </svelte:head>
 
-<div class="col-12">
-	<h1>
-		<a href="/">Krawlet</a> <span>&raquo;</span>
-		<a href="/shops">{$t$('nav.shops')}</a> <span>&raquo;</span>
-		<a href="/shops/reports">{$t$('nav.reports')}</a>
-	</h1>
+<Breadcrumbs
+	navItems={[
+		{ href: '/shops', tl: 'nav.shops' },
+		{ href: '/shops/reports', tl: 'nav.reports' }
+	]}
+/>
 
+<div class="col-12">
 	<div class="tabs-nav" role="tablist" aria-label="Report categories">
 		{#each tabs as tab (tab.id)}
 			<button

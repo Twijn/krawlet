@@ -4,13 +4,11 @@
 	import playerWalletStore, { type Player } from '$lib/stores/playerWallets';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import {
-		faBell,
 		faBuilding,
 		faCheck,
 		faCopy,
 		faDice,
 		faExchange,
-		faExternalLinkAlt,
 		faEye,
 		faPaperPlane,
 		faStore,
@@ -20,7 +18,6 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { getAddress, type KnownAddress } from '$lib/stores/knownAddresses';
 	import settings, { type Wallet } from '$lib/stores/settings';
-	import { getSyncNode } from '$lib/consts';
 	import { contextMenu } from '$lib/stores/contextMenu';
 	import { t$ } from '$lib/i18n';
 	import type { ContextMenuItem } from '$lib/components/ui/ContextMenu.svelte';
@@ -35,9 +32,7 @@
 	} = $props();
 
 	let wallet: Wallet | null = $derived(
-		$settings.wallets
-			.filter((x) => x.syncNode === getSyncNode().id)
-			.find((x) => x.address === address) ?? null
+		$settings.wallets.find((x) => x.address === address) ?? null
 	);
 
 	let player: Player | null = $derived(
@@ -54,7 +49,7 @@
 			notifications.success(`Address '${address}' copied to clipboard.`);
 		} catch (err) {
 			console.error(err);
-			notifications.success('Failed to copy address to clipboard.');
+			notifications.error(`Failed to copy address '${address}' to clipboard.`);
 		}
 	};
 
@@ -67,6 +62,12 @@
 				icon: faEye,
 				href: `/addresses/${address}`
 			},
+			{
+				label: $t$('contextMenu.copyAddress'),
+				icon: faCopy,
+				action: copyAddress
+			},
+			{ separator: true, label: '' },
 			{
 				label: $t$('contextMenu.viewTransactions'),
 				icon: faExchange,
@@ -82,29 +83,6 @@
 				label: $t$('contextMenu.sendKromer'),
 				icon: faPaperPlane,
 				href: `/transactions/new?to=${address}`
-			},
-			{ separator: true, label: '' },
-			{
-				label: $t$('contextMenu.copyAddress'),
-				icon: faCopy,
-				action: copyAddress
-			},
-			{
-				label: $t$('contextMenu.monitorAddress'),
-				icon: faBell,
-				href: `/settings?monitor=${address}`
-			},
-			{ separator: true, label: '' },
-			{
-				label: $t$('contextMenu.viewOnKrist'),
-				icon: faExternalLinkAlt,
-				href: `${getSyncNode().url.replace('/api/krist/', '')}/#/addresses/${address}`,
-				action: () => {
-					window.open(
-						`${getSyncNode().url.replace('/api/krist/', '')}/#/addresses/${address}`,
-						'_blank'
-					);
-				}
 			}
 		];
 
@@ -114,8 +92,8 @@
 	let special = $derived(
 		Boolean(
 			wallet ||
-				(player && $settings.replaceAddressesWithPlayer) ||
-				(verifiedEntry && $settings.replaceAddressesWithKnown)
+			(player && $settings.replaceAddressesWithPlayer) ||
+			(verifiedEntry && $settings.replaceAddressesWithKnown)
 		)
 	);
 </script>
@@ -128,6 +106,7 @@
 	class:official={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'official'}
 	class:shop={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'shop'}
 	class:gamble={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'gamble'}
+	class:service={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'service'}
 	class:company={$settings.replaceAddressesWithKnown && verifiedEntry?.type === 'company'}
 	title={special ? 'Go to ' + address : undefined}
 	oncontextmenu={handleContextMenu}
@@ -167,6 +146,8 @@
 		font-size: 1rem;
 		flex-grow: 1;
 		text-align: center;
+		/* Override global `a { transition: all ... }` to avoid load-in size/color morphing. */
+		transition: none;
 	}
 
 	a:not(.special) {
@@ -196,6 +177,10 @@
 
 	.gamble {
 		--color: var(--red);
+	}
+
+	.service {
+		--color: var(--theme-color-rgb);
 	}
 
 	.special {

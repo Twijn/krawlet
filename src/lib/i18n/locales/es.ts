@@ -105,6 +105,8 @@ export default {
 		walletDeleted: 'Billetera eliminada exitosamente',
 		selectWallet: 'Seleccionar Billetera',
 		masterPassword: 'Contraseña Maestra',
+		masterPasswordDescription: 'Ingresa tu contraseña maestra para desbloquear tus billeteras.',
+		rememberPassword: 'Recordar contraseña para esta sesión',
 		confirmPassword: 'Confirmar Contraseña',
 		passwordMismatch: 'Las contraseñas no coinciden',
 		invalidPassword: 'Contraseña inválida',
@@ -169,21 +171,53 @@ export default {
 		exportWallets: 'Exportar Billeteras',
 		importWallets: 'Importar Billeteras',
 		exportedPassword: 'Contraseña de Exportación',
-		exportedPasswordOptional: 'Contraseña de Exportación (Opcional)',
 		exportedPasswordPlaceholder:
 			'Ingresa la contraseña que quieres usar para exportar tus billeteras',
-		exportedPasswordHint:
-			'Esta es usualmente diferente de tu contraseña maestra. ¡No olvides esta contraseña ya que la necesitarás para importar tus billeteras!',
 		importPasswordPlaceholder: 'Ingresa la contraseña que usaste para exportar tus billeteras',
 		exportButton: 'Exportar',
 		importButton: 'Importar',
 		exportData: 'Datos de Exportación',
+		importFile: 'Archivo de Importación',
+		importFileHelp: 'Selecciona un archivo .krawlet o .json exportado desde tu dispositivo.',
 		importData: 'Datos de Importación',
 		importDataPlaceholder: 'Ingresa tu exportación JSON de billetera',
+		importReencryptToggle: 'Recifrar billeteras importadas con mi contraseña maestra actual',
+		importSourceMasterPassword: 'Contraseña Maestra de Origen',
+		importSourceMasterPasswordPlaceholder:
+			'Ingresa la contraseña maestra usada por las billeteras en esta exportación (por defecto la contraseña de exportación)',
+		importReencryptHelp:
+			'Primero intentaremos usar la contraseña de exportación para migrar billeteras. Si falla, podrás ingresar la contraseña maestra de origen.',
+		importSourceMasterPasswordHelp:
+			'La contraseña de exportación no pudo descifrar las claves privadas. Ingresa la contraseña maestra de origen de las billeteras exportadas.',
+		importMasterPasswordRequired:
+			'La contraseña maestra actual es obligatoria para completar la importación.',
+		importSourceMasterPasswordNeeded:
+			'Esta exportación parece usar una contraseña maestra diferente. Ingresa la contraseña maestra de origen para continuar.',
+		importSourceMasterPasswordRequired:
+			'La contraseña maestra de origen es obligatoria para continuar la importación.',
+		importPreviewTitle: 'Vista Previa de Importación',
+		importPreviewWaiting:
+			'Ingresa la contraseña de exportación para previsualizar esta importación.',
+		importPreviewLoading: 'Verificando datos de importación...',
+		importPreviewInvalid:
+			'No se pudo descifrar o validar esta exportación con la contraseña actual.',
+		importPreviewEmpty: 'Esta exportación no contiene billeteras para importar.',
+		importPreviewReady: '{count} billetera(s) lista(s) para importar.',
+		importPreviewSummary: '{add} nuevas, {rename} con cambio de nombre.',
+		importPreviewReencryptEnabled:
+			'Las claves privadas se migrarán a tu contraseña maestra actual.',
+		importPreviewReencryptDisabled:
+			'Las claves privadas conservarán su contraseña maestra original (no recomendado).',
+		importPreviewActionAdd: 'Agregar',
+		importPreviewActionRename: 'Renombrar',
+		importPreviewRenameFrom: 'Nombre actual: {name}',
+		importPreviewMore: '{count} billetera(s) más no se muestran.',
 		copyToClipboard: 'Copiar al Portapapeles',
 		exportCopied:
 			'Datos de exportación copiados al portapapeles. Pégalos en la aplicación Krawlet para importar tus billeteras.',
 		importSuccess: '¡{count} billetera(s) importada(s) exitosamente!',
+		importSuccessReencrypted:
+			'¡{count} billetera(s) importada(s) exitosamente! Se migraron {reencrypted} clave(s) privada(s) a tu contraseña maestra actual.',
 		importError: 'Error al importar billeteras: {message}',
 		importInvalid: '¡Contraseña de exportación o datos inválidos!'
 	},
@@ -417,6 +451,7 @@ export default {
 			general: 'General',
 			display: 'Pantalla',
 			notifications: 'Notificaciones',
+			cache: 'Caché',
 			advanced: 'Avanzado'
 		},
 		language: 'Idioma',
@@ -459,6 +494,8 @@ export default {
 		apiKeySaved: 'Clave API guardada exitosamente',
 		apiKeyInfo: 'Info de Clave API',
 		apiKeyName: 'Nombre',
+		apiKeyMinecraftName: 'Nombre de Minecraft',
+		apiKeyMinecraftUuid: 'UUID de Minecraft',
 		apiKeyTier: 'Nivel',
 		apiKeyStatus: 'Estado',
 		apiKeyActive: 'Activa',
@@ -482,7 +519,50 @@ export default {
 		quickCodeOverwriteConfirm:
 			'Ya tienes una clave API guardada. Canjear este código rápido sobrescribirá tu clave API existente. ¿Estás seguro de que quieres continuar?',
 		generatedApiKey: 'Tu Clave API',
-		quickCodeClear: 'Limpiar e Ingresar Otro Código'
+		quickCodeClear: 'Limpiar e Ingresar Otro Código',
+		cacheOverview: 'Resumen de Almacenamiento',
+		cacheTitle: 'Gestionar cachés locales de la app',
+		cacheSubtitle:
+			'Inspecciona y limpia datos de IndexedDB, localStorage y caché del service worker usados por Krawlet.',
+		cacheTotalEntries: 'Entradas Totales',
+		cacheEstimatedSize: 'Tamaño Estimado',
+		cacheBuckets: 'Bloques de Caché',
+		cacheHeaviest: 'Cachés Más Pesadas',
+		cacheRefresh: 'Actualizar',
+		cacheEmpty: 'Aún no se encontraron datos en caché.',
+		cacheEntries: 'entradas',
+		cacheIndexedDb: 'Datos de IndexedDB',
+		cacheLocalStorage: 'Datos de localStorage',
+		cacheServiceWorker: 'Cachés del Service Worker',
+		cacheClearAll: 'Limpiar Todo',
+		cacheClear: 'Limpiar',
+		cacheNoneForCategory: 'No hay entradas de caché en esta categoría.',
+		cacheUpdated: 'Actualizado',
+		cacheDangerZone: 'Zona de Riesgo',
+		cacheDangerZoneHint:
+			'Limpia todas las capas de caché de la app a la vez. Esto no elimina tus billeteras en configuración.',
+		cacheClearEverything: 'Limpiar Todo',
+		cacheNever: 'Nunca',
+		cacheHealthHeavy:
+			'Se detectó una caché grande. Considera limpiar entradas antiguas si la app se siente lenta.',
+		cacheHealthGood: 'El tamaño de la caché es saludable.',
+		cacheStatsFailed: 'No se pudieron cargar las estadísticas de caché.',
+		cacheActionFailed: 'No se pudo completar la acción de caché.',
+		cacheConfirmStore: '¿Limpiar el almacén de IndexedDB "{store}"?',
+		cacheStoreCleared: 'Se limpió el almacén de IndexedDB "{store}".',
+		cacheConfirmIdbAll: '¿Limpiar todos los almacenes de caché de IndexedDB?',
+		cacheIdbCleared: 'Se limpiaron todos los almacenes de caché de IndexedDB.',
+		cacheConfirmLocalKey: '¿Limpiar la caché de localStorage "{key}"?',
+		cacheLocalCleared: 'Se limpió la caché de localStorage "{key}".',
+		cacheConfirmLocalAll: '¿Limpiar todas las cachés de localStorage usadas por Krawlet?',
+		cacheLocalAllCleared: 'Se limpiaron todas las cachés de localStorage.',
+		cacheConfirmSwKey: '¿Limpiar la caché del service worker "{cache}"?',
+		cacheSwCleared: 'Se limpió la caché del service worker "{cache}".',
+		cacheConfirmSwAll: '¿Limpiar todas las cachés del service worker de Krawlet?',
+		cacheSwAllCleared: 'Se limpiaron todas las cachés del service worker.',
+		cacheConfirmEverything:
+			'¿Limpiar todas las capas de caché (IndexedDB, localStorage y service worker)?',
+		cacheEverythingCleared: 'Se limpiaron todas las capas de caché.'
 	},
 	notifications: {
 		success: 'Éxito',
@@ -499,7 +579,12 @@ export default {
 			'¡Nodo de sincronización cambiado exitosamente! Por favor actualiza la aplicación para aplicar el nuevo nodo.',
 		refreshRequired:
 			'Por favor actualiza la aplicación para aplicar el nuevo nodo de sincronización.',
-		newTransaction: 'Nueva transacción: {from} envió {amount} KRO a {to}'
+		newTransaction: 'Nueva transacción: {from} envió {amount} KRO a {to}',
+		transferStarted: 'Transferencia iniciada: {quantity}x {item} hacia {target}',
+		transferCompleted: 'Transferencia completada: {quantity}x {item} hacia {target}',
+		transferFailed: 'La transferencia falló: {item} hacia {target}',
+		transferFailedWithReason: 'La transferencia falló: {item} hacia {target} ({reason})',
+		transferCancelled: 'Transferencia cancelada: {item} hacia {target}'
 	},
 	errors: {
 		networkError: 'Error de red. Por favor intenta de nuevo.',
@@ -847,8 +932,6 @@ export default {
 		viewNames: 'Ver Nombres',
 		sendKromer: 'Enviar Kromer',
 		copyAddress: 'Copiar Dirección',
-		monitorAddress: 'Monitorear Dirección',
-		viewOnKrist: 'Ver en Krist',
 		// Acciones de transacción
 		viewTransaction: 'Ver Transacción',
 		copyTransactionId: 'Copiar ID de Transacción',

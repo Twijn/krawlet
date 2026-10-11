@@ -23,6 +23,8 @@ export interface Listing {
 	requiresInteraction: boolean;
 	stock: number;
 
+	features?: string[] | null;
+
 	prices?: ListingPrice[];
 	shop?: Shop;
 	addresses?: string[];
@@ -40,6 +42,8 @@ export interface Shop {
 	owner: string | null;
 	computerId: number;
 
+	features?: string[] | null;
+
 	softwareName: string | null;
 	softwareVersion: string | null;
 
@@ -49,6 +53,9 @@ export interface Shop {
 
 	items?: Listing[];
 	addresses?: string[];
+
+	sourceType: 'modem' | 'radio_tower';
+	supportsKlog: boolean;
 
 	createdDate?: string | null;
 	updatedDate?: string | null;

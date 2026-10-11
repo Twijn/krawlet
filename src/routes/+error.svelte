@@ -2,15 +2,15 @@
 	import Section from '$lib/components/ui/Section.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import { page } from '$app/state';
+	import Breadcrumbs from '$lib/components/ui/Breadcrumbs.svelte';
 </script>
 
 <svelte:head>
 	<title>{page.status} | Krawlet</title>
 </svelte:head>
 
-<h1>
-	<a href="/">Krawlet</a>
-</h1>
+<Breadcrumbs />
+
 <Section lgCols={12}>
 	<h2>{page.status}: {page?.error?.message ?? 'Internal Server Error'}</h2>
 	<p>
