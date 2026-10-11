@@ -37,7 +37,7 @@
 		gap: 0.35em;
 		padding: 0.2em 0.55em;
 		border-radius: 999px;
-		font-weight: 700;
+		font-weight: 500;
 		line-height: 1;
 		border: 1px solid rgba(var(--tag-color), 0.28);
 		background: rgba(var(--tag-color), 0.14);
@@ -45,12 +45,12 @@
 	}
 
 	.tag.sm {
-		font-size: 0.72rem;
+		font-size: 0.72em;
 		letter-spacing: 0.03em;
 	}
 
 	.tag.md {
-		font-size: 0.8rem;
+		font-size: 0.8em;
 		letter-spacing: 0.02em;
 		padding: 0.3em 0.68em;
 	}

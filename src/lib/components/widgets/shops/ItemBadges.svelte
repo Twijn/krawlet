@@ -49,8 +49,8 @@
 
 <style>
 	.badges {
-		display: flex;
-		justify-content: center;
+		display: inline-flex;
+		flex-wrap: wrap;
 		gap: 0.5em;
 		margin-bottom: 0.5em;
 	}

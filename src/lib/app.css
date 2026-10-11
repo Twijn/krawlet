@@ -561,19 +561,13 @@ button.link:focus-visible {
 
 	/* Scroll shadow indicators */
 	background:
-		/* Left shadow */
-		linear-gradient(to right, var(--background-color-1) 20%, transparent) left center,
-		/* Right shadow */ linear-gradient(to left, var(--background-color-1) 20%, transparent) right
-			center,
 		/* Left shadow cover */ linear-gradient(to right, rgba(0, 0, 0, 0.12), transparent) left center,
 		/* Right shadow cover */ linear-gradient(to left, rgba(0, 0, 0, 0.12), transparent) right center;
 	background-repeat: no-repeat;
 	background-size:
 		30px 100%,
-		30px 100%,
-		15px 100%,
-		15px 100%;
-	background-attachment: local, local, scroll, scroll;
+		30px 100%;
+	background-attachment: local, local;
 }
 
 .table-container::-webkit-scrollbar {
@@ -619,14 +613,14 @@ tbody tr:last-child {
 
 th,
 td {
-	padding: 0.85rem 1rem;
+	padding: 0.8em 0.95em;
 	text-align: left;
 }
 
 th {
 	font-weight: 600;
 	color: var(--text-color-1);
-	font-size: 0.8rem;
+	font-size: 0.8em;
 	text-transform: uppercase;
 	letter-spacing: 0.06em;
 }
